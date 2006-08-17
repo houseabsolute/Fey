@@ -5,35 +5,99 @@ use warnings;
 
 use base 'Q::Accessor';
 __PACKAGE__->mk_ro_accessors
-    ( qw( name type generic_type length precision is_nullable ) );
+    ( qw( name type generic_type length precision
+          is_auto_increment is_nullable table ) );
+
+use Scalar::Util qw(weaken);
 
 use Q::Exceptions qw(param_error);
 use Q::Validate
-    qw( validate SCALAR_TYPE BOOLEAN_TYPE
-        POS_INTEGER_TYPE POS_OR_ZERO_INTEGER_TYPE );
+    qw( validate validate_pos
+        UNDEF OBJECT
+        SCALAR_TYPE BOOLEAN_TYPE
+        POS_INTEGER_TYPE POS_OR_ZERO_INTEGER_TYPE
+        TABLE_TYPE );
 
 
 {
     my $gen_type_re =
-        qr/text|blob|number|integer|float|date|datetime|other/;
+        qr/text|blob|integer|float|date|datetime|time|boolean|other/;
 
     my $spec =
-        { name         => SCALAR_TYPE,
-          generic_type => SCALAR_TYPE( regex => $gen_type_re ),
-          type         => SCALAR_TYPE,
-          length       => POS_INTEGER_TYPE( optional => 1 ),
-          precision    => POS_OR_ZERO_INTEGER_TYPE( optional => 1,
-                                                    depends => [ 'length' ] ),
-          is_nullable  => BOOLEAN_TYPE( default  => 0 ),
+        { name              => SCALAR_TYPE,
+          generic_type      => SCALAR_TYPE( regex    => $gen_type_re,
+                                            optional => 1,
+                                          ),
+          type              => SCALAR_TYPE,
+          length            => POS_INTEGER_TYPE( optional => 1 ),
+          precision         => POS_OR_ZERO_INTEGER_TYPE( optional => 1,
+                                                         depends => [ 'length' ] ),
+          is_auto_increment => BOOLEAN_TYPE( default => 0 ),
+          is_nullable       => BOOLEAN_TYPE( default => 0 ),
+          table             => TABLE_TYPE( optional => 1 ),
         };
     sub new
     {
         my $class = shift;
         my %p     = validate( @_, $spec );
 
+        $p{generic_type}
+            ||= $class->_guess_generic_type( $p{type} );
+
         my $self = bless \%p, $class;
 
         return $self;
+    }
+}
+
+{
+    my @TypesRe =
+        ( [ text     => qr/(?:text|char(?:acter)?)\b/i ],
+          [ blob     => qr/blob\b|bytea\b/i ],
+          # The year type comes from MySQL
+          [ integer  => qr/(?:int(?:eger)?\d*|year)\b/i ],
+          [ float    => qr/(?:float\d*|decimal|real|double|money|numeric)\b/i ],
+          # MySQL's timestamp is not always a datetime, it depends on
+          # the length of the column, but this is the best _guess_.
+          [ datetime => qr/datetime\b|^timestamp/i ],
+          [ date     => qr/date\b/i ],
+          [ time     => qr/^time|time\b/i ],
+          [ boolean  => qr/\bbool/i ],
+        );
+
+    sub _guess_generic_type
+    {
+        my $type = $_[1];
+
+        for my $p (@TypesRe)
+        {
+            return $p->[0] if $type =~ /$p->[1]/;
+        }
+
+        return 'other';
+    }
+}
+
+{
+    # This method is private but intended to be called by Q::Table,
+    # but not by anything else.
+    my $spec = ( { type => UNDEF | OBJECT,
+                   callbacks =>
+                   { 'undef or table' =>
+                     sub { ! defined $_[0]
+                           || $_[0]->isa('Q::Table') },
+                   },
+                 } );
+    sub _set_table
+    {
+        my $self    = shift;
+        my ($table) = validate_pos( @_, $spec );
+
+        $self->{table} = $table;
+        weaken $self->{table}
+            if $self->{table};
+
+        return $self
     }
 }
 

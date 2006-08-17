@@ -22,3 +22,21 @@
 
 * Keep potential rows in some form, very handy
 
+Problems with Alzabo
+
+* Adding support for a new DBMS is a lot of work. Too many different
+  bits to code up.
+
+* Support for multiple versions of one DBMS is sketchy or
+  non-existent. Either old stuff doesn't work, or it defaults to
+  supporting old capabilities only (32 char name limit in Pg, for
+  example).
+** Unfortunately, DBMS's do not provide good support for discovering
+   much of this info after a connection.
+
+* GUI design tools exist for specific databases that do a better job
+  of catering to the database's quirks/features.
+
+* Separation of Runtime/Create made sense 6 years ago, but probably
+  isn't worthwhile nowadays.
+

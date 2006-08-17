@@ -10,8 +10,10 @@ __PACKAGE__->mk_ro_accessors
 use Q::Exceptions qw(param_error);
 use Q::Validate
     qw( validate validate_pos
-        SCALAR_TYPE TABLE_TYPE DBI_TYPE );
+        SCALAR_TYPE ARRAYREF_TYPE
+        TABLE_TYPE FK_TYPE DBI_TYPE );
 
+use Q::Query;
 use Q::Table;
 
 
@@ -56,6 +58,7 @@ use Q::Table;
             if $self->table($name);
 
         $self->{tables}{$name} = $table;
+        $table->_set_schema($self);
 
         return $self;
     }
@@ -85,11 +88,11 @@ sub tables
     sub remove_table
     {
         my $self = shift;
-        my ($col) = validate_pos( @_, $spec );
+        my ($table) = validate_pos( @_, $spec );
 
-        my $name = $col->name();
+        my $name = $table->name();
 
-        delete $self->{tables}{$name};
+        $table->_set_schema(undef);
 
         return $self;
     }
@@ -107,3 +110,21 @@ sub tables
         return $self;
     }
 }
+
+{
+    my $spec = (FK_TYPE);
+    sub add_foreign_key
+    {
+        my $self = shift;
+        my ($fk)  = validate_pos( @_, $spec );
+
+
+    }
+}
+
+sub query { Q::Query->new( dbh => $_[0]->dbh() ) }
+
+
+1;
+
+__END__

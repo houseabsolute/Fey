@@ -5,14 +5,16 @@ use warnings;
 
 use base 'Q::Accessor';
 __PACKAGE__->mk_ro_accessors
-    ( qw( name is_view ) );
+    ( qw( name is_view schema ) );
+
+use Scalar::Util qw( blessed weaken );
 
 use Q::Exceptions qw(param_error);
 use Q::Validate
     qw( validate validate_pos
+        UNDEF OBJECT
         SCALAR_TYPE BOOLEAN_TYPE
-        COLUMN_TYPE );
-use Scalar::Util qw( blessed );
+        COLUMN_TYPE SCHEMA_TYPE );
 
 use Q::Column;
 
@@ -48,6 +50,8 @@ use Q::Column;
 
         $self->{columns}{$name} = $col;
 
+        $col->_set_table($self);
+
         return $self;
     }
 }
@@ -81,6 +85,7 @@ sub columns
         my $name = $col->name();
 
         delete $self->{columns}{$name};
+        $col->_set_table(undef);
 
         return $self;
     }
@@ -117,6 +122,29 @@ sub columns
 }
 
 sub primary_key { @{ $_[0]->{pk} } }
+
+{
+    # This method is private but intended to be called by Q::Schema,
+    # but not by anything else.
+    my $spec = ( { type => UNDEF | OBJECT,
+                   callbacks =>
+                   { 'undef or schema' =>
+                     sub { ! defined $_[0]
+                           || $_[0]->isa('Q::Schema') },
+                   },
+                 } );
+    sub _set_schema
+    {
+        my $self     = shift;
+        my ($schema) = validate_pos( @_, $spec );
+
+        $self->{schema} = $schema;
+        weaken $self->{schema}
+            if $self->{schema};
+
+        return $self
+    }
+}
 
 
 1;

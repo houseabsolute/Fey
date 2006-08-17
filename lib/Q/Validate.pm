@@ -40,7 +40,7 @@ BEGIN {
           )
         );
 
-    for my $class ( qw( Schema Table Column ) )
+    for my $class ( qw( Schema Table Column FK ) )
     {
         $Types{ uc $class . '_TYPE' } = { isa => "Q::${class}" };
     }

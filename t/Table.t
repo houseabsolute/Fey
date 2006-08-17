@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 14;
+use Test::More tests => 17;
 
 
 use_ok( 'Q::Table' );
@@ -29,13 +29,17 @@ use_ok( 'Q::Table' );
 
 {
     my $t = Q::Table->new( name => 'Test' );
-    my $c1 = Q::Column->new( name         => 'test_id',
-                             type         => 'text',
-                             generic_type => 'text',
+    my $c1 = Q::Column->new( name => 'test_id',
+                             type => 'text',
                            );
+
+    ok( ! $c1->table(), 'column has no table' );
 
     $t->add_column($c1);
     ok( $t->column('test_id'), 'test_id column is in table' );
+
+    is( $c1->table(), $t,
+        'column has a table after calling add_column()' );
 
     my @cols = $t->columns;
     is( scalar @cols, 1, 'table has one column' );
@@ -47,18 +51,18 @@ use_ok( 'Q::Table' );
 
     $t->remove_column($c1);
     ok( ! $t->column('test_id'), 'test_id column is not in table' );
+    ok( ! $c1->table(),
+        'column has no table after calling remove_column()' );
 }
 
 {
     my $t = Q::Table->new( name => 'Test' );
-    my $c1 = Q::Column->new( name         => 'test_id',
-                             type         => 'text',
-                             generic_type => 'text',
+    my $c1 = Q::Column->new( name => 'test_id',
+                             type => 'text',
                            );
 
-    my $c2 = Q::Column->new( name         => 'size',
-                             type         => 'integer',
-                             generic_type => 'integer',
+    my $c2 = Q::Column->new( name => 'size',
+                             type => 'integer',
                            );
 
     $t->add_column($_) for $c1, $c2;
@@ -73,4 +77,12 @@ use_ok( 'Q::Table' );
     my @pk = $t->primary_key();
     is( scalar @pk, 1, 'table has a one column pk' );
     is( $pk[0]->name(), 'test_id', 'pk column is test_id' );
+}
+
+{
+    require Q::Schema;
+
+    my $s = Q::Schema->new( name => 'Test' );
+    my $t = Q::Table->new( name => 'Test' );
+
 }
