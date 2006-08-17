@@ -1,0 +1,24 @@
+* Be the parts of Alzabo that I use - namely automating query creation, simple caching
+
+* Cooperate with standard schema definition practice - A SQL file
+** Load schema by reverse engineering or define via code
+** This is simpler to port to multiple DBMS backends
+
+* Method auto-generation should be completely separate, and not rely
+  on complicated subclassing schemes like Alzabo::MethodMaker
+
+* Query creation should be not be a method of schema or tables, rather
+  a separate thing
+** This makes subselect-type queries, unions, etc, much simpler to
+   formulate and use
+** Preserve the clever bits of Alzabo's handling of aliases for
+   tables/columns, auto-join, auto-alias for functions so they can be
+   used in ORDER BY/GROUP BY
+
+* No referential integrity handling - a legacy of starting Alzabo with
+  MySQL
+** Allows simpler caching
+** Allows mass update/insert DML
+
+* Keep potential rows in some form, very handy
+
