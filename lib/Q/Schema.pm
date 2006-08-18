@@ -118,7 +118,17 @@ sub tables
         my $self = shift;
         my ($fk)  = validate_pos( @_, $spec );
 
+        for my $col_name ( map { $_->name() } $fk->source_columns() )
+        {
+            $self->{fk}{ $fk->source_table()->name() }{$col_name} = $fk;
+        }
 
+        for my $col_name ( map { $_->name() } $fk->target_columns() )
+        {
+            $self->{fk}{ $fk->target_table()->name() }{$col_name} = $fk;
+        }
+
+        return $self;
     }
 }
 

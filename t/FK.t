@@ -3,7 +3,8 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 4;
+use Q::Test;
+use Test::More tests => 10;
 
 
 use_ok('Q::FK');
@@ -11,21 +12,21 @@ use_ok('Q::FK');
 {
     require Q::Schema;
 
-    my $s = _make_test_schema();
+    my $s = Q::Test->mock_test_schema();
 
     eval { Q::FK->new( source => $s->table('User')->column('user_id'),
-                       target => [ $s->table('UserEmail')->column('user_id'),
-                                   $s->table('UserEmail')->column('email'),
+                       target => [ $s->table('UserGroup')->column('user_id'),
+                                   $s->table('UserGroup')->column('group_id'),
                                  ],
                      ) };
     like( $@, qr/must contain the same number of columns/,
           'error when column count for source and target differ' );
 
     eval { Q::FK->new( source => [ $s->table('User')->column('user_id'),
-                                   $s->table('User')->column('name'),
+                                   $s->table('User')->column('username'),
                                  ],
-                       target => [ $s->table('UserEmail')->column('user_id'),
-                                   $s->table('User')->column('name'),
+                       target => [ $s->table('UserGroup')->column('user_id'),
+                                   $s->table('User')->column('username'),
                                  ],
                      ) };
     my $err =
@@ -46,12 +47,12 @@ use_ok('Q::FK');
     my $fk =
         Q::FK->new
             ( source => $s->table('User')->column('user_id'),
-              target => $s->table('UserEmail')->column('user_id'),
+              target => $s->table('UserGroup')->column('user_id'),
             );
 
     is( $fk->source_table()->name(), 'User',
         'source_table() is User' );
-    is( $fk->target_table()->name(), 'UserEmail',
+    is( $fk->target_table()->name(), 'UserGroup',
         'source_table() is UserEmail' );
 
     my @source = $fk->source_columns();
@@ -61,43 +62,4 @@ use_ok('Q::FK');
     my @target = $fk->target_columns();
     is( scalar @target, 1, 'one target column' );
     is( $target[0]->name(), 'user_id', 'target column is user_id' );
-}
-
-
-sub _make_test_schema
-{
-    my $s = Q::Schema->new( name => 'Test' );
-
-    my $user_t = Q::Table->new( name => 'User' );
-    my $user_id = Q::Column->new( name => 'user_id',
-                                  type => 'integer',
-                                );
-
-    $user_t->add_column($user_id);
-    $user_t->set_primary_key('user_id');
-
-    my $name = Q::Column->new( name => 'name',
-                               type => 'text',
-                             );
-
-    $user_t->add_column($name);
-
-    $s->add_table($user_t);
-
-    my $user_email_t = Q::Table->new( name => 'UserEmail' );
-    my $email = Q::Column->new( name => 'email',
-                                type => 'text',
-                              );
-
-    $user_email_t->add_column($email);
-    $user_email_t->set_primary_key('email');
-
-    my $user_id2 = Q::Column->new( name => 'user_id',
-                                   type => 'integer',
-                                 );
-    $user_email_t->add_column($user_id2);
-
-    $s->add_table($user_email_t);
-
-    return $s;
 }
