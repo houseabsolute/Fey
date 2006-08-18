@@ -11,10 +11,12 @@ use Q::Exceptions qw(param_error);
 use Q::Validate
     qw( validate validate_pos
         SCALAR_TYPE ARRAYREF_TYPE
-        TABLE_TYPE FK_TYPE DBI_TYPE );
+        TABLE_TYPE TABLE_OR_NAME_TYPE
+        FK_TYPE DBI_TYPE );
 
 use Q::Query;
 use Q::Table;
+use Scalar::Util qw( blessed );
 
 
 {
@@ -84,14 +86,23 @@ sub tables
 }
 
 {
-    my $spec = (TABLE_TYPE);
+    my $spec = (TABLE_OR_NAME_TYPE);
     sub remove_table
     {
         my $self = shift;
         my ($table) = validate_pos( @_, $spec );
 
+        $table = $self->table($table)
+            unless blessed $table;
+
+        for my $fk ( $self->foreign_keys_for_table($table) )
+        {
+            $self->remove_foreign_key($fk);
+        }
+
         my $name = $table->name();
 
+        delete $self->{tables}{$name};
         $table->_set_schema(undef);
 
         return $self;
@@ -116,19 +127,82 @@ sub tables
     sub add_foreign_key
     {
         my $self = shift;
-        my ($fk)  = validate_pos( @_, $spec );
+        my ($fk) = validate_pos( @_, $spec );
 
+        my $fk_id = $fk->id();
+
+        my $source_table_name = $fk->source_table()->name();
         for my $col_name ( map { $_->name() } $fk->source_columns() )
         {
-            $self->{fk}{ $fk->source_table()->name() }{$col_name} = $fk;
+            $self->{fk}{$source_table_name}{$col_name}{$fk_id} = $fk;
         }
 
+        my $target_table_name = $fk->target_table()->name();
         for my $col_name ( map { $_->name() } $fk->target_columns() )
         {
-            $self->{fk}{ $fk->target_table()->name() }{$col_name} = $fk;
+            $self->{fk}{$target_table_name}{$col_name}{$fk_id} = $fk;
         }
 
         return $self;
+    }
+}
+
+{
+    my $spec = (FK_TYPE);
+    sub remove_foreign_key
+    {
+        my $self = shift;
+        my ($fk) = validate_pos( @_, $spec );
+
+        my $fk_id = $fk->id();
+
+        my $source_table_name = $fk->source_table()->name();
+        for my $col_name ( map { $_->name() } $fk->source_columns() )
+        {
+            delete $self->{fk}{$source_table_name}{$col_name}{$fk_id};
+        }
+
+        my $target_table_name = $fk->target_table()->name();
+        for my $col_name ( map { $_->name() } $fk->target_columns() )
+        {
+            delete $self->{fk}{$target_table_name}{$col_name}{$fk_id};
+        }
+
+        return $self;
+    }
+}
+
+{
+    my $spec = (TABLE_OR_NAME_TYPE);
+    sub foreign_keys_for_table
+    {
+        my $self    = shift;
+        my ($table) = validate_pos( @_, $spec );
+
+        my $name = blessed $table ? $table->name() : $table;
+
+        return
+            ( map { values %{ $self->{fk}{$name}{$_} } }
+              keys %{ $self->{fk}{$name} || {} }
+            );
+    }
+}
+
+{
+    my $spec = (TABLE_OR_NAME_TYPE);
+    sub foreign_keys_between_tables
+    {
+        my $self    = shift;
+        my ( $table1, $table2 ) = validate_pos( @_, $spec, $spec );
+
+        my $name1 = blessed $table1 ? $table1->name() : $table1;
+        my $name2 = blessed $table2 ? $table2->name() : $table2;
+
+        return
+            ( grep { $_->has_tables( $name1, $name2 ) }
+              map { values %{ $self->{fk}{$name1}{$_} } }
+              keys %{ $self->{fk}{$name1} || {} }
+            );
     }
 }
 

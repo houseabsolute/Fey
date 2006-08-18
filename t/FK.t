@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 10;
+use Test::More tests => 15;
 
 
 use_ok('Q::FK');
@@ -62,4 +62,23 @@ use_ok('Q::FK');
     my @target = $fk->target_columns();
     is( scalar @target, 1, 'one target column' );
     is( $target[0]->name(), 'user_id', 'target column is user_id' );
+
+    my $fk2 =
+        Q::FK->new
+            ( target => $s->table('User')->column('user_id'),
+              source => $s->table('UserGroup')->column('user_id'),
+            );
+
+    is( $fk->id(), $fk2->id(),
+        'id for an fk is the same regardless of source and target' );
+
+    ok( $fk->has_tables( 'User', 'UserGroup' ),
+        'has_tables() is true for User and UserGroup - as strings' );
+    ok( $fk->has_tables( $s->table('User'), $s->table('UserGroup') ),
+        'has_tables() is true for User and UserGroup - as objects' );
+
+    ok( ! $fk->has_tables( 'User', 'Group' ),
+        'has_tables() is false for User and Group - as strings' );
+    ok( ! $fk->has_tables( $s->table('User'), $s->table('Group') ),
+        'has_tables() is false for User and Group - as objects' );
 }

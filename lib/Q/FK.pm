@@ -3,10 +3,18 @@ package Q::FK;
 use strict;
 use warnings;
 
+use base 'Q::Accessor';
+__PACKAGE__->mk_ro_accessors
+    ( qw( id ) );
+
 use Q::Exceptions qw(param_error);
 use Q::Validate
-    qw( validate OBJECT ARRAYREF );
+    qw( validate validate_pos
+        OBJECT ARRAYREF
+        COLUMN_TYPE
+        TABLE_OR_NAME_TYPE );
 
+use List::Util qw( first );
 use List::MoreUtils qw(uniq);
 use Scalar::Util qw(blessed);
 
@@ -54,8 +62,14 @@ use Scalar::Util qw(blessed);
             }
         }
 
+        my $id = join "\0",
+                 sort
+                 map { $_->table()->name() . '.' . $_->name() }
+                 @source, @target;
+
         return bless { source => \@source,
                        target => \@target,
+                       id     => $id,
                      }, $class;
     }
 }
@@ -63,8 +77,50 @@ use Scalar::Util qw(blessed);
 sub source_table { $_[0]->{source}[0]->table() }
 sub target_table { $_[0]->{target}[0]->table() }
 
+{
+    my $spec = (TABLE_OR_NAME_TYPE);
+    sub has_tables
+    {
+        my $self = shift;
+        my ( $table1, $table2 ) = validate_pos( @_, $spec, $spec );
+
+        my $name1 = blessed $table1 ? $table1->name() : $table1;
+        my $name2 = blessed $table2 ? $table2->name() : $table2;
+
+        my @looking_for = sort $name1, $name2;
+        my @have =
+            sort map { $_->name() } $self->source_table(), $self->target_table();
+
+        return 1
+            if (    $looking_for[0] eq $have[0]
+                 && $looking_for[1] eq $have[1] );
+   }
+}
+
+{
+    my $spec = (COLUMN_TYPE);
+    sub has_column
+    {
+        my $self  = shift;
+        my ($col) = validate_pos( @_, $spec );
+
+        my $table_name = $col->table()->name();
+
+        my $matching_table =
+            ( first { $_->name() eq $table_name }
+              $self->source_table(), $self->target_table() );
+
+        return unless $matching_table;
+
+        return 1 if $matching_table->column( $col->name() );
+
+        return 0;
+    }
+}
+
 sub source_columns { @{ $_[0]->{source} } }
 sub target_columns { @{ $_[0]->{target} } }
+
 
 
 1;

@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 17;
+use Test::More tests => 18;
 
 
 use_ok( 'Q::Table' );
@@ -53,6 +53,10 @@ use_ok( 'Q::Table' );
     ok( ! $t->column('test_id'), 'test_id column is not in table' );
     ok( ! $c1->table(),
         'column has no table after calling remove_column()' );
+
+    $t->add_column($c1);
+    $t->remove_column( $c1->name() );
+    ok( ! $t->column('test_id'), 'test_id column is not in table' );
 }
 
 {

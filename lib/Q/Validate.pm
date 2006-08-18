@@ -45,6 +45,18 @@ BEGIN {
         $Types{ uc $class . '_TYPE' } = { isa => "Q::${class}" };
     }
 
+    for my $class ( qw( Table Column ) )
+    {
+        $Types{ uc $class . '_OR_NAME_TYPE' } =
+            { type      => SCALAR|OBJECT,
+              callbacks =>
+              { 'is an object or name' =>
+                sub { defined $_[0]
+                      && ( ! blessed $_[0] || $_[0]->isa($class) ) },
+              },
+            };
+    }
+
     for my $t ( keys %Types )
     {
         my $base_data = Data::Dumper::Dumper( $Types{$t} );

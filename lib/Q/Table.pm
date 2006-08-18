@@ -14,9 +14,11 @@ use Q::Validate
     qw( validate validate_pos
         UNDEF OBJECT
         SCALAR_TYPE BOOLEAN_TYPE
-        COLUMN_TYPE SCHEMA_TYPE );
+        COLUMN_TYPE COLUMN_OR_NAME_TYPE
+        SCHEMA_TYPE );
 
 use Q::Column;
+use Scalar::Util qw( blessed );
 
 
 {
@@ -76,11 +78,20 @@ sub columns
 }
 
 {
-    my $spec = (COLUMN_TYPE);
+    my $spec = (COLUMN_OR_NAME_TYPE);
     sub remove_column
     {
         my $self = shift;
         my ($col) = validate_pos( @_, $spec );
+
+        $col = $self->column($col)
+            unless blessed $col;
+
+        for my $fk ( grep { $_->has_column($col) }
+                     $self->schema()->foreign_keys_for_table($self) )
+        {
+            $self->schema()->remove_foreign_key($fk);
+        }
 
         my $name = $col->name();
 
@@ -92,15 +103,7 @@ sub columns
 }
 
 {
-    my $spec =
-        { callbacks =>
-          { 'scalar or column' =>
-            sub {
-                return ( ( blessed( $_[0] ) && $_[0]->isa('Q::Column') )
-                         || ! ref $_[0]
-                       ) },
-          },
-        };
+    my $spec = (COLUMN_OR_NAME_TYPE);
     sub set_primary_key
     {
         my $self = shift;
