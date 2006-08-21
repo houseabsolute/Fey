@@ -180,6 +180,21 @@ etc. and all that other good stuff.
 
 =item *
 
+I want complex query creation to requires less fiddliness than
+Alzabo. This means that class to represent queries will be a little
+smarter and more flexible about the order in which bits are added.
+
+For example, in using Alzabo I often come across cases where I want to
+add a table to a query's join I<if it hasn't already been
+added>. Right now there's no nice simple way to do this. Specifying
+the table twice will cause an error. It would be nice to simply be
+able to do this:
+
+  $query->join( $foo_table => $bar_table )
+      unless $query->join_includes($bar_table);
+
+=item *
+
 Provide the base for a tool that does what the C<Alzabo::Runtime::Row>
 class does. There will be a separate tool that takes query results and
 turns them into low-level "row" objects instead of returning them as
