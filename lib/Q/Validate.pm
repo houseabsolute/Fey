@@ -50,9 +50,8 @@ BEGIN {
         $Types{ uc $class . '_OR_NAME_TYPE' } =
             { type      => SCALAR|OBJECT,
               callbacks =>
-              { "is a $class object or name" =>
-                sub { defined $_[0]
-                      && ( ! blessed $_[0] || $_[0]->isa("Q::$class") ) },
+              { "is a Q::$class object or name" =>
+                sub { ! blessed $_[0] || $_[0]->isa("Q::$class") },
               },
             };
     }
