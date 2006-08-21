@@ -87,10 +87,13 @@ sub columns
         $col = $self->column($col)
             unless blessed $col;
 
-        for my $fk ( grep { $_->has_column($col) }
-                     $self->schema()->foreign_keys_for_table($self) )
+        if ( my $schema = $self->schema() )
         {
-            $self->schema()->remove_foreign_key($fk);
+            for my $fk ( grep { $_->has_column($col) }
+                         $schema->foreign_keys_for_table($self) )
+            {
+                $schema->remove_foreign_key($fk);
+            }
         }
 
         my $name = $col->name();
