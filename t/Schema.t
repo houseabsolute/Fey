@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 24;
+use Test::More tests => 26;
 
 
 use_ok( 'Q::Schema' );
@@ -115,4 +115,14 @@ use_ok( 'Q::Schema' );
     @fk = $s->foreign_keys_for_table('UserGroup');
     is( scalar @fk, 0,
         'no fks for UserGroup table after User.user_id column is removed' );
+}
+
+{
+    my $s = Q::Test->mock_test_schema();
+
+    my @tables = sort map { $_->name() } $s->tables();
+
+    is( scalar @tables, 3, 'schema has 3 tables' );
+    is_deeply( \@tables, [ 'Group', 'User', 'UserGroup' ],
+               'tables are Group, User, & UserGroup' );
 }
