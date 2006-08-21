@@ -148,6 +148,18 @@ an existing schema, or to allow users to define it in code.
 Alzabo's referential integrity checking was really cool back when I
 mostly used MySQL with MYISAM tables, but is a burden nowadays.
 
+=item *
+
+I didn't catch the testing bug until quite a while after I'd started
+working on Alzabo. Alzabo's test suite is nasty. Q will be built for
+testability, and I'll make sure that high test coverage is part of my
+ongoing goals.
+
+=item *
+
+Alzabo does too many things, which makes it hard to explain and
+document.
+
 =back
 
 =head2 Goals
