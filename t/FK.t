@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 15;
+use Test::More tests => 17;
 
 
 use_ok('Q::FK');
@@ -81,4 +81,9 @@ use_ok('Q::FK');
         'has_tables() is false for User and Group - as strings' );
     ok( ! $fk->has_tables( $s->table('User'), $s->table('Group') ),
         'has_tables() is false for User and Group - as objects' );
+
+    ok( ! $fk->has_column( $s->table('User')->column('username') ),
+        'fk does not have User.username column' );
+    ok( ! $fk->has_column( $s->table('Group')->column('group_id') ),
+        'fk does have Group.group_id column' );
 }

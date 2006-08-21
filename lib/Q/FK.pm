@@ -106,13 +106,22 @@ sub target_table { $_[0]->{target}[0]->table() }
 
         my $table_name = $col->table()->name();
 
-        my $matching_table =
-            ( first { $_->name() eq $table_name }
-              $self->source_table(), $self->target_table() );
+        my @cols;
+        for my $part ( qw( source target ) )
+        {
+            my $table_meth = $part . '_table';
+            if ( $self->$table_meth()->name() eq $table_name )
+            {
+                my $col_meth = $part . '_columns';
+                @cols = $self->$col_meth();
+            }
+        }
 
-        return unless $matching_table;
+        return 0 unless @cols;
 
-        return 1 if $matching_table->column( $col->name() );
+        my $col_name = $col->name();
+
+        return 1 if grep { $_->name() eq $col_name } @cols;
 
         return 0;
     }
