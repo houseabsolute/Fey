@@ -59,16 +59,12 @@ BEGIN {
 
     for my $t ( keys %Types )
     {
-        my $base_data = Data::Dumper::Dumper( $Types{$t} );
+        my %t = %{ $Types{$t} };
+        my $sub = sub { param_error "Invalid additional args for $t: [@_]" if @_ % 2;
+                        return { %t, @_ } };
 
-        $base_data =~ s/.*\$VAR1 = {(.+)}.*/$1/s;
-        eval <<"EOF";
-sub $t {
-    param_error "Invalid additional args for $t: [\@_]" if \@_ % 2;
-    return { \@_, $base_data }
-};
-EOF
-        die $@ if $@;
+        no strict 'refs';
+        *{$t} = $sub;
     }
 }
 
