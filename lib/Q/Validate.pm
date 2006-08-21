@@ -7,7 +7,7 @@ use base 'Exporter';
 
 use Data::Dumper ();
 use Params::Validate qw(:types);
-
+use Scalar::Util qw( blessed );
 use Q::Exceptions qw( param_error );
 
 
@@ -50,9 +50,9 @@ BEGIN {
         $Types{ uc $class . '_OR_NAME_TYPE' } =
             { type      => SCALAR|OBJECT,
               callbacks =>
-              { 'is an object or name' =>
+              { "is a $class object or name" =>
                 sub { defined $_[0]
-                      && ( ! blessed $_[0] || $_[0]->isa($class) ) },
+                      && ( ! blessed $_[0] || $_[0]->isa("Q::$class") ) },
               },
             };
     }
