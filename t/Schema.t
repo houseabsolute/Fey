@@ -122,7 +122,7 @@ use_ok( 'Q::Schema' );
 
     my @tables = sort map { $_->name() } $s->tables();
 
-    is( scalar @tables, 3, 'schema has 3 tables' );
-    is_deeply( \@tables, [ 'Group', 'User', 'UserGroup' ],
+    is( scalar @tables, 4, 'schema has 4 tables' );
+    is_deeply( \@tables, [ 'Group', 'Message', 'User', 'UserGroup' ],
                'tables are Group, User, & UserGroup' );
 }

@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 17;
+use Test::More tests => 19;
 
 
 use_ok('Q::FK');
@@ -75,12 +75,18 @@ use_ok('Q::FK');
     ok( $fk->has_tables( 'User', 'UserGroup' ),
         'has_tables() is true for User and UserGroup - as strings' );
     ok( $fk->has_tables( $s->table('User'), $s->table('UserGroup') ),
-        'has_tables() is true for User and UserGroup - as objects' );
 
+        'has_tables() is true for User and UserGroup - as objects' );
     ok( ! $fk->has_tables( 'User', 'Group' ),
         'has_tables() is false for User and Group - as strings' );
     ok( ! $fk->has_tables( $s->table('User'), $s->table('Group') ),
         'has_tables() is false for User and Group - as objects' );
+    ok( ! $fk->has_tables( 'Message', 'Group' ),
+        'has_tables() is false for Message and Group - as strings' );
+    # Need to test where first in sorted order is present and second
+    # is not for full coverage.
+    ok( ! $fk->has_tables( 'User', 'Z' ),
+        'has_tables() is false for User and Z - as strings' );
 
     ok( ! $fk->has_column( $s->table('User')->column('username') ),
         'fk does not have User.username column' );

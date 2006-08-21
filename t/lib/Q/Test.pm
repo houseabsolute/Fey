@@ -23,6 +23,8 @@ sub mock_test_schema
     $schema->add_table( _group_table() );
 
     $schema->add_table( _user_group_table() );
+
+    $schema->add_table( _message_table() );
 }
 
 sub _user_table
@@ -88,6 +90,27 @@ sub _user_group_table
 
     $t->add_column($_) for $user_id, $group_id;
     $t->set_primary_key( $user_id, $group_id );
+
+    return $t;
+}
+
+sub _message_table
+{
+    my $t = Q::Table->new( name => 'Message' );
+
+    my $message_id =
+        Q::Column->new( name              => 'message_id',
+                        type              => 'integer',
+                        is_auto_increment => 1,
+                      );
+
+    my $message =
+        Q::Column->new( name => 'message',
+                        type => 'text',
+                      );
+
+    $t->add_column($_) for $message_id, $message;
+    $t->set_primary_key($message_id);
 
     return $t;
 }
