@@ -15,25 +15,25 @@ my %Types;
 BEGIN {
     %Types =
         ( POS_INTEGER_TYPE =>
-          { type => SCALAR,
-            callbacks =>
-            { 'is a positive integer' =>
-              sub { $_[0] =~ qr/^\d+$/ && $_[0] > 0 }
-            }
-          },
+              { type      => SCALAR,
+                callbacks =>
+                { 'is a positive integer' =>
+                  sub { $_[0] =~ qr/^\d+$/ && $_[0] > 0 }
+                }
+              },
 
           POS_OR_ZERO_INTEGER_TYPE =>
-          { type => SCALAR,
-            callbacks =>
-            { 'is a positive or zero integer' =>
-              sub { $_[0] =~ qr/^\d+$/ && $_[0] >= 0 }
-            }
-          },
+              { type      => SCALAR,
+                callbacks =>
+                { 'is a positive or zero integer' =>
+                  sub { $_[0] =~ qr/^\d+$/ && $_[0] >= 0 }
+                }
+              },
 
           DBI_TYPE =>
-          { type => OBJECT,
-            isa  => 'DBI',
-          },
+              { type => OBJECT,
+                isa  => 'DBI',
+              },
 
           ( map { $_ . '_TYPE' => { type => eval $_ } }
             grep { /^[A-Z]+$/ } @Params::Validate::EXPORT_OK,
