@@ -6,7 +6,9 @@ use lib 't/lib';
 use Q::Test;
 use Test::More;
 
-unless ( eval "use Test::Memory::Cycle" )
+unless ( eval { require Test::Memory::Cycle;
+                Test::Memory::Cycle->import();
+                1; } )
 {
     plan skip_all => 'These tests require Test::Memory::Cycle.';
     exit;
