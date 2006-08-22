@@ -17,7 +17,11 @@ my $builder =
             'Params::Validate'      => 0.82,
             'Scalar::Util'          => 0,
             'Task::Weaken'          => 0.99,
+            'Test::MockObject'      => 0,
             'Test::More'            => 0,
+          },
+          recommends =>
+          { 'Test::Memory::Cycle'   => 0,
           },
           create_makefile_pl => 'passthrough',
           create_readme      => 1,

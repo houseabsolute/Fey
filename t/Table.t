@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 18;
+use Test::More tests => 22;
 
 
 use_ok( 'Q::Table' );
@@ -19,6 +19,14 @@ use_ok( 'Q::Table' );
 
     is( $t->name(), 'Test', 'table name is Test' );
     ok( ! $t->is_view(), 'table is not view' );
+
+    is( $t->id(), 'Test', 'table id is Test' );
+
+    ok( ! $t->is_alias(), 'Test has no alias' );
+
+    $t->{alias_name} = 'TestX';
+    ok( $t->is_alias(), 'Test is now an alias' );
+    is( $t->alias_name(), 'TestX', 'alias_name is TextX' );
 }
 
 {

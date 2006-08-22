@@ -5,7 +5,6 @@ use warnings;
 
 use base 'Exporter';
 
-use Data::Dumper ();
 use Params::Validate qw(:types);
 use Scalar::Util qw( blessed );
 use Q::Exceptions qw( param_error );
@@ -34,11 +33,14 @@ BEGIN {
               { type => OBJECT,
                 isa  => 'DBI',
               },
-
-          ( map { $_ . '_TYPE' => { type => eval $_ } }
-            grep { /^[A-Z]+$/ } @Params::Validate::EXPORT_OK,
-          )
         );
+
+
+    for my $t ( grep { /^[A-Z]+$/ } @Params::Validate::EXPORT_OK )
+    {
+        my $name = $t . '_TYPE';
+        $Types{$name} = { type => eval $t };
+    }
 
     for my $class ( qw( Schema Table Column FK ) )
     {

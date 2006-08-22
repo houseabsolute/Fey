@@ -5,12 +5,8 @@ use warnings;
 
 use DBI;
 use File::Temp ();
+use Test::MockObject;
 
-
-sub mock_dbh
-{
-    return Q::Test::MockDBI->new();
-}
 
 sub mock_test_schema
 {
@@ -25,6 +21,8 @@ sub mock_test_schema
     $schema->add_table( _user_group_table() );
 
     $schema->add_table( _message_table() );
+
+    $schema->set_dbh( mock_dbh() );
 }
 
 sub _user_table
@@ -115,61 +113,14 @@ sub _message_table
     return $t;
 }
 
-
-package Q::Test::MockDBI;
-
-sub new
+sub mock_dbh
 {
-    return bless {}, shift;
-}
+    my $mock = Test::MockObject->new();
 
-sub table_info
-{
-    return
-        Q::Test::MockSTH->new
-            ( { TABLE_NAME => 'User' },
-              { TABLE_NAME => 'UserEmailAddress' },
-            );
-}
+    $mock->set_isa('DBI');
 
-sub isa
-{
-    return 1 if $_[1] eq 'DBI';
-}
-
-
-package Q::Test::MockSTH;
-
-sub new
-{
-    my $class = shift;
-    my @rows = @_;
-
-    return bless \@rows, $class;
-}
-
-sub fetchrow_hashref
-{
-    my $self = shift;
-
-    return unless @$self;
-    return shift @$self;
+    return $mock;
 }
 
 
 1;
-
-__DATA__
-
-CREATE TABLE User (
-    user_id   INTEGER  PRIMARY KEY  AUTOINCREMENT,
-    username  TEXT  NOT NULL
-);
-
-----
-
-CREATE TABLE UserEmailAddress (
-    user_id   INTEGER  NOT NULL  REFERENCES User (user_id),
-    email     TEXT  NOT NULL,
-    PRIMARY KEY ( user_id, email )
-);

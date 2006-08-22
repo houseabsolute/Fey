@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 11;
+use Test::More tests => 13;
 
 
 use_ok( 'Q::Column' );
@@ -27,6 +27,9 @@ use_ok( 'Q::Column' );
     ok( ! defined $c->precision(), 'column has no precision' );
     ok( ! $c->is_auto_increment(), 'column is not auto increment' );
     ok( ! $c->is_nullable(), 'column defaults to not nullable' );
+
+    eval { $c->id() };
+    isa_ok( $@, 'Q::Exception::ObjectState' );
 }
 
 {
@@ -46,6 +49,8 @@ use_ok( 'Q::Column' );
                            );
 
     $t->add_column($c1);
+
+    is( $c1->id(), 'Test.test_id', 'id is Test.test_id' );
 
     undef $t;
     ok( ! $c1->table(), q{column's reference to table is weak} );

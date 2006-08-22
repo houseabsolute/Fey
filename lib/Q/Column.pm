@@ -8,9 +8,9 @@ __PACKAGE__->mk_ro_accessors
     ( qw( name type generic_type length precision
           is_auto_increment is_nullable table ) );
 
-use Scalar::Util qw(weaken);
+use Scalar::Util qw( weaken );
 
-use Q::Exceptions qw(param_error);
+use Q::Exceptions qw( object_state_error param_error );
 use Q::Validate
     qw( validate validate_pos
         UNDEF OBJECT
@@ -99,6 +99,19 @@ use Q::Validate
 
         return $self
     }
+}
+
+sub id
+{
+    my $self = shift;
+
+    my $table = $self->table();
+
+    object_state_error
+        'The id() method cannot be called on a column object which has no table.'
+            unless $table;
+
+    return $table->id() . '.' . $self->name();
 }
 
 

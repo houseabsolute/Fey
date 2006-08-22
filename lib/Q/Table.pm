@@ -7,6 +7,8 @@ use base 'Q::Accessor';
 __PACKAGE__->mk_ro_accessors
     ( qw( name is_view schema ) );
 
+use Class::Trait qw( Q::Trait::Aliasable );
+
 use Scalar::Util qw( blessed weaken );
 
 use Q::Exceptions qw(param_error);
@@ -151,6 +153,8 @@ sub primary_key { @{ $_[0]->{pk} } }
         return $self
     }
 }
+
+sub id { $_[0]->name() }
 
 
 1;
