@@ -130,6 +130,8 @@ sub mock_dbh
 
     $mock->mock( 'get_info', \&_mock_get_info );
 
+    $mock->mock( 'quote', \&_mock_quote );
+
     return $mock;
 }
 
@@ -144,6 +146,18 @@ sub mock_dbh
 
         return $Info{$num}
     }
+}
+
+sub _mock_quote
+{
+    my $self = shift;
+    my $str  = shift;
+
+    my $q = q{'};
+
+    $str =~ s/$q/$q$q/g;
+
+    return "$q$str$q";
 }
 
 

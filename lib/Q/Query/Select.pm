@@ -5,18 +5,27 @@ use warnings;
 
 use base 'Q::Query';
 
-use Q::Exceptions qw( object_state_error param_error );
+__PACKAGE__->mk_ro_accessors
+    ( qw( is_distinct ) );
+
+use Q::Exceptions qw( object_state_error );
 use Q::Validate
     qw( validate_pos
+        SCALAR
         OBJECT
       );
 
+use Q::Literal;
+use Scalar::Util qw( blessed );
+
+
 {
-    my $spec = { type      => OBJECT,
+    my $spec = { type      => SCALAR|OBJECT,
                  callbacks =>
-                 { 'table, alias, literal, or column' =>
-                   sub {    $_[0]->isa('Q::Table')
-                         || $_[0]->isa('Q::Query::Literal')
+                 { 'table, alias, literal, column, or scalar' =>
+                   sub {    ! blessed $_[0]
+                         || $_[0]->isa('Q::Table')
+                         || $_[0]->isa('Q::Literal')
                          || (    $_[0]->isa('Q::Column')
                               && $_[0]->table() ) },
                  },
@@ -29,66 +38,53 @@ use Q::Validate
         for my $elt ( map { $_->can('columns')
                             ? sort { $a->name() cmp $b->name() } $_->columns()
                            : $_ }
+                      map { blessed $_ ? $_ : Q::Literal::Term->new($_) }
                       @s )
         {
-            $self->{select}{ $elt->id() } = $elt;
+            my $key = $elt->can('id') ? $elt->id() : $self->format_literal($elt);
+            $self->{select}{$key} = $elt;
         }
 
         return $self;
     }
 }
 
-sub distinct { $_[0]->{distinct} = 1 }
+sub distinct
+{
+    $_[0]->{is_distinct} = 1;
 
-sub _start_clause
+    return $_[0];
+}
+
+sub sql
 {
     my $self = shift;
 
-    my @select;
-    for my $elt ( map { $self->{select}{$_} }
-                  sort keys %{ $self->{select} } )
-    {
-        if ( $elt->isa('Q::Column') )
-        {
-            push @select, $self->_fq_column_name_with_alias($elt);
-        }
-        else
-        {
-            push @select, $elt->as_string;
-        }
-    }
-
-    return 'SELECT ' . join ', ', @select;
-}
-
-sub _fq_column_name_with_alias
-{
-    my $fq = $_[0]->_fq_column_name( $_[1] );
-
-    return $fq unless $_[1]->is_alias();
-
     return
-        ( $fq
-          . ' AS '
-          . $_[0]->{_quote}
-          . $_[1]->alias_name()
-          . $_[0]->{_quote}
+        ( join ' ',
+          $self->_select_clause(),
+          $self->_from_clause(),
+          $self->_where_clause(),
+          $self->_group_by_clause(),
+          $self->_order_by_clause(),
+          $self->_limit_clause(),
         );
 }
 
-sub _fq_column_name
+sub _select_clause
 {
-    my $t = $_[1]->table();
+    my $self = shift;
 
-    return
-        (   $_[0]->{_quote}
-          . ( $t->is_alias() ? $t->alias_name() : $t->name() )
-          . $_[0]->{_quote}
-          . $_[0]->{_name_sep}
-          . $_[0]->{_quote}
-          . $_[1]->name()
-          . $_[0]->{_quote}
+    my $sql = 'SELECT ';
+    $sql .= 'DISTINCT ' if $self->is_distinct();
+    $sql .=
+        ( join ', ',
+          map { $self->_format_column_or_literal( $self->{select}{$_} ) }
+          sort
+          keys %{ $self->{select} }
         );
+
+    return $sql;
 }
 
 

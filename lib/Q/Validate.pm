@@ -42,7 +42,7 @@ BEGIN {
         $Types{$name} = { type => eval $t };
     }
 
-    for my $class ( qw( Schema Table Column FK ) )
+    for my $class ( qw( Schema Table Column FK Query ) )
     {
         $Types{ uc $class . '_TYPE' } = { isa => "Q::${class}" };
     }

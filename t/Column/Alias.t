@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 16;
+use Test::More tests => 17;
 
 
 use_ok( 'Q::Column::Alias' );
@@ -49,5 +49,14 @@ $t->add_column($c);
     my $alias = $c->alias( alias_name => 'foobar' );
     is( $alias->alias_name(), 'foobar',
         'explicitly set alias_name to foobar' );
+}
+
+{
+    my $c = Q::Column->new( name => 'testy',
+                            type => 'text',
+                          );
+    my $alias = $c->alias();
+    eval { $alias->id() };
+    isa_ok( $@, 'Q::Exception::ObjectState' );
 }
 

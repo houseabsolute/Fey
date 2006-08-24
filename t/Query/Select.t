@@ -4,9 +4,10 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 4;
+use Test::More tests => 11;
 
 use Q::Query;
+
 
 my $s = Q::Test->mock_test_schema();
 
@@ -18,18 +19,18 @@ my $s = Q::Test->mock_test_schema();
     isa_ok( $q, 'Q::Query::Select' );
 
     my $sql = q{SELECT "User"."email", "User"."user_id", "User"."username"};
-    is( $q->_start_clause(), $sql,
-        '_start_clause with one table'
+    is( $q->_select_clause(), $sql,
+        '_select_clause with one table'
       );
 
     $q->select( $s->table('User') );
-    is( $q->_start_clause(), $sql,
-        '_start_clause even when same table is added twice'
+    is( $q->_select_clause(), $sql,
+        '_select_clause even when same table is added twice'
       );
 
     $q->select( $s->table('User')->column('user_id') );
-    is( $q->_start_clause(), $sql,
-        '_start_clause even when table and column from that table are both added'
+    is( $q->_select_clause(), $sql,
+        '_select_clause even when table and column from that table are both added'
       );
 }
 
@@ -44,18 +45,18 @@ my $s = Q::Test->mock_test_schema();
     my $sql = q{SELECT "User"."email", "User"."user_id", "User"."username"};
     $sql .= q{, "UserA"."email", "UserA"."user_id", "UserA"."username"};
 
-    is( $q->_start_clause(), $sql,
-        '_start_clause with table alias'
+    is( $q->_select_clause(), $sql,
+        '_select_clause with table alias'
       );
 
     $q->select($user_alias);
-    is( $q->_start_clause(), $sql,
-        '_start_clause with table alias even when same alias is added twice'
+    is( $q->_select_clause(), $sql,
+        '_select_clause with table alias even when same alias is added twice'
       );
 
     $q->select( $user_alias->column('user_id') );
-    is( $q->_start_clause(), $sql,
-        '_start_clause even when alias and column from that alias are both added'
+    is( $q->_select_clause(), $sql,
+        '_select_clause even when alias and column from that alias are both added'
       );
 }
 
@@ -66,8 +67,8 @@ my $s = Q::Test->mock_test_schema();
     $q->select( $s->table('User') );
 
     my $sql = q{SELECT "User"."email", "User"."user_id", "User"."username"};
-    is( $q->_start_clause(), $sql,
-        '_start_clause when first adding column and then table for that column'
+    is( $q->_select_clause(), $sql,
+        '_select_clause when first adding column and then table for that column'
       );
 }
 
@@ -79,7 +80,24 @@ my $s = Q::Test->mock_test_schema();
                                  ->alias( alias_name => 'new_user_id' ) );
 
     my $sql = q{SELECT "User"."user_id" AS "new_user_id", "User"."user_id"};
-    is( $q->_start_clause(), $sql,
-        '_start_clause with column and alias for that column'
+    is( $q->_select_clause(), $sql,
+        '_select_clause with column and alias for that column'
       );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() );
+    $q->select( $s->table('User')->column('user_id') )->distinct();
+
+    my $sql = q{SELECT DISTINCT "User"."user_id"};
+    is( $q->_select_clause(), $sql, '_select_clause with distinct' );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() );
+
+    $q->select( 'some literal thing' );
+    my $sql = q{SELECT some literal thing};
+    is( $q->_select_clause(), $sql,
+        '_select_clause after passing string to select()' );
 }

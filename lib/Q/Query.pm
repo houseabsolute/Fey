@@ -57,21 +57,6 @@ sub _rebless
     bless $self, ref $new;
 }
 
-sub sql
-{
-    my $self = shift;
-
-    return
-        ( join ' ',
-          $self->_start_clause(),
-          $self->_from_clause(),
-          $self->_where_clause(),
-          $self->_group_by_clause(),
-          $self->_order_by_clause(),
-          $self->_limit_clause(),
-        );
-}
-
 sub _start_clause
 {
     my $class = ref $_[0];
@@ -103,6 +88,94 @@ sub _limit_clause
 {
     return ();
 }
+
+sub _fq_column_name_with_alias
+{
+    my $fq = $_[0]->_fq_column_name( $_[1] );
+
+    return $fq unless $_[1]->is_alias();
+
+    return
+        ( $fq
+          . ' AS '
+          . $_[0]->{_quote}
+          . $_[1]->alias_name()
+          . $_[0]->{_quote}
+        );
+}
+
+sub _fq_column_name
+{
+    my $t = $_[1]->table();
+
+    return
+        (   $_[0]->{_quote}
+          . ( $t->is_alias() ? $t->alias_name() : $t->name() )
+          . $_[0]->{_quote}
+          . $_[0]->{_name_sep}
+          . $_[0]->{_quote}
+          . $_[1]->name()
+          . $_[0]->{_quote}
+        );
+}
+
+sub quote
+{
+    return $_[0]->dbh()->quote( $_[1] );
+}
+
+sub _format_column_or_literal
+{
+    if ( $_[1]->isa('Q::Column') )
+    {
+        return $_[0]->_fq_column_name_with_alias($_[1]);
+    }
+    else
+    {
+        return $_[0]->format_literal( $_[1] );
+    }
+}
+
+sub format_literal
+{
+    my $meth = 'format_' . $_[1]->type();
+    $_[0]->$meth( $_[1] );
+}
+
+sub format_function
+{
+    my $self = shift;
+    my $func = shift;
+
+    my $sql = $func->function();
+    $sql .= '(';
+
+    $sql .=
+        ( join ', ',
+          map { $self->_format_column_or_literal($_) }
+          $func->args()
+        );
+
+    $sql .= ')';
+
+    return $sql;
+}
+
+sub format_number
+{
+    return $_[1]->number();
+}
+
+sub format_string
+{
+    return $_[0]->quote( $_[1]->string() );
+}
+
+sub format_term
+{
+    return $_[1]->term();
+}
+
 
 
 1;
