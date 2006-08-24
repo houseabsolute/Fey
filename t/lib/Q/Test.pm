@@ -5,6 +5,15 @@ use warnings;
 
 use DBI;
 use File::Temp ();
+
+BEGIN
+{
+    # This freaking module is reporting warnings from overload.pm,
+    # which is calling can() as a method. Test::MockObject insists on
+    # loading it for some reason.
+    $INC{'UNIVERSAL/can.pm'} = 1;
+}
+
 use Test::MockObject;
 
 
@@ -119,7 +128,22 @@ sub mock_dbh
 
     $mock->set_isa('DBI');
 
+    $mock->mock( 'get_info', \&_mock_get_info );
+
     return $mock;
+}
+
+{
+    my %Info = ( 29 => q{"},
+                 41 => q{.},
+               );
+    sub _mock_get_info
+    {
+        my $self = shift;
+        my $num  = shift;
+
+        return $Info{$num}
+    }
 }
 
 

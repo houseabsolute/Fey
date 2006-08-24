@@ -7,7 +7,7 @@ use base 'Q::Accessor';
 __PACKAGE__->mk_ro_accessors
     ( qw( name dbh ) );
 
-use Q::Exceptions qw(param_error);
+use Q::Exceptions qw( param_error );
 use Q::Validate
     qw( validate validate_pos
         SCALAR_TYPE ARRAYREF_TYPE

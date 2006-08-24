@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 22;
+use Test::More tests => 21;
 
 
 use_ok( 'Q::Table' );
@@ -23,10 +23,6 @@ use_ok( 'Q::Table' );
     is( $t->id(), 'Test', 'table id is Test' );
 
     ok( ! $t->is_alias(), 'Test has no alias' );
-
-    $t->{alias_name} = 'TestX';
-    ok( $t->is_alias(), 'Test is now an alias' );
-    is( $t->alias_name(), 'TestX', 'alias_name is TextX' );
 }
 
 {
@@ -89,12 +85,8 @@ use_ok( 'Q::Table' );
     my @pk = $t->primary_key();
     is( scalar @pk, 1, 'table has a one column pk' );
     is( $pk[0]->name(), 'test_id', 'pk column is test_id' );
-}
 
-{
-    require Q::Schema;
-
-    my $s = Q::Schema->new( name => 'Test' );
-    my $t = Q::Table->new( name => 'Test' );
-
+    $t->remove_column('test_id');
+    @pk = $t->primary_key();
+    is( scalar @pk, 0, 'table has no pk' );
 }

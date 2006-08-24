@@ -9,7 +9,7 @@ __PACKAGE__->mk_ro_accessors
 
 use Scalar::Util qw( blessed weaken );
 
-use Q::Exceptions qw(param_error);
+use Q::Exceptions qw( param_error );
 use Q::Validate
     qw( validate validate_pos
         UNDEF OBJECT
@@ -18,6 +18,7 @@ use Q::Validate
         SCHEMA_TYPE );
 
 use Q::Column;
+use Q::Table::Alias;
 use Scalar::Util qw( blessed );
 
 
@@ -98,6 +99,9 @@ sub columns
 
         my $name = $col->name();
 
+        $self->set_primary_key
+            ( grep { $_->name() ne $name } $self->primary_key() );
+
         delete $self->{columns}{$name};
         $col->_set_table(undef);
 
@@ -127,7 +131,7 @@ sub columns
     }
 }
 
-sub primary_key { @{ $_[0]->{pk} } }
+sub primary_key { @{ $_[0]->{pk} || [] } }
 
 {
     # This method is private but intended to be called by Q::Schema,
@@ -151,6 +155,15 @@ sub primary_key { @{ $_[0]->{pk} } }
         return $self
     }
 }
+
+sub alias
+{
+    my $self = shift;
+
+    return Q::Table::Alias->new( table => $self, @_ );
+}
+
+sub is_alias { 0 }
 
 sub id { $_[0]->name() }
 

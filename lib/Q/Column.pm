@@ -10,13 +10,15 @@ __PACKAGE__->mk_ro_accessors
 
 use Scalar::Util qw( weaken );
 
-use Q::Exceptions qw( object_state_error param_error );
+use Q::Exceptions qw( object_state_error );
 use Q::Validate
     qw( validate validate_pos
         UNDEF OBJECT
         SCALAR_TYPE BOOLEAN_TYPE
         POS_INTEGER_TYPE POS_OR_ZERO_INTEGER_TYPE
         TABLE_TYPE );
+
+use Q::Column::Alias;
 
 
 {
@@ -79,8 +81,8 @@ use Q::Validate
 }
 
 {
-    # This method is private but intended to be called by Q::Table,
-    # but not by anything else.
+    # This method is private but intended to be called by Q::Table and
+    # Q::Table::Alias but not by anything else.
     my $spec = ( { type => UNDEF | OBJECT,
                    callbacks =>
                    { 'undef or table' =>
@@ -112,6 +114,24 @@ sub id
             unless $table;
 
     return $table->id() . '.' . $self->name();
+}
+
+sub clone
+{
+    my $self = shift;
+
+    my %clone = %$self;
+
+    return bless \%clone, ref $self;
+}
+
+sub is_alias { 0 }
+
+sub alias
+{
+    my $self = shift;
+
+    return Q::Column::Alias->new( column => $self, @_ );
 }
 
 

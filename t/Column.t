@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 13;
+use Test::More tests => 20;
 
 
 use_ok( 'Q::Column' );
@@ -30,6 +30,15 @@ use_ok( 'Q::Column' );
 
     eval { $c->id() };
     isa_ok( $@, 'Q::Exception::ObjectState' );
+
+    my $clone = $c->clone();
+    is( $clone->name(), 'Test', 'clone name is Test' );
+    is( $clone->type(), 'foobar', 'clone type is foobar' );
+    is( $clone->generic_type(), 'text', 'clone generic type is text' );
+    ok( ! defined $clone->length(), 'clone has no length' );
+    ok( ! defined $clone->precision(), 'clone has no precision' );
+    ok( ! $clone->is_auto_increment(), 'clone is not auto increment' );
+    ok( ! $clone->is_nullable(), 'clone defaults to not nullable' );
 }
 
 {
@@ -40,6 +49,7 @@ use_ok( 'Q::Column' );
 
     ok( $c->is_nullable(), 'column is nullable' );
 }
+
 {
     require Q::Table;
 
@@ -55,4 +65,3 @@ use_ok( 'Q::Column' );
     undef $t;
     ok( ! $c1->table(), q{column's reference to table is weak} );
 }
-

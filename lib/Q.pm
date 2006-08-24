@@ -140,13 +140,13 @@ subclass of the core functionality.
 =item *
 
 Storing schemas in an Alzabo-specific format is problematic for many
-obvious reasons. It's simpler to simply get the schema definition from
-an existing schema, or to allow users to define it in code.
+reasons. It's simpler to simply get the schema definition from an
+existing schema, or to allow users to define it in code.
 
 =item *
 
-Alzabo's referential integrity checking was really cool back when I
-mostly used MySQL with MYISAM tables, but is a burden nowadays.
+Alzabo's referential integrity checking code was really cool back when
+I mostly used MySQL with MYISAM tables, but is a burden nowadays.
 
 =item *
 
@@ -186,25 +186,27 @@ Provide a simple way to generate queries dynamically. I really like
 the way this works with Alzabo, except that Alzabo is not as flexible
 as I'd like.
 
-Specifically, I want to be able to issue updates and deletes to more
-than one row at a time. I want support for sub-selects, unions,
-etc. and all that other good stuff.
+Specifically, Q will be able to issue updates and deletes to more than
+one row at a time. Q will support sub-selects, unions, etc. and all
+that other good stuff.
 
 =item *
 
-I want complex query creation to requires less fiddliness than
-Alzabo. This means that class to represent queries will be a little
-smarter and more flexible about the order in which bits are added.
+Q will support complex query creation with less fiddliness than
+Alzabo. This means that the class to represent queries will be a
+little smarter and more flexible about the order in which bits are
+added.
 
 For example, in using Alzabo I often come across cases where I want to
 add a table to a query's join I<if it hasn't already been
 added>. Right now there's no nice simple way to do this. Specifying
 the table twice will cause an error. It would be nice to simply be
-able to do this:
+able to do this
 
-  $query->join( $foo_table => $bar_table )
-      unless $query->join_includes($bar_table);
+  $query->join( $foo_table => $bar_table );
 
+and have it do the right thing if that join already exists.
+o
 =item *
 
 Provide the base for a tool that does what the C<Alzabo::Runtime::Row>

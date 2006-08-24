@@ -14,7 +14,7 @@ use Q::Validate
 {
     my $spec = { type      => OBJECT,
                  callbacks =>
-                 { 'table or column' =>
+                 { 'table, alias, literal, or column' =>
                    sub {    $_[0]->isa('Q::Table')
                          || $_[0]->isa('Q::Query::Literal')
                          || (    $_[0]->isa('Q::Column')
@@ -26,8 +26,13 @@ use Q::Validate
         my $self = shift;
         my @s    = validate_pos( @_, ($spec) x @_ );
 
-        $self->{select}{ $_->id() } = $_
-            for @s;
+        for my $elt ( map { $_->can('columns')
+                            ? sort { $a->name() cmp $b->name() } $_->columns()
+                           : $_ }
+                      @s )
+        {
+            $self->{select}{ $elt->id() } = $elt;
+        }
 
         return $self;
     }
@@ -40,30 +45,51 @@ sub _start_clause
     my $self = shift;
 
     my @select;
-    for my $elt ( map { $_->can('columns')
-                        ? sort { $a->name() cmp $b->name() } $_->columns()
-                        : $_ }
-                  map { $self->{select}{$_} }
+    for my $elt ( map { $self->{select}{$_} }
                   sort keys %{ $self->{select} } )
     {
         if ( $elt->isa('Q::Column') )
         {
-            push @select,
-                ( join $self->{_name_sep},
-                  map { $_->has_alias()
-                        ? $_ . ' AS ' . $_->alias_name()
-                        : $_ }
-                  map { $self->{_quote} . $_->name() . $self->{_quote} }
-                  $elt, $elt->table(),
-                );
+            push @select, $self->_fq_column_name_with_alias($elt);
         }
         else
         {
             push @select, $elt->as_string;
         }
     }
+
+    return 'SELECT ' . join ', ', @select;
 }
 
+sub _fq_column_name_with_alias
+{
+    my $fq = $_[0]->_fq_column_name( $_[1] );
+
+    return $fq unless $_[1]->is_alias();
+
+    return
+        ( $fq
+          . ' AS '
+          . $_[0]->{_quote}
+          . $_[1]->alias_name()
+          . $_[0]->{_quote}
+        );
+}
+
+sub _fq_column_name
+{
+    my $t = $_[1]->table();
+
+    return
+        (   $_[0]->{_quote}
+          . ( $t->is_alias() ? $t->alias_name() : $t->name() )
+          . $_[0]->{_quote}
+          . $_[0]->{_name_sep}
+          . $_[0]->{_quote}
+          . $_[1]->name()
+          . $_[0]->{_quote}
+        );
+}
 
 
 1;

@@ -26,11 +26,10 @@ use Q::Query::Update;
         my $class = shift;
         my %p     = validate( @_, $spec );
 
-        my $quote = $p{dbh}->get_info(29) || '.';
-        my $sep   = $p{dbh}->get_info(41) || '.';
+        my $quote = $p{dbh}->get_info(29) || q{"};
+        my $sep   = $p{dbh}->get_info(41) || q{.};
 
         return bless { %p,
-                       _alias      => 0,
                        _quote      => $quote,
                        _name_sep   => $sep,
                      }, $class;
