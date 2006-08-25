@@ -34,6 +34,23 @@ sub mock_test_schema
     $schema->set_dbh( mock_dbh() );
 }
 
+sub mock_test_schema_with_fks
+{
+    require Q::Schema;
+    require Q::FK;
+
+    my $schema = __PACKAGE__->mock_test_schema();
+
+    my $fk =
+        Q::FK->new
+            ( source => [ $schema->table('User')->column('user_id') ],
+              target => [ $schema->table('UserGroup')->column('user_id') ],
+            );
+    $schema->add_foreign_key($fk);
+
+    return $schema;
+}
+
 sub _user_table
 {
     my $t = Q::Table->new( name => 'User' );

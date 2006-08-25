@@ -45,6 +45,15 @@ sub select
     return $self->select(@_);
 }
 
+sub where
+{
+    my $self = shift;
+
+    $self->_rebless('Q::Query::Select');
+
+    return $self->where(@_);
+}
+
 sub _rebless
 {
     my $self  = shift;
@@ -89,6 +98,21 @@ sub _limit_clause
     return ();
 }
 
+sub _fq_column_name
+{
+    my $t = $_[1]->table();
+
+    return
+        (   $_[0]->{_quote}
+          . ( $t->is_alias() ? $t->alias_name() : $t->name() )
+          . $_[0]->{_quote}
+          . $_[0]->{_name_sep}
+          . $_[0]->{_quote}
+          . $_[1]->name()
+          . $_[0]->{_quote}
+        );
+}
+
 sub _fq_column_name_with_alias
 {
     my $fq = $_[0]->_fq_column_name( $_[1] );
@@ -104,17 +128,26 @@ sub _fq_column_name_with_alias
         );
 }
 
-sub _fq_column_name
+sub _table_name
 {
-    my $t = $_[1]->table();
-
     return
         (   $_[0]->{_quote}
-          . ( $t->is_alias() ? $t->alias_name() : $t->name() )
-          . $_[0]->{_quote}
-          . $_[0]->{_name_sep}
-          . $_[0]->{_quote}
           . $_[1]->name()
+          . $_[0]->{_quote}
+        );
+}
+
+sub _table_name_with_alias
+{
+    my $t = $_[0]->_table_name( $_[1] );
+
+    return $t unless $_[1]->is_alias();
+
+    return
+        ( $t
+          . ' AS '
+          . $_[0]->{_quote}
+          . $_[1]->alias_name()
           . $_[0]->{_quote}
         );
 }

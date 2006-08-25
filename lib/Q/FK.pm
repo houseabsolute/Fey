@@ -131,7 +131,6 @@ sub source_columns { @{ $_[0]->{source} } }
 sub target_columns { @{ $_[0]->{target} } }
 
 
-
 1;
 
 __END__
