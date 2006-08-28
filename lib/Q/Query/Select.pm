@@ -63,8 +63,10 @@ sub distinct
 
         # gee, wouldn't multimethods be nice here?
         my $meth =
-            (   @_ == 1
+            (   @_ == 1 && blessed $_[0] && $_[0]->isa('Q::Table')
               ? '_from_one_table'
+              : @_ == 1 && blessed $_[0] && $_[0]->isa('Q::Query::Select')
+              ? '_from_subselect'
               : @_ == 2
               ? '_join'
               : @_ == 3 && ! blessed $_[1]
@@ -93,11 +95,16 @@ sub _from_one_table
 {
     my $self = shift;
 
-    param_error 'A single argument to from() must be a table.'
-        unless $_[0]->isa('Q::Table');
-
     my $join = Q::QueryFragment::Join->new( $_[0] );
     $self->{from}{ $join->id() } = $join;
+}
+
+sub _from_subselect
+{
+    my $self = shift;
+
+    my $subsel = Q::QueryFragment::SubSelect->new( $_[0] );
+    $self->{from}{ $subsel->id() } = $subsel;
 }
 
 sub _join
@@ -168,7 +175,7 @@ sub _check_outer_join_arguments
         unless $_[0]->isa('Q::Table') && $_[2]->isa('Q::Table');
 }
 
-sub sql
+sub as_sql
 {
     my $self = shift;
 
@@ -212,13 +219,6 @@ sub _from_clause
     }
 
     return 'FROM ' . join ', ', @from;
-}
-
-sub where
-{
-    my $self = shift;
-
-    return $self;
 }
 
 
@@ -293,6 +293,28 @@ sub as_sql
     }
 
     return $join;
+}
+
+package Q::QueryFragment::SubSelect;
+
+
+use constant SELECT  => 0;
+use constant COUNTER => 1;
+
+my $Counter = 0;
+sub new
+{
+    my $class  = shift;
+    my $select = shift;
+
+    return bless [ $select, $Counter++ ], $class;
+}
+
+sub id { $_[0][SELECT]->as_sql() }
+
+sub as_sql
+{
+    return '( ' . $_[0][SELECT]->as_sql() . ' ) AS SUBSELECT' . $_[0]->[COUNTER];
 }
 
 

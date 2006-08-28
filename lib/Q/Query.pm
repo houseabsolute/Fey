@@ -45,15 +45,6 @@ sub select
     return $self->select(@_);
 }
 
-sub where
-{
-    my $self = shift;
-
-    $self->_rebless('Q::Query::Select');
-
-    return $self->where(@_);
-}
-
 sub _rebless
 {
     my $self  = shift;
@@ -64,6 +55,13 @@ sub _rebless
     %$self = %$new;
 
     bless $self, ref $new;
+}
+
+sub where
+{
+    my $self = shift;
+
+    return $self;
 }
 
 sub _start_clause

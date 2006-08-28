@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 15;
+use Test::More tests => 19;
 
 use Q::Query;
 
@@ -31,7 +31,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
     my $q = Q::Query->new( dbh => $s->dbh() )->select();
 
     eval { $q->from('foo') };
-    like( $@, qr/A single argument to from\(\) must be a table/,
+    like( $@, qr/from\(\) called with invalid parameters \(foo\)/,
           'from() called with one non-table argument' );
 }
 
@@ -183,4 +183,16 @@ my $s = Q::Test->mock_test_schema_with_fks();
     eval { $q->from( $s->table('UserGroup'), 'left', 'not a table' ) };
     like( $@, qr/from\(\) was called with invalid arguments/,
           'invalid outer join type causes an error' );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+    my $subselect = Q::Query->new( dbh => $s->dbh() );
+    $subselect->select( $s->table('User')->column('user_id') )->from( $s->table('User') );
+
+    $q->from($subselect);
+
+    my $sql = q{FROM ( SELECT "User"."user_id" FROM "User" ) AS SUBSELECT0};
+    is( $q->_from_clause(), $sql,
+        '_from_clause for subselect' );
 }
