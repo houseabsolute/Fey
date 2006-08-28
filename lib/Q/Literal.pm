@@ -3,6 +3,8 @@ package Q::Literal;
 use strict;
 use warnings;
 
+use base 'Q::Accessor';
+
 use Q::Literal::Function;
 use Q::Literal::Number;
 use Q::Literal::String;

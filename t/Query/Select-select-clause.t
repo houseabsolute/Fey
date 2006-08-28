@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 11;
+use Test::More tests => 13;
 
 use Q::Query;
 
@@ -97,7 +97,26 @@ my $s = Q::Test->mock_test_schema();
     my $q = Q::Query->new( dbh => $s->dbh() );
 
     $q->select( 'some literal thing' );
-    my $sql = q{SELECT some literal thing};
+    my $sql = q{SELECT some literal thing AS TERM0};
     is( $q->_select_clause(), $sql,
         '_select_clause after passing string to select()' );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() );
+
+    my $concat = Q::Literal->function( 'CONCAT',
+                                       $s->table('User')->column('user_id'),
+                                       Q::Literal->string(' '),
+                                       $s->table('User')->column('username'),
+                                     );
+    $q->select($concat);
+
+    my $lit_with_alias = q{CONCAT("User"."user_id", ' ', "User"."username") AS FUNCTION0};
+    my $sql = 'SELECT '. $lit_with_alias;
+    is( $q->_select_clause(), $sql,
+        '_select_clause after passing function to select()' );
+
+    is( $q->_literal_with_alias($concat), $lit_with_alias,
+        '_literal_with_alias returns same alias for function second time' );
 }

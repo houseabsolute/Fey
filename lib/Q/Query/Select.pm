@@ -16,6 +16,8 @@ use Q::Validate
       );
 
 use Q::Literal;
+use Q::Query::Fragment::Join;
+use Q::Query::Fragment::SubSelect;
 use Scalar::Util qw( blessed );
 
 
@@ -95,7 +97,7 @@ sub _from_one_table
 {
     my $self = shift;
 
-    my $join = Q::QueryFragment::Join->new( $_[0] );
+    my $join = Q::Query::Fragment::Join->new( $_[0] );
     $self->{from}{ $join->id() } = $join;
 }
 
@@ -103,7 +105,7 @@ sub _from_subselect
 {
     my $self = shift;
 
-    my $subsel = Q::QueryFragment::SubSelect->new( $_[0] );
+    my $subsel = Q::Query::Fragment::SubSelect->new( $_[0] );
     $self->{from}{ $subsel->id() } = $subsel;
 }
 
@@ -118,7 +120,7 @@ sub _join
 
     my $key = join "\0", sort map { $_->id() } @_[0,1], $fk;
 
-    my $join = Q::QueryFragment::Join->new( @_[0,1], $fk );
+    my $join = Q::Query::Fragment::Join->new( @_[0,1], $fk );
     $self->{from}{ $join->id() } = $join;
 }
 
@@ -150,7 +152,7 @@ sub _outer_join
 
     my $fk = $_[3] || $self->_fk_for_join( @_[0, 2] );
 
-    my $join = Q::QueryFragment::Join->new( @_[0, 2], $fk, $_[1] );
+    my $join = Q::Query::Fragment::Join->new( @_[0, 2], $fk, $_[1] );
     $self->{from}{ $join->id() } = $join;
 }
 
@@ -162,7 +164,7 @@ sub _outer_join_with_where
 
     my $fk = $_[3] || $self->_fk_for_join( @_[0, 2] );
 
-    my $join = Q::QueryFragment::Join->new( @_[0, 2], $fk, $_[1], $_[4] );
+    my $join = Q::Query::Fragment::Join->new( @_[0, 2], $fk, $_[1], $_[4] );
     $self->{from}{ $join->id() } = $join;
 }
 
@@ -198,7 +200,7 @@ sub _select_clause
     $sql .= 'DISTINCT ' if $self->is_distinct();
     $sql .=
         ( join ', ',
-          map { $self->_format_column_or_literal( $self->{select}{$_} ) }
+          map { $self->_format_column_or_literal_with_alias( $self->{select}{$_} ) }
           sort
           keys %{ $self->{select} }
         );
@@ -219,102 +221,6 @@ sub _from_clause
     }
 
     return 'FROM ' . join ', ', @from;
-}
-
-
-package Q::QueryFragment::Join;
-
-use List::MoreUtils qw( pairwise );
-
-use constant TABLE1 => 0;
-use constant TABLE2 => 1;
-use constant FK     => 2;
-use constant OUTER  => 3;
-use constant WHERE  => 4;
-
-
-sub new
-{
-    my $class = shift;
-
-    return bless \@_, $class;
-}
-
-sub id
-{
-    # This is a rather special case, and handling it separately makes
-    # the rest of this method simpler.
-    return $_[0]->[TABLE1]->id()
-        unless $_[0]->[TABLE2];
-
-    my ( $t1, $t2 ) =
-        ( $_[0]->[OUTER] && $_[0]->[OUTER] ne 'full'
-          ? @{ $_[0] }[ TABLE1, TABLE2 ]
-          : ( sort { $a->name() cmp $b->name() }
-              @{ $_[0] }[ TABLE1, TABLE2 ] )
-        );
-
-    return
-        ( join "\0",
-          $_[0]->[OUTER] || (),
-          $t1->id(),
-          $t2->id(),
-          $_[0]->[FK]->id(),
-        );
-}
-
-sub as_sql
-{
-    return $_[1]->_table_name_with_alias( $_[0]->[TABLE1] )
-        unless $_[0]->[TABLE2];
-
-    my $join = $_[1]->_table_name_with_alias( $_[0]->[TABLE1] );
-    if ( $_[0]->[OUTER] )
-    {
-        $join .= ' ' . uc $_[0]->[OUTER] . ' OUTER';
-    }
-    $join .= ' JOIN ';
-    $join .= $_[1]->_table_name_with_alias( $_[0]->[TABLE2] );
-    $join .= ' ON ';
-
-    my @s = $_[0]->[FK]->source_columns();
-    my @t = $_[0]->[FK]->target_columns();
-
-    for my $p ( pairwise { [ $a, $b ] } @s, @t )
-    {
-        $join .= $_[1]->_fq_column_name( $p->[0] );
-        $join .= ' = ';
-        $join .= $_[1]->_fq_column_name( $p->[1] );
-    }
-
-    if ( $_[0]->[WHERE] )
-    {
-
-    }
-
-    return $join;
-}
-
-package Q::QueryFragment::SubSelect;
-
-
-use constant SELECT  => 0;
-use constant COUNTER => 1;
-
-my $Counter = 0;
-sub new
-{
-    my $class  = shift;
-    my $select = shift;
-
-    return bless [ $select, $Counter++ ], $class;
-}
-
-sub id { $_[0][SELECT]->as_sql() }
-
-sub as_sql
-{
-    return '( ' . $_[0][SELECT]->as_sql() . ' ) AS SUBSELECT' . $_[0]->[COUNTER];
 }
 
 

@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 8;
+use Test::More tests => 7;
 
 
 use_ok('Q::Query');
@@ -30,13 +30,6 @@ my $s = Q::Test->mock_test_schema();
     my $q = Q::Query->new( dbh => $s->dbh() );
 
     $q->select( $s->table('User') );
-    isa_ok( $q, 'Q::Query::Select' );
-}
-
-{
-    my $q = Q::Query->new( dbh => $s->dbh() );
-
-    $q->where( $s->table('User')->column('user_id'), '=', 2 );
     isa_ok( $q, 'Q::Query::Select' );
 }
 

@@ -3,7 +3,7 @@ package Q::Literal::String;
 use strict;
 use warnings;
 
-use base 'Q::Accessor';
+use base 'Q::Literal';
 __PACKAGE__->mk_ro_accessors
     ( qw( string ) );
 

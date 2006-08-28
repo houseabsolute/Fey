@@ -17,6 +17,7 @@ use Q::Query::Delete;
 use Q::Query::Insert;
 use Q::Query::Select;
 use Q::Query::Update;
+use Q::Query::Fragment::Where;
 
 
 {
@@ -155,11 +156,42 @@ sub quote
     return $_[0]->dbh()->quote( $_[1] );
 }
 
-sub _format_column_or_literal
+sub _format_column_or_literal_with_alias
 {
     if ( $_[1]->isa('Q::Column') )
     {
         return $_[0]->_fq_column_name_with_alias($_[1]);
+    }
+    else
+    {
+        return $_[0]->_literal_with_alias( $_[1] );
+    }
+}
+
+sub _literal_with_alias
+{
+    my $sql = $_[0]->format_literal( $_[1] );
+
+    my $alias = $_[0]->_alias_for_literal( $_[1], $sql );
+
+    return $sql . ' AS ' . $alias;
+}
+
+sub _alias_for_literal
+{
+    my $type = $_[1]->type();
+    my $id   = $_[2];
+
+    $_[0]->{counters}{$type} ||= 0;
+
+    return $_[0]->{aliases}{$id} ||= uc $type . $_[0]->{counters}{$type}++;
+}
+
+sub _format_column_or_literal
+{
+    if ( $_[1]->isa('Q::Column') )
+    {
+        return $_[0]->_fq_column_name($_[1]);
     }
     else
     {
@@ -170,13 +202,14 @@ sub _format_column_or_literal
 sub format_literal
 {
     my $meth = 'format_' . $_[1]->type();
-    $_[0]->$meth( $_[1] );
+    return $_[0]->$meth( $_[1] );
 }
 
 sub format_function
 {
-    my $self = shift;
-    my $func = shift;
+    my $self  = shift;
+    my $func  = shift;
+    my $alias = shift;
 
     my $sql = $func->function();
     $sql .= '(';
@@ -186,7 +219,6 @@ sub format_function
           map { $self->_format_column_or_literal($_) }
           $func->args()
         );
-
     $sql .= ')';
 
     return $sql;
