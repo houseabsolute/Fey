@@ -43,8 +43,7 @@ use Scalar::Util qw( blessed );
                       map { blessed $_ ? $_ : Q::Literal::Term->new($_) }
                       @s )
         {
-            my $key = $elt->can('id') ? $elt->id() : $self->format_literal($elt);
-            $self->{select}{$key} = $elt;
+            $self->{select}{ $elt->id() } = $elt;
         }
 
         return $self;
@@ -200,7 +199,7 @@ sub _select_clause
     $sql .= 'DISTINCT ' if $self->is_distinct();
     $sql .=
         ( join ', ',
-          map { $self->_format_column_or_literal_with_alias( $self->{select}{$_} ) }
+          map { $self->formatter()->format_for_select( $self->{select}{$_} ) }
           sort
           keys %{ $self->{select} }
         );
@@ -212,15 +211,16 @@ sub _from_clause
 {
     my $self = shift;
 
-    # The sort means that the order that things appear in will be
-    # repeatable, if not obvious.
-    my @from;
-    for my $j ( map { $self->{from}{$_} } sort keys %{ $self->{from} } )
-    {
-        push @from, $j->as_sql($self);
-    }
-
-    return 'FROM ' . join ', ', @from;
+    return ( 'FROM '
+             .
+             ( join ', ',
+               map { $self->{from}{$_}->as_sql( $self->formatter() ) }
+               # The sort means that the order that things appear in
+               # will be repeatable, if not obvious.
+               sort
+               keys %{ $self->{from} }
+             )
+           )
 }
 
 

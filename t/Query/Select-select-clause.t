@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 13;
+use Test::More tests => 12;
 
 use Q::Query;
 
@@ -116,7 +116,4 @@ my $s = Q::Test->mock_test_schema();
     my $sql = 'SELECT '. $lit_with_alias;
     is( $q->_select_clause(), $sql,
         '_select_clause after passing function to select()' );
-
-    is( $q->_literal_with_alias($concat), $lit_with_alias,
-        '_literal_with_alias returns same alias for function second time' );
 }

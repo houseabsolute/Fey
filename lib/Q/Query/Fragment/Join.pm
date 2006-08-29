@@ -44,16 +44,16 @@ sub id
 
 sub as_sql
 {
-    return $_[1]->_table_name_with_alias( $_[0]->[TABLE1] )
+    return $_[1]->_table_name_for_from( $_[0]->[TABLE1] )
         unless $_[0]->[TABLE2];
 
-    my $join = $_[1]->_table_name_with_alias( $_[0]->[TABLE1] );
+    my $join = $_[1]->_table_name_for_from( $_[0]->[TABLE1] );
     if ( $_[0]->[OUTER] )
     {
         $join .= ' ' . uc $_[0]->[OUTER] . ' OUTER';
     }
     $join .= ' JOIN ';
-    $join .= $_[1]->_table_name_with_alias( $_[0]->[TABLE2] );
+    $join .= $_[1]->_table_name_for_from( $_[0]->[TABLE2] );
     $join .= ' ON ';
 
     my @s = $_[0]->[FK]->source_columns();

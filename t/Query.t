@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 7;
+use Test::More tests => 5;
 
 
 use_ok('Q::Query');
@@ -33,11 +33,3 @@ my $s = Q::Test->mock_test_schema();
     isa_ok( $q, 'Q::Query::Select' );
 }
 
-{
-    my $q = Q::Query->new( dbh => $s->dbh() );
-
-    is( $q->quote('Simple'), q{'Simple'},
-        'quote on simple string' );
-    is( $q->quote(q{Won't}), q{'Won''t'},
-        'quote on string with apostrophe' );
-}
