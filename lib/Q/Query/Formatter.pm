@@ -62,8 +62,11 @@ sub _alias_for_literal
 
 sub _lhs_for_where
 {
+    my $in_function = $_[2];
+
     return $_[0]->_alias_for_literal( $_[1] )
-        if $_[1]->isa('Q::Literal::Function');
+        if $_[1]->isa('Q::Literal::Function')
+           && ! $in_function;
 
     return $_[0]->format_literal( $_[1] )
         if $_[1]->isa('Q::Literal');
@@ -73,7 +76,11 @@ sub _lhs_for_where
 
     return $_[0]->_fq_column_name( $_[1] );
 }
-*_column_or_literal_for_function_arg = \&_lhs_for_where;
+
+sub _column_or_literal_for_function_arg
+{
+    shift->_lhs_for_where( @_, 'in function' );
+}
 
 sub _fq_column_name
 {
