@@ -35,7 +35,7 @@ use Q::Validate
 sub format_for_select
 {
     return
-        ( $_[1]->isa('Q::Column')
+        (   $_[1]->isa('Q::Column')
           ? $_[0]->_fq_column_name_and_alias($_[1])
           : $_[0]->_literal_and_alias( $_[1] )
         );
@@ -45,7 +45,7 @@ sub _literal_and_alias
 {
     my $sql = $_[0]->format_literal( $_[1] );
 
-    my $alias = $_[0]->_alias_for_literal( $_[1], $sql );
+    my $alias = $_[0]->_alias_for_literal( $_[1] );
 
     return $sql . ' AS ' . $alias;
 }
@@ -53,24 +53,27 @@ sub _literal_and_alias
 sub _alias_for_literal
 {
     my $type = $_[1]->type();
-    my $id   = $_[2];
 
     $_[0]->{counters}{$type} ||= 0;
 
-    return $_[0]->{aliases}{$id} ||= uc $type . $_[0]->{counters}{$type}++;
+    return $_[0]->{aliases}{ $_[1]->id() }
+        ||= uc $type . $_[0]->{counters}{$type}++;
 }
 
-sub _format_column_or_literal
+sub _lhs_for_where
 {
-    if ( $_[1]->isa('Q::Column') )
-    {
-        return $_[0]->_fq_column_name($_[1]);
-    }
-    else
-    {
-        return $_[0]->format_literal( $_[1] );
-    }
+    return $_[0]->_alias_for_literal( $_[1] )
+        if $_[1]->isa('Q::Literal::Function');
+
+    return $_[0]->format_literal( $_[1] )
+        if $_[1]->isa('Q::Literal');
+
+    return $_[0]->{quote} . $_[1]->alias_name() . $_[0]->{quote}
+        if $_[1]->is_alias();
+
+    return $_[0]->_fq_column_name( $_[1] );
 }
+*_column_or_literal_for_function_arg = \&_lhs_for_where;
 
 sub _fq_column_name
 {
@@ -148,7 +151,7 @@ sub format_function
 
     $sql .=
         ( join ', ',
-          map { $self->_format_column_or_literal($_) }
+          map { $self->_column_or_literal_for_function_arg($_) }
           $func->args()
         );
     $sql .= ')';
