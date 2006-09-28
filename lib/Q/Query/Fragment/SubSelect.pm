@@ -20,7 +20,11 @@ sub id { $_[0][SELECT]->as_sql() }
 
 sub as_sql
 {
-    return '( ' . $_[0][SELECT]->as_sql() . ' ) AS SUBSELECT' . $_[0]->[COUNTER];
+    my $sql = '( ' . $_[0][SELECT]->as_sql() . ' )';
+    $sql .= ' AS SUBSELECT' . $_[0]->[COUNTER]
+        if $_[2] eq 'from';
+
+    return $sql;
 }
 
 

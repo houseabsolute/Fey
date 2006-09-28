@@ -16,6 +16,8 @@ sub new
 {
     my $class = shift;
 
+    # REVIEW - should we do some parameter validation here?
+
     return bless \@_, $class;
 }
 

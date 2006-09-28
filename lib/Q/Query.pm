@@ -18,9 +18,14 @@ use Q::Query::Insert;
 use Q::Query::Select;
 use Q::Query::Update;
 
-use Q::Query::Formatter;
-use Q::Query::Fragment::Where;
+use Q::Placeholder;
 
+use Q::Query::Formatter;
+
+use Q::Query::Fragment::Where::Boolean;
+use Q::Query::Fragment::Where::Comparison;
+use Q::Query::Fragment::Where::SubgroupStart;
+use Q::Query::Fragment::Where::SubgroupEnd;
 
 {
     my $spec = { dbh => DBI_TYPE };
@@ -62,24 +67,68 @@ sub where
 {
     my $self = shift;
 
+    if ( @{ $self->{where} || [] }
+         && ! (    $self->{where}[-1]->isa('Q::Query::Fragment::Where::Boolean')
+                || $self->{where}[-1]->isa('Q::Query::Fragment::Where::SubgroupStart')
+              )
+       )
+    {
+        $self->and();
+    }
+
+    push @{ $self->{where} },
+        Q::Query::Fragment::Where::Comparison->new(@_);
+
     return $self;
 }
 
-sub _start_clause
+sub subgroup_start
 {
-    my $class = ref $_[0];
-    virtual_method
-        "The _start_clause() method must be overridden in the $class class.";
+    my $self = shift;
+
+    push @{ $self->{where} },
+        Q::Query::Fragment::Where::SubgroupStart->new();
+
+    return $self;
 }
 
-sub _from_clause
+sub subgroup_end
 {
-    return ();
+    my $self = shift;
+
+    push @{ $self->{where} },
+        Q::Query::Fragment::Where::SubgroupEnd->new();
+
+    return $self;
 }
+
+sub and
+{
+    my $self = shift;
+
+    push @{ $self->{where} },
+        Q::Query::Fragment::Where::Boolean->new( 'AND' );
+
+    return $self;
+}
+
+sub or
+{
+    my $self = shift;
+
+    push @{ $self->{where} },
+        Q::Query::Fragment::Where::Boolean->new( 'OR' );
+
+    return $self;
+}
+
+sub placeholder { Q::Placeholder->new() }
 
 sub _where_clause
 {
-    return ();
+    return unless $_[0]->{where};
+
+    return join ' ', map { $_->as_sql( $_[0]->formatter() ) } @{ $_[0]->{where} };
 }
 
 sub _group_by_clause

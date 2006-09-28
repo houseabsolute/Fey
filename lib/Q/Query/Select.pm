@@ -24,7 +24,7 @@ use Scalar::Util qw( blessed );
 {
     my $spec = { type      => SCALAR|OBJECT,
                  callbacks =>
-                 { 'table, alias, literal, column, or scalar' =>
+                 { 'table, alias, literal, column (with table), or scalar' =>
                    sub {    ! blessed $_[0]
                          || $_[0]->isa('Q::Table')
                          || $_[0]->isa('Q::Literal')
@@ -149,7 +149,15 @@ sub _outer_join
 
     _check_outer_join_arguments(@_);
 
-    my $fk = $_[3] || $self->_fk_for_join( @_[0, 2] );
+    # I used to have ...
+    #
+    #  $_[3] || $self->_fk_for_join( @_[0, 2] )
+    #
+    # but this ends up reducing code coverage because it's not
+    # possible (I hope) to have a situation where both are false.
+    my $fk = $_[3];
+    $fk = $self->_fk_for_join( @_[0, 2] )
+        unless $fk;
 
     my $join = Q::Query::Fragment::Join->new( @_[0, 2], $fk, $_[1] );
     $self->{from}{ $join->id() } = $join;
@@ -161,7 +169,9 @@ sub _outer_join_with_where
 
     _check_outer_join_arguments(@_);
 
-    my $fk = $_[3] || $self->_fk_for_join( @_[0, 2] );
+    my $fk = $_[3];
+    $fk = $self->_fk_for_join( @_[0, 2] )
+        unless $fk;
 
     my $join = Q::Query::Fragment::Join->new( @_[0, 2], $fk, $_[1], $_[4] );
     $self->{from}{ $join->id() } = $join;
@@ -214,7 +224,7 @@ sub _from_clause
     return ( 'FROM '
              .
              ( join ', ',
-               map { $self->{from}{$_}->as_sql( $self->formatter() ) }
+               map { $self->{from}{$_}->as_sql( $self->formatter(), 'from' ) }
                # The sort means that the order that things appear in
                # will be repeatable, if not obvious.
                sort
