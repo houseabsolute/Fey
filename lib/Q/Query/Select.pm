@@ -40,7 +40,7 @@ use Scalar::Util qw( blessed );
         for my $elt ( map { $_->can('columns')
                             ? sort { $a->name() cmp $b->name() } $_->columns()
                            : $_ }
-                      map { blessed $_ ? $_ : Q::Literal::Term->new($_) }
+                      map { blessed $_ ? $_ : Q::Literal->new_from_scalar($_) }
                       @s )
         {
             $self->{select}{ $elt->id() } = $elt;
@@ -209,7 +209,7 @@ sub _select_clause
     $sql .= 'DISTINCT ' if $self->is_distinct();
     $sql .=
         ( join ', ',
-          map { $self->formatter()->format_for_select( $self->{select}{$_} ) }
+          map { $self->sql_for_select( $self->{select}{$_} ) }
           sort
           keys %{ $self->{select} }
         );

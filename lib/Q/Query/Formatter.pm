@@ -32,6 +32,22 @@ use Q::Validate
     }
 }
 
+sub table_and_column
+{
+    return
+        (   $_[0]->{quote}
+          . $_[1]
+          . $_[0]->{quote}
+          . $_[0]->{sep}
+          . $_[0]->{quote}
+          . $_[2]
+          . $_[0]->{quote}
+        );
+}
+
+# -------------------------------
+
+
 sub format_for_select
 {
     return

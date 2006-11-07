@@ -7,6 +7,8 @@ use base 'Q::Accessor';
 __PACKAGE__->mk_ro_accessors
     ( qw( alias_name column ) );
 
+use Class::Trait ( 'Q::Trait::Selectable' );
+
 use Q::Exceptions qw( object_state_error );
 use Q::Validate
     qw( validate
@@ -64,6 +66,13 @@ sub id
 }
 
 sub is_alias { 1 }
+
+sub sql_for_select
+{
+    return
+        $_[1]->table_and_column
+            ( $_[0]->_table_name_or_alias(), $_[0]->alias_name() );
+}
 
 sub isa
 {

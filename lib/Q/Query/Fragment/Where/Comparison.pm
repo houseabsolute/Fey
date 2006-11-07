@@ -84,7 +84,7 @@ our $in_comp_re = qr/(?:not\s+)?in/;
 
         for ( $lhs, @rhs )
         {
-            $_ = Q::Literal::Term->new($_)
+            $_ = Q::Literal->new_from_scalar($_)
                 unless blessed $_;
             $_ = Q::Query::Fragment::SubSelect->new($_)
                 if $_->isa('Q::Query::Select');

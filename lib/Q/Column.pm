@@ -8,6 +8,8 @@ __PACKAGE__->mk_ro_accessors
     ( qw( name type generic_type length precision
           is_auto_increment is_nullable table ) );
 
+use Class::Trait ( 'Q::Trait::Selectable' );
+
 use Scalar::Util qw( weaken );
 
 use Q::Exceptions qw( object_state_error );
@@ -132,6 +134,21 @@ sub alias
     my $self = shift;
 
     return Q::Column::Alias->new( column => $self, @_ );
+}
+
+sub _fq_name
+{
+    $_[1]->table_and_column
+        ( $_[0]->_table_name_or_alias(), $_[0]->name() );
+}
+*sql_for_select = \&fq_name;
+*sql_for_function_arg = \&fq_name;
+
+sub _table_name_or_alias
+{
+    my $t = $_[0]->table();
+
+    $t->is_alias() ? $t->alias_name() : $t->name();
 }
 
 

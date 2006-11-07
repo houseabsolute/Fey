@@ -10,7 +10,17 @@ use Q::Literal::Number;
 use Q::Literal::String;
 use Q::Literal::Term;
 use Q::Query::Formatter;
+use Scalar::Util qw( looks_like_number );
 
+
+sub new_from_scalar
+{
+    return
+        (   looks_like_number( $_[1] )
+          ? $_[0]->number( $_[1] )
+          : $_[0]->string( $_[1] )
+        );
+}
 
 sub function
 {
