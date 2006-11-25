@@ -24,12 +24,10 @@ use Scalar::Util qw( blessed );
 {
     my $spec = { type      => SCALAR|OBJECT,
                  callbacks =>
-                 { 'table, alias, literal, column (with table), or scalar' =>
+                 { 'is selectable' =>
                    sub {    ! blessed $_[0]
                          || $_[0]->isa('Q::Table')
-                         || $_[0]->isa('Q::Literal')
-                         || (    $_[0]->isa('Q::Column')
-                              && $_[0]->table() ) },
+                         || $_[0]->is_selectable() },
                  },
                };
     sub select
@@ -209,7 +207,7 @@ sub _select_clause
     $sql .= 'DISTINCT ' if $self->is_distinct();
     $sql .=
         ( join ', ',
-          map { $self->sql_for_select( $self->{select}{$_} ) }
+          map { $self->{select}{$_}->sql_for_select( $self->formatter() ) }
           sort
           keys %{ $self->{select} }
         );

@@ -8,6 +8,7 @@ __PACKAGE__->mk_ro_accessors
     ( qw( alias_name function ) );
 
 use Class::Trait ( 'Q::Trait::Selectable' );
+use Class::Trait ( 'Q::Trait::Comparable' );
 
 use Q::Validate
     qw( validate_pos
@@ -27,13 +28,14 @@ use Scalar::Util qw( blessed );
                         => sub {    ! blessed $_[0]
                                  || (    $_[0]->isa('Q::Column')
                                       && $_[0]->table()
-                                      && ! $_[0]->is_alias() ) }
+                                      && ! $_[0]->is_alias() )
+                                 || $_[0]->isa('Q::Literal') }
                       },
                     };
     sub new
     {
         my $class = shift;
-        my ( $func, @args ) = validate_pos( @_, $func_spec, ($arg_spec) x @_ - 1 );
+        my ( $func, @args ) = validate_pos( @_, $func_spec, ($arg_spec) x (@_ - 1) );
 
         my $self = bless { function => $func };
         $self->{args} =
@@ -52,6 +54,24 @@ sub sql_for_select
     $_[0]->_make_alias()
         unless $_[0]->alias_name();
 
+    my $sql = $_[0]->_sql( $_[1] );
+
+    $sql .= ' AS ';
+    $sql .= $_[0]->alias_name();
+
+    return $sql;
+}
+
+sub sql_for_compare
+{
+    return $_[0]->alias_name()
+        if $_[0]->alias_name();
+
+    return $_[0]->_sql( $_[1] );
+}
+
+sub _sql
+{
     my $sql = $_[0]->function();
     $sql .= '(';
 
@@ -61,11 +81,6 @@ sub sql_for_select
           $_[0]->args()
         );
     $sql .= ')';
-
-    $sql .= ' AS ';
-    $sql .= $_[0]->alias_name();
-
-    return $sql;
 }
 
 {

@@ -45,6 +45,16 @@ sub table_and_column
         );
 }
 
+sub quote_identifier
+{
+    return $_[0]->{quote} . $_[1] . $_[0]->{quote};
+}
+
+sub quote_string
+{
+    return $_[0]->dbh()->quote( $_[1] );
+}
+
 # -------------------------------
 
 

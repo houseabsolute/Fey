@@ -3,10 +3,10 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 21;
+use Test::More tests => 20;
 
+use Q::Table;
 
-use_ok( 'Q::Table' );
 
 {
     eval { my $s = Q::Table->new() };

@@ -4,14 +4,13 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 19;
+use Test::More tests => 18;
 
+use Q::FK;
+use Q::Schema;
 
-use_ok('Q::FK');
 
 {
-    require Q::Schema;
-
     my $s = Q::Test->mock_test_schema();
 
     eval { Q::FK->new( source => $s->table('User')->column('user_id'),

@@ -3,10 +3,10 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 20;
+use Test::More tests => 19;
 
+use Q::Column;
 
-use_ok( 'Q::Column' );
 
 {
     eval { my $s = Q::Column->new() };

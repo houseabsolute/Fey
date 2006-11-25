@@ -7,6 +7,9 @@ use base 'Q::Literal';
 __PACKAGE__->mk_ro_accessors
     ( qw( string ) );
 
+use Class::Trait ( 'Q::Trait::Selectable' );
+use Class::Trait ( 'Q::Trait::Comparable' );
+
 use Q::Validate
     qw( validate_pos
         SCALAR_TYPE
@@ -26,6 +29,11 @@ use Q::Validate
 }
 
 sub type { 'string' }
+
+sub sql_for_select  { $_[1]->quote_string( $_[0]->string() ) }
+
+*sql_for_compare = \&sql_for_select;
+*sql_for_function_arg = \&sql_for_select;
 
 
 1;

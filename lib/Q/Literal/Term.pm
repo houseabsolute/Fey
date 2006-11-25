@@ -7,6 +7,9 @@ use base 'Q::Literal';
 __PACKAGE__->mk_ro_accessors
     ( qw( term ) );
 
+use Class::Trait ( 'Q::Trait::Selectable' );
+use Class::Trait ( 'Q::Trait::Comparable' );
+
 use Q::Validate
     qw( validate_pos
         SCALAR_TYPE
@@ -25,6 +28,10 @@ use Q::Validate
 }
 
 sub type { 'term' }
+
+sub sql_for_select  { $_[1]->term() }
+
+sub sql_for_compare { $_[1]->term() }
 
 
 1;

@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 12;
+use Test::More tests => 13;
 
 use Q::Query;
 
@@ -97,9 +97,18 @@ my $s = Q::Test->mock_test_schema();
     my $q = Q::Query->new( dbh => $s->dbh() );
 
     $q->select( 'some literal thing' );
-    my $sql = q{SELECT some literal thing AS TERM0};
+    my $sql = q{SELECT 'some literal thing'};
     is( $q->_select_clause(), $sql,
         '_select_clause after passing string to select()' );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() );
+
+    $q->select( 235.12 );
+    my $sql = q{SELECT 235.12};
+    is( $q->_select_clause(), $sql,
+        '_select_clause after passing number to select()' );
 }
 
 {

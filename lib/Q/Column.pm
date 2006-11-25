@@ -8,7 +8,7 @@ __PACKAGE__->mk_ro_accessors
     ( qw( name type generic_type length precision
           is_auto_increment is_nullable table ) );
 
-use Class::Trait ( 'Q::Trait::Selectable' );
+use Class::Trait ( 'Q::Trait::Selectable' => { exclude => 'is_selectable' } );
 
 use Scalar::Util qw( weaken );
 
@@ -141,8 +141,8 @@ sub _fq_name
     $_[1]->table_and_column
         ( $_[0]->_table_name_or_alias(), $_[0]->name() );
 }
-*sql_for_select = \&fq_name;
-*sql_for_function_arg = \&fq_name;
+*sql_for_select = \&_fq_name;
+*sql_for_function_arg = \&_fq_name;
 
 sub _table_name_or_alias
 {
@@ -150,6 +150,8 @@ sub _table_name_or_alias
 
     $t->is_alias() ? $t->alias_name() : $t->name();
 }
+
+sub is_selectable { return $_[0]->table() ? 1 : 0 }
 
 
 1;
