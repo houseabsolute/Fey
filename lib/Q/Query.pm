@@ -69,7 +69,8 @@ sub where
 
     if ( @{ $self->{where} || [] }
          && ! (    $self->{where}[-1]->isa('Q::Query::Fragment::Where::Boolean')
-                || $self->{where}[-1]->isa('Q::Query::Fragment::Where::SubgroupStart')
+                || $self->{where}[-1]
+                ->isa('Q::Query::Fragment::Where::SubgroupStart')
               )
        )
     {
@@ -128,7 +129,8 @@ sub _where_clause
 {
     return unless $_[0]->{where};
 
-    return join ' ', map { $_->as_sql( $_[0]->formatter() ) } @{ $_[0]->{where} };
+    return join ' ',
+        map { $_->as_sql( $_[0]->formatter() ) } @{ $_[0]->{where} };
 }
 
 sub _group_by_clause
