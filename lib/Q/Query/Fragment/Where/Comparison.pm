@@ -24,36 +24,25 @@ our $eq_comp_re = qr/(?:=|!=|<>)/;
 our $in_comp_re = qr/(?:not\s+)?in/;
 
 {
-    my @spec =
-        ( { type      => SCALAR|OBJECT,
-            callbacks =>
-            { 'column (with table) or literal' =>
-              sub {    ! blessed $_[0]
-                    || $_[0]->isa('Q::Literal')
-                    || ( $_[0]->isa('Q::Column')
-                         && $_[0]->table() ) },
-            },
+    my $comparable = 
+        { type      => SCALAR|OBJECT,
+          callbacks =>
+          { 'is comparable' =>
+            sub {    ! blessed $_[0]
+                  || $_[0]->is_comparable() },
           },
-          SCALAR_TYPE,
-        );
-    my $rhs =
-        ( { type      => SCALAR|OBJECT,
-            callbacks =>
-            { 'column (with table), literal, placeholder, or select' =>
-              sub {    ! blessed $_[0]
-                    || $_[0]->isa('Q::Literal')
-                    || ( $_[0]->isa('Q::Column')
-                         && $_[0]->table() )
-                    || $_[0]->isa('Q::Placeholder')
-                    || $_[0]->isa('Q::Query::Select') },
-            },
-          } );
+        };
+
+    my $operator = SCALAR_TYPE;
+
     sub new
     {
         my $class = shift;
         my $rhs_count = @_ - 2;
         $rhs_count = 1 if $rhs_count < 1;
-        my ( $lhs, $comp, @rhs ) = validate_pos( @_, @spec, ($rhs) x $rhs_count );
+
+        my ( $lhs, $comp, @rhs ) =
+            validate_pos( @_, $comparable, $operator, ($comparable) x $rhs_count );
 
         if ( ! $rhs[0] )
         {
@@ -94,9 +83,9 @@ our $in_comp_re = qr/(?:not\s+)?in/;
     }
 }
 
-sub as_sql
+sub sql_for_where
 {
-    my $sql = $_[1]->_lhs_for_where( $_[0][LHS] );
+    my $sql = $_[0][LHS]->sql_for_compare( $_[1] );
 
     if (    $_[0][COMP] =~ /^$eq_comp_re$/
          && ! defined $_[0][RHS][0] )
@@ -114,9 +103,9 @@ sub as_sql
         return
             (   $sql
               . ' BETWEEN '
-              . $_[1]->_rhs_for_where( $_[0][RHS][0] )
+              . $_[0][RHS][0]->sql_for_compare( $_[1] )
               . ' AND '
-              . $_[1]->_rhs_for_where( $_[0][RHS][1] )
+              . $_[0][RHS][1]->sql_for_compare( $_[1] )
             );
     }
 
@@ -128,7 +117,7 @@ sub as_sql
               . uc $_[0][COMP]
               . ' ('
               . ( join ', ',
-                  map { $_[1]->_rhs_for_where( $_[0] ) }
+                  map { $_->sql_for_compare( $_[1] ) }
                   @{ $_[0][RHS] }
                 )
               . ')'
@@ -140,7 +129,7 @@ sub as_sql
           . ' '
           . $_[0][COMP]
           . ' '
-          . $_[1]->_rhs_for_where( $_[0][RHS][0] )
+          . $_[0][RHS][0]->sql_for_compare( $_[1] )
         );
 }
 

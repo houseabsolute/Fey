@@ -3,9 +3,10 @@ package Q::Query::Fragment::SubSelect;
 use strict;
 use warnings;
 
+use Class::Trait ( 'Q::Trait::Joinable' );
 
 use constant SELECT  => 0;
-use constant COUNTER => 1;
+
 
 my $Counter = 0;
 sub new
@@ -13,18 +14,30 @@ sub new
     my $class  = shift;
     my $select = shift;
 
-    return bless [ $select, $Counter++ ], $class;
+    return bless [ $select ], $class;
 }
 
-sub id { $_[0][SELECT]->as_sql() }
+sub id { $_[0][SELECT]->sql() }
 
-sub as_sql
+sub sql_for_join
 {
-    my $sql = '( ' . $_[0][SELECT]->as_sql() . ' )';
-    $sql .= ' AS SUBSELECT' . $_[0]->[COUNTER]
-        if $_[2] eq 'from';
+    return
+        (   $_[0]->_sql()
+          . ' AS '
+          . $_[0]->_make_alias()
+        );
+}
 
-    return $sql;
+sub _sql { '( ' . $_[0][SELECT]->sql() . ' )' }
+
+sub _make_alias
+{
+    return 'SUBSELECT' . $Counter++;
+}
+
+sub sql_for_compare
+{
+    return $_[0]->_sql();
 }
 
 

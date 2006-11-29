@@ -184,7 +184,7 @@ sub _check_outer_join_arguments
         unless $_[0]->isa('Q::Table') && $_[2]->isa('Q::Table');
 }
 
-sub as_sql
+sub sql
 {
     my $self = shift;
 
@@ -222,7 +222,7 @@ sub _from_clause
     return ( 'FROM '
              .
              ( join ', ',
-               map { $self->{from}{$_}->as_sql( $self->formatter(), 'from' ) }
+               map { $self->{from}{$_}->sql_for_join( $self->formatter() ) }
                # The sort means that the order that things appear in
                # will be repeatable, if not obvious.
                sort
@@ -230,6 +230,10 @@ sub _from_clause
              )
            )
 }
+
+# Fakes being comparable so it will be transformed into a subselect
+# fragment by query bits.
+sub is_comparable { 1 }
 
 
 1;

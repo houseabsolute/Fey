@@ -5,7 +5,6 @@ use warnings;
 
 use List::MoreUtils qw( pairwise );
 
-
 use constant TABLE1 => 0;
 use constant TABLE2 => 1;
 use constant FK     => 2;
@@ -44,18 +43,18 @@ sub id
         );
 }
 
-sub as_sql
+sub sql_for_join
 {
-    return $_[1]->_table_name_for_from( $_[0]->[TABLE1] )
+    return $_[0][TABLE1]->sql_for_join( $_[1] )
         unless $_[0]->[TABLE2];
 
-    my $join = $_[1]->_table_name_for_from( $_[0]->[TABLE1] );
+    my $join = $_[0][TABLE1]->sql_for_join( $_[1] );
     if ( $_[0]->[OUTER] )
     {
         $join .= ' ' . uc $_[0]->[OUTER] . ' OUTER';
     }
     $join .= ' JOIN ';
-    $join .= $_[1]->_table_name_for_from( $_[0]->[TABLE2] );
+    $join .= $_[0][TABLE2]->sql_for_join( $_[1] );
     $join .= ' ON ';
 
     my @s = $_[0]->[FK]->source_columns();
@@ -63,9 +62,9 @@ sub as_sql
 
     for my $p ( pairwise { [ $a, $b ] } @s, @t )
     {
-        $join .= $_[1]->_fq_column_name( $p->[0] );
+        $join .= $p->[0]->sql_for_compare( $_[1] );
         $join .= ' = ';
-        $join .= $_[1]->_fq_column_name( $p->[1] );
+        $join .= $p->[1]->sql_for_compare( $_[1] );
     }
 
     if ( $_[0]->[WHERE] )

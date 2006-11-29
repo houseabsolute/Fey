@@ -7,7 +7,8 @@ use base 'Q::Accessor';
 __PACKAGE__->mk_ro_accessors
     ( qw( alias_name column ) );
 
-use Class::Trait ( 'Q::Trait::Selectable' );
+use Class::Trait ( 'Q::Trait::Selectable' => { exclude => 'is_selectable' } );
+use Class::Trait ( 'Q::Trait::Comparable' => { exclude => 'is_comparable' } );
 
 use Q::Exceptions qw( object_state_error );
 use Q::Validate
@@ -70,7 +71,10 @@ sub is_alias { 1 }
 sub sql_for_select
 {
     my $sql =
-        $_[1]->table_and_column( $_[0]->_table_name_or_alias(), $_[0]->name() );
+        $_[1]->join_table_and_column
+            ( $_[1]->quote_identifier( $_[0]->_table_name_or_alias() ),
+              $_[1]->quote_identifier( $_[0]->name() )
+            );
 
     $sql .= ' AS ';
     $sql .= $_[1]->quote_identifier( $_[0]->alias_name() );
@@ -79,6 +83,7 @@ sub sql_for_select
 }
 
 sub sql_for_function_arg { $_[0]->alias_name() }
+*sql_for_compare = \&sql_for_function_arg;
 
 sub _table_name_or_alias
 {
@@ -86,6 +91,9 @@ sub _table_name_or_alias
 
     $t->is_alias() ? $t->alias_name() : $t->name();
 }
+
+sub is_selectable { return $_[0]->table() ? 1 : 0 }
+*is_comparable = \&is_selectable;
 
 sub isa
 {

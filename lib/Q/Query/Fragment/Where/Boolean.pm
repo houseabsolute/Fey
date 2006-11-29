@@ -18,7 +18,7 @@ use Q::Validate
     }
 }
 
-sub as_sql
+sub sql_for_where
 {
     return uc ${ $_[0] };
 }

@@ -47,8 +47,6 @@ use Scalar::Util qw( blessed );
 
 sub args { @{ $_[0]->{args} } }
 
-sub type { 'function' }
-
 sub sql_for_select
 {
     $_[0]->_make_alias()
@@ -70,6 +68,8 @@ sub sql_for_compare
     return $_[0]->_sql( $_[1] );
 }
 
+*sql_for_function_arg = \&sql_for_compare;
+
 sub _sql
 {
     my $sql = $_[0]->function();
@@ -90,7 +90,6 @@ sub _sql
         $_[0]->{alias_name} = 'FUNCTION' . $Number++;
     }
 }
-
 
 
 1;

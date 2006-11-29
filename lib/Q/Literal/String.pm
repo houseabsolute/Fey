@@ -28,8 +28,6 @@ use Q::Validate
     }
 }
 
-sub type { 'string' }
-
 sub sql_for_select  { $_[1]->quote_string( $_[0]->string() ) }
 
 *sql_for_compare = \&sql_for_select;

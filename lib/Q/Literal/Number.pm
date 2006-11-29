@@ -27,11 +27,10 @@ use Q::Validate
     }
 }
 
-sub type { 'number' }
-
 sub sql_for_select  { $_[0]->number() }
 
-sub sql_for_compare { $_[0]->number() }
+*sql_for_compare = \&sql_for_select;
+*sql_for_function_arg = \&sql_for_select;
 
 
 1;

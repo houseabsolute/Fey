@@ -7,6 +7,8 @@ use base 'Q::Accessor';
 __PACKAGE__->mk_ro_accessors
     ( qw( name is_view schema ) );
 
+use Class::Trait ( 'Q::Trait::Joinable' );
+
 use Scalar::Util qw( blessed weaken );
 
 use Q::Exceptions qw( param_error );
@@ -164,6 +166,11 @@ sub alias
 }
 
 sub is_alias { 0 }
+
+sub sql_for_join
+{
+    return $_[1]->quote_identifier( $_[0]->name() );
+}
 
 sub id { $_[0]->name() }
 
