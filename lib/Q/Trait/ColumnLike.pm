@@ -12,7 +12,6 @@ use Class::Trait ( 'Q::Trait::Comparable' => { exclude => 'is_comparable' } );
 our @REQUIRES
     = qw( id
           is_alias
-          _fq_name
           _containing_table_name_or_alias
           is_selectable
           is_comparable );
