@@ -46,8 +46,8 @@ use Q::Column::Alias;
         my $class = shift;
         my %p     = validate( @_, $spec );
 
-        $p{generic_type}
-            ||= $class->_guess_generic_type( $p{type} );
+        $p{generic_type} = $class->_guess_generic_type( $p{type} )
+            unless defined $p{generic_type};
 
         my $self = bless \%p, $class;
 

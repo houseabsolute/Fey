@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 12;
+use Test::More tests => 14;
 
 use_ok('Q::Literal');
 
@@ -76,4 +76,22 @@ require Q::Query::Formatter;
     is( $ifnull2->sql_for_compare($f),
         q{IFNULL("User"."user_id", CONCAT("User"."user_id", ' ', "User"."username"))},
         'IFNULL(..., CONCAT) function formatted' );
+
+    my $avg2 =
+        Q::Literal->function
+            ( 'AVG',
+              $s->table('User')->column('user_id')->alias( alias_name => 'uid' ) );
+    is( $avg2->sql_for_compare($f), 'AVG(uid)',
+        'AVG() with column alias as argument' );
 }
+
+{
+    my $f = Q::Query::Formatter->new( dbh => Q::Test->mock_dbh() );
+
+    my $now = Q::Literal->function( 'NOW' );
+    $now->_make_alias();
+
+    like( $now->sql_for_compare($f), qr/FUNCTION\d+/,
+        'NOW function formatted for compare when it has an alias returns alias' );
+}
+

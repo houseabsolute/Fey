@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 19;
+use Test::More tests => 20;
 
 use Q::Column;
 
@@ -27,6 +27,7 @@ use Q::Column;
     ok( ! defined $c->precision(), 'column has no precision' );
     ok( ! $c->is_auto_increment(), 'column is not auto increment' );
     ok( ! $c->is_nullable(), 'column defaults to not nullable' );
+    ok( ! $c->is_alias(), 'column is not an alias' );
 
     eval { $c->id() };
     isa_ok( $@, 'Q::Exception::ObjectState' );
