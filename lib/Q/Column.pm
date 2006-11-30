@@ -8,8 +8,8 @@ __PACKAGE__->mk_ro_accessors
     ( qw( name type generic_type length precision
           is_auto_increment is_nullable table ) );
 
-use Class::Trait ( 'Q::Trait::Selectable' => { exclude => 'is_selectable' } );
-use Class::Trait ( 'Q::Trait::Comparable' => { exclude => 'is_comparable' } );
+use Class::Trait ( 'Q::Trait::ColumnLike' );
+
 
 use Scalar::Util qw( weaken );
 
@@ -140,24 +140,13 @@ sub alias
 sub _fq_name
 {
     $_[1]->join_table_and_column
-        ( $_[1]->quote_identifier( $_[0]->_table_name_or_alias() ),
+        ( $_[1]->quote_identifier( $_[0]->_containing_table_name_or_alias() ),
           $_[1]->quote_identifier( $_[0]->name() )
         );
 }
-
 *sql_for_select = \&_fq_name;
 *sql_for_function_arg = \&_fq_name;
 *sql_for_compare = \&_fq_name;
-
-sub _table_name_or_alias
-{
-    my $t = $_[0]->table();
-
-    $t->is_alias() ? $t->alias_name() : $t->name();
-}
-
-sub is_selectable { return $_[0]->table() ? 1 : 0 }
-*is_comparable = \&is_selectable;
 
 
 1;

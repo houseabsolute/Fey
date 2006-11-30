@@ -24,11 +24,10 @@ use Scalar::Util qw( blessed );
     my $func_spec = SCALAR_TYPE;
     my $arg_spec  = { type      => SCALAR|OBJECT,
                       callbacks =>
-                      { 'is un-aliased column (with table) or literal'
+                      { 'is scalar, column (with table) or literal'
                         => sub {    ! blessed $_[0]
                                  || (    $_[0]->isa('Q::Column')
-                                      && $_[0]->table()
-                                      && ! $_[0]->is_alias() )
+                                      && $_[0]->table() )
                                  || $_[0]->isa('Q::Literal') }
                       },
                     };
