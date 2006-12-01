@@ -4,16 +4,17 @@ use strict;
 use warnings;
 
 
+my $Paren = ')';
 sub new
 {
     my $class = shift;
 
-    return bless ')', $class;
+    return bless \$Paren, $class;
 }
 
-sub as_sql
+sub sql_for_where
 {
-    return ${ $_[0] };
+    return $Paren;
 }
 
 

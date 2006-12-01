@@ -6,6 +6,7 @@ use warnings;
 use base 'Q::Accessor';
 
 use Q::Literal::Function;
+use Q::Literal::Null;
 use Q::Literal::Number;
 use Q::Literal::String;
 use Q::Literal::Term;
@@ -16,7 +17,9 @@ use Scalar::Util qw( looks_like_number );
 sub new_from_scalar
 {
     return
-        (   looks_like_number( $_[1] )
+        (   ! defined $_[1]
+          ? $_[0]->null()
+          : looks_like_number( $_[1] )
           ? $_[0]->number( $_[1] )
           : $_[0]->string( $_[1] )
         );
@@ -26,6 +29,11 @@ sub function
 {
     shift;
     return Q::Literal::Function->new(@_);
+}
+
+sub null
+{
+    return Q::Literal::Null->new();
 }
 
 sub number
