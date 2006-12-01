@@ -27,7 +27,9 @@ use Scalar::Util qw( blessed );
                  { 'is selectable' =>
                    sub {    ! blessed $_[0]
                          || $_[0]->isa('Q::Table')
-                         || $_[0]->is_selectable() },
+                         || (    $_[0]->can('is_selectable')
+                              && $_[0]->is_selectable()
+                            ) },
                  },
                };
     sub select
@@ -157,7 +159,7 @@ sub _outer_join
     $fk = $self->_fk_for_join( @_[0, 2] )
         unless $fk;
 
-    my $join = Q::Query::Fragment::Join->new( @_[0, 2], $fk, $_[1] );
+    my $join = Q::Query::Fragment::Join->new( @_[0, 2], $fk, lc $_[1] );
     $self->{from}{ $join->id() } = $join;
 }
 
@@ -167,18 +169,19 @@ sub _outer_join_with_where
 
     _check_outer_join_arguments(@_);
 
-    my $fk = $_[3];
-    $fk = $self->_fk_for_join( @_[0, 2] )
-        unless $fk;
+    my $fk;
+    $fk = $_[3]->isa('Q::FK') ? $_[3] : $self->_fk_for_join( @_[0, 2] );
 
-    my $join = Q::Query::Fragment::Join->new( @_[0, 2], $fk, $_[1], $_[4] );
+    my $where = $_[4] ? $_[4] : $_[3];
+
+    my $join = Q::Query::Fragment::Join->new( @_[0, 2], $fk, lc $_[1], $where );
     $self->{from}{ $join->id() } = $join;
 }
 
 sub _check_outer_join_arguments
 {
     param_error 'invalid outer join type, must be one of out left, right, or full.'
-        unless $_[1] =~ /^(?:left|right|full)$/;
+        unless $_[1] =~ /^(?:left|right|full)$/i;
 
     param_error 'from() was called with invalid arguments'
         unless $_[0]->isa('Q::Table') && $_[2]->isa('Q::Table');

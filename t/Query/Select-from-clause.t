@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 19;
+use Test::More tests => 23;
 
 use Q::Query;
 
@@ -164,6 +164,49 @@ my $s = Q::Test->mock_test_schema_with_fks();
 {
     my $q = Q::Query->new( dbh => $s->dbh() )->select();
 
+    my $q2 = Q::Query->new( dbh => $s->dbh() );
+    $q2->where( $s->table('User')->column('user_id'), '=', 2 );
+
+    $q->from( $s->table('User'), 'left', $s->table('UserGroup'), $q2 );
+
+    my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
+    $sql .= q{ ON "User"."user_id" = "UserGroup"."user_id"};
+    $sql .= q{ WHERE "User"."user_id" = 2};
+
+    is( $q->_from_clause(), $sql,
+        '_from_clause for outer join with where clause' );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+
+    my $q2 = Q::Query->new( dbh => $s->dbh() );
+    $q2->where( $s->table('User')->column('user_id'), '=', 2 );
+
+    my @t = ( $s->table('User'), $s->table('UserGroup') );
+    my ($fk) = $s->foreign_keys_between_tables(@t);
+
+    $q->from( $t[0], 'left', $t[1], $fk, $q2 );
+
+    my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
+    $sql .= q{ ON "User"."user_id" = "UserGroup"."user_id"};
+    $sql .= q{ WHERE "User"."user_id" = 2};
+
+    is( $q->_from_clause(), $sql,
+        '_from_clause for outer join with where clause and explicit fk' );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+
+    eval { $q->from( $s->table('User')->column('user_id') ) };
+    like( $@, qr/\Qfrom() called with invalid parameters/,
+          'passing just a column to from()' );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+
     eval { $q->from( $s->table('User'), 'foobar', $s->table('UserGroup') ) };
     like( $@, qr/invalid outer join type/,
           'invalid outer join type causes an error' );
@@ -183,6 +226,14 @@ my $s = Q::Test->mock_test_schema_with_fks();
     eval { $q->from( $s->table('UserGroup'), 'left', 'not a table' ) };
     like( $@, qr/from\(\) was called with invalid arguments/,
           'invalid outer join type causes an error' );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+
+    eval { $q->from( $s->table('User'), 'full', $s->table('UserGroup'), 'invalid' ) };
+    like( $@, qr/\Qfrom() called with invalid parameters/,
+          'passing invalid parameter to from() with outer join' );
 }
 
 {

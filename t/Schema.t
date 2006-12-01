@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 25;
+use Test::More tests => 30;
 
 use Q::Schema;
 
@@ -45,6 +45,11 @@ use Q::Schema;
     $s->remove_table( $t->name() );
     ok( ! $t->schema(),
         'table has no schema after calling remove_table()' );
+
+    $s->add_table($t);
+    eval { $s->add_table($t); };
+    like( $@, qr/already contains a table named Test/,
+          'error when adding the same table twice' );
 }
 
 {
@@ -86,6 +91,11 @@ use Q::Schema;
     is( $fk[0]->id(), $fk->id(),
         'one foreign key between User and UserGroup is same as original' );
 
+    @fk = $s->foreign_keys_between_tables( 'UserGroup', 'User' );
+    is( scalar @fk, 1, 'one fk for UserGroup table' );
+    is( $fk[0]->id(), $fk->id(),
+        'one foreign key between UserGroup and User' );
+
     @fk = $s->foreign_keys_between_tables( $s->table('User'), $s->table('UserGroup') );
     is( scalar @fk, 1, 'one fk for UserGroup table - passed as objects' );
 
@@ -115,6 +125,14 @@ use Q::Schema;
     @fk = $s->foreign_keys_for_table('UserGroup');
     is( scalar @fk, 0,
         'no fks for UserGroup table after User.user_id column is removed' );
+
+    @fk = $s->foreign_keys_between_tables( $s->table('User'), $s->table('UserGroup') );
+    is( scalar @fk, 0,
+        'no fks between User and UserGroup after User.user_id columns is removed' );
+
+    @fk = $s->foreign_keys_between_tables( $s->table('UserGroup'), $s->table('User') );
+    is( scalar @fk, 0,
+        'no fks between UserGroup and User after User.user_id columns is removed' );
 }
 
 {

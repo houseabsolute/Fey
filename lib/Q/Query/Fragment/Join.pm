@@ -17,7 +17,18 @@ sub new
 
     # REVIEW - should we do some parameter validation here?
 
-    return bless \@_, $class;
+    my $self = bless \@_, $class;
+
+    # Make it '' to avoid undef comparison later in id().
+    $self->[OUTER] = ''
+        unless $self->[OUTER];
+
+    # REVIEW - this is a bit wack - maybe _where_clause() should be
+    # public.
+    $self->[WHERE] = $self->[WHERE]->_where_clause()
+        if $self->[WHERE];
+
+    return $self;
 }
 
 sub id
@@ -28,18 +39,22 @@ sub id
         unless $_[0]->[TABLE2];
 
     my ( $t1, $t2 ) =
-        ( $_[0]->[OUTER] && $_[0]->[OUTER] ne 'full'
+        ( $_[0]->[OUTER] ne 'full'
           ? @{ $_[0] }[ TABLE1, TABLE2 ]
           : ( sort { $a->name() cmp $b->name() }
               @{ $_[0] }[ TABLE1, TABLE2 ] )
         );
 
+    my @outer = $_[0]->[OUTER] ? $_[0]->[OUTER] : ();
+    my @where = $_[0]->[WHERE] ? $_[0]->[WHERE] : ();
+
     return
         ( join "\0",
-          $_[0]->[OUTER] || (),
+          @outer,
           $t1->id(),
           $t2->id(),
           $_[0]->[FK]->id(),
+          @where,
         );
 }
 
@@ -69,7 +84,8 @@ sub sql_for_join
 
     if ( $_[0]->[WHERE] )
     {
-
+        $join .= ' WHERE ';
+        $join .= $_[0]->[WHERE];
     }
 
     return $join;
