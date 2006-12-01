@@ -3,12 +3,11 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 17;
+use Test::More tests => 16;
 
+use Q::Table;
+use Q::Column::Alias;
 
-use_ok( 'Q::Column::Alias' );
-
-require Q::Table;
 
 my $t = Q::Table->new( name => 'Test' );
 my $c = Q::Column->new( name => 'test_id',

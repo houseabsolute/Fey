@@ -4,10 +4,9 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 20;
+use Test::More tests => 19;
 
-
-use_ok( 'Q::Table::Alias' );
+use Q::Table::Alias;
 
 
 my $t = Q::Table->new( name => 'Test' );

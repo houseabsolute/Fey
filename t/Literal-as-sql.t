@@ -4,11 +4,10 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 14;
+use Test::More tests => 13;
 
-use_ok('Q::Literal');
-
-require Q::Query::Formatter;
+use Q::Literal;
+use Q::Query::Formatter;
 
 
 {

@@ -3,6 +3,7 @@ use warnings;
 
 use Test::More tests => 10;
 
+use Q::Table;
 use Q::Validate qw( validate :types );
 
 
@@ -44,7 +45,6 @@ use Q::Validate qw( validate :types );
 }
 
 {
-    require Q::Table;
     my $table = Q::Table->new( name => 'Test' );
 
     my @p = ( table => $table );

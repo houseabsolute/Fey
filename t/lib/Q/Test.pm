@@ -6,6 +6,10 @@ use warnings;
 use DBI;
 use File::Temp ();
 
+use Q::FK;
+use Q::Schema;
+
+
 BEGIN
 {
     # This freaking module is reporting warnings from overload.pm,
@@ -19,8 +23,6 @@ use Test::MockObject;
 
 sub mock_test_schema
 {
-    require Q::Schema;
-
     my $schema = Q::Schema->new( name => 'Test' );
 
     $schema->add_table( _user_table() );
@@ -36,9 +38,6 @@ sub mock_test_schema
 
 sub mock_test_schema_with_fks
 {
-    require Q::Schema;
-    require Q::FK;
-
     my $schema = __PACKAGE__->mock_test_schema();
 
     my $fk =
