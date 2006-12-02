@@ -144,9 +144,14 @@ sub _fq_name
           $_[1]->quote_identifier( $_[0]->name() )
         );
 }
-*sql_for_select = \&_fq_name;
-*sql_for_function_arg = \&_fq_name;
-*sql_for_compare = \&_fq_name;
+
+sub sql_for_select { goto &_fq_name }
+
+sub sql_for_compare { goto &_fq_name }
+
+sub sql_for_function_arg { goto &_fq_name }
+
+sub sql_for_group_by { goto &_fq_name }
 
 
 1;

@@ -80,7 +80,7 @@ use Q::Query::Formatter;
         Q::Literal->function
             ( 'AVG',
               $s->table('User')->column('user_id')->alias( alias_name => 'uid' ) );
-    is( $avg2->sql_for_compare($f), 'AVG(uid)',
+    is( $avg2->sql_for_compare($f), q{AVG("uid")},
         'AVG() with column alias as argument' );
 }
 

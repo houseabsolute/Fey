@@ -7,6 +7,7 @@ use Class::Trait 'base';
 
 use Class::Trait ( 'Q::Trait::Selectable' => { exclude => 'is_selectable' } );
 use Class::Trait ( 'Q::Trait::Comparable' => { exclude => 'is_comparable' } );
+use Class::Trait ( 'Q::Trait::Groupable' => { exclude => 'is_groupable' } );
 
 
 our @REQUIRES
@@ -27,3 +28,5 @@ sub _containing_table_name_or_alias
 sub is_selectable { return $_[0]->table() ? 1 : 0 }
 
 sub is_comparable { return $_[0]->table() ? 1 : 0 }
+
+sub is_groupable  { return $_[0]->table() ? 1 : 0 }

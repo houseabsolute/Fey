@@ -9,6 +9,7 @@ __PACKAGE__->mk_ro_accessors
 
 use Class::Trait ( 'Q::Trait::Selectable' );
 use Class::Trait ( 'Q::Trait::Comparable' );
+use Class::Trait ( 'Q::Trait::Groupable' );
 
 use Q::Validate
     qw( validate_pos
@@ -61,13 +62,15 @@ sub sql_for_select
 
 sub sql_for_compare
 {
-    return $_[0]->alias_name()
+    return $_[1]->quote_identifier( $_[0]->alias_name() )
         if $_[0]->alias_name();
 
     return $_[0]->_sql( $_[1] );
 }
 
-*sql_for_function_arg = \&sql_for_compare;
+sub sql_for_function_arg { goto &sql_for_compare }
+
+sub sql_for_group_by     { goto &sql_for_compare }
 
 sub _sql
 {

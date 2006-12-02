@@ -81,8 +81,12 @@ sub sql_for_select
     return $sql;
 }
 
-sub sql_for_function_arg { $_[0]->alias_name() }
-*sql_for_compare = \&sql_for_function_arg;
+sub sql_for_function_arg { $_[1]->quote_identifier( $_[0]->alias_name() ) }
+
+sub sql_for_compare { goto &sql_for_function_arg }
+
+sub sql_for_group_by { goto &sql_for_function_arg }
+
 
 sub isa
 {

@@ -9,6 +9,7 @@ __PACKAGE__->mk_ro_accessors
 
 use Class::Trait ( 'Q::Trait::Selectable' );
 use Class::Trait ( 'Q::Trait::Comparable' );
+use Class::Trait ( 'Q::Trait::Groupable' );
 
 use Q::Validate
     qw( validate_pos
@@ -29,8 +30,12 @@ use Q::Validate
 
 sub sql_for_select  { $_[0]->term() }
 
-*sql_for_compare = \&sql_for_select;
-*sql_for_function_arg = \&sql_for_select;
+sub sql_for_compare { goto &sql_for_select }
+
+sub sql_for_function_arg { goto &sql_for_select }
+
+sub sql_for_group_by     { goto &sql_for_compare }
+
 
 
 1;

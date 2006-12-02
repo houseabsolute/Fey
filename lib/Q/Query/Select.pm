@@ -187,6 +187,25 @@ sub _check_outer_join_arguments
         unless $_[0]->isa('Q::Table') && $_[2]->isa('Q::Table');
 }
 
+{
+    my $spec = { type      => SCALAR|OBJECT,
+                 callbacks =>
+                 { 'is groupable' =>
+                   sub { $_[0]->can('is_groupable') && $_[0]->is_groupable() },
+                 },
+               };
+
+    sub group_by
+    {
+        my $self = shift;
+
+        my $count = @_ ? @_ : 1;
+        my (@by) = validate_pos( @_, ($spec) x $count );
+
+        push @{ $self->{group_by} }, @by;
+    }
+}
+
 sub sql
 {
     my $self = shift;
@@ -234,8 +253,23 @@ sub _from_clause
            )
 }
 
-# Fakes being comparable so it will be transformed into a subselect
-# fragment by query bits.
+sub _group_by_clause
+{
+    my $self = shift;
+
+    return unless $self->{group_by};
+
+    return ( 'GROUP BY '
+             .
+             ( join ', ',
+               map { $_->sql_for_group_by( $self->formatter() ) }
+               @{ $self->{group_by} }
+             )
+           );
+}
+
+# REVIEW - Fakes being comparable so it will be transformed into a
+# subselect fragment by query bits.
 sub is_comparable { 1 }
 
 
