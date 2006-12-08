@@ -26,14 +26,16 @@ use Scalar::Util qw( blessed );
         my $class = shift;
         my %p     = validate( @_, $spec );
 
-        my $loader = Q::Loader->new( dbh => $p{dbh} );
+        my $loader = Q::Loader->new( dbh => $p{dbh}, );
 
         return $loader->make_schema();
     }
 }
 
 {
-    my $spec = { name => SCALAR_TYPE };
+    my $spec = { name        => SCALAR_TYPE,
+                 query_class => SCALAR_TYPE( default => 'Q::Query' ),
+               };
     sub new
     {
         my $class = shift;
@@ -44,8 +46,20 @@ use Scalar::Util qw( blessed );
                     tables => {},
                   }, $class;
 
+        $self->_load_query_class();
+
         return $self;
     }
+}
+
+sub _load_query_class
+{
+    my $self = shift;
+
+    return $self->{query_class}->can('new');
+
+    eval "use $self->{query_class}";
+    die $@ if $@;
 }
 
 {
@@ -206,7 +220,7 @@ sub tables
     }
 }
 
-sub query { Q::Query->new( dbh => $_[0]->dbh() ) }
+sub query { $_[0]->{query_class}->new( dbh => $_[0]->dbh() ) }
 
 
 1;
