@@ -133,21 +133,6 @@ sub _where_clause
         map { $_->sql_for_where( $_[0]->formatter() ) } @{ $_[0]->{where} };
 }
 
-sub _group_by_clause
-{
-    return ();
-}
-
-sub _order_by_clause
-{
-    return ();
-}
-
-sub _limit_clause
-{
-    return ();
-}
-
 
 1;
 

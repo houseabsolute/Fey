@@ -87,6 +87,8 @@ sub sql_for_compare { goto &sql_for_function_arg }
 
 sub sql_for_group_by { goto &sql_for_function_arg }
 
+sub sql_for_order_by { goto &sql_for_function_arg }
+
 
 sub isa
 {

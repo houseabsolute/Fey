@@ -25,8 +25,9 @@ sub new
 
 sub sql_for_select  { 'NULL' }
 
-*sql_for_compare = \&sql_for_select;
-*sql_for_function_arg = \&sql_for_select;
+sub sql_for_compare { goto &sql_for_select }
+
+sub sql_for_function_arg { goto &sql_for_select }
 
 
 1;

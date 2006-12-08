@@ -9,7 +9,8 @@ __PACKAGE__->mk_ro_accessors
 
 use Class::Trait ( 'Q::Trait::Selectable' );
 use Class::Trait ( 'Q::Trait::Comparable' );
-use Class::Trait ( 'Q::Trait::Groupable' );
+use Class::Trait ( 'Q::Trait::Groupable' => { exclude => 'is_groupable' } );
+use Class::Trait ( 'Q::Trait::Orderable' => { exclude => 'is_orderable' } );
 
 use Q::Validate
     qw( validate_pos
@@ -70,7 +71,13 @@ sub sql_for_compare
 
 sub sql_for_function_arg { goto &sql_for_compare }
 
-sub sql_for_group_by     { goto &sql_for_compare }
+sub is_groupable { $_[0]->alias_name() ? 1 : 0 }
+
+sub sql_for_group_by { goto &sql_for_compare }
+
+sub is_orderable { $_[0]->alias_name() ? 1 : 0 }
+
+sub sql_for_order_by { goto &sql_for_compare }
 
 sub _sql
 {

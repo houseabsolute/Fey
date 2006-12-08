@@ -153,6 +153,8 @@ sub sql_for_function_arg { goto &_fq_name }
 
 sub sql_for_group_by { goto &_fq_name }
 
+sub sql_for_order_by { goto &_fq_name }
+
 
 1;
 

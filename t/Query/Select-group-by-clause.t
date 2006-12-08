@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 use Q::Literal;
 use Q::Query;
@@ -57,7 +57,17 @@ my $s = Q::Test->mock_test_schema_with_fks();
     $q->group_by($now);
 
     like( $q->_group_by_clause(), qr/GROUP BY "FUNCTION\d+"/,
-        'group_by() function' );
+          'group_by() function' );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+
+    my $now = Q::Literal->function( 'NOW' );
+
+    eval { $q->group_by($now) };
+    like( $@, qr/is groupable/,
+          'cannot group by function with no alias' );
 }
 
 {
