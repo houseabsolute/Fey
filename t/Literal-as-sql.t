@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 13;
+use Test::More tests => 28;
 
 use Q::Literal;
 use Q::Query::Formatter;
@@ -14,21 +14,39 @@ use Q::Query::Formatter;
     my $f = Q::Query::Formatter->new( dbh => Q::Test->mock_dbh() );
 
     my $num = Q::Literal->number(1237);
-    is( $num->sql_for_compare($f), '1237', 'number formatted is 1237' );
+    is( $num->sql_for_select($f), '1237', 'number sql_for_select is 1237' );
+    is( $num->sql_for_compare($f), '1237', 'number sql_for_compare is 1237' );
+    is( $num->sql_for_function_arg($f), '1237',
+        'number sql_for_function_arg is 1237' );
 
     my $term = Q::Literal->term('1237.0');
-    is( $term->sql_for_compare($f), '1237.0', 'term formatted is 1237.0' );
+    is( $term->sql_for_select($f), '1237.0', 'term sql_for_select is 1237.0' );
+    is( $term->sql_for_compare($f), '1237.0',
+        'term sql_for_compare is 1237.0' );
+    is( $term->sql_for_function_arg($f), '1237.0',
+        'term sql_for_function_arg is 1237.0' );
 
     $term = Q::Literal->term( q{"Foo"::text} );
     is( $term->sql_for_compare($f),
-        q{"Foo"::text}, 'term formatted is "Foo"::text' );
+        q{"Foo"::text}, 'term sql_for_select is "Foo"::text' );
+    is( $term->sql_for_compare($f),
+        q{"Foo"::text}, 'term sql_for_compare is "Foo"::text' );
+    is( $term->sql_for_function_arg($f),
+        q{"Foo"::text}, 'term sql_for_function_arg is "Foo"::text' );
 
     my $string = Q::Literal->string('Foo');
-    is( $string->sql_for_compare($f), q{'Foo'}, "string formatted is 'Foo'" );
+    is( $string->sql_for_select($f), q{'Foo'}, "string sql_for_select is 'Foo'" );
+    is( $string->sql_for_compare($f), q{'Foo'}, "string sql_for_compare is 'Foo'" );
+    is( $string->sql_for_function_arg($f), q{'Foo'}, "string sql_for_function_arg is 'Foo'" );
 
     $string = Q::Literal->string("Weren't");
     is( $string->sql_for_compare($f),
         q{'Weren''t'}, "string formatted is 'Weren''t'" );
+
+    my $null = Q::Literal->null();
+    is( $null->sql_for_select($f), 'NULL', 'null sql_for_select' );
+    is( $null->sql_for_compare($f), 'NULL', 'null sql_for_compare' );
+    is( $null->sql_for_function_arg($f), 'NULL', 'null sql_for_function_arg' );
 }
 
 {
@@ -37,8 +55,18 @@ use Q::Query::Formatter;
     my $f = Q::Query::Formatter->new( dbh => $s->dbh() );
 
     my $now = Q::Literal->function( 'NOW' );
-    is( $now->sql_for_compare($f), q{NOW()},
-        'NOW function formatted' );
+    is( $now->sql_for_select($f), q{NOW() AS FUNCTION0},
+        'NOW function sql_for_select' );
+    is( $now->sql_for_compare($f), q{"FUNCTION0"},
+        'NOW function sql_for_compare - with alias' );
+    is( $now->sql_for_function_arg($f), q{"FUNCTION0"},
+        'NOW function sql_for_function_arg - with alias' );
+
+    my $now2 = Q::Literal->function( 'NOW' );
+    is( $now2->sql_for_compare($f), q{NOW()},
+        'NOW function sql_for_compare - no alias' );
+    is( $now2->sql_for_function_arg($f), q{NOW()},
+        'NOW function sql_for_function_arg - no alias' );
 
     my $avg = Q::Literal->function( 'AVG',
                                      $s->table('User')->column('user_id') );

@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 18;
+use Test::More tests => 19;
 
 use Q::Query;
 
@@ -26,6 +26,17 @@ my $s = Q::Test->mock_test_schema_with_fks();
 
     is( $q->_where_clause(), q{"User"."user_id" = 1},
         'simple comparison - col = literal' );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+
+    $q->where
+        ( $s->table('User')->column('user_id')->alias( alias_name => 'alias' ),
+          '=', 1 );
+
+    is( $q->_where_clause(), q{"alias" = 1},
+        'simple comparison - col alias = literal' );
 }
 
 {

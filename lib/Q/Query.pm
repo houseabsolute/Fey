@@ -46,9 +46,20 @@ sub select
 {
     my $self = shift;
 
-    $self->_rebless('Q::Query::Select');
+    my $class = (ref $self) . '::Select';
+    $self->_rebless($class);
 
     return $self->select(@_);
+}
+
+sub insert
+{
+    my $self = shift;
+
+    my $class = (ref $self) . '::Insert';
+    $self->_rebless($class);
+
+    return $self->insert(@_);
 }
 
 sub _rebless
@@ -61,6 +72,8 @@ sub _rebless
     %$self = %$new;
 
     bless $self, ref $new;
+
+    return $self;
 }
 
 sub where
