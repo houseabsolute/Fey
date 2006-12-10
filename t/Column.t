@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 20;
+use Test::More tests => 24;
 
 use Q::Column;
 
@@ -27,6 +27,7 @@ use Q::Column;
     ok( ! defined $c->precision(), 'column has no precision' );
     ok( ! $c->is_auto_increment(), 'column is not auto increment' );
     ok( ! $c->is_nullable(), 'column defaults to not nullable' );
+    ok( ! defined $c->default(), 'column defaults to not having a default' );
     ok( ! $c->is_alias(), 'column is not an alias' );
 
     eval { $c->id() };
@@ -49,6 +50,36 @@ use Q::Column;
                           );
 
     ok( $c->is_nullable(), 'column is nullable' );
+}
+
+{
+    my $c = Q::Column->new( name        => 'Test',
+                            type        => 'text',
+                            default     => 'hello',
+                          );
+
+    ok( $c->default()->isa('Q::Literal::String'),
+        'column has default which is a string literal' );
+}
+
+{
+    my $c = Q::Column->new( name        => 'Test',
+                            type        => 'text',
+                            default     => undef,
+                          );
+
+    ok( $c->default()->isa('Q::Literal::Null'),
+        'column has default which is a null literal' );
+}
+
+{
+    my $c = Q::Column->new( name        => 'Test',
+                            type        => 'text',
+                            default     => Q::Literal->term('a term'),
+                          );
+
+    ok( $c->default()->isa('Q::Literal::Term'),
+        'column has default which is a term literal' );
 }
 
 {

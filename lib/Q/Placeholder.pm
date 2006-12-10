@@ -14,6 +14,8 @@ sub new
 
 sub sql_for_compare { ${ $_[0] } }
 
+sub sql_for_insert { goto &sql_for_compare }
+
 
 1;
 

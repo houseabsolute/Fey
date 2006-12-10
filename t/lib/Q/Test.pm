@@ -70,7 +70,13 @@ sub _user_table
                         type => 'text',
                       );
 
-    $t->add_column($_) for $user_id, $username, $email;
+    my $size =
+        Q::Column->new( name        => 'size',
+                        type        => 'text',
+                        is_nullable => 1,
+                      );
+
+    $t->add_column($_) for $user_id, $username, $email, $size;
     $t->set_primary_key($user_id);
 
     return $t;

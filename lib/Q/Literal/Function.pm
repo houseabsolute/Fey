@@ -79,6 +79,8 @@ sub is_orderable { $_[0]->alias_name() ? 1 : 0 }
 
 sub sql_for_order_by { goto &sql_for_compare }
 
+sub sql_for_insert { goto &sql_for_compare }
+
 sub _sql
 {
     my $sql = $_[0]->function();

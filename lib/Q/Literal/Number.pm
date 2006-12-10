@@ -33,6 +33,8 @@ sub sql_for_compare { goto &sql_for_select }
 
 sub sql_for_function_arg { goto &sql_for_select }
 
+sub sql_for_insert { goto &sql_for_compare }
+
 
 1;
 

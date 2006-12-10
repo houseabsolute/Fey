@@ -6,22 +6,24 @@ use warnings;
 use base 'Q::Accessor';
 __PACKAGE__->mk_ro_accessors
     ( qw( name type generic_type length precision
-          is_auto_increment is_nullable table ) );
+          is_auto_increment is_nullable default
+          table ) );
 
 use Class::Trait ( 'Q::Trait::ColumnLike' );
 
 
-use Scalar::Util qw( weaken );
+use Scalar::Util qw( blessed weaken );
 
 use Q::Exceptions qw( object_state_error );
 use Q::Validate
     qw( validate validate_pos
-        UNDEF OBJECT
+        SCALAR UNDEF OBJECT
         SCALAR_TYPE BOOLEAN_TYPE
         POS_INTEGER_TYPE POS_OR_ZERO_INTEGER_TYPE
         TABLE_TYPE );
 
 use Q::Column::Alias;
+use Q::Literal;
 
 
 {
@@ -39,6 +41,15 @@ use Q::Column::Alias;
                                                          depends => [ 'length' ] ),
           is_auto_increment => BOOLEAN_TYPE( default => 0 ),
           is_nullable       => BOOLEAN_TYPE( default => 0 ),
+          default           =>
+          { type      => SCALAR|UNDEF|OBJECT,
+            optional  => 1,
+            callbacks =>
+            { 'is a scalar, undef, or literal' =>
+              sub {    ! blessed $_[0]
+                    || $_[0]->isa('Q::Literal') },
+            },
+          },
           table             => TABLE_TYPE( optional => 1 ),
         };
     sub new
@@ -48,6 +59,9 @@ use Q::Column::Alias;
 
         $p{generic_type} = $class->_guess_generic_type( $p{type} )
             unless defined $p{generic_type};
+
+        $p{default} = Q::Literal->new_from_scalar( $p{default} )
+            if exists $p{default} && ! blessed $p{default};
 
         my $self = bless \%p, $class;
 
@@ -154,6 +168,8 @@ sub sql_for_function_arg { goto &_fq_name }
 sub sql_for_group_by { goto &_fq_name }
 
 sub sql_for_order_by { goto &_fq_name }
+
+sub sql_for_insert { $_[1]->quote_identifier( $_[0]->name() ) }
 
 
 1;

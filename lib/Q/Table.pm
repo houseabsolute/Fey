@@ -172,6 +172,8 @@ sub sql_for_join
     return $_[1]->quote_identifier( $_[0]->name() );
 }
 
+sub sql_for_insert { goto &sql_for_join }
+
 sub id { $_[0]->name() }
 
 
