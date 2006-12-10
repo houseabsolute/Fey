@@ -4,11 +4,19 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 14;
+use Test::More tests => 16;
 
 use Q::Query;
 
 my $s = Q::Test->mock_test_schema();
+
+my $size =
+    Q::Column->new( name        => 'size',
+                    type        => 'text',
+                    is_nullable => 1,
+                  );
+$s->table('User')->add_column($size);
+
 
 {
     my $q = Q::Query->new( dbh => $s->dbh() )->insert();
@@ -82,6 +90,16 @@ my $s = Q::Test->mock_test_schema();
 
     $q->into( $s->table('User')->column('size') );
 
+    $q->values( size => 'big' );
+    is( $q->_values_clause(), q{VALUES ('big')},
+        '_values_clause() for string as value' );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+
+    $q->into( $s->table('User')->column('size') );
+
     $q->values( size => undef );
     is( $q->_values_clause(), q{VALUES (NULL)},
         '_values_clause() for null as value' );
@@ -138,4 +156,14 @@ my $s = Q::Test->mock_test_schema();
     $q->values( size => 2 );
     is( $q->_values_clause(), q{VALUES (1),(2)},
         '_values_clause() for extended insert (multiple sets of values)' );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+
+    $q->into( $s->table('User')->column('size') );
+
+    $q->values( size => 1 );
+    is( $q->sql(), q{INSERT INTO "User" ("size") VALUES (1)},
+        'sql() for full insert clause' );
 }
