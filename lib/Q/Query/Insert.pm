@@ -5,7 +5,6 @@ use warnings;
 
 use base 'Q::Query';
 
-use Q::Exceptions qw( object_state_error param_error );
 use Q::Validate
     qw( validate
         validate_pos
