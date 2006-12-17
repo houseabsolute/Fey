@@ -78,6 +78,8 @@ sub insert { return $_[0] }
         }
 
         push @{ $self->{values} }, \%vals;
+
+        return $self;
     }
 }
 
