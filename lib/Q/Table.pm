@@ -167,12 +167,14 @@ sub alias
 
 sub is_alias { 0 }
 
-sub sql_for_join
+sub sql
 {
     return $_[1]->quote_identifier( $_[0]->name() );
 }
 
-sub sql_for_insert { goto &sql_for_join }
+sub sql_with_alias { goto &sql }
+
+sub sql_or_alias { goto &sql }
 
 sub id { $_[0]->name() }
 

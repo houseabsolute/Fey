@@ -12,7 +12,7 @@ sub new
     return bless \$Paren, $class;
 }
 
-sub sql_for_where
+sub sql
 {
     return $Paren;
 }

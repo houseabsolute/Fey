@@ -48,50 +48,30 @@ use Scalar::Util qw( blessed );
 
 sub args { @{ $_[0]->{args} } }
 
-sub sql_for_select
-{
-    $_[0]->_make_alias()
-        unless $_[0]->alias_name();
-
-    my $sql = $_[0]->_sql( $_[1] );
-
-    $sql .= ' AS ';
-    $sql .= $_[0]->alias_name();
-
-    return $sql;
-}
-
-sub sql_for_compare
-{
-    return $_[1]->quote_identifier( $_[0]->alias_name() )
-        if $_[0]->alias_name();
-
-    return $_[0]->_sql( $_[1] );
-}
-
-sub sql_for_function_arg { goto &sql_for_compare }
-
-sub is_groupable { $_[0]->alias_name() ? 1 : 0 }
-
-sub sql_for_group_by { goto &sql_for_compare }
-
-sub is_orderable { $_[0]->alias_name() ? 1 : 0 }
-
-sub sql_for_order_by { goto &sql_for_compare }
-
-sub sql_for_insert { goto &sql_for_compare }
-
-sub _sql
+sub sql
 {
     my $sql = $_[0]->function();
     $sql .= '(';
 
     $sql .=
         ( join ', ',
-          map { $_->sql_for_function_arg( $_[1] ) }
+          map { $_->sql( $_[1] ) }
           $_[0]->args()
         );
     $sql .= ')';
+}
+
+sub sql_with_alias
+{
+    $_[0]->_make_alias()
+        unless $_[0]->alias_name();
+
+    my $sql = $_[0]->sql( $_[1] );
+
+    $sql .= ' AS ';
+    $sql .= $_[0]->alias_name();
+
+    return $sql;
 }
 
 {
@@ -101,6 +81,18 @@ sub _sql
         $_[0]->{alias_name} = 'FUNCTION' . $Number++;
     }
 }
+
+sub sql_or_alias
+{
+    return $_[1]->quote_identifier( $_[0]->alias_name() )
+        if $_[0]->alias_name();
+
+    return $_[0]->sql( $_[1] );
+}
+
+sub is_groupable { $_[0]->alias_name() ? 1 : 0 }
+
+sub is_orderable { $_[0]->alias_name() ? 1 : 0 }
 
 
 1;

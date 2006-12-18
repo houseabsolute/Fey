@@ -5,10 +5,9 @@ use warnings;
 
 use Class::Trait ( 'Q::Trait::Joinable' );
 
-use constant SELECT  => 0;
+use constant SELECT     => 0;
+use constant ALIAS_NAME => 1;
 
-
-my $Counter = 0;
 sub new
 {
     my $class  = shift;
@@ -17,27 +16,33 @@ sub new
     return bless [ $select ], $class;
 }
 
-sub id { $_[0][SELECT]->sql() }
+sub id { goto &sql }
 
-sub sql_for_join
+sub sql_with_alias
 {
     return
-        (   $_[0]->_sql()
+        (   $_[0]->sql()
           . ' AS '
           . $_[0]->_make_alias()
         );
 }
 
-sub _sql { '( ' . $_[0][SELECT]->sql() . ' )' }
-
-sub _make_alias
 {
-    return 'SUBSELECT' . $Counter++;
+    my $Number = 0;
+    sub _make_alias
+    {
+        $_[0]->[ALIAS_NAME] = 'SUBSELECT' . $Number++;
+    }
 }
 
-sub sql_for_compare
+sub sql { '( ' . $_[0][SELECT]->sql() . ' )' }
+
+sub sql_or_alias
 {
-    return $_[0]->_sql();
+    return $_[1]->quote_identifier( $_[0]->[ALIAS_NAME] )
+        if $_[0]->[ALIAS_NAME];
+
+    return $_[0]->sql( $_[1] );
 }
 
 

@@ -6,7 +6,9 @@ use warnings;
 use Class::Trait 'base';
 
 
-our @REQUIRES = qw( sql_for_join );
+our @REQUIRES = qw( is_joinable );
+
+sub is_joinable { 1 }
 
 
 1;

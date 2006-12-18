@@ -33,6 +33,26 @@ BEGIN {
               { type => OBJECT,
                 isa  => 'DBI',
               },
+
+          NULLABLE_COL_VALUE_TYPE =>
+              { type      => SCALAR|UNDEF|OBJECT,
+                callbacks =>
+                { 'literal, placeholder, scalar, or undef' =>
+                  sub {    ! blessed $_[0]
+                        || $_[0]->isa('Q::Literal')
+                        || $_[0]->isa('Q::Placeholder') } 
+                },
+              },
+
+          NON_NULLABLE_COL_VALUE_TYPE =>
+              { type      => SCALAR|OBJECT,
+                callbacks =>
+                { 'literal, placeholder, or scalar' =>
+                  sub {    ! blessed $_[0]
+                        || $_[0]->isa('Q::Literal')
+                        || $_[0]->isa('Q::Placeholder') }
+                },
+              },
         );
 
 

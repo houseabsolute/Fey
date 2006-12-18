@@ -67,7 +67,9 @@ sub id
 
 sub is_alias { 1 }
 
-sub sql_for_select
+sub sql { $_[1]->quote_identifier( $_[0]->alias_name() ) }
+
+sub sql_with_alias
 {
     my $sql =
         $_[1]->join_table_and_column
@@ -81,14 +83,7 @@ sub sql_for_select
     return $sql;
 }
 
-sub sql_for_function_arg { $_[1]->quote_identifier( $_[0]->alias_name() ) }
-
-sub sql_for_compare { goto &sql_for_function_arg }
-
-sub sql_for_group_by { goto &sql_for_function_arg }
-
-sub sql_for_order_by { goto &sql_for_function_arg }
-
+sub sql_or_alias { goto &sql }
 
 sub isa
 {

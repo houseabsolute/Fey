@@ -186,7 +186,7 @@ sub _where_clause
     return unless $_[0]->{where};
 
     return join ' ',
-        map { $_->sql_for_where( $_[0]->formatter() ) } @{ $_[0]->{where} };
+        map { $_->sql( $_[0]->formatter() ) } @{ $_[0]->{where} };
 }
 
 sub _order_by_clause
@@ -206,7 +206,7 @@ sub _order_by_clause
         else
         {
             $sql .= ', ' if $elt != $self->{order_by}[0];
-            $sql .= $elt->sql_for_order_by( $self->formatter() );
+            $sql .= $elt->sql_or_alias( $self->formatter() );
         }
     }
 

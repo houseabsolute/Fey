@@ -76,9 +76,9 @@ our $in_comp_re = qr/^(?:not\s+)?in$/i;
     }
 }
 
-sub sql_for_where
+sub sql
 {
-    my $sql = $_[0][LHS]->sql_for_compare( $_[1] );
+    my $sql = $_[0][LHS]->sql_or_alias( $_[1] );
 
     if (    $_[0][COMP] =~ $eq_comp_re
          && $_[0][RHS][0]->isa('Q::Literal::Null') )
@@ -97,9 +97,9 @@ sub sql_for_where
         return
             (   $sql
               . ' BETWEEN '
-              . $_[0][RHS][0]->sql_for_compare( $_[1] )
+              . $_[0][RHS][0]->sql_or_alias( $_[1] )
               . ' AND '
-              . $_[0][RHS][1]->sql_for_compare( $_[1] )
+              . $_[0][RHS][1]->sql_or_alias( $_[1] )
             );
     }
 
@@ -111,7 +111,7 @@ sub sql_for_where
               . ( uc $_[0][COMP] )
               . ' ('
               . ( join ', ',
-                  map { $_->sql_for_compare( $_[1] ) }
+                  map { $_->sql_or_alias( $_[1] ) }
                   @{ $_[0][RHS] }
                 )
               . ')'
@@ -123,7 +123,7 @@ sub sql_for_where
           . ' '
           . $_[0][COMP]
           . ' '
-          . $_[0][RHS][0]->sql_for_compare( $_[1] )
+          . $_[0][RHS][0]->sql_or_alias( $_[1] )
         );
 }
 

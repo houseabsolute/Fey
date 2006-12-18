@@ -12,9 +12,9 @@ sub new
     return bless \$str, $_[0];
 }
 
-sub sql_for_compare { ${ $_[0] } }
+sub sql { '?' }
 
-sub sql_for_insert { goto &sql_for_compare }
+sub sql_or_alias { goto &sql }
 
 
 1;

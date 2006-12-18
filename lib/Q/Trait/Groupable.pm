@@ -6,7 +6,7 @@ use warnings;
 use Class::Trait 'base';
 
 
-our @REQUIRES = qw( sql_for_group_by is_groupable );
+our @REQUIRES = qw( is_groupable );
 
 sub is_groupable { 1 }
 

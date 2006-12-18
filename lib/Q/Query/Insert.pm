@@ -11,6 +11,8 @@ use Q::Validate
         SCALAR
         UNDEF
         OBJECT
+        NULLABLE_COL_VALUE_TYPE
+        NON_NULLABLE_COL_VALUE_TYPE
       );
 
 use Scalar::Util qw( blessed );
@@ -29,22 +31,6 @@ sub insert { return $_[0] }
                  },
                };
 
-    my %nullable_col_spec = ( type      => SCALAR|UNDEF|OBJECT,
-                              callbacks =>
-                              { 'literal, placeholder, scalar, or undef' =>
-                                sub {    ! blessed $_[0]
-                                      || $_[0]->isa('Q::Literal')
-                                      || $_[0]->isa('Q::Placeholder') }
-                              },
-                            );
-    my %non_nullable_col_spec = ( type      => SCALAR|OBJECT,
-                                  callbacks =>
-                                  { 'literal, placeholder, or scalar' =>
-                                    sub {    ! blessed $_[0]
-                                          || $_[0]->isa('Q::Literal')
-                                          || $_[0]->isa('Q::Placeholder') }
-                                  },
-                                );
     sub into
     {
         my $self = shift;
@@ -57,7 +43,7 @@ sub insert { return $_[0] }
         for my $col ( @{ $self->{columns} } )
         {
             $self->{values_spec}{ $col->name() } =
-                $col->is_nullable() ? \%nullable_col_spec : \%non_nullable_col_spec;
+                $col->is_nullable() ? NULLABLE_COL_VALUE_TYPE : NON_NULLABLE_COL_VALUE_TYPE;
         }
 
         return $self;
@@ -98,7 +84,7 @@ sub _insert_clause
 {
     return
         ( 'INSERT INTO '
-          . $_[0]->{columns}[0]->table()->sql_for_insert( $_[0]->formatter() )
+          . $_[0]->formatter()->quote_identifier( $_[0]->{columns}[0]->table()->name() )
         );
 }
 
@@ -107,7 +93,7 @@ sub _into_clause
     return
         ( '('
           . ( join ', ',
-              map { $_->sql_for_insert( $_[0]->formatter() ) }
+              map { $_[0]->formatter()->quote_identifier( $_->name() ) }
               @{ $_[0]->{columns} }
             )
           . ')'
@@ -125,7 +111,7 @@ sub _values_clause
 
         $v .=
             ( join ', ',
-              map { $vals->{ $_->name() }->sql_for_insert( $self->formatter() ) }
+              map { $vals->{ $_->name() }->sql( $self->formatter() ) }
               @{ $self->{columns} }
            );
 

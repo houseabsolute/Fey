@@ -58,18 +58,18 @@ sub id
         );
 }
 
-sub sql_for_join
+sub sql_with_alias
 {
-    return $_[0][TABLE1]->sql_for_join( $_[1] )
+    return $_[0][TABLE1]->sql_with_alias( $_[1] )
         unless $_[0]->[TABLE2];
 
-    my $join = $_[0][TABLE1]->sql_for_join( $_[1] );
+    my $join = $_[0][TABLE1]->sql_with_alias( $_[1] );
     if ( $_[0]->[OUTER] )
     {
         $join .= ' ' . uc $_[0]->[OUTER] . ' OUTER';
     }
     $join .= ' JOIN ';
-    $join .= $_[0][TABLE2]->sql_for_join( $_[1] );
+    $join .= $_[0][TABLE2]->sql_with_alias( $_[1] );
     $join .= ' ON ';
 
     my @s = $_[0]->[FK]->source_columns();
@@ -77,9 +77,9 @@ sub sql_for_join
 
     for my $p ( pairwise { [ $a, $b ] } @s, @t )
     {
-        $join .= $p->[0]->sql_for_compare( $_[1] );
+        $join .= $p->[0]->sql_or_alias( $_[1] );
         $join .= ' = ';
-        $join .= $p->[1]->sql_for_compare( $_[1] );
+        $join .= $p->[1]->sql_or_alias( $_[1] );
     }
 
     if ( $_[0]->[WHERE] )

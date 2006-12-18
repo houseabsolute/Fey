@@ -151,7 +151,7 @@ sub alias
     return Q::Column::Alias->new( column => $self, @_ );
 }
 
-sub _fq_name
+sub sql
 {
     $_[1]->join_table_and_column
         ( $_[1]->quote_identifier( $_[0]->_containing_table_name_or_alias() ),
@@ -159,17 +159,9 @@ sub _fq_name
         );
 }
 
-sub sql_for_select { goto &_fq_name }
+sub sql_with_alias { goto &sql }
 
-sub sql_for_compare { goto &_fq_name }
-
-sub sql_for_function_arg { goto &_fq_name }
-
-sub sql_for_group_by { goto &_fq_name }
-
-sub sql_for_order_by { goto &_fq_name }
-
-sub sql_for_insert { $_[1]->quote_identifier( $_[0]->name() ) }
+sub sql_or_alias { goto &sql }
 
 
 1;

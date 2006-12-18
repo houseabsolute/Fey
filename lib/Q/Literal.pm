@@ -58,7 +58,7 @@ sub term
     my $formatter = Q::Query::Formatter->new( dbh => Q::FakeDBI->new() );
     sub id
     {
-        return $_[0]->sql_for_select( $formatter );
+        return $_[0]->sql( $formatter );
     }
 }
 

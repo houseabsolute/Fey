@@ -6,8 +6,7 @@ use warnings;
 use Class::Trait 'base';
 
 
-our @REQUIRES = qw( sql_for_compare is_comparable );
-
+our @REQUIRES = qw( is_comparable );
 
 sub is_comparable { 1 }
 
