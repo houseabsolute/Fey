@@ -3,8 +3,6 @@ package Q::Query::Fragment::SubSelect;
 use strict;
 use warnings;
 
-use Class::Trait ( 'Q::Trait::Joinable' );
-
 use constant SELECT     => 0;
 use constant ALIAS_NAME => 1;
 

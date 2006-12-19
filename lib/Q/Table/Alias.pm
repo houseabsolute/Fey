@@ -7,8 +7,6 @@ use base 'Q::Accessor';
 __PACKAGE__->mk_ro_accessors
     ( qw( alias_name table ) );
 
-use Class::Trait ( 'Q::Trait::Joinable' );
-
 use Q::Exceptions qw(param_error);
 use Q::Validate
     qw( validate validate_pos
@@ -80,11 +78,6 @@ sub columns
 
 sub is_alias { 1 }
 
-sub sql
-{
-    return $_[1]->quote_identifier( $_[0]->alias_name() );
-}
-
 sub sql_with_alias
 {
     return
@@ -93,8 +86,6 @@ sub sql_with_alias
           . $_[1]->quote_identifier( $_[0]->alias_name() )
         );
 }
-
-sub sql_or_alias { goto &sql }
 
 sub id { $_[0]->alias_name() }
 

@@ -13,7 +13,7 @@ use Q::Query;
 my $s = Q::Test->mock_test_schema_with_fks();
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+    my $q = Q::Query->new( dbh => $s->dbh() );
 
     eval { $q->limit() };
     like( $@, qr/0 parameters/,
@@ -21,7 +21,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+    my $q = Q::Query->new( dbh => $s->dbh() );
 
     $q->limit(10);
 
@@ -30,7 +30,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+    my $q = Q::Query->new( dbh => $s->dbh() );
 
     $q->limit( 10, 20 );
 
