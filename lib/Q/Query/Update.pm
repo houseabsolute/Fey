@@ -8,11 +8,12 @@ use base 'Q::Query';
 use Q::Exceptions qw( param_error );
 use Q::Validate
     qw( validate_pos
+        SCALAR
+        UNDEF
         OBJECT
-        NULLABLE_COL_VALUE_TYPE
-        NON_NULLABLE_COL_VALUE_TYPE
       );
 
+use Q::Literal;
 use Scalar::Util qw( blessed );
 
 
@@ -28,7 +29,9 @@ use Scalar::Util qw( blessed );
     sub update
     {
         my $self     = shift;
-        my (@tables) = validate_pos( @_, ($spec) x @_ );
+
+        my $count = @_ ? @_ : 1;
+        my (@tables) = validate_pos( @_, ($spec) x $count );
 
         $self->{tables} = \@tables;
 
@@ -42,18 +45,41 @@ use Scalar::Util qw( blessed );
                         { 'is a (non-alias) column' =>
                           sub {    $_[0]->isa('Q::Column')
                                 && $_[0]->table()
-                                && ! $_[0]->isa_alias() },
+                                && ! $_[0]->is_alias() },
                         },
                       };
+
+    my $nullable_col_value_type =
+        { type      => SCALAR|UNDEF|OBJECT,
+          callbacks =>
+          { 'literal, placeholder, column, undef, or scalar' =>
+            sub {    ! blessed $_[0]
+                  || ( $_[0]->isa('Q::Column') && !$_[0]->is_alias() )
+                  || $_[0]->isa('Q::Literal')
+                  || $_[0]->isa('Q::Placeholder') },
+          },
+        };
+
+    my $non_nullable_col_value_type = 
+        { type      => SCALAR|OBJECT,
+          callbacks =>
+          { 'literal, placeholder, column, or scalar' =>
+            sub {    ! blessed $_[0]
+                  || ( $_[0]->isa('Q::Column') && !$_[0]->is_alias() )
+                  || $_[0]->isa('Q::Literal')
+                  || $_[0]->isa('Q::Placeholder') },
+          },
+        };
 
     sub set
     {
         my $self = shift;
 
-        unless ( @_ && ! @_ % 2 )
+        if ( ! @_ || @_ % 2 )
         {
+            my $count = @_;
             param_error
-                'The set method expects a list of paired column objects and values';
+                "The set method expects a list of paired column objects and values but you passed $count parameters";
         }
 
         my @spec;
@@ -62,13 +88,21 @@ use Scalar::Util qw( blessed );
             push @spec, $column_spec;
             push @spec,
                 $_[$x]->is_nullable()
-                ? NULLABLE_COL_VALUE_TYPE
-                : NON_NULLABLE_COL_VALUE_TYPE;
+                ? $nullable_col_value_type
+                : $non_nullable_col_value_type;
         }
 
-        my @pairs = validate_pos( @_, @spec );
+        validate_pos( @_, @spec );
 
-        push @{ $self->{set} }, @pairs;
+        for ( my $x = 0; $x < @_; $x += 2 )
+        {
+            push @{ $self->{set} },
+                [ $_[$x],
+                  blessed $_[ $x + 1 ]
+                  ? $_[ $x + 1 ]
+                  : Q::Literal->new_from_scalar( $_[ $x + 1 ] )
+                ];
+        }
 
         return $self;
     }
@@ -95,24 +129,21 @@ sub _update_clause
 sub _tables_subclause
 {
     return ( join ', ',
-             map { $_[0]->formatter()->quote_indentifier( $_ ) }
+             map { $_[0]->formatter()->quote_identifier( $_->name() ) }
              @{ $_[0]->{tables} }
            );
 }
 
 sub _set_clause
 {
-    my $self = shift;
-
-    my $sql = '';
-    for ( my $x = 0; $x < @{ $self->{set} }; $x += 2 )
-    {
-        $sql .= $self->{set}[$x]->sql();
-        $sql .= ' = ';
-        $sql .= $self->{set}[$x + 1]->sql();
-    }
-
-    return $sql;
+    return ( 'SET '
+             . ( join ', ',
+                 map {   $_->[0]->sql( $_[0]->formatter() )
+                       . ' = '
+                       . $_->[1]->sql( $_[0]->formatter() ) }
+                 @{ $_[0]->{set} }
+               )
+           );
 }
 
 

@@ -53,26 +53,29 @@ sub select
 {
     my $self = shift;
 
-    my $class = (ref $self) . '::Select';
-    $self->_rebless($class);
-
-    return $self->select(@_);
+    $self->_rebless_for( 'select', @_ );
 }
 
 sub insert
 {
     my $self = shift;
 
-    my $class = (ref $self) . '::Insert';
-    $self->_rebless($class);
-
-    return $self->insert(@_);
+    return $self->_rebless_for( 'insert', @_ );
 }
 
-sub _rebless
+sub update
 {
-    my $self  = shift;
-    my $class = shift;
+    my $self = shift;
+
+    $self->_rebless_for( 'update', @_ );
+}
+
+sub _rebless_for
+{
+    my $self = shift;
+    my $type = shift;
+
+    my $class = (ref $self) . '::' . ucfirst $type;
 
     my $new = $class->new( dbh => $self->dbh() );
 
@@ -80,7 +83,7 @@ sub _rebless
 
     bless $self, ref $new;
 
-    return $self;
+    return $self->$type(@_);
 }
 
 sub where
