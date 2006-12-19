@@ -29,23 +29,26 @@ sub insert { return $_[0] }
                  },
                };
 
-    my $nullable_col_value_type = { type      => SCALAR|UNDEF|OBJECT,
-                                    callbacks =>
-                                    { 'literal, placeholder, scalar, or undef' =>
-                                      sub {    ! blessed $_[0]
-                                            || $_[0]->isa('Q::Literal')
-                                            || $_[0]->isa('Q::Placeholder') }
-                                    },
-                                  };
+    my $nullable_col_value_type =
+    { type      => SCALAR|UNDEF|OBJECT,
+      callbacks =>
+      { 'literal, placeholder, scalar, or undef' =>
+        sub {    ! blessed $_[0]
+              || $_[0]->isa('Q::Literal')
+              || $_[0]->isa('Q::Placeholder') }
+      },
+    };
 
-    my $non_nullable_col_value_type = { type      => SCALAR|OBJECT,
-                                        callbacks =>
-                                        { 'literal, placeholder, or scalar' =>
-                                          sub {    ! blessed $_[0]
-                                                || $_[0]->isa('Q::Literal')
-                                                || $_[0]->isa('Q::Placeholder') }
-                                        },
-                                      };
+    my $non_nullable_col_value_type =
+        { type      => SCALAR|OBJECT,
+          callbacks =>
+          { 'literal, placeholder, or scalar' =>
+            sub {    ! blessed $_[0]
+                  || ( $_[0]->isa('Q::Literal') && ! $_[0]->isa('Q::Literal::Null') )
+                  || $_[0]->isa('Q::Placeholder') }
+          },
+        };
+
     sub into
     {
         my $self = shift;

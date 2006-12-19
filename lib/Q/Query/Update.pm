@@ -60,13 +60,13 @@ use Scalar::Util qw( blessed );
           },
         };
 
-    my $non_nullable_col_value_type = 
+    my $non_nullable_col_value_type =
         { type      => SCALAR|OBJECT,
           callbacks =>
           { 'literal, placeholder, column, or scalar' =>
             sub {    ! blessed $_[0]
-                  || ( $_[0]->isa('Q::Column') && !$_[0]->is_alias() )
-                  || $_[0]->isa('Q::Literal')
+                  || ( $_[0]->isa('Q::Column') && ! $_[0]->is_alias() )
+                  || ( $_[0]->isa('Q::Literal') && ! $_[0]->isa('Q::Literal::Null') )
                   || $_[0]->isa('Q::Placeholder') },
           },
         };

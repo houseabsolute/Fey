@@ -4,11 +4,19 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 13;
+use Test::More tests => 15;
 
 use Q::Query;
 
+
 my $s = Q::Test->mock_test_schema();
+
+my $size =
+    Q::Column->new( name        => 'size',
+                    type        => 'text',
+                    is_nullable => 1,
+                  );
+$s->table('User')->add_column($size);
 
 {
     eval { Q::Query->new( dbh => $s->dbh() )->update() };
@@ -38,7 +46,7 @@ my $s = Q::Test->mock_test_schema();
     $q->set( $s->table('User')->column('username'), 'bubba' );
 
     is( $q->_set_clause(), q{SET "User"."username" = 'bubba'},
-        'set clause for one column' );
+        '_set_clause() for one column' );
 }
 
 {
@@ -50,7 +58,7 @@ my $s = Q::Test->mock_test_schema();
 
     is( $q->_set_clause(),
         q{SET "User"."username" = 'bubba', "User"."email" = 'bubba@bubba.com'},
-        'set clause for two columns' );
+        '_set_clause() for two columns' );
 }
 
 {
@@ -62,19 +70,19 @@ my $s = Q::Test->mock_test_schema();
 
     is( $q->_set_clause(),
         q{SET "User"."username" = "User"."email"},
-        'set clause for column = columns' );
+        '_set_clause() for column = columns' );
 }
 
 {
     my $q = Q::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('username'),
+    $q->set( $s->table('User')->column('size'),
              Q::Literal->new_from_scalar(undef),
            );
 
     is( $q->_set_clause(),
-        q{SET "User"."username" = NULL},
-        'set clause for column = NULL (literal)' );
+        q{SET "User"."size" = NULL},
+        '_set_clause() for column = NULL (literal)' );
 }
 
 {
@@ -86,7 +94,7 @@ my $s = Q::Test->mock_test_schema();
 
     is( $q->_set_clause(),
         q{SET "User"."username" = 'string'},
-        'set clause for column = string (literal)' );
+        '_set_clause() for column = string (literal)' );
 }
 
 {
@@ -98,7 +106,7 @@ my $s = Q::Test->mock_test_schema();
 
     is( $q->_set_clause(),
         q{SET "User"."username" = 42},
-        'set clause for column = number (literal)' );
+        '_set_clause() for column = number (literal)' );
 }
 
 {
@@ -110,7 +118,7 @@ my $s = Q::Test->mock_test_schema();
 
     is( $q->_set_clause(),
         q{SET "User"."username" = NOW()},
-        'set clause for column = function (literal)' );
+        '_set_clause() for column = function (literal)' );
 }
 
 {
@@ -122,7 +130,7 @@ my $s = Q::Test->mock_test_schema();
 
     is( $q->_set_clause(),
         q{SET "User"."username" = thingy},
-        'set clause for column = term (literal)' );
+        '_set_clause() for column = term (literal)' );
 }
 
 {
@@ -134,7 +142,7 @@ my $s = Q::Test->mock_test_schema();
 
     is( $q->_set_clause(),
         q{SET "User"."username" = thingy},
-        'set clause for column = term (literal)' );
+        '_set_clause() for column = term (literal)' );
 }
 
 {
@@ -150,4 +158,22 @@ my $s = Q::Test->mock_test_schema();
     is( $q->sql(),
         q{UPDATE "User" SET "User"."username" = 'hello' WHERE "User"."user_id" = 10 ORDER BY "User"."user_id" LIMIT 10},
         'update sql with where clause, order by, and limit' );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() );
+    $q->update( $s->table('User') );
+    eval { $q->set() };
+
+    like( $@, qr/list of paired/,
+          'set() called with no parameters' );
+}
+
+{
+    my $q = Q::Query->new( dbh => $s->dbh() );
+    $q->update( $s->table('User') );
+    eval { $q->set( $s->table('User')->column('username') ) };
+
+    like( $@, qr/list of paired/,
+          'set() called with one parameter' );
 }
