@@ -24,7 +24,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 
     $q->where( $s->table('User')->column('user_id'), '=', 1 );
 
-    is( $q->_where_clause(), q{"User"."user_id" = 1},
+    is( $q->_where_clause(), q{WHERE "User"."user_id" = 1},
         'simple comparison - col = literal' );
 }
 
@@ -35,7 +35,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
         ( $s->table('User')->column('user_id')->alias( alias_name => 'alias' ),
           '=', 1 );
 
-    is( $q->_where_clause(), q{"alias" = 1},
+    is( $q->_where_clause(), q{WHERE "alias" = 1},
         'simple comparison - col alias = literal' );
 }
 
@@ -45,7 +45,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
     $q->where( $s->table('User')->column('username'), 'LIKE',
                '%foo%' );
 
-    is( $q->_where_clause(), q{"User"."username" LIKE '%foo%'},
+    is( $q->_where_clause(), q{WHERE "User"."username" LIKE '%foo%'},
         'simple comparison - col LIKE literal' );
 }
 
@@ -54,7 +54,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 
     $q->where( 1, '=', $s->table('User')->column('user_id') );
 
-    is( $q->_where_clause(), q{1 = "User"."user_id"},
+    is( $q->_where_clause(), q{WHERE 1 = "User"."user_id"},
         'simple comparison - literal = col' );
 }
 
@@ -63,7 +63,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 
     $q->where( $s->table('User')->column('user_id'), '=', $s->table('User')->column('user_id') );
 
-    is( $q->_where_clause(), q{"User"."user_id" = "User"."user_id"},
+    is( $q->_where_clause(), q{WHERE "User"."user_id" = "User"."user_id"},
         'simple comparison - col = col' );
 }
 
@@ -72,7 +72,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 
     $q->where( $s->table('User')->column('user_id'), 'IN', 1, 2, 3 );
 
-    is( $q->_where_clause(), q{"User"."user_id" IN (1, 2, 3)},
+    is( $q->_where_clause(), q{WHERE "User"."user_id" IN (1, 2, 3)},
         'simple comparison - IN' );
 }
 
@@ -81,7 +81,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 
     $q->where( $s->table('User')->column('user_id'), 'NOT IN', 1, 2, 3 );
 
-    is( $q->_where_clause(), q{"User"."user_id" NOT IN (1, 2, 3)},
+    is( $q->_where_clause(), q{WHERE "User"."user_id" NOT IN (1, 2, 3)},
         'simple comparison - IN' );
 }
 
@@ -91,7 +91,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
     $q->where( $s->table('User')->column('user_id'), '=',
                $q->placeholder() );
 
-    is( $q->_where_clause(), q{"User"."user_id" = ?},
+    is( $q->_where_clause(), q{WHERE "User"."user_id" = ?},
         'simple comparison - col = placeholder' );
 }
 
@@ -104,7 +104,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 
     $q->where( $s->table('User')->column('user_id'), 'IN', $sub );
 
-    is( $q->_where_clause(), q{"User"."user_id" IN (( SELECT "User"."user_id" FROM "User" ))},
+    is( $q->_where_clause(), q{WHERE "User"."user_id" IN (( SELECT "User"."user_id" FROM "User" ))},
         'comparison with subselect' );
 }
 
@@ -113,7 +113,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 
     $q->where( $s->table('User')->column('user_id'), '=', undef );
 
-    is( $q->_where_clause(), q{"User"."user_id" IS NULL},
+    is( $q->_where_clause(), q{WHERE "User"."user_id" IS NULL},
         'undef in comparison (=)' );
 }
 
@@ -122,7 +122,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 
     $q->where( $s->table('User')->column('user_id'), '!=', undef );
 
-    is( $q->_where_clause(), q{"User"."user_id" IS NOT NULL},
+    is( $q->_where_clause(), q{WHERE "User"."user_id" IS NOT NULL},
         'undef in comparison (!=)' );
 }
 
@@ -131,7 +131,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 
     $q->where( $s->table('User')->column('user_id'), 'BETWEEN', 1, 5 );
 
-    is( $q->_where_clause(), q{"User"."user_id" BETWEEN 1 AND 5},
+    is( $q->_where_clause(), q{WHERE "User"."user_id" BETWEEN 1 AND 5},
         'simple comparison - BETWEEN' );
 }
 
@@ -141,7 +141,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
     $q->where( $s->table('User')->column('user_id'), '=', 1 );
     $q->where( $s->table('User')->column('user_id'), '=', 2 );
 
-    is( $q->_where_clause(), q{"User"."user_id" = 1 AND "User"."user_id" = 2},
+    is( $q->_where_clause(), q{WHERE "User"."user_id" = 1 AND "User"."user_id" = 2},
         'multiple clauses with implicit AN' );
 }
 
@@ -152,7 +152,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
     $q->or();
     $q->where( $s->table('User')->column('user_id'), '=', 2 );
 
-    is( $q->_where_clause(), q{"User"."user_id" = 1 OR "User"."user_id" = 2},
+    is( $q->_where_clause(), q{WHERE "User"."user_id" = 1 OR "User"."user_id" = 2},
         'multiple clauses with OR' );
 }
 
@@ -164,7 +164,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
     $q->where( $s->table('User')->column('user_id'), '=', 2 );
     $q->subgroup_end();
 
-    is( $q->_where_clause(), q{( "User"."user_id" = 2 )},
+    is( $q->_where_clause(), q{WHERE ( "User"."user_id" = 2 )},
         'subgroup in where clause' );
 }
 

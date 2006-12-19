@@ -84,8 +84,7 @@ sub sql_with_alias
 
     if ( $_[0]->[WHERE] )
     {
-        $join .= ' WHERE ';
-        $join .= $_[0]->[WHERE];
+        $join .= ' ' . $_[0]->[WHERE];
     }
 
     return $join;

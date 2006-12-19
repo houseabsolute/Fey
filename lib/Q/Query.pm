@@ -185,8 +185,12 @@ sub _where_clause
 {
     return unless $_[0]->{where};
 
-    return join ' ',
-        map { $_->sql( $_[0]->formatter() ) } @{ $_[0]->{where} };
+    return ( 'WHERE '
+             . ( join ' ',
+                 map { $_->sql( $_[0]->formatter() ) }
+                 @{ $_[0]->{where} }
+               )
+           )
 }
 
 sub _order_by_clause

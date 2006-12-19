@@ -81,6 +81,9 @@ sub sql
     return ( join ' ',
              $self->_update_clause(),
              $self->_set_clause(),
+             $self->_where_clause(),
+             $self->_order_by_clause(),
+             $self->_limit_clause(),
            );
 }
 
@@ -111,7 +114,6 @@ sub _set_clause
 
     return $sql;
 }
-
 
 
 1;
