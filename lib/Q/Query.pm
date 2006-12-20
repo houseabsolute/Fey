@@ -70,6 +70,13 @@ sub update
     $self->_rebless_for( 'update', @_ );
 }
 
+sub delete
+{
+    my $self = shift;
+
+    $self->_rebless_for( 'delete', @_ );
+}
+
 sub _rebless_for
 {
     my $self = shift;
