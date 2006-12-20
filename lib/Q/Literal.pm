@@ -10,7 +10,7 @@ use Q::Literal::Null;
 use Q::Literal::Number;
 use Q::Literal::String;
 use Q::Literal::Term;
-use Q::Query::Formatter;
+use Q::Query::Quoter;
 use Scalar::Util qw( looks_like_number );
 
 
@@ -55,14 +55,14 @@ sub term
 }
 
 {
-    my $formatter = Q::Query::Formatter->new( dbh => Q::FakeDBI->new() );
+    my $quoter = Q::Query::Quoter->new( dbh => Q::FakeDBI->new() );
     sub id
     {
-        return $_[0]->sql( $formatter );
+        return $_[0]->sql( $quoter );
     }
 }
 
-# This package allows us to use the formatter class in id(). Even
+# This package allows us to use the quoter class in id(). Even
 # though they may not be quoted properly for a given DBMS, it will
 # generate unique ids, and that's all that matters.
 

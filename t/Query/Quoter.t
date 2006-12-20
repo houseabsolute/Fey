@@ -7,4 +7,4 @@ use Q::Test;
 use Test::More tests => 1;
 
 
-use_ok('Q::Query::Formatter');
+use_ok('Q::Query::Quoter');

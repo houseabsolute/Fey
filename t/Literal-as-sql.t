@@ -7,11 +7,11 @@ use Q::Test;
 use Test::More tests => 28;
 
 use Q::Literal;
-use Q::Query::Formatter;
+use Q::Query::Quoter;
 
 
 {
-    my $f = Q::Query::Formatter->new( dbh => Q::Test->mock_dbh() );
+    my $f = Q::Query::Quoter->new( dbh => Q::Test->mock_dbh() );
 
     my $num = Q::Literal->number(1237);
     is( $num->sql_with_alias($f), '1237', 'number sql_with_alias is 1237' );
@@ -52,7 +52,7 @@ use Q::Query::Formatter;
 {
     my $s = Q::Test->mock_test_schema();
 
-    my $f = Q::Query::Formatter->new( dbh => $s->dbh() );
+    my $f = Q::Query::Quoter->new( dbh => $s->dbh() );
 
     my $now = Q::Literal->function( 'NOW' );
     is( $now->sql_with_alias($f), q{NOW() AS FUNCTION0},
@@ -113,7 +113,7 @@ use Q::Query::Formatter;
 }
 
 {
-    my $f = Q::Query::Formatter->new( dbh => Q::Test->mock_dbh() );
+    my $f = Q::Query::Quoter->new( dbh => Q::Test->mock_dbh() );
 
     my $now = Q::Literal->function( 'NOW' );
     $now->_make_alias();

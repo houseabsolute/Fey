@@ -5,7 +5,7 @@ use warnings;
 
 use base 'Q::Accessor';
 __PACKAGE__->mk_ro_accessors
-    ( qw( dbh formatter ) );
+    ( qw( dbh quoter ) );
 
 use Q::Exceptions qw( param_error virtual_method );
 use Q::Validate
@@ -27,7 +27,7 @@ use Q::Query::Update;
 
 use Q::Placeholder;
 
-use Q::Query::Formatter;
+use Q::Query::Quoter;
 
 use Q::Query::Fragment::Where::Boolean;
 use Q::Query::Fragment::Where::Comparison;
@@ -41,10 +41,10 @@ use Q::Query::Fragment::Where::SubgroupEnd;
         my $class = shift;
         my %p     = validate( @_, $spec );
 
-        my $formatter = Q::Query::Formatter->new( dbh => $p{dbh} );
+        my $quoter = Q::Query::Quoter->new( dbh => $p{dbh} );
 
         return bless { %p,
-                       formatter => $formatter,
+                       quoter => $quoter,
                      }, $class;
     }
 }
@@ -197,7 +197,7 @@ sub _where_clause
 
     return ( 'WHERE '
              . ( join ' ',
-                 map { $_->sql( $_[0]->formatter() ) }
+                 map { $_->sql( $_[0]->quoter() ) }
                  @{ $_[0]->{where} }
                )
            )
@@ -220,7 +220,7 @@ sub _order_by_clause
         else
         {
             $sql .= ', ' if $elt != $self->{order_by}[0];
-            $sql .= $elt->sql_or_alias( $self->formatter() );
+            $sql .= $elt->sql_or_alias( $self->quoter() );
         }
     }
 
