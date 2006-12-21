@@ -23,7 +23,7 @@ use Q::Loader::DBI;
     }
 }
 
-sub _determine_class
+sub _determine_subclass
 {
     my $class = shift;
     my $driver = shift;
@@ -40,7 +40,7 @@ sub _determine_class
         warn <<"EOF";
 
 There is no driver-specific $class subclass for your driver ($driver)
-- falling back to the base DBI implementation. This may or may not
+... falling back to the base DBI implementation. This may or may not
 work.
 
 EOF

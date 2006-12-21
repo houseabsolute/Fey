@@ -23,6 +23,8 @@ use Test::MockObject;
 
 sub mock_test_schema
 {
+    my $skip_dbh = shift;
+
     my $schema = Q::Schema->new( name => 'Test' );
 
     $schema->add_table( _user_table() );
@@ -33,12 +35,15 @@ sub mock_test_schema
 
     $schema->add_table( _message_table() );
 
-    $schema->set_dbh( mock_dbh() );
+    $schema->set_dbh( mock_dbh() )
+        unless $skip_dbh;
+
+    return $schema;
 }
 
 sub mock_test_schema_with_fks
 {
-    my $schema = __PACKAGE__->mock_test_schema();
+    my $schema = __PACKAGE__->mock_test_schema(@_);
 
     my $fk =
         Q::FK->new
@@ -148,6 +153,20 @@ sub mock_dbh
 
     $mock->mock( 'quote', \&_mock_quote );
 
+    $mock->mock( 'table_info', \&_mock_table_info );
+
+    $mock->mock( 'column_info', \&_mock_column_info );
+
+    $mock->mock( 'primary_key_info', \&_mock_primary_key_info );
+
+    $mock->mock( 'foreign_key_info', \&_mock_foreign_key_info );
+
+    $mock->{Driver}{Name} = 'Mock';
+
+    $mock->{__schema__} = __PACKAGE__->mock_test_schema_with_fks(1);
+
+    $mock->{Name} = $mock->{__schema__}->name();
+
     return $mock;
 }
 
@@ -174,6 +193,152 @@ sub _mock_quote
     $str =~ s/$q/$q$q/g;
 
     return "$q$str$q";
+}
+
+sub _mock_table_info
+{
+    my $self = shift;
+
+    unless ( $self->{__schema__}->table('TestView') )
+    {
+        my $table = Q::Table->new( name    => 'TestView',
+                                   is_view => 1,
+                                 );
+
+        my $col = Q::Column->new( name         => 'user_id',
+                                  type         => 'INTEGER',
+                                  generic_type => 'integer',
+                                );
+
+        $table->add_column($col);
+        $table->set_primary_key($col);
+
+        $self->{__schema__}->add_table($table);
+    }
+
+    my @tables;
+    for my $table ( $self->{__schema__}->tables() )
+    {
+        push @tables,
+            { TABLE_NAME => $table->name(),
+              TABLE_TYPE => ( $table->is_view() ? 'VIEW' : 'TABLE'),
+            };
+    }
+
+    return Q::Test::MockSTH->new(\@tables);
+}
+
+sub _mock_column_info
+{
+    my $self       = shift;
+    my $table_name = $_[2];
+
+    my $table = $self->{__schema__}->table($table_name);
+
+    return Q::Mock::STH->new() unless $table;
+
+    my @columns;
+    for my $col ( $table->columns() )
+    {
+        my %col =
+            ( COLUMN_NAME   => $col->name(),
+              DATA_TYPE     => $col->type(),
+              SQL_DATA_TYPE => $col->generic_type(),
+              NULLABLE      => $col->is_nullable(),
+            );
+
+        $col{COLUMN_SIZE} = $col->length()
+            if defined $col->length();
+
+        $col{DECIMAL_DIGITS} = $col->precision()
+            if defined $col->precision();
+
+        $col{COLUMN_DEF} = $col->default()
+            if defined $col->default();
+
+        push @columns, \%col;
+    }
+
+    return Q::Test::MockSTH->new(\@columns);
+}
+
+sub _mock_primary_key_info
+{
+    my $self       = shift;
+    my $table_name = $_[2];
+
+    my $table = $self->{__schema__}->table($table_name);
+
+    return Q::Mock::STH->new()  unless $table;
+
+    my $x = 1;
+    my @pk;
+    for my $col ( $table->primary_key() )
+    {
+        push @pk,
+            { KEY_SEQ     => $x++,
+              COLUMN_NAME => $col->name(),
+            };
+    }
+
+    return Q::Test::MockSTH->new(\@pk);
+}
+
+sub _mock_foreign_key_info
+{
+    my $self       = shift;
+    my $table_name = $_[2];
+
+    my $table = $self->{__schema__}->table($table_name);
+
+    return unless $table;
+
+    my $x = 1;
+    my @fk;
+    my %pk = map { $_->name() => 1 } $table->primary_key();
+
+    for my $fk ( $self->{__schema__}->foreign_keys_for_table($table) )
+    {
+        my @source = $fk->source_columns();
+
+        next unless @source == keys %pk;
+        next if grep { ! $pk{ $_->name() } } @source;
+
+        my @target = $fk->target_columns();
+
+        for ( my $x = 0; $x < @source; $x++ )
+        {
+            push @fk,
+               { KEY_SEQ       => $x + 1,
+                 PKTABLE_NAME  => $source[$x]->table()->name(),
+                 PKCOLUMN_NAME => $source[$x]->name(),
+                 FKTABLE_NAME  => $target[$x]->table()->name(),
+                 FKCOLUMN_NAME => $target[$x]->name(),
+               };
+        }
+    }
+
+    return Q::Test::MockSTH->new(\@fk);
+}
+
+
+package Q::Test::MockSTH;
+
+sub new
+{
+    my $class = shift;
+    my $rows  = shift;
+
+    return bless $rows, $class;
+}
+
+sub fetchrow_hashref
+{
+    my $self = shift;
+
+    return unless @{$self};
+
+    return shift @{$self};
 }
 
 
