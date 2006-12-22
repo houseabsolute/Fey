@@ -40,3 +40,14 @@ Problems with Alzabo
 * Separation of Runtime/Create made sense 6 years ago, but probably
   isn't worthwhile nowadays.
 
+----------------------
+
+Packages
+
+* Low-level SQL maker
+
+* Higher-level SQL maker that can do things like make insert SQL for a
+  given table/set of columns
+
+* A simple OO-RDBMS mapper like Class::AlzaboWrapper - with caching of
+  objects and of object method
