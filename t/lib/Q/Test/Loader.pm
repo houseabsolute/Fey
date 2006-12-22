@@ -15,6 +15,9 @@ sub compare_schemas
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
+    is( $schema1->name(), $schema2->name(),
+        'schemas have the same name' );
+
     for my $table1 ( grep { $_->name() ne 'TestView' } $schema1->tables() )
     {
         my $name = $table1->name();
