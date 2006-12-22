@@ -23,6 +23,7 @@ use Test::MockObject;
 
 sub mock_test_schema
 {
+    my $class    = shift;
     my $skip_dbh = shift;
 
     my $schema = Q::Schema->new( name => 'Test' );
@@ -43,7 +44,8 @@ sub mock_test_schema
 
 sub mock_test_schema_with_fks
 {
-    my $schema = __PACKAGE__->mock_test_schema(@_);
+    my $class  = shift;
+    my $schema = $class->mock_test_schema(@_);
 
     my $fk =
         Q::FK->new
@@ -137,7 +139,14 @@ sub _message_table
                         type => 'text',
                       );
 
-    $t->add_column($_) for $message_id, $message;
+    my $quality =
+        Q::Column->new( name      => 'quality',
+                        type      => 'float',
+                        length    => 5,
+                        precision => 2,
+                      );
+
+    $t->add_column($_) for $message_id, $message, $quality;
     $t->set_primary_key($message_id);
 
     return $t;
