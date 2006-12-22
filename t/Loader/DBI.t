@@ -12,8 +12,11 @@ use Q::Loader;
 
 
 {
-    my $loader = do { local $SIG{__WARN__} = sub {};
-                      Q::Loader->new( dbh => Q::Test->mock_dbh() ) };
+    my $loader =
+        do { local $SIG{__WARN__} =
+                 sub { my @w = grep { ! /driver-specific/ } @_;
+                       warn @w if @w; };
+             Q::Loader->new( dbh => Q::Test->mock_dbh() ) };
 
     my $schema1 = $loader->make_schema();
     my $schema2 = Q::Test->mock_test_schema_with_fks();
