@@ -6,8 +6,11 @@ use warnings;
 use DBI;
 use File::Temp ();
 
+use Q::Column;
 use Q::FK;
+use Q::Query::Quoter;
 use Q::Schema;
+use Q::Table;
 
 
 BEGIN
@@ -135,8 +138,9 @@ sub _message_table
                       );
 
     my $message =
-        Q::Column->new( name => 'message',
-                        type => 'text',
+        Q::Column->new( name    => 'message',
+                        type    => 'text',
+                        default => 'Some message text',
                       );
 
     my $quality =
@@ -144,6 +148,7 @@ sub _message_table
                         type      => 'float',
                         length    => 5,
                         precision => 2,
+                        default   => 2.3,
                       );
 
     $t->add_column($_) for $message_id, $message, $quality;
@@ -246,6 +251,8 @@ sub _mock_column_info
 
     return Q::Mock::STH->new() unless $table;
 
+    my $quoter = Q::Query::Quoter->new( dbh => $self );
+
     my @columns;
     for my $col ( $table->columns() )
     {
@@ -262,8 +269,8 @@ sub _mock_column_info
         $col{DECIMAL_DIGITS} = $col->precision()
             if defined $col->precision();
 
-        $col{COLUMN_DEF} = $col->default()
-            if defined $col->default();
+        $col{COLUMN_DEF} = $col->default()->sql($quoter)
+            if $col->default();
 
         push @columns, \%col;
     }

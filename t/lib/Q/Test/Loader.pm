@@ -6,6 +6,8 @@ use warnings;
 use Test::More;
 use Data::Dumper ();
 
+use Q::Query::Quoter;
+
 
 sub compare_schemas
 {
@@ -69,6 +71,8 @@ sub compare_columns
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
+    my $quoter = Q::Query::Quoter->new( dbh => $table1->schema()->dbh() );
+
     for my $col1 ( $table1->columns() )
     {
         my $name = $col1->name();
@@ -78,11 +82,21 @@ sub compare_columns
         ok( $col2,
             "$fq_name column found by loader exists in test schema" );
 
-        for my $meth ( qw( type generic_type length precision is_nullable default ) )
+        for my $meth ( qw( type generic_type length precision is_nullable ) )
         {
             is( $col1->$meth(), $col2->$meth(),
                 "schemas agree on $meth for $fq_name" );
         }
+
+        my $def1 = $col1->default();
+        my $def2 = $col2->default();
+
+        $def1 = $def1->sql($quoter)
+            if $def1;
+        $def2 = $def2->sql($quoter)
+            if $def2;
+
+        is( $def1, $def2, "schemas agree on default for $fq_name" );
 
         ok( ! $col1->is_auto_increment(),
             'is_auto_increment is always false for columns found via DBI loader' );
