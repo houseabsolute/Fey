@@ -28,7 +28,7 @@ use Q::Literal;
 {
     my $fake = Q::FakeDBI->new();
 
-    isa_ok( $fake, 'DBI' );
+    isa_ok( $fake, 'DBI::db' );
     ok( ! $fake->isa('Foo'), 'FakeDBI is not a Foo' );
 
     is( $fake->quote('foo'), q{"foo"}, 'FakeDBI->quote foo' );
