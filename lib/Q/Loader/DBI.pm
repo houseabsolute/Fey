@@ -56,6 +56,8 @@ sub _add_tables
 
     while ( my $table_info = $sth->fetchrow_hashref() )
     {
+        next if $table_info->{TABLE_NAME} =~ /^sqlite_/;
+
         my $table =
             Q::Table->new
                 ( name    => $table_info->{TABLE_NAME},
@@ -80,10 +82,13 @@ sub _add_columns
     {
         my %col = ( name         => $col_info->{COLUMN_NAME},
                     type         => $col_info->{DATA_TYPE},
-                    generic_type => $col_info->{SQL_DATA_TYPE},
                     # NULLABLE could be 2, which indicate unknown
                     is_nullable  => ( $col_info->{NULLABLE} == 1 ? 1 : 0 ),
                   );
+
+        $col{generic_type} = $col_info->{SQL_DATA_TYPE}
+            if defined $col_info->{SQL_DATA_TYPE};
+
         $col{length} = $col_info->{COLUMN_SIZE}
             if defined $col_info->{COLUMN_SIZE};
 
@@ -154,7 +159,13 @@ sub _add_foreign_keys
 
     for my $table ( $schema->tables() )
     {
-        my $sth = $self->dbh()->foreign_key_info( undef, undef, $table->name() );
+        my $sth =
+            $self->dbh()->foreign_key_info
+                ( undef, undef, $table->name(),
+                  undef, undef, undef,
+                );
+
+        next unless $sth;
 
         my %fk;
         while ( my $fk_info = $sth->fetchrow_hashref() )

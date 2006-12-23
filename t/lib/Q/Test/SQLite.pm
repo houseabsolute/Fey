@@ -77,7 +77,7 @@ EOF
 CREATE TABLE Message (
     message_id  integer     not null  primary key autoincrement,
     quality     real(5,2)   not null  default 2.3,
-    message     text        not null  default 'Some message test'
+    message     text        not null  default 'Some message text'
 )
 EOF
           <<'EOF',
