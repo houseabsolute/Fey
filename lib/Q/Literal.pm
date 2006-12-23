@@ -79,7 +79,7 @@ sub get_info
 
 sub isa
 {
-    return 1 if $_[1] eq 'DBI';
+    return 1 if $_[1] eq 'DBI::db';
 }
 
 sub quote

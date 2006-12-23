@@ -161,7 +161,7 @@ sub mock_dbh
 {
     my $mock = Test::MockObject->new();
 
-    $mock->set_isa('DBI');
+    $mock->set_isa('DBI::db');
 
     $mock->mock( 'get_info', \&_mock_get_info );
 

@@ -31,7 +31,7 @@ BEGIN {
 
           DBI_TYPE =>
               { type => OBJECT,
-                isa  => 'DBI',
+                isa  => 'DBI::db',
               },
         );
 
