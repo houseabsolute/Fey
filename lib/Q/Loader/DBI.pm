@@ -76,36 +76,44 @@ sub _add_columns
     my $self  = shift;
     my $table = shift;
 
-    my $sth = $self->dbh()->column_info( undef, undef, $table->name(), undef );
+    my $sth = $self->dbh()->column_info( undef, undef, $table->name(), '%' );
 
     while ( my $col_info = $sth->fetchrow_hashref() )
     {
-        my %col = ( name         => $col_info->{COLUMN_NAME},
-                    type         => $col_info->{DATA_TYPE},
-                    # NULLABLE could be 2, which indicate unknown
-                    is_nullable  => ( $col_info->{NULLABLE} == 1 ? 1 : 0 ),
-                  );
-
-        $col{generic_type} = $col_info->{SQL_DATA_TYPE}
-            if defined $col_info->{SQL_DATA_TYPE};
-
-        $col{length} = $col_info->{COLUMN_SIZE}
-            if defined $col_info->{COLUMN_SIZE};
-
-        $col{precision} = $col_info->{DECIMAL_DIGITS}
-            if defined $col_info->{DECIMAL_DIGITS};
-
-        if ( defined $col_info->{COLUMN_DEF} )
-        {
-            $col{default} = $self->_default( $col_info->{COLUMN_DEF} );
-        }
-
-        $col{is_auto_increment} = $self->_is_auto_increment( $table, $col_info );
+        my %col = $self->_column_params( $table, $col_info );
 
         my $col = Q::Column->new(%col);
 
         $table->add_column($col);
     }
+}
+
+sub _column_params
+{
+    my $self     = shift;
+    my $table    = shift;
+    my $col_info = shift;
+
+    my %col = ( name         => $col_info->{COLUMN_NAME},
+                type         => $col_info->{TYPE_NAME},
+                # NULLABLE could be 2, which indicate unknown
+                is_nullable  => ( $col_info->{NULLABLE} == 1 ? 1 : 0 ),
+              );
+
+    $col{length} = $col_info->{COLUMN_SIZE}
+        if defined $col_info->{COLUMN_SIZE};
+
+    $col{precision} = $col_info->{DECIMAL_DIGITS}
+        if defined $col_info->{DECIMAL_DIGITS};
+
+    if ( defined $col_info->{COLUMN_DEF} )
+    {
+        $col{default} = $self->_default( $col_info->{COLUMN_DEF}, $col_info );
+    }
+
+    $col{is_auto_increment} = $self->_is_auto_increment( $table, $col_info );
+
+    return %col;
 }
 
 sub _default

@@ -107,19 +107,17 @@ sub compare_columns
         }
 
         my $def1 = $col1->default();
-        my $def2 = $col2->default();
+        my $def2 =
+            exists $override->{$fq_name}{default}
+            ? $override->{$fq_name}{default}
+            : $col2->default();
 
         $def1 = $def1->sql($quoter)
             if $def1;
         $def2 = $def2->sql($quoter)
             if $def2;
 
-        my $expect =
-            exists $override->{$fq_name}{default}
-            ? $override->{$fq_name}{default}
-            : $def2;
-
-        is( $def1, $expect, "schemas agree on default for $fq_name" );
+        is( $def1, $def2, "schemas agree on default for $fq_name" );
     }
 
     for my $col2 ( $table2->columns() )

@@ -9,8 +9,6 @@ use DBD::SQLite;
 
 use Q::Validate qw( validate SCALAR_TYPE );
 
-use Scalar::Util qw( looks_like_number );
-
 
 unless ( defined &DBD::SQLite::db::column_info )
 {
@@ -19,6 +17,9 @@ unless ( defined &DBD::SQLite::db::column_info )
 
 sub _sqlite_column_info {
     my($dbh, $catalog, $schema, $table, $column) = @_;
+
+    $column = undef
+        if defined $column && $column eq '%';
 
     my $sth_columns = $dbh->prepare( qq{PRAGMA table_info('$table')} );
     $sth_columns->execute;
@@ -46,7 +47,7 @@ sub _sqlite_column_info {
             $col{DECIMAL_DIGITS} = $3;
         }
 
-        $col{DATA_TYPE} = $type;
+        $col{TYPE_NAME} = $type;
 
         $col{COLUMN_DEF} = $col_info->{dflt_value}
             if defined $col_info->{dflt_value};
@@ -148,17 +149,12 @@ sub _default
     {
         return undef;
     }
-    elsif ( looks_like_number($default) )
-    {
-        return $default;
-    }
     elsif ( $default =~ /CURRENT_(?:TIME(?:STAMP)?|DATE)/ )
     {
         return Q::Literal->term($default);
     }
     else
     {
-        # defaults come back un-quoted from SQLite
         return $default;
     }
 }

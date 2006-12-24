@@ -227,7 +227,7 @@ sub _mock_table_info
                                  );
 
         my $col = Q::Column->new( name         => 'user_id',
-                                  type         => 'INTEGER',
+                                  type         => 'integer',
                                   generic_type => 'integer',
                                 );
 
@@ -264,10 +264,9 @@ sub _mock_column_info
     for my $col ( $table->columns() )
     {
         my %col =
-            ( COLUMN_NAME   => $col->name(),
-              DATA_TYPE     => $col->type(),
-              SQL_DATA_TYPE => $col->generic_type(),
-              NULLABLE      => $col->is_nullable(),
+            ( COLUMN_NAME => $col->name(),
+              TYPE_NAME   => $col->type(),
+              NULLABLE    => $col->is_nullable(),
             );
 
         $col{COLUMN_SIZE} = $col->length()
