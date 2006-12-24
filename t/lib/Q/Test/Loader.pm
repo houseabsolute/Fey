@@ -11,9 +11,10 @@ use Q::Query::Quoter;
 
 sub compare_schemas
 {
-    my $class  = shift;
-    my $schema1 = shift;
-    my $schema2 = shift;
+    my $class    = shift;
+    my $schema1  = shift;
+    my $schema2  = shift;
+    my $override = shift;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
@@ -27,12 +28,17 @@ sub compare_schemas
 
         ok( $table2,
             "$name table found by loader exists in test schema" );
-        is( $table1->is_view(), $table2->is_view(),
+
+        my $expect =
+            exists $override->{ $table1->name() }{is_view}
+            ? $override->{ $table1->name() }{is_view}
+            : $table2->is_view();
+        is( $table1->is_view(), $expect,
             "schemas agree on is_view() for $name table" );
 
-        $class->compare_pk( $table1, $table2 );
-        $class->compare_columns( $table1, $table2 );
-        $class->compare_fks( $table1, $table2 );
+        $class->compare_pk( $table1, $table2, $override );
+        $class->compare_columns( $table1, $table2, $override );
+        $class->compare_fks( $table1, $table2, $override );
     }
 
     my $test_view_t = $schema1->table('TestView');
@@ -50,24 +56,31 @@ sub compare_schemas
 
 sub compare_pk
 {
-    my $class  = shift;
-    my $table1 = shift;
-    my $table2 = shift;
+    my $class    = shift;
+    my $table1   = shift;
+    my $table2   = shift;
+    my $override = shift;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my @pk1 = map { $_->name() } $table1->primary_key();
     my @pk2 = map { $_->name() } $table2->primary_key();
 
-    is_deeply( \@pk1, \@pk2,
+    my $expect =
+        exists $override->{ $table1->name() }{primary_key}
+        ? $override->{ $table1->name() }{primary_key}
+        : \@pk2;
+
+    is_deeply( \@pk1, $expect,
                "schemas agree on primary key for " . $table1->name() );
 }
 
 sub compare_columns
 {
-    my $class  = shift;
-    my $table1 = shift;
-    my $table2 = shift;
+    my $class    = shift;
+    my $table1   = shift;
+    my $table2   = shift;
+    my $override = shift;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
@@ -82,9 +95,14 @@ sub compare_columns
         ok( $col2,
             "$fq_name column found by loader exists in test schema" );
 
-        for my $meth ( qw( type generic_type length precision is_nullable ) )
+        for my $meth ( qw( type generic_type length precision
+                           is_nullable is_auto_increment ) )
         {
-            is( $col1->$meth(), $col2->$meth(),
+            my $expect =
+                exists $override->{$fq_name}{$meth}
+                ? $override->{$fq_name}{$meth}
+                : $col2->$meth();
+            is( $col1->$meth(), $expect,
                 "schemas agree on $meth for $fq_name" );
         }
 
@@ -96,10 +114,12 @@ sub compare_columns
         $def2 = $def2->sql($quoter)
             if $def2;
 
-        is( $def1, $def2, "schemas agree on default for $fq_name" );
+        my $expect =
+            exists $override->{$fq_name}{default}
+            ? $override->{$fq_name}{default}
+            : $def2;
 
-        ok( ! $col1->is_auto_increment(),
-            'is_auto_increment is always false for columns found via DBI loader' );
+        is( $def1, $expect, "schemas agree on default for $fq_name" );
     }
 
     for my $col2 ( $table2->columns() )
@@ -113,9 +133,12 @@ sub compare_columns
 
 sub compare_fks
 {
-    my $class  = shift;
-    my $table1 = shift;
-    my $table2 = shift;
+    my $class    = shift;
+    my $table1   = shift;
+    my $table2   = shift;
+    my $override = shift;
+
+    return if $override->{skip_foreign_keys};
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 

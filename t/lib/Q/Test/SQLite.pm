@@ -58,12 +58,13 @@ sub _sql
 CREATE TABLE User (
     user_id   integer  not null  primary key autoincrement,
     username  text     not null,
-    email     text     not null
+    email     text     null
 )
 EOF
           <<'EOF',
 CREATE TABLE "Group" (
-    group_id   integer  not null  primary key autoincrement
+    group_id   integer  not null  primary key autoincrement,
+    name       text     not null
 )
 EOF
           <<'EOF',

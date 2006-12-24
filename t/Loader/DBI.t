@@ -21,7 +21,13 @@ use Q::Loader;
     my $schema1 = $loader->make_schema();
     my $schema2 = Q::Test->mock_test_schema_with_fks();
 
-    Q::Test::Loader->compare_schemas( $schema1, $schema2 );
+    Q::Test::Loader->compare_schemas
+        ( $schema1, $schema2,
+          { 'Group.group_id'     => { is_auto_increment => 0 },
+            'Message.message_id' => { is_auto_increment => 0 },
+            'User.user_id'       => { is_auto_increment => 0 },
+          },
+        );
 }
 
 {

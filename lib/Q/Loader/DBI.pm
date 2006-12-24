@@ -141,13 +141,7 @@ sub _set_primary_key
     my $self  = shift;
     my $table = shift;
 
-    my $sth = $self->dbh()->primary_key_info( undef, undef, $table->name() );
-
-    my @pk;
-    while ( my $pk_info = $sth->fetchrow_hashref() )
-    {
-        @pk[ $pk_info->{KEY_SEQ} - 1 ] = $pk_info->{COLUMN_NAME};
-    }
+    my @pk = $self->dbh()->primary_key( undef, undef, $table->name() );
 
     $table->set_primary_key(@pk);
 }

@@ -76,8 +76,9 @@ sub _user_table
                       );
 
     my $email =
-        Q::Column->new( name => 'email',
-                        type => 'text',
+        Q::Column->new( name        => 'email',
+                        type        => 'text',
+                        is_nullable => 1,
                       );
 
     $t->add_column($_) for $user_id, $username, $email;
@@ -171,7 +172,7 @@ sub mock_dbh
 
     $mock->mock( 'column_info', \&_mock_column_info );
 
-    $mock->mock( 'primary_key_info', \&_mock_primary_key_info );
+    $mock->mock( 'primary_key', \&_mock_primary_key );
 
     $mock->mock( 'foreign_key_info', \&_mock_foreign_key_info );
 
@@ -278,26 +279,16 @@ sub _mock_column_info
     return Q::Test::MockSTH->new(\@columns);
 }
 
-sub _mock_primary_key_info
+sub _mock_primary_key
 {
     my $self       = shift;
     my $table_name = $_[2];
 
     my $table = $self->{__schema__}->table($table_name);
 
-    return Q::Mock::STH->new()  unless $table;
+    return unless $table;
 
-    my $x = 1;
-    my @pk;
-    for my $col ( $table->primary_key() )
-    {
-        push @pk,
-            { KEY_SEQ     => $x++,
-              COLUMN_NAME => $col->name(),
-            };
-    }
-
-    return Q::Test::MockSTH->new(\@pk);
+    return map { $_->name() } $table->primary_key();
 }
 
 sub _mock_foreign_key_info
