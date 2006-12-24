@@ -99,32 +99,44 @@ sub _is_auto_increment
     my $table    = shift;
     my $col_info = shift;
 
-    my $sql = $self->_table_sql($table);
-
     my $name = $col_info->{COLUMN_NAME};
 
-    my @pk = $self->dbh()->primary_key( undef, undef, $table->name() );
+    my @pk = $self->_primary_key( $table->name() );
 
     # With SQLite3, a table can only have one autoincrement column,
     # and it must be that table's primary key ...
     return 0 unless @pk == 1 && $pk[0] eq $name;
+
+    my $sql = $self->_table_sql( $table->name() );
 
     # ... therefore if the table's SQL includes the string
     # autoincrement, then the primary key must be auto-incremented.
     return $sql =~ /autoincrement/m ? 1 : 0;
 }
 
-sub _table_sql {
-    my $self     = shift;
-    my $table    = shift;
+sub _primary_key {
+    my $self = shift;
+    my $name = shift;
 
-    my $name = $table->name();
+    return @{ $self->{__primary_key__}{$name} }
+        if $self->{__primary_key__}{$name};
+
+    my @pk = $self->dbh()->primary_key( undef, undef, $name );
+    $self->{__primary_key__}{$name} = \@pk;
+
+    return @pk;
+}
+
+sub _table_sql {
+    my $self = shift;
+    my $name = shift;
+
     return $self->{__table_sql__}{$name}
         if $self->{__table_sql__}{$name};
 
     return $self->{__table_sql__}{$name} =
         $self->dbh()->selectcol_arrayref
-            ( 'SELECT sql FROM sqlite_master WHERE tbl_name = ?', {}, $table->name() )->[0];
+            ( 'SELECT sql FROM sqlite_master WHERE tbl_name = ?', {}, $name )->[0];
 }
 
 sub _default
