@@ -103,7 +103,15 @@ sub _is_auto_increment
 
     my $name = $col_info->{COLUMN_NAME};
 
-    return $sql =~ /\Q$name\E\s+\w+[^,]+autoincrement(?:,|$)/m ? 1 : 0;
+    my @pk = $self->dbh()->primary_key( undef, undef, $table->name() );
+
+    # With SQLite3, a table can only have one autoincrement column,
+    # and it must be that table's primary key ...
+    return 0 unless @pk == 1 && $pk[0] eq $name;
+
+    # ... therefore if the table's SQL includes the string
+    # autoincrement, then the primary key must be auto-incremented.
+    return $sql =~ /autoincrement/m ? 1 : 0;
 }
 
 sub _table_sql {
