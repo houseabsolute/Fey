@@ -6,7 +6,7 @@ use lib 't/lib';
 use Q::Test;
 use Q::Test::Loader;
 
-use Test::More tests => 120;
+use Test::More tests => 129;
 
 use Q::Loader;
 

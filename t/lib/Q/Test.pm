@@ -152,7 +152,13 @@ sub _message_table
                         default   => 2.3,
                       );
 
-    $t->add_column($_) for $message_id, $message, $quality;
+    my $message_date =
+        Q::Column->new( name      => 'message_date',
+                        type      => 'date',
+                        default   => Q::Literal->function('NOW'),
+                      );
+
+    $t->add_column($_) for $message_id, $message, $quality, $message_date;
     $t->set_primary_key($message_id);
 
     return $t;

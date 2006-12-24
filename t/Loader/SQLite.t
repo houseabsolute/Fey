@@ -7,7 +7,7 @@ use Q::Test;
 use Q::Test::Loader;
 use Q::Test::SQLite;
 
-use Test::More tests => 115;
+use Test::More tests => 124;
 
 use Q::Loader;
 
@@ -20,7 +20,11 @@ use Q::Loader;
 
     Q::Test::Loader->compare_schemas
         ( $schema1, $schema2,
-          { 'Message.quality' => { type => 'real' },
+          { 'Message.quality'      => { type => 'real' },
+            # SQLite crack-headedly returns the actual current date as
+            # the default value if we use CURRENT_DATE as the
+            # default. Brilliant!
+            'Message.message_date' => { default => undef },
             skip_foreign_keys => 1,
           },
         );

@@ -1,4 +1,4 @@
-package Q::Loader::SQLite;
+package Q::Loader::mysql;
 
 use strict;
 use warnings;
