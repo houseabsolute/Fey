@@ -34,6 +34,22 @@ sub _primary_key {
     return @pk;
 }
 
+# Not sure why DBD::mysql is not getting this right.
+sub _is_view
+{
+    my $self       = shift;
+    my $table_info = shift;
+
+    my $sth =
+        $self->dbh()->prepare
+            ( 'SHOW CREATE TABLE '
+              . $self->dbh()->quote_identifier( $table_info->{TABLE_NAME} )
+            );
+    $sth->execute();
+
+    return $sth->{NAME}[1] =~ /view/i ? 1 : 0;
+}
+
 sub _column_params
 {
     my $self     = shift;

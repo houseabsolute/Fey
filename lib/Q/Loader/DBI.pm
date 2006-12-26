@@ -62,20 +62,29 @@ sub _add_tables
 
     while ( my $table_info = $sth->fetchrow_hashref() )
     {
-        next if $table_info->{TABLE_NAME} =~ /^sqlite_/;
-
-        my $table =
-            Q::Table->new
-                ( name    => $table_info->{TABLE_NAME},
-                  is_view => ( $table_info->{TABLE_TYPE} eq 'VIEW' ? 1 : 0 ),
-                );
-
-        $self->_add_columns($table);
-        $self->_set_primary_key($table);
-
-        $schema->add_table($table);
+        $self->_add_table( $schema, $table_info );
     }
 }
+
+sub _add_table
+{
+    my $self       = shift;
+    my $schema     = shift;
+    my $table_info = shift;
+
+    my $table =
+        Q::Table->new
+            ( name    => $table_info->{TABLE_NAME},
+              is_view => $self->_is_view($table_info),
+            );
+
+    $self->_add_columns($table);
+    $self->_set_primary_key($table);
+
+    $schema->add_table($table);
+}
+
+sub _is_view { $_[1]->{TABLE_TYPE} eq 'VIEW' ? 1 : 0 }
 
 sub _add_columns
 {

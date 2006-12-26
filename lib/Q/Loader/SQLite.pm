@@ -79,6 +79,17 @@ sub _sqlite_column_info {
     return $sth;
 }
 
+sub _add_table
+{
+    my $self       = shift;
+    my $schema     = shift;
+    my $table_info = shift;
+
+    return if $table_info->{TABLE_NAME} =~ /^sqlite_/;
+
+    $self->SUPER::_add_table( $schema, $table_info );
+}
+
 sub _is_auto_increment
 {
     my $self     = shift;
