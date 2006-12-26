@@ -20,19 +20,6 @@ use Scalar::Util qw( blessed );
 
 
 {
-    my $spec = { dbh  => DBI_TYPE };
-    sub from_dbh
-    {
-        my $class = shift;
-        my %p     = validate( @_, $spec );
-
-        my $loader = Q::Loader->new( dbh => $p{dbh}, );
-
-        return $loader->make_schema();
-    }
-}
-
-{
     my $spec = { name        => SCALAR_TYPE,
                  query_class => SCALAR_TYPE( default => 'Q::Query' ),
                };
