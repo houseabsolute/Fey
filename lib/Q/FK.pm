@@ -24,7 +24,7 @@ use Scalar::Util qw(blessed);
         { type => OBJECT|ARRAYREF,
           callbacks =>
           { 'all elements are columns' =>
-            sub { ( ! grep { ! $_->isa('Q::Column') }
+            sub { ( ! grep { ! ( blessed($_) && $_->isa('Q::Column') ) }
                     blessed $_[0] ? $_[0] : @{ $_[0] } ) }
           },
         };
