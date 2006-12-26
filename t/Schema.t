@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 30;
+use Test::More tests => 33;
 
 use Q::Schema;
 
@@ -144,3 +144,37 @@ use Q::Schema;
     is_deeply( \@tables, [ 'Group', 'Message', 'User', 'UserGroup' ],
                'tables are Group, User, & UserGroup' );
 }
+
+{
+    my $s = Q::Test->mock_test_schema();
+
+    my $q = $s->query();
+    isa_ok( $q, 'Q::Query' );
+}
+
+{
+    my $s = Q::Schema->new( name        => 'Test2',
+                            query_class => 'Q::Query::Test',
+                          );
+
+    $s->set_dbh( Q::Test->mock_dbh() );
+
+    my $q = $s->query();
+    isa_ok( $q, 'Q::Query::Test' );
+}
+
+{
+    eval
+    {
+        my $s = Q::Schema->new( name        => 'Test3',
+                                query_class => 'Q::Query::DoesNotExist',
+                              );
+    };
+
+    like( $@, qr/can't locate/i,
+          'specify non-existent query subclass' );
+}
+
+package Q::Query::Test;
+
+use base 'Q::Query';
