@@ -120,7 +120,7 @@ sub _default
 
     if ( $default =~ /^NULL$/i )
     {
-        return undef;
+        return Q::Literal->null();
     }
     elsif ( $default =~ /^CURRENT_TIMESTAMP$/i )
     {

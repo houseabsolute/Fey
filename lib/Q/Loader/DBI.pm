@@ -5,7 +5,7 @@ use warnings;
 
 use base 'Q::Accessor';
 __PACKAGE__->mk_ro_accessors
-    ( qw( dbh ) );
+    ( qw( dbh quoter ) );
 
 use Q::Validate qw( validate SCALAR_TYPE DBI_TYPE );
 
@@ -13,6 +13,7 @@ use Q::Column;
 use Q::FK;
 use Q::Schema;
 use Q::Table;
+use Q::Query::Quoter;
 
 use Scalar::Util qw( looks_like_number );
 
@@ -35,9 +36,11 @@ use Scalar::Util qw( looks_like_number );
         my $self = shift;
         my %p    = validate( @_, $spec );
 
-        my $name = delete $p{name} || $self->_schema_name();
+        my $name = delete $p{name} || $self->dbh()->{Name};
 
         my $schema = Q::Schema->new( name => $name );
+
+        $self->{quoter} = Q::Query::Quoter->new( dbh => $self->dbh() );
 
         $self->_add_tables($schema);
         $self->_add_foreign_keys($schema);
@@ -48,17 +51,15 @@ use Scalar::Util qw( looks_like_number );
     }
 }
 
-sub _schema_name
-{
-    return $_[0]->dbh()->{Name};
-}
-
 sub _add_tables
 {
     my $self   = shift;
     my $schema = shift;
 
-    my $sth = $self->dbh()->table_info( undef, undef, '%', 'TABLE,VIEW' );
+    my $sth =
+        $self->dbh()->table_info
+            ( $self->_catalog_name(), $self->_schema_name(),
+              '%', 'TABLE,VIEW' );
 
     while ( my $table_info = $sth->fetchrow_hashref() )
     {
@@ -66,15 +67,21 @@ sub _add_tables
     }
 }
 
+sub _catalog_name { undef }
+
+sub _schema_name { undef }
+
 sub _add_table
 {
     my $self       = shift;
     my $schema     = shift;
     my $table_info = shift;
 
+    my $name = $self->quoter()->unquote_identifier( $table_info->{TABLE_NAME} );
+
     my $table =
         Q::Table->new
-            ( name    => $table_info->{TABLE_NAME},
+            ( name    => $name,
               is_view => $self->_is_view($table_info),
             );
 
@@ -109,7 +116,9 @@ sub _column_params
     my $table    = shift;
     my $col_info = shift;
 
-    my %col = ( name         => $col_info->{COLUMN_NAME},
+    my $name = $self->quoter()->unquote_identifier( $col_info->{COLUMN_NAME} );
+
+    my %col = ( name         => $name,
                 type         => $col_info->{TYPE_NAME},
                 # NULLABLE could be 2, which indicate unknown
                 is_nullable  => ( $col_info->{NULLABLE} == 1 ? 1 : 0 ),
@@ -123,7 +132,9 @@ sub _column_params
 
     if ( defined $col_info->{COLUMN_DEF} )
     {
-        $col{default} = $self->_default( $col_info->{COLUMN_DEF}, $col_info );
+        my $default = $self->_default( $col_info->{COLUMN_DEF}, $col_info );
+        $col{default} = $default
+            if defined $default;
     }
 
     $col{is_auto_increment} = $self->_is_auto_increment( $table, $col_info );
@@ -138,7 +149,7 @@ sub _default
 
     if ( $default =~ /^NULL$/i )
     {
-        return undef;
+        return Q::Literal->null();
     }
     elsif ( $default =~ /^(["'])(.*)\1$/ )
     {
@@ -164,7 +175,10 @@ sub _set_primary_key
     my $self  = shift;
     my $table = shift;
 
-    my @pk = $self->dbh()->primary_key( undef, undef, $table->name() );
+    my @pk =
+        ( map { $self->quoter()->unquote_identifier($_) }
+          $self->dbh()->primary_key( undef, undef, $table->name() )
+        );
 
     $table->set_primary_key(@pk);
 }
@@ -173,6 +187,8 @@ sub _add_foreign_keys
 {
     my $self   = shift;
     my $schema = shift;
+
+    my @keys = qw( UK_TABLE_NAME UK_COLUMN_NAME FK_TABLE_NAME FK_COLUMN_NAME );
 
     for my $table ( $schema->tables() )
     {
@@ -187,22 +203,32 @@ sub _add_foreign_keys
         my %fk;
         while ( my $fk_info = $sth->fetchrow_hashref() )
         {
-            my $key =
-                ( join "\0",
-                  @{$fk_info}{ qw( PKTABLE_NAME PKCOLUMN_NAME FKTABLE_NAME FKCOLUMN_NAME ) }
-                );
+            for my $k (@keys)
+            {
+                $fk_info->{$k} = $self->quoter()->unquote_identifier( $fk_info->{$k} );
+            }
 
-            $fk{$key}{source}[ $fk_info->{KEY_SEQ} - 1 ] =
-                $schema->table( $fk_info->{PKTABLE_NAME} )
-                        ->column( $fk_info->{PKCOLUMN_NAME} );
+            my $key = $fk_info->{FK_NAME};
 
-            $fk{$key}{target}[ $fk_info->{KEY_SEQ} - 1 ] =
-                $schema->table( $fk_info->{FKTABLE_NAME} )
-                       ->column( $fk_info->{FKCOLUMN_NAME} );
+            $fk{$key}{source}[ $fk_info->{ORDINAL_POSITION} - 1 ] =
+                $schema->table( $fk_info->{UK_TABLE_NAME} )
+                        ->column( $fk_info->{UK_COLUMN_NAME} );
+
+            $fk{$key}{target}[ $fk_info->{ORDINAL_POSITION} - 1 ] =
+                $schema->table( $fk_info->{FK_TABLE_NAME} )
+                       ->column( $fk_info->{FK_COLUMN_NAME} );
         }
 
         for my $fk_cols ( values %fk )
         {
+            # This is a gross workaround for what seems to be a bug in
+            # DBD::Pg. The ORDINAL_POSITION is sequential across
+            # different fks, so we end up with undef in the array.
+            for my $k ( qw( source target ) )
+            {
+                $fk_cols->{$k} = [ grep { defined } @{ $fk_cols->{$k} } ]
+            }
+
             my $fk = Q::FK->new( %{$fk_cols} );
 
             $schema->add_foreign_key($fk);

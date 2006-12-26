@@ -37,6 +37,16 @@ sub quote_identifier
     return $_[0]->{quote} . $_[1] . $_[0]->{quote};
 }
 
+sub unquote_identifier
+{
+    my $self  = shift;
+    my $ident = shift;
+
+    $ident =~ s/^\Q$self->{quote}\E|\Q$self->{quote}\E$//g;
+
+    return $ident;
+}
+
 sub quote_string
 {
     return $_[0]->dbh()->quote( $_[1] );

@@ -31,8 +31,8 @@ use Q::Loader;
 }
 
 {
-    is( Q::Loader::SQLite->_default('NULL'), undef,
-        'NULL as default becomes undef' );
+    my $def = Q::Loader::SQLite->_default('NULL');
+    isa_ok( $def, 'Q::Literal::Null');
 
     is( Q::Loader::SQLite->_default('foo'), 'foo',
         q{foo as default becomes string foo} );
@@ -43,7 +43,7 @@ use Q::Loader;
     is( Q::Loader::SQLite->_default(42.42), 42.42,
         '42.42 as default becomes 42.42' );
 
-    my $def = Q::Loader::SQLite->_default('CURRENT_TIME');
+    $def = Q::Loader::SQLite->_default('CURRENT_TIME');
     isa_ok( $def, 'Q::Literal::Term' );
     is( $def->sql, 'CURRENT_TIME',
         'unquoted CURRENT_TIME as default becomes CURRENT_TIME as term' );

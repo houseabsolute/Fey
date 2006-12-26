@@ -6,7 +6,7 @@ use lib 't/lib';
 use Q::Test;
 use Q::Test::Loader;
 
-use Test::More tests => 129;
+use Test::More tests => 133;
 
 use Q::Loader;
 
@@ -31,8 +31,8 @@ use Q::Loader;
 }
 
 {
-    is( Q::Loader::DBI->_default('NULL'), undef,
-        'NULL as default becomes undef' );
+    my $def = Q::Loader::DBI->_default('NULL');
+    isa_ok( $def, 'Q::Literal::Null');
 
     is( Q::Loader::DBI->_default( q{'foo'} ), 'foo',
         q{'foo' as default becomes string foo} );
@@ -46,7 +46,7 @@ use Q::Loader;
     is( Q::Loader::DBI->_default(42.42), 42.42,
         '42.42 as default becomes 42.42' );
 
-    my $def = Q::Loader::DBI->_default('NOW');
+    $def = Q::Loader::DBI->_default('NOW');
     isa_ok( $def, 'Q::Literal::Term' );
     is( $def->sql, 'NOW',
         'unquoted NOW as default becomes NOW as term' );

@@ -50,12 +50,19 @@ sub mock_test_schema_with_fks
     my $class  = shift;
     my $schema = $class->mock_test_schema(@_);
 
-    my $fk =
+    my $fk1 =
         Q::FK->new
             ( source => [ $schema->table('User')->column('user_id') ],
               target => [ $schema->table('UserGroup')->column('user_id') ],
             );
-    $schema->add_foreign_key($fk);
+
+    my $fk2 =
+        Q::FK->new
+            ( source => [ $schema->table('Group')->column('group_id') ],
+              target => [ $schema->table('UserGroup')->column('group_id') ],
+            );
+
+    $schema->add_foreign_key($_) for $fk1, $fk2;
 
     return $schema;
 }
@@ -321,11 +328,16 @@ sub _mock_foreign_key_info
         for ( my $x = 0; $x < @source; $x++ )
         {
             push @fk,
-               { KEY_SEQ       => $x + 1,
-                 PKTABLE_NAME  => $source[$x]->table()->name(),
-                 PKCOLUMN_NAME => $source[$x]->name(),
-                 FKTABLE_NAME  => $target[$x]->table()->name(),
-                 FKCOLUMN_NAME => $target[$x]->name(),
+               { ORDINAL_POSITION => $x + 1,
+                 UK_TABLE_NAME    => $source[$x]->table()->name(),
+                 UK_COLUMN_NAME   => $source[$x]->name(),
+                 FK_TABLE_NAME    => $target[$x]->table()->name(),
+                 FK_COLUMN_NAME   => $target[$x]->name(),
+                 FK_NAME          =>
+                     ( join '_', map { $_->name() }
+                       $source[$x]->table(), $source[$x],
+                       $target[$x]->table(), $target[$x],
+                     )
                };
         }
     }
