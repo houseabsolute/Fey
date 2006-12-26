@@ -27,7 +27,7 @@ use Q::Query::Update;
 
 use Q::Placeholder;
 
-use Q::Query::Quoter;
+use Q::Quoter;
 
 use Q::Query::Fragment::Where::Boolean;
 use Q::Query::Fragment::Where::Comparison;
@@ -41,7 +41,7 @@ use Q::Query::Fragment::Where::SubgroupEnd;
         my $class = shift;
         my %p     = validate( @_, $spec );
 
-        my $quoter = Q::Query::Quoter->new( dbh => $p{dbh} );
+        my $quoter = Q::Quoter->new( dbh => $p{dbh} );
 
         return bless { %p,
                        quoter => $quoter,

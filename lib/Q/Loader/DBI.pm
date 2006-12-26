@@ -13,7 +13,7 @@ use Q::Column;
 use Q::FK;
 use Q::Schema;
 use Q::Table;
-use Q::Query::Quoter;
+use Q::Quoter;
 
 use Scalar::Util qw( looks_like_number );
 
@@ -40,7 +40,7 @@ use Scalar::Util qw( looks_like_number );
 
         my $schema = Q::Schema->new( name => $name );
 
-        $self->{quoter} = Q::Query::Quoter->new( dbh => $self->dbh() );
+        $self->{quoter} = Q::Quoter->new( dbh => $self->dbh() );
 
         $self->_add_tables($schema);
         $self->_add_foreign_keys($schema);

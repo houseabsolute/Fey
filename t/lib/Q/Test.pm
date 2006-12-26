@@ -8,7 +8,7 @@ use File::Temp ();
 
 use Q::Column;
 use Q::FK;
-use Q::Query::Quoter;
+use Q::Quoter;
 use Q::Schema;
 use Q::Table;
 
@@ -265,7 +265,7 @@ sub _mock_column_info
 
     return Q::Mock::STH->new() unless $table;
 
-    my $quoter = Q::Query::Quoter->new( dbh => $self );
+    my $quoter = Q::Quoter->new( dbh => $self );
 
     my @columns;
     for my $col ( $table->columns() )

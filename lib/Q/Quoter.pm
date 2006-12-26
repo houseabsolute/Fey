@@ -1,4 +1,4 @@
-package Q::Query::Quoter;
+package Q::Quoter;
 
 use strict;
 use warnings;

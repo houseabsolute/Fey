@@ -6,7 +6,7 @@ use warnings;
 use Test::More;
 use Data::Dumper ();
 
-use Q::Query::Quoter;
+use Q::Quoter;
 
 
 sub compare_schemas
@@ -84,7 +84,7 @@ sub compare_columns
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
-    my $quoter = Q::Query::Quoter->new( dbh => $table1->schema()->dbh() );
+    my $quoter = Q::Quoter->new( dbh => $table1->schema()->dbh() );
 
     for my $col1 ( $table1->columns() )
     {

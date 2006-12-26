@@ -10,7 +10,7 @@ use Q::Literal::Null;
 use Q::Literal::Number;
 use Q::Literal::String;
 use Q::Literal::Term;
-use Q::Query::Quoter;
+use Q::Quoter;
 use Scalar::Util qw( looks_like_number );
 
 
@@ -55,7 +55,7 @@ sub term
 }
 
 {
-    my $quoter = Q::Query::Quoter->new( dbh => Q::FakeDBI->new() );
+    my $quoter = Q::Quoter->new( dbh => Q::FakeDBI->new() );
     sub id
     {
         return $_[0]->sql( $quoter );
