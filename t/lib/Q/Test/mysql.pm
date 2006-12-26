@@ -7,15 +7,14 @@ use Test::More;
 
 BEGIN
 {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     unless ( eval { require DBD::mysql; 1 } )
     {
-        local $Test::Builder::Level = $Test::Builder::Level + 1;
         plan skip_all => 'These tests require DBD::mysql';
     }
 
     unless ( $ENV{Q_MAINTAINER_TEST_MYSQL} || -d '.svn' )
     {
-        local $Test::Builder::Level = $Test::Builder::Level + 1;
         plan skip_all =>
             'These tests are only run if the Q_MAINTAINER_TEST_MYSQL'
             . ' env var is true, or if being run from an SVN checkout dir.';
