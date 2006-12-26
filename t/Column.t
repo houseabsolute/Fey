@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 24;
+use Test::More tests => 28;
 
 use Q::Column;
 
@@ -29,6 +29,11 @@ use Q::Column;
     ok( ! $c->is_nullable(), 'column defaults to not nullable' );
     ok( ! defined $c->default(), 'column defaults to not having a default' );
     ok( ! $c->is_alias(), 'column is not an alias' );
+
+    ok( ! $c->is_selectable(), 'is_selectable is false without table' );
+    ok( ! $c->is_comparable(), 'is_comparable is false without table' );
+    ok( ! $c->is_groupable(), 'is_groupable is false without table' );
+    ok( ! $c->is_orderable(), 'is_orderable is false without table' );
 
     eval { $c->id() };
     isa_ok( $@, 'Q::Exception::ObjectState' );

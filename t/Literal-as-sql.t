@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 28;
+use Test::More tests => 29;
 
 use Q::Literal;
 use Q::Query::Quoter;
@@ -57,6 +57,8 @@ use Q::Query::Quoter;
     my $now = Q::Literal->function( 'NOW' );
     is( $now->sql_with_alias($f), q{NOW() AS FUNCTION0},
         'NOW function sql_with_alias' );
+    is( $now->sql_with_alias($f), q{NOW() AS FUNCTION0},
+        'NOW function sql_with_alias - second time' );
     is( $now->sql_or_alias($f), q{"FUNCTION0"},
         'NOW function sql_or_alias - with alias' );
     is( $now->sql($f), 'NOW()',
