@@ -7,7 +7,7 @@ use Q::Test;
 use Q::Test::Loader;
 use Q::Test::mysql;
 
-use Test::More tests => 120;
+use Test::More tests => 118;
 
 use Q::Literal;
 use Q::Loader;
@@ -69,6 +69,12 @@ use Q::Loader;
                 { type    => 'TEXT',
                   default => Q::Literal->string(''),
                 },
+            # DBD::mysql does not support foreign_key_info(), and
+            # there's no good way of getting this from mysql
+            # directly. Both SHOW CREATE TABLE and SHOW TABLE STATUS
+            # include information about foreign keys, but in a rather
+            # inconvenient form.
+            skip_foreign_keys => 1,
           },
         );
 }
