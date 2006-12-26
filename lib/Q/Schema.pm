@@ -43,7 +43,7 @@ sub _load_query_class
 {
     my $self = shift;
 
-    return $self->{query_class}->can('new');
+    return if $self->{query_class}->can('new');
 
     eval "use $self->{query_class}";
     die $@ if $@;
