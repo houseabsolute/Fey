@@ -7,7 +7,7 @@ use Q::Test;
 use Q::Test::Loader;
 use Q::Test::mysql;
 
-use Test::More tests => 118;
+use Test::More tests => 119;
 
 use Q::Literal;
 use Q::Loader;
@@ -77,4 +77,9 @@ use Q::Loader;
             skip_foreign_keys => 1,
           },
         );
+}
+
+{
+    my $def = Q::Loader::mysql->_default('NULL');
+    isa_ok( $def, 'Q::Literal::Null');
 }

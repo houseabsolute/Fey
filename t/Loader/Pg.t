@@ -7,7 +7,7 @@ use Q::Test;
 use Q::Test::Loader;
 use Q::Test::Pg;
 
-use Test::More tests => 126;
+use Test::More tests => 127;
 
 use Q::Loader;
 
@@ -32,4 +32,9 @@ use Q::Loader;
                 },
           },
         );
+}
+
+{
+    my $def = Q::Loader::Pg->_default('NULL');
+    isa_ok( $def, 'Q::Literal::Null');
 }
