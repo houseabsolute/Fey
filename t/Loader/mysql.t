@@ -16,7 +16,7 @@ use Q::Loader;
 {
     my $loader = Q::Loader->new( dbh => Q::Test::SQLite->dbh() );
 
-    my $schema1 = $loader->make_schema();
+    my $schema1 = $loader->make_schema( name => 'Test' );
     my $schema2 = Q::Test->mock_test_schema_with_fks();
 
     Q::Test::Loader->compare_schemas
@@ -31,20 +31,24 @@ use Q::Loader;
                 },
             'Message.quality' =>
                 { type    => 'DECIMAL',
+                  default => Q::Literal->term('2.30'),
                 },
             'Message.message_date' =>
                 { type         => 'TIMESTAMP',
                   length       => 14,
-                  precision    => 0, # gah, MySQL is so weird
+                  precision    => 0, # gah, mysql is so weird
                   generic_type => 'datetime',
                   default      => Q::Literal->term('CURRENT_TIMESTAMP'),
+                  # mysql seems to always consider timestamp columns nullable
+                  is_nullable  => 1,
                 },
             'User.user_id' =>
                 { type   => 'INT',
                   length => 11,
                 },
             'User.username' =>
-                { type   => 'TEXT',
+                { type    => 'TEXT',
+                  default => Q::Literal->string(''),
                 },
             'User.email' =>
                 { type   => 'TEXT',
@@ -62,7 +66,8 @@ use Q::Loader;
                   length => 11,
                 },
             'Group.name' =>
-                { type   => 'TEXT',
+                { type    => 'TEXT',
+                  default => Q::Literal->string(''),
                 },
           },
         );

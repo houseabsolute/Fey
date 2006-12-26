@@ -7,7 +7,7 @@ use base 'Q::Accessor';
 __PACKAGE__->mk_ro_accessors
     ( qw( dbh ) );
 
-use Q::Validate qw( validate DBI_TYPE );
+use Q::Validate qw( validate SCALAR_TYPE DBI_TYPE );
 
 use Q::Column;
 use Q::FK;
@@ -28,18 +28,24 @@ use Scalar::Util qw( looks_like_number );
     }
 }
 
-sub make_schema
 {
-    my $self = shift;
+    my $spec = { name => SCALAR_TYPE( optional => 1 ) };
+    sub make_schema
+    {
+        my $self = shift;
+        my %p    = validate( @_, $spec );
 
-    my $schema = Q::Schema->new( name => $self->_schema_name() );
+        my $name = delete $p{name} || $self->_schema_name();
 
-    $self->_add_tables($schema);
-    $self->_add_foreign_keys($schema);
+        my $schema = Q::Schema->new( name => $name );
 
-    $schema->set_dbh( $self->dbh() );
+        $self->_add_tables($schema);
+        $self->_add_foreign_keys($schema);
 
-    return $schema;
+        $schema->set_dbh( $self->dbh() );
+
+        return $schema;
+    }
 }
 
 sub _schema_name

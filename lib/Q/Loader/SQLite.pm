@@ -79,21 +79,6 @@ sub _sqlite_column_info {
     return $sth;
 }
 
-{
-    my $spec = { name => SCALAR_TYPE };
-    sub make_schema
-    {
-        my $self = shift;
-        my %p    = validate( @_, $spec );
-
-        $self->{schema_name} = delete $p{name};
-
-        return $self->SUPER::make_schema(@_);
-    }
-}
-
-sub _schema_name { $_[0]->{schema_name} }
-
 sub _is_auto_increment
 {
     my $self     = shift;

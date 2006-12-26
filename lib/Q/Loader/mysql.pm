@@ -34,8 +34,6 @@ sub _primary_key {
     return @pk;
 }
 
-
-
 sub _column_params
 {
     my $self     = shift;
@@ -69,6 +67,33 @@ sub _column_params
            );
 
     return %col;
+}
+
+sub _is_auto_increment
+{
+    my $self     = shift;
+    my $table    = shift;
+    my $col_info = shift;
+
+    my $table_info = $self->_table_info( $table->name() );
+
+    my ($row) =
+        grep { $_->[0] eq $col_info->{COLUMN_NAME} } @{$table_info};
+
+    return $row && $row->[5] =~ /AUTO_INCREMENT/i ? 1 : 0;
+}
+
+sub _table_info
+{
+    my $self = shift;
+    my $name = shift;
+
+    return $self->{__table_info__}{$name}
+        if $self->{__table_info__}{$name};
+
+    return $self->{__table_info__}{$name} =
+        $self->dbh()->selectall_arrayref
+            ( "DESCRIBE " . $self->dbh()->quote_identifier($name) );
 }
 
 sub _default
