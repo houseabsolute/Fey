@@ -23,6 +23,17 @@ my $builder =
           recommends =>
           { 'Test::Memory::Cycle'   => 0,
           },
+          auto_features =>
+          { mysql    => { description => 'mysql support',
+                          requires    => { 'DBD::mysql' => 0 },
+                        },
+            SQLite   => { description => 'SQLite support',
+                          requires    => { 'DBD::SQLite' => 0 },
+                        },
+            Postgres => { description => 'Postgres support',
+                          requires    => { 'DBD::Pg' => 0 },
+                        },
+          },
           create_makefile_pl   => 'passthrough',
           create_readme        => 1,
           recursive_test_files => 1,
