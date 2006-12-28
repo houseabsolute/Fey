@@ -30,7 +30,6 @@ BEGIN
         DBI->import(':sql_types');
 
         require DBI::Const::GetInfoType;
-        DBI::Const::GetInfoType->import();
     }
 }
 
@@ -74,7 +73,7 @@ BEGIN
         my $dbh = shift;
 
         my ($maj, $min, $point) =
-            $dbh->get_info($GetInfoType{SQL_DBMS_VER}) =~ /(\d+)\.(\d+)\.(\d+)/;
+            $dbh->get_info($DBI::Const::GetInfoType::GetInfoType{SQL_DBMS_VER}) =~ /(\d+)\.(\d+)\.(\d+)/;
 
         return 1 if $maj >= 5 && $point >= 1;
     }
