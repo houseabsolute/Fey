@@ -10,9 +10,14 @@ use DBD::SQLite;
 use Q::Validate qw( validate SCALAR_TYPE );
 
 
-unless ( defined &DBD::SQLite::db::column_info )
+package DBD::SQLite::Fixup;
+
+BEGIN
 {
-    *DBD::SQLite::db::column_info = \&_sqlite_column_info;
+    unless ( defined &DBD::SQLite::db::column_info )
+    {
+        *DBD::SQLite::db::column_info = \&_sqlite_column_info;
+    }
 }
 
 sub _sqlite_column_info {
@@ -78,6 +83,9 @@ sub _sqlite_column_info {
     }) or return $dbh->DBI::set_err($sponge->err(), $sponge->errstr());
     return $sth;
 }
+
+
+package Q::Loader::SQLite;
 
 sub _add_table
 {
