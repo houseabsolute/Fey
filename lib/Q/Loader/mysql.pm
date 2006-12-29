@@ -306,19 +306,6 @@ sub _is_auto_increment
     return $col_info->{mysql_is_auto_increment} ? 1 : 0;
 }
 
-sub _table_info
-{
-    my $self = shift;
-    my $name = shift;
-
-    return $self->{__table_info__}{$name}
-        if $self->{__table_info__}{$name};
-
-    return $self->{__table_info__}{$name} =
-        $self->dbh()->selectall_arrayref
-            ( "DESCRIBE " . $self->dbh()->quote_identifier($name) );
-}
-
 sub _default
 {
     my $self     = shift;
