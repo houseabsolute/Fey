@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 33;
+use Test::More tests => 34;
 
 use Q::Schema;
 
@@ -133,6 +133,10 @@ use Q::Schema;
     @fk = $s->foreign_keys_between_tables( $s->table('UserGroup'), $s->table('User') );
     is( scalar @fk, 0,
         'no fks between UserGroup and User after User.user_id columns is removed' );
+
+    @fk = $s->foreign_keys_between_tables( $s->table('Message'), $s->table('Message') );
+    is( scalar @fk, 0,
+        'no fks between Message and Message' );
 }
 
 {
