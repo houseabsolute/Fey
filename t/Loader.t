@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Q::Test;
-use Test::More tests => 3;
+use Test::More tests => 4;
 
 use Q::Loader;
 
@@ -24,6 +24,11 @@ use Q::Loader;
     $dbh->{Driver}{Name} = 'SQLite';
 
     my $loader = Q::Loader->new( dbh => $dbh );
+    isa_ok( $loader, 'Q::Loader::SQLite' );
+
+    # Make sure Q::Loader finds the right subclass after that subclass
+    # has been loaded.
+    $loader = Q::Loader->new( dbh => $dbh );
     isa_ok( $loader, 'Q::Loader::SQLite' );
 }
 
