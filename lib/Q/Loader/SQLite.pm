@@ -34,7 +34,6 @@ sub _sqlite_column_info {
                     DECIMAL_DIGITS NUM_PREC_RADIX NULLABLE
                     REMARKS COLUMN_DEF SQL_DATA_TYPE SQL_DATETIME_SUB
                     CHAR_OCTET_LENGTH ORDINAL_POSITION IS_NULLABLE
-                    sqlite_autoincrement
                   );
 
     my @cols;
