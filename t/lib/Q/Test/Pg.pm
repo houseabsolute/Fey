@@ -45,6 +45,8 @@ use File::Temp ();
             DBI->connect
                 ( 'dbi:Pg:dbname=test_q', '', '', { PrintError => 0, RaiseError => 1 } );
 
+        # Shuts up "NOTICE" warnings from Pg.
+        local $dbh->{PrintWarn} = 0;
         $class->_run_ddl($dbh);
 
         return $dbh;
