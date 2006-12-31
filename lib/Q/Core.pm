@@ -1,4 +1,4 @@
-package Q;
+package Q::Core;
 
 use strict;
 use warnings;

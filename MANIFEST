@@ -1,10 +1,10 @@
 Build.PL
 Changes
 GOALS
-lib/Q.pm
 lib/Q/Accessor.pm
 lib/Q/Column.pm
 lib/Q/Column/Alias.pm
+lib/Q/Core.pm
 lib/Q/Exceptions.pm
 lib/Q/FK.pm
 lib/Q/Literal.pm
