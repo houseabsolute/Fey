@@ -12,22 +12,14 @@ __END__
 
 =head1 NAME
 
-Q - The fantastic new Q!
-
-=head1 SYNOPSIS
-
-Perhaps a little code snippet.
-
-  use Q;
-
-  my $foo = Q->new;
+Fey::Core - Core classes for Fey
 
 =head1 DESCRIPTION
 
 The goal of this module is to provide a (relatively) simple, flexible
-way to I<dynamically> generate SQL queries from Perl. The emphasis
-here is on dynamic, and by that I mean that the structure of the SQL
-query may change dynamically.
+way to I<dynamically> generate complex SQL queries in Perl. The
+emphasis here is on dynamic, and by that I mean that the structure of
+the SQL query may change dynamically.
 
 This is different from simply changing the parameters of a query
 dynamically. For example:
@@ -37,7 +29,7 @@ dynamically. For example:
 While this is a dynamic query in the sense that the username is
 parameter-ized, and may change on each invocation, it is still easily
 handled by a phrasebook class. If that is all you need, I suggest
-checking out C<Class::Phrasebook::SQL>, C<Data::Phrasebook>, and
+checking out C<Class::Phrasebook::SQL>, C<Data::Phrasebook>, or
 C<SQL::Library> on CPAN.
 
 =head2 Why Not Use a Phrasebook?
@@ -50,21 +42,21 @@ Let's assume we have a simple User table with the following columns:
  last_name
  access_level
 
-Limiting ourselves to queries of equality ("username = ?"), we would
-still need 32 (1 + 5 + 10 + 10 + 5 + 1) entries to handle all the
-possible combinations. Now imagine adding in variants like allowing
-for wildcard searches using LIKE or regexes, or more complex variants
-involving an "OR" in a subclause.
+Limiting ourselves to queries of equality ("username = ?", "state =
+?"), we would still need 32 (1 + 5 + 10 + 10 + 5 + 1) entries to
+handle all the possible combinations of columns. Now imagine adding in
+variants like allowing for wildcard searches using LIKE or regexes, or
+more complex variants involving an "OR" in a subclause.
 
 This gets even more complicated if you start adding in joins, outer
 joins, and so on. It's plain to see that a phrasebook gets too large
-to be usable at this point, and you'd probably have to write a program
-just to generate the phrasebook and keep it up to date at this point!
+to be usable at this point. You'd probably have to write a program
+just to generate the phrasebook and keep it up to date!
 
 =head2 Why Not String Manipulation?
 
-The first solution that might come to mind is to dump the phrasebook
-in favor of string manipulation. This is simple enough at first, but
+The next idea that might come to mind is to dump the phrasebook in
+favor of string manipulation. This is simple enough at first, but
 quickly gets ugly. Handling all of the possible options correctly
 requires lots of fiddly code that has to concatenate bits of SQL in
 the correct order.
@@ -72,110 +64,33 @@ the correct order.
 =head2 The Solution
 
 Hopefully, this module provides a solution to this problem. It allows
-you to specify queries in the form of I<Perl data structures>. It
-provides a set of objects to represent specific parts of a schema,
-specifically tables, columns, and foreign keys. Using these objects
-you can easily generate very complex queries by combining them with
-strings and passing them to the appropriate query-generating method.
+you to specify queries in the form of I<Perl methods and data
+structures>. It provides a set of objects to represent the parts of a
+schema, specifically tables, columns, and foreign keys. Using these
+objects you can easily generate very complex queries by combining them
+with strings and passing them to the appropriate query-generating
+method.
 
 I also hope that this module can be used as a building block to build
-other tools. A good example would be a tool for generating DDL
-statements (like Alzabo ;).
+other tools. A good example would be an RDBMS-OO mapper.
 
 =head1 HISTORY AND GOALS
 
 This module comes from my experience writing and using Alzabo. Alzabo
 does everything this module does, and a lot more. The fact that Alzabo
-does so many things has become a bit problematic in its maintenance,
-and Alzabo is over 6 years old at this time (August of 2006).
-
-=head2 Problems with Alzabo
-
-Here are some of the problems I've had with Alzabo over the years:
-
-=over 4
-
-=item *
-
-Adding support for a new RDBMS is a lot of work, so it only supports
-MySQL and Pg. Alzabo tried to be really smart about preventing users
-from shooting themselves in the foot, and required a lot of specific
-code for each DBMS to achieve this.
-
-=item *
-
-It doesn't support multiple versions of a DBMS very well. Either it
-doesn't work with an older version at all, or it doesn't support some
-enhanced capability of a newer version.
-
-On a side note, if DBMS's were to provide a standard API for asking
-questions about their DDL syntax and vcapabilities like "what is the
-max number of chars in a column name?" or "what data are the names of
-each data type?" that would have made things infinitely easier.
-
-=item *
-
-There are now free GUI design tools for specific databases that do a
-better job of supporting the database in question.
-
-=item *
-
-Alzabo separates its classes into Create (for generation of DDL) and
-Runtime (for DML) subclasses, which might have been worth the memory
-savings six years ago, but just makes for an extra hassle now.
-
-=item *
-
-When I originally developed Alzabo, I thought that generating OO
-classes that subclasses the Alzabo classes and added "business logic"
-methods was a good idea, thus C<Alzabo::MethodMaker>. Nowadays, I
-prefer to have my business logic classes simple use the Alzabo
-classes. In other words, I now prefer "has-a" versus "is-a" object
-design for this case.
-
-Method auto-generation based on a specific schema can be quite handy,
-but it should be done in the domain-specific classes, not as a
-subclass of the core functionality.
-
-=item *
-
-Storing schemas in an Alzabo-specific format is problematic for many
-reasons. It's simpler to simply get the schema definition from an
-existing schema, or to allow users to define it in code.
-
-=item *
-
-Alzabo's referential integrity checking code was really cool back when
-I mostly used MySQL with MYISAM tables, but is a burden nowadays.
-
-=item *
-
-I didn't catch the testing bug until quite a while after I'd started
-working on Alzabo. Alzabo's test suite is nasty. Q will be built for
-testability, and I'll make sure that high test coverage is part of my
-ongoing goals.
-
-=item *
-
-Alzabo does too many things, which makes it hard to explain and
-document.
-
-=back
+does so many things has become a fairly problematic in its
+maintenance, and Alzabo is over 6 years old at the time this project
+was begun (August of 2006).
 
 =head2 Goals
 
-Overall, rather than coming up with a very smart solution that allows
-us to use 80% of a DBMS's functionality, I'd rather come up with a
-100% solution that's dumber. It's easy to add smarts on top of a dumb
-layer, but it can be terribly hard to add that last 20% once you've
-got something really smart.
+Rather than coming up with a very smart solution that allows us to use
+80% of a DBMS's functionality, I'd rather come up with a 100% solution
+that's dumber. It's easy to add smarts on top of a dumb layer, but it
+can be terribly hard to add that last 20% once you've got something
+really smart.
 
-A good example of this is Alzabo's support of database functions like
-"AVG" or "SUM". It supports them in a very clever way, but adding
-support for a new function can be a pain, especially if it has odd
-syntax.
-
-The goals for Q, based on my experience with Alzabo, are the
+The goals for Fey, based on my experience with Alzabo, are the
 following:
 
 =over 4
@@ -186,13 +101,13 @@ Provide a simple way to generate queries dynamically. I really like
 the way this works with Alzabo, except that Alzabo is not as flexible
 as I'd like.
 
-Specifically, Q will be able to issue updates and deletes to more than
-one row at a time. Q will support sub-selects, unions, etc. and all
+Specifically, Fey will be able to issue updates and deletes to more than
+one row at a time. Fey will support sub-selects, unions, etc. and all
 that other good stuff.
 
 =item *
 
-Q will support complex query creation with less fiddliness than
+Fey will support complex query creation with less fiddliness than
 Alzabo. This means that the class to represent queries will be a
 little smarter and more flexible about the order in which bits are
 added.
@@ -206,21 +121,162 @@ able to do this
   $query->join( $foo_table => $bar_table );
 
 and have it do the right thing if that join already exists.
-o
+
 =item *
 
-Provide the base for a tool that does what the C<Alzabo::Runtime::Row>
-class does. There will be a separate tool that takes query results and
-turns them into low-level "row" objects instead of returning them as
-DBI statement handles.
+Provide the core for an RDBMS-OO mapper similar to a combination of
+C<Alzabo::Runtime::Row> and C<Class::AlzaboWrapper>.
 
-This tool will support something like Alzabo's "potential" rows, which
-are objects that have the same API as these row objects, but do not
-represent data in the DBMS.
+This mapper will support something like Alzabo's "potential" rows,
+which are objects that have the same API as these row objects, but do
+not represent data in the DBMS.
 
-Finally, it will have support the same type of simple "unique row
-cache" that Alzabo provides. This type of dirt-simple caching has
-proven to be a big win in many applications I've written.
+Finally, it will have support the same type of simple "unique
+row/object cache" that Alzabo provides. This type of dirt-simple
+caching has proven to be a big win in many applications I've written.
+
+=back
+
+=head2 Problems with Alzabo
+
+Here are some of the problems I've had with Alzabo over the years:
+
+=over 4
+
+=item *
+
+Adding support for a new DBMS is a lot of work, so it only supports
+MySQL and Postgres. Alzabo tries to be really smart about preventing
+users from shooting themselves in the foot, and required a lot of
+specific code for each DBMS to achieve this.
+
+In retrospect, being a lot dumber and allowing for foot-shooting makes
+supporting a new DBMS much easier.
+
+For example, while Fey can accomodate per-DBMS query (sub)classes, it does
+not include any by default, and is capable of supporting many
+DBMS-specific features without per-DBMS classes.
+
+=item *
+
+Alzabo has too much DBMS-specific knowledge. If you want to use a SQL
+function in a query, you have to import a corresponding Perl function
+from the appropriate C<Alzabo::SQLMaker> subclass.
+
+This means that you're limited to what that subclass defines.
+
+By contrast, Fey has simple generic support for arbitrary functions
+via the C<Fey::Literal::Function> class. If you need more flexibility
+you can use the C<Fey::Literal::Term> subclass to generate an
+arbitrary snippet of SQL.
+
+You can still make helper functions that use these for your own use,
+but you're not limited by what Fey provides.
+
+=item *
+
+Alzabo doesn't support multiple versions of a DBMS very well. Either
+it doesn't work with an older version at all, or it doesn't support
+some enhanced capability of a newer version.
+
+=item *
+
+There are now free GUI design tools for specific databases that do a
+better job of supporting the database in question than Alzabo ever
+has.
+
+=item *
+
+Alzabo separates its classes into Create (for generation of DDL) and
+Runtime (for DML) subclasses, which might have been worth the memory
+savings six years ago, but just makes for an extra hassle now.
+
+=item *
+
+When I originally developed Alzabo, I included a feature for
+generating high-level application object classes which subclass the
+Alzabo classes and add "business logic" methods. This is what is
+provided by C<Alzabo::MethodMaker>.
+
+Nowadays, I prefer to have my business logic classes simple use the
+Alzabo classes. In other words, I now prefer "has-a" and "uses-a"
+versus "is-a" object design for this case.
+
+Method auto-generation based on a specific schema can be quite handy,
+but it should be done in the domain-specific application classes, not
+as a subclass of the core functionality.
+
+=item *
+
+Storing schemas in an Alzabo-specific format is problematic for many
+reasons. It's simpler to simply get the schema definition from an
+existing schema, or to allow users to define it in code.
+
+=item *
+
+Alzabo's referential integrity checking code was really cool back when
+I mostly used MySQL with MYISAM tables, but is a just a maintenance
+burden nowadays, and makes it hard to add some features to Alzabo.
+
+=item *
+
+I didn't catch the testing bug until quite a while after I'd started
+working on Alzabo. Alzabo's test suite is nasty. Fey is built with
+testability in mind, and high test coverage is part of my ongoing
+goals for the project.
+
+=item *
+
+Alzabo does too many things, which makes it hard to explain and
+document.
+
+=back
+
+=head1 WHY IS IT NAMED Fey?
+
+When I first started working on Fey, it was named "Q". This was a nice
+short name to type, but obviously unsuitable for releasing on CPAN. I
+wanted a nice short name that could be used in multiple distributions,
+like John Siracusa's "Rose" modules.
+
+I was standing in the shower one day and had the following series of
+thoughts leading to Fey. Reading this will may give you an unpleasant
+insight into my mind. You have been warned.
+
+=over 4
+
+=item * SQLy
+
+This module is "SQL-y", as in "related to SQL". However, this name is
+bad for a number of reasons. First, it's not clear how to pronounce
+it. It may make think of a YACC grammar ("SQL.y"). It's a weird combo
+of upper- and lower-case letters.
+
+=item * SQLy => Squall
+
+"SQLy" and "Squall" share a number of letters, obviously.
+
+Squall is a single short word, which is good. However, it's a bit
+awkward to type and has a somewhat negative meaning to me, because a
+storm can mean trouble.
+
+=item * Squall => Lionheart => Faye
+
+Squall Lionheart is a character in Final Fantasy VIII, which IMO is
+the best Final Fantasy game before the PS2.
+
+The inimitable Faye Wong sang the theme song for FF VIII. I love Faye
+Wong.
+
+=item * Faye => Fey
+
+And thus we arrive at "Fey". It's nice and short, easy to type, and
+easy to say.
+
+Some of its meanings are "otherworldly" or "magical". Attempting to
+combine SQL and OO in any way is certainly unnatural, and if done
+right, perhaps magical. Fey can also mean "appearing slightly
+crazy". This project is certainly that.
 
 =back
 
@@ -242,10 +298,10 @@ Dave Rolsky, <autarch@urth.org>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to
-C<bug-q@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.  I will be notified, and then you'll automatically be
-notified of progress on your bug as I make changes.
+Please report any bugs or feature requests to C<bug-fey@rt.cpan.org>,
+or through the web interface at L<http://rt.cpan.org>.  I will be
+notified, and then you'll automatically be notified of progress on
+your bug as I make changes.
 
 =head1 COPYRIGHT & LICENSE
 
