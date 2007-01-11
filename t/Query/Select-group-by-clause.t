@@ -3,17 +3,17 @@ use warnings;
 
 use lib 't/lib';
 
-use Q::Test;
+use Fey::Test;
 use Test::More tests => 7;
 
-use Q::Literal;
-use Q::Query;
+use Fey::Literal;
+use Fey::Query;
 
 
-my $s = Q::Test->mock_test_schema_with_fks();
+my $s = Fey::Test->mock_test_schema_with_fks();
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select();
 
     eval { $q->group_by() };
     like( $@, qr/0 parameters/,
@@ -21,7 +21,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select();
 
     $q->group_by( $s->table('User')->column('user_id') );
     is( $q->_group_by_clause(), q{GROUP BY "User"."user_id"},
@@ -29,7 +29,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select();
 
     $q->group_by( $s->table('User')->column('user_id'),
                   $s->table('User')->column('username')
@@ -39,7 +39,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select();
 
     $q->group_by( $s->table('User')->column('user_id')
                   ->alias( alias_name => 'alias_test' ) );
@@ -49,9 +49,9 @@ my $s = Q::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select();
 
-    my $now = Q::Literal->function( 'NOW' );
+    my $now = Fey::Literal->function( 'NOW' );
     $now->_make_alias();
 
     $q->group_by($now);
@@ -61,9 +61,9 @@ my $s = Q::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select();
 
-    my $now = Q::Literal->function( 'NOW' );
+    my $now = Fey::Literal->function( 'NOW' );
 
     eval { $q->group_by($now) };
     like( $@, qr/is groupable/,
@@ -71,9 +71,9 @@ my $s = Q::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->select();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select();
 
-    my $term = Q::Literal->term( q{"Foo"::text} );
+    my $term = Fey::Literal->term( q{"Foo"::text} );
     $q->group_by($term);
 
     is( $q->_group_by_clause(), q{GROUP BY "Foo"::text},

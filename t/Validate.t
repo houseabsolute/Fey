@@ -3,8 +3,8 @@ use warnings;
 
 use Test::More tests => 10;
 
-use Q::Table;
-use Q::Validate qw( validate :types );
+use Fey::Table;
+use Fey::Validate qw( validate :types );
 
 
 {
@@ -45,7 +45,7 @@ use Q::Validate qw( validate :types );
 }
 
 {
-    my $table = Q::Table->new( name => 'Test' );
+    my $table = Fey::Table->new( name => 'Test' );
 
     my @p = ( table => $table );
     eval { validate( @p, { table => TABLE_OR_NAME_TYPE } ) };
@@ -57,6 +57,6 @@ use Q::Validate qw( validate :types );
 
     @p = ( table => bless { foo => 1 }, 'Foo' );
     eval { validate( @p, { table => TABLE_OR_NAME_TYPE } ) };
-    like( $@, qr/is a Q::Table object or name/,
+    like( $@, qr/is a Fey::Table object or name/,
           'TABLE_OR_NAME_TYPE failed with Foo object' );
 }

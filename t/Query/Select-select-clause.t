@@ -3,20 +3,20 @@ use warnings;
 
 use lib 't/lib';
 
-use Q::Test;
+use Fey::Test;
 use Test::More tests => 13;
 
-use Q::Query;
+use Fey::Query;
 
 
-my $s = Q::Test->mock_test_schema();
+my $s = Fey::Test->mock_test_schema();
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
 
     $q->select( $s->table('User') );
 
-    isa_ok( $q, 'Q::Query::Select' );
+    isa_ok( $q, 'Fey::Query::Select' );
 
     my $sql = q{SELECT "User"."email", "User"."user_id", "User"."username"};
     is( $q->_select_clause(), $sql,
@@ -35,7 +35,7 @@ my $s = Q::Test->mock_test_schema();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
 
     $q->select( $s->table('User') );
 
@@ -61,7 +61,7 @@ my $s = Q::Test->mock_test_schema();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
 
     $q->select( $s->table('User')->column('user_id') );
     $q->select( $s->table('User') );
@@ -73,7 +73,7 @@ my $s = Q::Test->mock_test_schema();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
 
     $q->select( $s->table('User')->column('user_id') );
     $q->select( $s->table('User')->column('user_id')
@@ -86,7 +86,7 @@ my $s = Q::Test->mock_test_schema();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->select( $s->table('User')->column('user_id') )->distinct();
 
     my $sql = q{SELECT DISTINCT "User"."user_id"};
@@ -94,7 +94,7 @@ my $s = Q::Test->mock_test_schema();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
 
     $q->select( 'some literal thing' );
     my $sql = q{SELECT 'some literal thing'};
@@ -103,7 +103,7 @@ my $s = Q::Test->mock_test_schema();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
 
     $q->select( 235.12 );
     my $sql = q{SELECT 235.12};
@@ -112,11 +112,11 @@ my $s = Q::Test->mock_test_schema();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
 
-    my $concat = Q::Literal->function( 'CONCAT',
+    my $concat = Fey::Literal->function( 'CONCAT',
                                        $s->table('User')->column('user_id'),
-                                       Q::Literal->string(' '),
+                                       Fey::Literal->string(' '),
                                        $s->table('User')->column('username'),
                                      );
     $q->select($concat);

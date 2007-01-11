@@ -5,20 +5,20 @@ use lib 't/lib';
 
 use Test::More tests => 16;
 
-use Q::Table;
-use Q::Column::Alias;
+use Fey::Table;
+use Fey::Column::Alias;
 
 
-my $t = Q::Table->new( name => 'Test' );
-my $c = Q::Column->new( name => 'test_id',
+my $t = Fey::Table->new( name => 'Test' );
+my $c = Fey::Column->new( name => 'test_id',
                         type => 'text',
                       );
 $t->add_column($c);
 
 {
     my $alias = $c->alias();
-    isa_ok( $alias, 'Q::Column::Alias' );
-    isa_ok( $alias, 'Q::Column' );
+    isa_ok( $alias, 'Fey::Column::Alias' );
+    isa_ok( $alias, 'Fey::Column' );
 
     ok( $alias->is_alias(), 'is_alias is true' );
     is( $alias->alias_name(), 'test_id1',
@@ -51,11 +51,11 @@ $t->add_column($c);
 }
 
 {
-    my $c = Q::Column->new( name => 'testy',
+    my $c = Fey::Column->new( name => 'testy',
                             type => 'text',
                           );
     my $alias = $c->alias();
     eval { $alias->id() };
-    isa_ok( $@, 'Q::Exception::ObjectState' );
+    isa_ok( $@, 'Fey::Exception::ObjectState' );
 }
 

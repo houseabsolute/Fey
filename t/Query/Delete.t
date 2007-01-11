@@ -3,37 +3,37 @@ use warnings;
 
 use lib 't/lib';
 
-use Q::Test;
+use Fey::Test;
 use Test::More tests => 4;
 
-use Q::Query;
+use Fey::Query;
 
 
-my $s = Q::Test->mock_test_schema();
+my $s = Fey::Test->mock_test_schema();
 
 my $size =
-    Q::Column->new( name        => 'size',
+    Fey::Column->new( name        => 'size',
                     type        => 'text',
                     is_nullable => 1,
                   );
 $s->table('User')->add_column($size);
 
 {
-    eval { Q::Query->new( dbh => $s->dbh() )->delete()->from() };
+    eval { Fey::Query->new( dbh => $s->dbh() )->delete()->from() };
 
     like( $@, qr/1 was expected/,
           'from() without any parameters fails' );
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->delete()->from( $s->table('User') );
+    my $q = Fey::Query->new( dbh => $s->dbh() )->delete()->from( $s->table('User') );
 
     is( $q->_delete_clause(), q{DELETE FROM "User"},
         'delete clause for one table' );
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )
+    my $q = Fey::Query->new( dbh => $s->dbh() )
                     ->delete()->from( $s->table('User'), $s->table('UserGroup') );
 
     is( $q->_delete_clause(), q{DELETE FROM "User", "UserGroup"},
@@ -41,7 +41,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->delete()->from( $s->table('User') );
     $q->where( $s->table('User')->column('user_id'), '=', 10 );
     $q->order_by( $s->table('User')->column('user_id') );

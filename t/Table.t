@@ -5,17 +5,17 @@ use lib 't/lib';
 
 use Test::More tests => 20;
 
-use Q::Table;
+use Fey::Table;
 
 
 {
-    eval { my $s = Q::Table->new() };
+    eval { my $s = Fey::Table->new() };
     like( $@, qr/Mandatory parameter 'name' missing/,
           'name is a required param' );
 }
 
 {
-    my $t = Q::Table->new( name => 'Test' );
+    my $t = Fey::Table->new( name => 'Test' );
 
     is( $t->name(), 'Test', 'table name is Test' );
     ok( ! $t->is_view(), 'table is not view' );
@@ -26,14 +26,14 @@ use Q::Table;
 }
 
 {
-    my $t = Q::Table->new( name => 'Test', is_view => 1 );
+    my $t = Fey::Table->new( name => 'Test', is_view => 1 );
 
     ok( $t->is_view(), 'table is view' );
 }
 
 {
-    my $t = Q::Table->new( name => 'Test' );
-    my $c1 = Q::Column->new( name => 'test_id',
+    my $t = Fey::Table->new( name => 'Test' );
+    my $c1 = Fey::Column->new( name => 'test_id',
                              type => 'text',
                            );
 
@@ -64,12 +64,12 @@ use Q::Table;
 }
 
 {
-    my $t = Q::Table->new( name => 'Test' );
-    my $c1 = Q::Column->new( name => 'test_id',
+    my $t = Fey::Table->new( name => 'Test' );
+    my $c1 = Fey::Column->new( name => 'test_id',
                              type => 'text',
                            );
 
-    my $c2 = Q::Column->new( name => 'size',
+    my $c2 = Fey::Column->new( name => 'size',
                              type => 'integer',
                            );
 

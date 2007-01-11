@@ -3,17 +3,17 @@ use warnings;
 
 use lib 't/lib';
 
-use Q::Test;
+use Fey::Test;
 use Test::More tests => 18;
 
-use Q::FK;
-use Q::Schema;
+use Fey::FK;
+use Fey::Schema;
 
 
 {
-    my $s = Q::Test->mock_test_schema();
+    my $s = Fey::Test->mock_test_schema();
 
-    eval { Q::FK->new( source => $s->table('User')->column('user_id'),
+    eval { Fey::FK->new( source => $s->table('User')->column('user_id'),
                        target => [ $s->table('UserGroup')->column('user_id'),
                                    $s->table('UserGroup')->column('group_id'),
                                  ],
@@ -21,7 +21,7 @@ use Q::Schema;
     like( $@, qr/must contain the same number of columns/,
           'error when column count for source and target differ' );
 
-    eval { Q::FK->new( source => [ $s->table('User')->column('user_id'),
+    eval { Fey::FK->new( source => [ $s->table('User')->column('user_id'),
                                    $s->table('User')->column('username'),
                                  ],
                        target => [ $s->table('UserGroup')->column('user_id'),
@@ -34,17 +34,17 @@ use Q::Schema;
     like( $@, qr/\Q$err/,
           'error when column list comes from >1 table' );
 
-    my $c = Q::Column->new( name => 'no_table',
+    my $c = Fey::Column->new( name => 'no_table',
                             type => 'text',
                           );
-    eval { Q::FK->new( source => $s->table('User')->column('user_id'),
+    eval { Fey::FK->new( source => $s->table('User')->column('user_id'),
                        target => $c,
                      ) };
     like( $@, qr/\QAll columns passed to add_foreign_key() must have a table./,
           'error when a column does not have a table' );
 
     my $fk =
-        Q::FK->new
+        Fey::FK->new
             ( source => $s->table('User')->column('user_id'),
               target => $s->table('UserGroup')->column('user_id'),
             );
@@ -63,7 +63,7 @@ use Q::Schema;
     is( $target[0]->name(), 'user_id', 'target column is user_id' );
 
     my $fk2 =
-        Q::FK->new
+        Fey::FK->new
             ( target => $s->table('User')->column('user_id'),
               source => $s->table('UserGroup')->column('user_id'),
             );

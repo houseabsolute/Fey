@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Q::Test;
+use Fey::Test;
 use Test::More;
 
 unless ( eval { require Test::Memory::Cycle;
@@ -16,5 +16,5 @@ unless ( eval { require Test::Memory::Cycle;
 
 plan tests => 1;
 
-memory_cycle_ok( Q::Test->mock_test_schema(),
+memory_cycle_ok( Fey::Test->mock_test_schema(),
                  'Make sure schema object does not have circular refs' );

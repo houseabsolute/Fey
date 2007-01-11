@@ -3,17 +3,17 @@ use warnings;
 
 use lib 't/lib';
 
-use Q::Test;
+use Fey::Test;
 use Test::More tests => 3;
 
-use Q::Literal;
-use Q::Query;
+use Fey::Literal;
+use Fey::Query;
 
 
-my $s = Q::Test->mock_test_schema_with_fks();
+my $s = Fey::Test->mock_test_schema_with_fks();
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
 
     eval { $q->limit() };
     like( $@, qr/0 parameters/,
@@ -21,7 +21,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
 
     $q->limit(10);
 
@@ -30,7 +30,7 @@ my $s = Q::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
 
     $q->limit( 10, 20 );
 

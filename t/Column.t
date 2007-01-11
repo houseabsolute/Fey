@@ -5,17 +5,17 @@ use lib 't/lib';
 
 use Test::More tests => 28;
 
-use Q::Column;
+use Fey::Column;
 
 
 {
-    eval { my $s = Q::Column->new() };
+    eval { my $s = Fey::Column->new() };
     like( $@, qr/Mandatory parameters .+ missing/,
           'name, generic_type and type are required params' );
 }
 
 {
-    my $c = Q::Column->new( name         => 'Test',
+    my $c = Fey::Column->new( name         => 'Test',
                             type         => 'foobar',
                             generic_type => 'text',
                           );
@@ -36,7 +36,7 @@ use Q::Column;
     ok( ! $c->is_orderable(), 'is_orderable is false without table' );
 
     eval { $c->id() };
-    isa_ok( $@, 'Q::Exception::ObjectState' );
+    isa_ok( $@, 'Fey::Exception::ObjectState' );
 
     my $clone = $c->clone();
     is( $clone->name(), 'Test', 'clone name is Test' );
@@ -49,7 +49,7 @@ use Q::Column;
 }
 
 {
-    my $c = Q::Column->new( name        => 'Test',
+    my $c = Fey::Column->new( name        => 'Test',
                             type        => 'text',
                             is_nullable => 1,
                           );
@@ -58,40 +58,40 @@ use Q::Column;
 }
 
 {
-    my $c = Q::Column->new( name        => 'Test',
+    my $c = Fey::Column->new( name        => 'Test',
                             type        => 'text',
                             default     => 'hello',
                           );
 
-    ok( $c->default()->isa('Q::Literal::String'),
+    ok( $c->default()->isa('Fey::Literal::String'),
         'column has default which is a string literal' );
 }
 
 {
-    my $c = Q::Column->new( name        => 'Test',
+    my $c = Fey::Column->new( name        => 'Test',
                             type        => 'text',
                             default     => undef,
                           );
 
-    ok( $c->default()->isa('Q::Literal::Null'),
+    ok( $c->default()->isa('Fey::Literal::Null'),
         'column has default which is a null literal' );
 }
 
 {
-    my $c = Q::Column->new( name        => 'Test',
+    my $c = Fey::Column->new( name        => 'Test',
                             type        => 'text',
-                            default     => Q::Literal->term('a term'),
+                            default     => Fey::Literal->term('a term'),
                           );
 
-    ok( $c->default()->isa('Q::Literal::Term'),
+    ok( $c->default()->isa('Fey::Literal::Term'),
         'column has default which is a term literal' );
 }
 
 {
-    require Q::Table;
+    require Fey::Table;
 
-    my $t = Q::Table->new( name => 'Test' );
-    my $c1 = Q::Column->new( name         => 'test_id',
+    my $t = Fey::Table->new( name => 'Test' );
+    my $c1 = Fey::Column->new( name         => 'test_id',
                              type         => 'text',
                            );
 

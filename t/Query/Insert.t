@@ -3,15 +3,15 @@ use warnings;
 
 use lib 't/lib';
 
-use Q::Test;
+use Fey::Test;
 use Test::More tests => 16;
 
-use Q::Query;
+use Fey::Query;
 
-my $s = Q::Test->mock_test_schema();
+my $s = Fey::Test->mock_test_schema();
 
 my $size =
-    Q::Column->new( name        => 'size',
+    Fey::Column->new( name        => 'size',
                     type        => 'text',
                     is_nullable => 1,
                   );
@@ -19,7 +19,7 @@ $s->table('User')->add_column($size);
 
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
 
     eval { $q->into() };
     like( $@, qr/1 was expected/,
@@ -28,7 +28,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('username') );
 
@@ -39,7 +39,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('user_id'),
               $s->table('User')->column('username') );
@@ -51,7 +51,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('user_id'),
               $s->table('User')->column('username') );
@@ -64,7 +64,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('user_id'),
               $s->table('User')->column('username') );
@@ -75,7 +75,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('user_id'),
               $s->table('User')->column('username') );
@@ -86,7 +86,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -96,7 +96,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -106,49 +106,49 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
-    my $func = Q::Literal->function('NOW');
+    my $func = Fey::Literal->function('NOW');
     $q->values( size => $func );
     is( $q->_values_clause(), q{VALUES (NOW())},
         '_values_clause() for function as value' );
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
-    my $term = Q::Literal->term('term test');
+    my $term = Fey::Literal->term('term test');
     $q->values( size => $term );
     is( $q->_values_clause(), q{VALUES (term test)},
         '_values_clause() for term as value' );
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
-    $q->values( size => Q::Placeholder->new() );
+    $q->values( size => Fey::Placeholder->new() );
     is( $q->_values_clause(), q{VALUES (?)},
         '_values_clause() for placeholder as value' );
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
-    $q->values( size => Q::Placeholder->new() );
+    $q->values( size => Fey::Placeholder->new() );
     is( $q->_values_clause(), q{VALUES (?)},
         '_values_clause() for placeholder as value' );
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -159,7 +159,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 

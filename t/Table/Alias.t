@@ -3,18 +3,18 @@ use warnings;
 
 use lib 't/lib';
 
-use Q::Test;
+use Fey::Test;
 use Test::More tests => 19;
 
-use Q::Table::Alias;
+use Fey::Table::Alias;
 
 
-my $t = Q::Table->new( name => 'Test' );
-my $c1 = Q::Column->new( name => 'test_id',
+my $t = Fey::Table->new( name => 'Test' );
+my $c1 = Fey::Column->new( name => 'test_id',
                          type => 'text',
                        );
 
-my $c2 = Q::Column->new( name => 'size',
+my $c2 = Fey::Column->new( name => 'size',
                          type => 'integer',
                        );
 
@@ -22,8 +22,8 @@ $t->add_column($_) for $c1, $c2;
 
 {
     my $alias = $t->alias();
-    isa_ok( $alias, 'Q::Table::Alias' );
-    isa_ok( $alias, 'Q::Table' );
+    isa_ok( $alias, 'Fey::Table::Alias' );
+    isa_ok( $alias, 'Fey::Table' );
 
     is( $alias->name(), 'Test', 'name is Test' );
     is( $alias->alias_name(), 'Test1', 'alias_name is Test1' );
@@ -59,7 +59,7 @@ $t->add_column($_) for $c1, $c2;
 }
 
 {
-    my $s = Q::Test->mock_test_schema();
+    my $s = Fey::Test->mock_test_schema();
 
     my $alias = $s->table('User')->alias();
     is( $alias->schema(), $s, 'schema method returns correct schema' );

@@ -5,7 +5,7 @@ use Module::Build;
 
 my $builder =
     Module::Build->new
-        ( module_name        => 'Q::Core',
+        ( module_name        => 'Fey::Core',
           license            => 'perl',
           requires           =>
           { 'Class::Accessor::Fast' => 0,

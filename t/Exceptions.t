@@ -3,4 +3,4 @@ use warnings;
 
 use Test::More tests => 1;
 
-use_ok('Q::Exceptions');
+use_ok('Fey::Exceptions');

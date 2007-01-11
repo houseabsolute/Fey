@@ -5,7 +5,7 @@ use lib 't/lib';
 
 use Test::More tests => 61;
 
-use Q::Column;
+use Fey::Column;
 
 
 {
@@ -38,7 +38,7 @@ use Q::Column;
         );
     while ( my ( $type, $generic ) = each %MysqlTypes )
     {
-        is( Q::Column->_guess_generic_type( $type ), $generic,
+        is( Fey::Column->_guess_generic_type( $type ), $generic,
             "guessed $generic for generic type of $type" );
     }
 }
@@ -85,7 +85,7 @@ use Q::Column;
         );
     while ( my ( $type, $generic ) = each %PgTypes )
     {
-        is( Q::Column->_guess_generic_type( $type ), $generic,
+        is( Fey::Column->_guess_generic_type( $type ), $generic,
             "guessed $generic for generic type of $type" );
     }
 }

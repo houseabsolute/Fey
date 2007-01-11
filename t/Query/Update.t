@@ -3,37 +3,37 @@ use warnings;
 
 use lib 't/lib';
 
-use Q::Test;
+use Fey::Test;
 use Test::More tests => 15;
 
-use Q::Query;
+use Fey::Query;
 
 
-my $s = Q::Test->mock_test_schema();
+my $s = Fey::Test->mock_test_schema();
 
 my $size =
-    Q::Column->new( name        => 'size',
+    Fey::Column->new( name        => 'size',
                     type        => 'text',
                     is_nullable => 1,
                   );
 $s->table('User')->add_column($size);
 
 {
-    eval { Q::Query->new( dbh => $s->dbh() )->update() };
+    eval { Fey::Query->new( dbh => $s->dbh() )->update() };
 
     like( $@, qr/1 was expected/,
           'update() without any parameters fails' );
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )->update( $s->table('User') );
+    my $q = Fey::Query->new( dbh => $s->dbh() )->update( $s->table('User') );
 
     is( $q->_update_clause(), q{UPDATE "User"},
         'update clause for one table' );
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() )
+    my $q = Fey::Query->new( dbh => $s->dbh() )
                     ->update( $s->table('User'), $s->table('UserGroup') );
 
     is( $q->_update_clause(), q{UPDATE "User", "UserGroup"},
@@ -41,7 +41,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'), 'bubba' );
 
@@ -50,7 +50,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'), 'bubba',
              $s->table('User')->column('email'), 'bubba@bubba.com',
@@ -62,7 +62,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
              $s->table('User')->column('email'),
@@ -74,10 +74,10 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('size'),
-             Q::Literal->new_from_scalar(undef),
+             Fey::Literal->new_from_scalar(undef),
            );
 
     is( $q->_set_clause(),
@@ -86,10 +86,10 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
-             Q::Literal->new_from_scalar('string'),
+             Fey::Literal->new_from_scalar('string'),
            );
 
     is( $q->_set_clause(),
@@ -98,10 +98,10 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
-             Q::Literal->new_from_scalar(42),
+             Fey::Literal->new_from_scalar(42),
            );
 
     is( $q->_set_clause(),
@@ -110,10 +110,10 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
-             Q::Literal->function( 'NOW' ),
+             Fey::Literal->function( 'NOW' ),
            );
 
     is( $q->_set_clause(),
@@ -122,10 +122,10 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
-             Q::Literal->term( 'thingy' ),
+             Fey::Literal->term( 'thingy' ),
            );
 
     is( $q->_set_clause(),
@@ -134,10 +134,10 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
-             Q::Literal->term( 'thingy' ),
+             Fey::Literal->term( 'thingy' ),
            );
 
     is( $q->_set_clause(),
@@ -146,7 +146,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
              'hello'
@@ -161,7 +161,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     eval { $q->set() };
 
@@ -170,7 +170,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Q::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     eval { $q->set( $s->table('User')->column('username') ) };
 

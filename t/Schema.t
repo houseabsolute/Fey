@@ -3,30 +3,30 @@ use warnings;
 
 use lib 't/lib';
 
-use Q::Test;
+use Fey::Test;
 use Test::More tests => 34;
 
-use Q::Schema;
+use Fey::Schema;
 
 
 {
-    eval { my $s = Q::Schema->new() };
+    eval { my $s = Fey::Schema->new() };
     like( $@, qr/Mandatory parameter .+ missing/,
           'dbh is a required param' );
 }
 
 {
-    my $s = Q::Schema->new( name => 'Test' );
+    my $s = Fey::Schema->new( name => 'Test' );
 
     is( $s->name(), 'Test', 'schema name is Test' );
 
-    $s->set_dbh( Q::Test->mock_dbh() );
+    $s->set_dbh( Fey::Test->mock_dbh() );
     ok( $s->dbh(), 'set_dbh() sets the database handle' );
 }
 
 {
-    my $s = Q::Schema->new( name => 'Test' );
-    my $t = Q::Table->new( name => 'Test' );
+    my $s = Fey::Schema->new( name => 'Test' );
+    my $t = Fey::Table->new( name => 'Test' );
 
     ok( ! $t->schema(), 'table has no schema when created' );
 
@@ -53,12 +53,12 @@ use Q::Schema;
 }
 
 {
-    require Q::FK;
+    require Fey::FK;
 
-    my $s = Q::Test->mock_test_schema();
+    my $s = Fey::Test->mock_test_schema();
 
     my $fk =
-        Q::FK->new
+        Fey::FK->new
             ( source => $s->table('User')->column('user_id'),
               target => $s->table('UserGroup')->column('user_id'),
             );
@@ -115,7 +115,7 @@ use Q::Schema;
 
     $s->add_table($user_t);
     $fk =
-        Q::FK->new
+        Fey::FK->new
             ( source => $s->table('User')->column('user_id'),
               target => $s->table('UserGroup')->column('user_id'),
             );
@@ -140,7 +140,7 @@ use Q::Schema;
 }
 
 {
-    my $s = Q::Test->mock_test_schema();
+    my $s = Fey::Test->mock_test_schema();
 
     my @tables = sort map { $_->name() } $s->tables();
 
@@ -150,28 +150,28 @@ use Q::Schema;
 }
 
 {
-    my $s = Q::Test->mock_test_schema();
+    my $s = Fey::Test->mock_test_schema();
 
     my $q = $s->query();
-    isa_ok( $q, 'Q::Query' );
+    isa_ok( $q, 'Fey::Query' );
 }
 
 {
-    my $s = Q::Schema->new( name        => 'Test2',
-                            query_class => 'Q::Query::Test',
+    my $s = Fey::Schema->new( name        => 'Test2',
+                            query_class => 'Fey::Query::Test',
                           );
 
-    $s->set_dbh( Q::Test->mock_dbh() );
+    $s->set_dbh( Fey::Test->mock_dbh() );
 
     my $q = $s->query();
-    isa_ok( $q, 'Q::Query::Test' );
+    isa_ok( $q, 'Fey::Query::Test' );
 }
 
 {
     eval
     {
-        my $s = Q::Schema->new( name        => 'Test3',
-                                query_class => 'Q::Query::DoesNotExist',
+        my $s = Fey::Schema->new( name        => 'Test3',
+                                query_class => 'Fey::Query::DoesNotExist',
                               );
     };
 
@@ -179,6 +179,6 @@ use Q::Schema;
           'specify non-existent query subclass' );
 }
 
-package Q::Query::Test;
+package Fey::Query::Test;
 
-use base 'Q::Query';
+use base 'Fey::Query';
