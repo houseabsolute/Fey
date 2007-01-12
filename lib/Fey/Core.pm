@@ -6,6 +6,13 @@ use warnings;
 our $VERSION = '0.01';
 
 
+use Fey::Column;
+use Fey::FK;
+use Fey::Query;
+use Fey::Schema;
+use Fey::Table;
+
+
 1;
 
 __END__
@@ -14,12 +21,31 @@ __END__
 
 Fey::Core - Core classes for Fey
 
+=head1 SYNOPSIS
+
+  use Fey::Core;
+
+  # loads all the modules in the Fey::Core distro
+
 =head1 DESCRIPTION
 
-The goal of this module is to provide a (relatively) simple, flexible
-way to I<dynamically> generate complex SQL queries in Perl. The
-emphasis here is on dynamic, and by that I mean that the structure of
-the SQL query may change dynamically.
+The C<Fey::Core> distribution contains a set of modules for
+representing the components of a DBMS schema, and for dynamically
+generating SQL queries based on that schema.
+
+=head1 USAGE
+
+The C<Fey::Core> I<module> itself provides no methods. Loading this
+module simply loads the various modules in the C<Fey::Core>
+distribution, such as C<Fey::Schema>, F<Fey::Table>, C<Fey::Column>,
+etc.
+
+=head1 WHAT IS Fey::Core?
+
+The goal of the C<Fey::Core> is to provide a (relatively) simple,
+flexible way to I<dynamically> generate complex SQL queries in
+Perl. The emphasis here is on dynamic, and by that I mean that the
+structure of the SQL query may change dynamically.
 
 This is different from simply changing the parameters of a query
 dynamically. For example:
