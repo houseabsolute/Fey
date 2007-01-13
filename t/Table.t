@@ -3,7 +3,8 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 20;
+use Fey::Test;
+use Test::More tests => 23;
 
 use Fey::Table;
 
@@ -89,4 +90,18 @@ use Fey::Table;
     $t->remove_column('test_id');
     @pk = $t->primary_key();
     is( scalar @pk, 0, 'table has no pk' );
+}
+
+{
+    my $s = Fey::Test->mock_test_schema();
+    my $t = $s->table('User');
+
+    my @cols = sort map { $_->name() } $t->columns( 'user_id', 'username' );
+
+    is( scalar @cols, 2, 'columns() returns named columns' );
+    is_deeply( \@cols, [ 'user_id', 'username' ],
+               'columns are user_id & username' );
+
+    @cols = sort map { $_->name() } $t->columns( 'no_such_column' );
+    is( scalar @cols, 0, 'columns() ignores columns which do not exist' );
 }

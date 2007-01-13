@@ -75,7 +75,9 @@ sub columns
 {
     my $self = shift;
 
-    return values %{ $self->{columns} };
+    return values %{ $self->{columns} } unless @_;
+
+    return map { $self->{columns}{$_} || () } @_;
 }
 
 {

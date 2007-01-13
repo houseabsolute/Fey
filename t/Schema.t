@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 34;
+use Test::More tests => 37;
 
 use Fey::Schema;
 
@@ -146,7 +146,16 @@ use Fey::Schema;
 
     is( scalar @tables, 4, 'schema has 4 tables' );
     is_deeply( \@tables, [ 'Group', 'Message', 'User', 'UserGroup' ],
-               'tables are Group, User, & UserGroup' );
+               'tables are Group, Message, User, & UserGroup' );
+
+    @tables = sort map { $_->name() } $s->tables( 'User', 'Group' );
+
+    is( scalar @tables, 2, 'tables() returns named tables' );
+    is_deeply( \@tables, [ 'Group', 'User' ],
+               'tables are Group & User' );
+
+    @tables = sort map { $_->name() } $s->tables( 'NoSuchTable' );
+    is( scalar @tables, 0, 'tables() ignores tables which do not exist' );
 }
 
 {

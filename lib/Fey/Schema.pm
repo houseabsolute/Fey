@@ -83,7 +83,9 @@ sub tables
 {
     my $self = shift;
 
-    return values %{ $self->{tables} };
+    return values %{ $self->{tables} } unless @_;
+
+    return map { $self->{tables}{$_} || () } @_;
 }
 
 {
