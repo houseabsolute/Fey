@@ -221,3 +221,144 @@ sub query { $_[0]->{query_class}->new( dbh => $_[0]->dbh() ) }
 
 
 1;
+
+__END__
+
+=head1 NAME
+
+Fey::Schema - Represents a schema and contains tables and foreign keys
+
+=head1 SYNOPSIS
+
+  my $schema = Fey::Schema->new( name => 'MySchema' );
+
+  $schema->add_table(...);
+
+  $schema->add_foreign_key(...);
+
+=head1 DESCRIPTION
+
+This class represents a schema, which is a set of tables and foreign
+keys.
+
+=head1 METHODS
+
+This class provides the following methods:
+
+=head2 new()
+
+  my $schema = Fey::Schema->new( name => 'MySchema' );
+
+  my $schema = Fey::Schema->new( name        => 'MySchema',
+                                 query_class => 'My::Query' );
+
+This method constructs a new C<Fey::Schema> object. It takes the
+following parameters:
+
+=over 4
+
+=item * name - required
+
+The name of the schema
+
+=item * query_class - defaults to C<Fey::Query>
+
+The name of the base class for queries. See the C<query()> method for
+details.
+
+=back
+
+=head2 name()
+
+Returns the name of the schema.
+
+=head2 add_table($table)
+
+Adds the specified table to the schema. The table must be a
+C<Fey::Table> object. Adding the table to the schema sets the schema
+for the table, so that C<< $table->schema() >> returns the correct
+object.
+
+If the table is already part of the schema, an exception will be
+thrown.
+
+=head2 remove_table($table)
+
+Remove the specified table from the schema. Removing the table also
+removes any foreign keys which reference the table.
+
+The table can be specified either by name or by passing in a
+C<Fey::Table> object.
+
+=head2 tables()
+
+=head2 tables( 'Table1', 'Table2' )
+
+When this method is called with no arguments, it returns all of the
+tables in the schema. If given a list of names, it returns only the
+specified tables. If a name is given which doesn't match a table in
+the schema, then it is ignored.
+
+=head2 table('Name')
+
+Returns the table with the specified name. If no such table exists,
+this method returns false.
+
+=head2 add_foreign_key($fk)
+
+Adds the specified to the schema. The foreign key must be a C<Fey::FK>
+object.
+
+If the foreign key references tables which are not in the schema, an
+exception will be thrown.
+
+=head2 remove_foreign_key($fk)
+
+Removes the specified foreign key from the schema. The foreign key
+must be a C<Fey::FK> object.
+
+=head2 foreign_keys_for_table($table)
+
+Returns all the foreign keys which reference the specified table. The
+table can be specified as a name or a C<Fey::Table> object.
+
+=head2 foreign_keys_between_tables( $source_table, $target_table )
+
+Returns all the foreign keys which reference both tables. The tables
+can be specified as names or C<Fey::Table> objects.
+
+=head2 dbh()
+
+Returns the database handle belonging to the schema, if any.
+
+=head2 set_dbh($dbh)
+
+This method sets the database handle for the schema. The object must
+be a DBI handle.
+
+=head2 query()
+
+Returns a new query object with the database handle set to the value
+of C<< $schema->dbh() >>. The class used to construct the object can
+be changed by passing a "query_class" parameter to the C<Fey::Schema>
+constructor. The default class is C<Fey::Query>
+
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-fey@rt.cpan.org>,
+or through the web interface at L<http://rt.cpan.org>.  I will be
+notified, and then you'll automatically be notified of progress on
+your bug as I make changes.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2006-2007 Dave Rolsky, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
