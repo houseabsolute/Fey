@@ -9,8 +9,7 @@ my $builder =
           license            => 'perl',
           requires           =>
           { 'Class::Accessor::Fast' => 0,
-            'Data::Dumper'          => 0,
-            'DBI'                   => 0,
+            'Class::Trait'          => 0,
             'Exception::Class'      => 0,
             'Exporter'              => 0,
             'List::MoreUtils'       => 0,
@@ -19,7 +18,9 @@ my $builder =
             'Task::Weaken'          => 0.99,
           },
           build_requires =>
-          { 'Test::MockObject'      => 0,
+          { 'DBI'                   => 0,
+            'File::Temp'            => 0,
+            'Test::MockObject'      => 0,
             'Test::More'            => 0,
           },
           recommends =>
