@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 37;
+use Test::More tests => 38;
 
 use Fey::Schema;
 
@@ -137,6 +137,28 @@ use Fey::Schema;
     @fk = $s->foreign_keys_between_tables( $s->table('Message'), $s->table('Message') );
     is( scalar @fk, 0,
         'no fks between Message and Message' );
+}
+
+{
+    my $s = Fey::Test->mock_test_schema();
+
+    my $s2 = Fey::Schema->new( name => 'AnotherSchema' );
+    my $t = Fey::Table->new( name => 'User' );
+    $s2->add_table($t);
+
+    my $c = Fey::Column->new( name => 'user_id',
+                              type => 'integer',
+                            );
+
+    $t->add_column($c);
+
+    my $fk = Fey::FK->new( source => $c,
+                           target => $s->table('UserGroup')->column('user_id'),
+                         );
+
+    eval { $s->add_foreign_key($fk) };
+    like( $@, qr/does not contain/,
+          'Cannot add a foreign key for tables not in the schema' );
 }
 
 {
