@@ -349,10 +349,7 @@ Dave Rolsky, <autarch@urth.org>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-fey@rt.cpan.org>,
-or through the web interface at L<http://rt.cpan.org>.  I will be
-notified, and then you'll automatically be notified of progress on
-your bug as I make changes.
+See C<Fey::Core> for details on how to report bugs.
 
 =head1 COPYRIGHT & LICENSE
 
