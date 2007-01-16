@@ -73,20 +73,20 @@ sub _user_table
 
     my $user_id =
         Fey::Column->new( name              => 'user_id',
-                        type              => 'integer',
-                        is_auto_increment => 1,
-                      );
+                          type              => 'integer',
+                          is_auto_increment => 1,
+                        );
 
     my $username =
         Fey::Column->new( name => 'username',
-                        type => 'text',
-                      );
+                          type => 'text',
+                        );
 
     my $email =
         Fey::Column->new( name        => 'email',
-                        type        => 'text',
-                        is_nullable => 1,
-                      );
+                          type        => 'text',
+                          is_nullable => 1,
+                        );
 
     $t->add_column($_) for $user_id, $username, $email;
     $t->set_primary_key($user_id);
@@ -100,14 +100,14 @@ sub _group_table
 
     my $group_id =
         Fey::Column->new( name              => 'group_id',
-                        type              => 'integer',
-                        is_auto_increment => 1,
-                      );
+                          type              => 'integer',
+                          is_auto_increment => 1,
+                        );
 
     my $name =
         Fey::Column->new( name => 'name',
-                        type => 'text',
-                      );
+                          type => 'text',
+                        );
 
     $t->add_column($_) for $group_id, $name;
     $t->set_primary_key($group_id);
@@ -121,13 +121,13 @@ sub _user_group_table
 
     my $user_id =
         Fey::Column->new( name => 'user_id',
-                        type => 'integer',
-                      );
+                          type => 'integer',
+                        );
 
     my $group_id =
         Fey::Column->new( name => 'group_id',
-                        type => 'integer',
-                      );
+                          type => 'integer',
+                        );
 
     $t->add_column($_) for $user_id, $group_id;
     $t->set_primary_key( $user_id, $group_id );
@@ -141,29 +141,29 @@ sub _message_table
 
     my $message_id =
         Fey::Column->new( name              => 'message_id',
-                        type              => 'integer',
-                        is_auto_increment => 1,
-                      );
+                          type              => 'integer',
+                          is_auto_increment => 1,
+                        );
 
     my $message =
         Fey::Column->new( name    => 'message',
-                        type    => 'text',
-                        default => 'Some message text',
-                      );
+                          type    => 'text',
+                          default => 'Some message text',
+                        );
 
     my $quality =
         Fey::Column->new( name      => 'quality',
-                        type      => 'float',
-                        length    => 5,
-                        precision => 2,
-                        default   => 2.3,
-                      );
+                          type      => 'float',
+                          length    => 5,
+                          precision => 2,
+                          default   => 2.3,
+                        );
 
     my $message_date =
         Fey::Column->new( name      => 'message_date',
-                        type      => 'date',
-                        default   => Fey::Literal->function('NOW'),
-                      );
+                          type      => 'date',
+                          default   => Fey::Literal->function('NOW'),
+                        );
 
     $t->add_column($_) for $message_id, $message, $quality, $message_date;
     $t->set_primary_key($message_id);
@@ -230,13 +230,13 @@ sub _mock_table_info
     unless ( $self->{__schema__}->table('TestView') )
     {
         my $table = Fey::Table->new( name    => 'TestView',
-                                   is_view => 1,
-                                 );
+                                     is_view => 1,
+                                   );
 
         my $col = Fey::Column->new( name         => 'user_id',
-                                  type         => 'integer',
-                                  generic_type => 'integer',
-                                );
+                                    type         => 'integer',
+                                    generic_type => 'integer',
+                                  );
 
         $table->add_column($col);
         $table->set_primary_key($col);
