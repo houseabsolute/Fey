@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 19;
+use Test::More tests => 21;
 
 use Fey::Table::Alias;
 
@@ -46,6 +46,10 @@ $t->add_column($_) for $c1, $c2;
 
     ok( ! $alias->column('no-such-thing'),
         'column() returns false for nonexistent column' );
+
+    @cols = sort { $a->name() cmp $b->name() } $alias->columns('size');
+    is( scalar @cols, 1, 'columns() returned named columns only' );
+    is( $cols[0]->name(), 'size', 'column returned was size' );
 }
 
 {

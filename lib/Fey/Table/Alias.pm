@@ -73,7 +73,9 @@ sub columns
 {
     my $self = shift;
 
-    return map { $self->column( $_->name() ) } $self->table()->columns();
+    my @cols = @_ ? @_ : map { $_->name() } $self->table()->columns();
+
+    return map { $self->column($_) } @cols;
 }
 
 sub is_alias { 1 }
