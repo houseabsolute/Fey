@@ -71,7 +71,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 
     $q->from( $s->table('User'), $s->table('UserGroup') );
 
-    my $sql = q{FROM "User" JOIN "UserGroup" ON "User"."user_id" = "UserGroup"."user_id"};
+    my $sql = q{FROM "User" JOIN "UserGroup" ON "UserGroup"."user_id" = "User"."user_id"};
     is( $q->_from_clause(), $sql,
         '_from_clause for two tables, fk not provided' );
 }
@@ -83,7 +83,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
     my ($fk) = $s->foreign_keys_between_tables(@t);
     $q->from( @t, $fk );
 
-    my $sql = q{FROM "User" JOIN "UserGroup" ON "User"."user_id" = "UserGroup"."user_id"};
+    my $sql = q{FROM "User" JOIN "UserGroup" ON "UserGroup"."user_id" = "User"."user_id"};
     is( $q->_from_clause(), $sql,
         '_from_clause for two tables with fk provided' );
 }
@@ -109,7 +109,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
     $q->from( $s->table('User'), 'left', $s->table('UserGroup') );
 
     my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "User"."user_id" = "UserGroup"."user_id"};
+    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
     is( $q->_from_clause(), $sql,
         '_from_clause for two tables with left outer join' );
 }
@@ -123,7 +123,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
     $q->from( $t[0], 'left', $t[1], $fk );
 
     my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "User"."user_id" = "UserGroup"."user_id"};
+    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
     is( $q->_from_clause(), $sql,
         '_from_clause for two tables with left outer join with explicit fk' );
 }
@@ -134,7 +134,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
     $q->from( $s->table('User'), 'right', $s->table('UserGroup') );
 
     my $sql = q{FROM "User" RIGHT OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "User"."user_id" = "UserGroup"."user_id"};
+    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
     is( $q->_from_clause(), $sql,
         '_from_clause for two tables with right outer join' );
 }
@@ -145,7 +145,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
     $q->from( $s->table('User'), 'full', $s->table('UserGroup') );
 
     my $sql = q{FROM "User" FULL OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "User"."user_id" = "UserGroup"."user_id"};
+    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
     is( $q->_from_clause(), $sql,
         '_from_clause for two tables with full outer join' );
 }
@@ -156,7 +156,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
     $q->from( $s->table('User'), 'full', $s->table('UserGroup') );
 
     my $sql = q{FROM "User" FULL OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "User"."user_id" = "UserGroup"."user_id"};
+    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
     is( $q->_from_clause(), $sql,
         '_from_clause for two tables with full outer join' );
 }
@@ -170,7 +170,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
     $q->from( $s->table('User'), 'left', $s->table('UserGroup'), $q2 );
 
     my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "User"."user_id" = "UserGroup"."user_id"};
+    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
     $sql .= q{ WHERE "User"."user_id" = 2};
 
     is( $q->_from_clause(), $sql,
@@ -189,7 +189,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
     $q->from( $t[0], 'left', $t[1], $fk, $q2 );
 
     my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "User"."user_id" = "UserGroup"."user_id"};
+    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
     $sql .= q{ WHERE "User"."user_id" = 2};
 
     is( $q->_from_clause(), $sql,

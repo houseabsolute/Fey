@@ -23,7 +23,6 @@ $t->add_column($_) for $c1, $c2;
 {
     my $alias = $t->alias();
     isa_ok( $alias, 'Fey::Table::Alias' );
-    isa_ok( $alias, 'Fey::Table' );
 
     is( $alias->name(), 'Test', 'name is Test' );
     is( $alias->alias_name(), 'Test1', 'alias_name is Test1' );
@@ -70,7 +69,8 @@ $t->add_column($_) for $c1, $c2;
 
     my @pk = $alias->primary_key();
     is( scalar @pk, 1, 'one column in primary key' );
-    is( $pk[0], $s->table('User')->column('user_id'),
+    is( $pk[0]->name(), $s->table('User')->column('user_id')->name(),
         'primary_key() returns same columns as non-alias' );
+    is( $pk[0]->table(), $alias, 'table() for pk col is alias' );
 }
 

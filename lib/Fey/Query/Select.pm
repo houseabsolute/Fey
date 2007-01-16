@@ -20,6 +20,7 @@ use Fey::Validate
 use Fey::Literal;
 use Fey::Query::Fragment::Join;
 use Fey::Query::Fragment::SubSelect;
+use List::MoreUtils qw( all );
 use Scalar::Util qw( blessed );
 
 
@@ -29,6 +30,7 @@ use Scalar::Util qw( blessed );
                  { 'is selectable' =>
                    sub {    ! blessed $_[0]
                          || $_[0]->isa('Fey::Table')
+                         || $_[0]->isa('Fey::Table::Alias')
                          || (    $_[0]->can('is_selectable')
                               && $_[0]->is_selectable()
                             ) },
@@ -66,7 +68,7 @@ sub distinct
 
         # gee, wouldn't multimethods be nice here?
         my $meth =
-            (   @_ == 1 && blessed $_[0] && $_[0]->isa('Fey::Table')
+            (   @_ == 1 && blessed $_[0] && $_[0]->can('is_joinable') && $_[0]->is_joinable()
               ? '_from_one_table'
               : @_ == 1 && blessed $_[0] && $_[0]->isa('Fey::Query::Select')
               ? '_from_subselect'
@@ -115,11 +117,9 @@ sub _join
     my $self = shift;
 
     param_error 'from() was called with with an invalid first two arguments.'
-        unless $_[0]->isa('Fey::Table') && $_[1]->isa('Fey::Table');
+        unless all { $_->can('is_joinable') && $_->is_joinable() } @_[0,1];
 
     my $fk = $_[2] || $self->_fk_for_join(@_);
-
-    my $key = join "\0", sort map { $_->id() } @_[0,1], $fk;
 
     my $join = Fey::Query::Fragment::Join->new( @_[0,1], $fk );
     $self->{from}{ $join->id() } = $join;

@@ -245,7 +245,7 @@ keys.
 
 This class provides the following methods:
 
-=head2 new()
+=head2 Fey::Schema->new()
 
   my $schema = Fey::Schema->new( name => 'MySchema' );
 
@@ -259,7 +259,7 @@ following parameters:
 
 =item * name - required
 
-The name of the schema
+The name of the schema.
 
 =item * query_class - defaults to C<Fey::Query>
 
@@ -268,11 +268,11 @@ details.
 
 =back
 
-=head2 name()
+=head2 $schema->name()
 
 Returns the name of the schema.
 
-=head2 add_table($table)
+=head2 $schema->add_table($table)
 
 Adds the specified table to the schema. The table must be a
 C<Fey::Table> object. Adding the table to the schema sets the schema
@@ -282,29 +282,30 @@ object.
 If the table is already part of the schema, an exception will be
 thrown.
 
-=head2 remove_table($table)
+=head2 $schema->remove_table($table)
 
 Remove the specified table from the schema. Removing the table also
-removes any foreign keys which reference the table.
+removes any foreign keys which reference the table. Removing the table
+unsets the schema for the table.
 
 The table can be specified either by name or by passing in a
 C<Fey::Table> object.
 
-=head2 tables()
+=head2 $schema->table($name)
 
-=head2 tables( 'Table1', 'Table2' )
+Returns the table with the specified name. If no such table exists,
+this method returns false.
+
+=head2 $schema->tables()
+
+=head2 $schema->tables(@names)
 
 When this method is called with no arguments, it returns all of the
 tables in the schema. If given a list of names, it returns only the
 specified tables. If a name is given which doesn't match a table in
 the schema, then it is ignored.
 
-=head2 table('Name')
-
-Returns the table with the specified name. If no such table exists,
-this method returns false.
-
-=head2 add_foreign_key($fk)
+=head2 $schema->add_foreign_key($fk)
 
 Adds the specified to the schema. The foreign key must be a C<Fey::FK>
 object.
@@ -312,31 +313,31 @@ object.
 If the foreign key references tables which are not in the schema, an
 exception will be thrown.
 
-=head2 remove_foreign_key($fk)
+=head2 $schema->remove_foreign_key($fk)
 
 Removes the specified foreign key from the schema. The foreign key
 must be a C<Fey::FK> object.
 
-=head2 foreign_keys_for_table($table)
+=head2 $schema->foreign_keys_for_table($table)
 
 Returns all the foreign keys which reference the specified table. The
 table can be specified as a name or a C<Fey::Table> object.
 
-=head2 foreign_keys_between_tables( $source_table, $target_table )
+=head2 $schema->foreign_keys_between_tables( $source_table, $target_table )
 
 Returns all the foreign keys which reference both tables. The tables
 can be specified as names or C<Fey::Table> objects.
 
-=head2 dbh()
+=head2 $schema->dbh()
 
-Returns the database handle belonging to the schema, if any.
+Returns the database handle belonging to the schema, if it has one.
 
-=head2 set_dbh($dbh)
+=head2 $schema->set_dbh($dbh)
 
 This method sets the database handle for the schema. The object must
 be a DBI handle.
 
-=head2 query()
+=head2 $schema->query()
 
 Returns a new query object with the database handle set to the value
 of C<< $schema->dbh() >>. The class used to construct the object can

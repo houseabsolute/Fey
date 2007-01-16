@@ -52,14 +52,14 @@ sub mock_test_schema_with_fks
 
     my $fk1 =
         Fey::FK->new
-            ( source => [ $schema->table('User')->column('user_id') ],
-              target => [ $schema->table('UserGroup')->column('user_id') ],
+            ( source => [ $schema->table('UserGroup')->column('user_id') ],
+              target => [ $schema->table('User')->column('user_id') ],
             );
 
     my $fk2 =
         Fey::FK->new
-            ( source => [ $schema->table('Group')->column('group_id') ],
-              target => [ $schema->table('UserGroup')->column('group_id') ],
+            ( source => [ $schema->table('UserGroup')->column('group_id') ],
+              target => [ $schema->table('Group')->column('group_id') ],
             );
 
     $schema->add_foreign_key($_) for $fk1, $fk2;

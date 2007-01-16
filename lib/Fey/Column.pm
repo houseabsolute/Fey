@@ -104,7 +104,8 @@ use Fey::Literal;
                    callbacks =>
                    { 'undef or table' =>
                      sub { ! defined $_[0]
-                           || $_[0]->isa('Fey::Table') },
+                           || $_[0]->isa('Fey::Table')
+                           || $_[0]->isa('Fey::Table::Alias') },
                    },
                  } );
     sub _set_table
