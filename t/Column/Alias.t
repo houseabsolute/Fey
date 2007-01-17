@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 16;
+use Test::More tests => 15;
 
 use Fey::Table;
 use Fey::Column::Alias;
@@ -18,7 +18,6 @@ $t->add_column($c);
 {
     my $alias = $c->alias();
     isa_ok( $alias, 'Fey::Column::Alias' );
-    isa_ok( $alias, 'Fey::Column' );
 
     ok( $alias->is_alias(), 'is_alias is true' );
     is( $alias->alias_name(), 'test_id1',
