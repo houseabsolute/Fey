@@ -38,7 +38,7 @@ use Fey::Column;
     eval { $c->id() };
     isa_ok( $@, 'Fey::Exception::ObjectState' );
 
-    my $clone = $c->clone();
+    my $clone = $c->_clone();
     is( $clone->name(), 'Test', 'clone name is Test' );
     is( $clone->type(), 'foobar', 'clone type is foobar' );
     is( $clone->generic_type(), 'text', 'clone generic type is text' );
