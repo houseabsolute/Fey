@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 18;
+use Test::More tests => 19;
 
 use Fey::FK;
 use Fey::Schema;
@@ -12,6 +12,12 @@ use Fey::Schema;
 
 {
     my $s = Fey::Test->mock_test_schema();
+
+    eval { Fey::FK->new( source => [],
+                         target => [ $s->table('UserGroup')->column('user_id') ],
+                       ) };
+    like( $@, qr/requires at least one column/,
+          'error when column count for source and target differ' );
 
     eval { Fey::FK->new( source => $s->table('User')->column('user_id'),
                          target => [ $s->table('UserGroup')->column('user_id'),
