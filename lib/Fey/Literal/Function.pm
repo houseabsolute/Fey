@@ -28,9 +28,8 @@ use Scalar::Util qw( blessed );
                       callbacks =>
                       { 'is scalar, column (with table) or literal'
                         => sub {    ! blessed $_[0]
-                                 || (    $_[0]->isa('Fey::Column')
-                                      && $_[0]->table() )
-                                 || $_[0]->isa('Fey::Literal') }
+                                 || (    $_[0]->can('is_selectable')
+                                      && $_[0]->is_selectable() ) }
                       },
                     };
     sub new
