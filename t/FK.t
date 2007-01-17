@@ -14,20 +14,20 @@ use Fey::Schema;
     my $s = Fey::Test->mock_test_schema();
 
     eval { Fey::FK->new( source => $s->table('User')->column('user_id'),
-                       target => [ $s->table('UserGroup')->column('user_id'),
-                                   $s->table('UserGroup')->column('group_id'),
-                                 ],
-                     ) };
+                         target => [ $s->table('UserGroup')->column('user_id'),
+                                     $s->table('UserGroup')->column('group_id'),
+                                   ],
+                       ) };
     like( $@, qr/must contain the same number of columns/,
           'error when column count for source and target differ' );
 
     eval { Fey::FK->new( source => [ $s->table('User')->column('user_id'),
-                                   $s->table('User')->column('username'),
-                                 ],
-                       target => [ $s->table('UserGroup')->column('user_id'),
-                                   $s->table('User')->column('username'),
-                                 ],
-                     ) };
+                                     $s->table('User')->column('username'),
+                                   ],
+                         target => [ $s->table('UserGroup')->column('user_id'),
+                                     $s->table('User')->column('username'),
+                                   ],
+                       ) };
     my $err =
         'Each column in the target argument to add_foreign_key()'
         . ' must come from the same table.';
@@ -35,11 +35,11 @@ use Fey::Schema;
           'error when column list comes from >1 table' );
 
     my $c = Fey::Column->new( name => 'no_table',
-                            type => 'text',
-                          );
+                              type => 'text',
+                            );
     eval { Fey::FK->new( source => $s->table('User')->column('user_id'),
-                       target => $c,
-                     ) };
+                         target => $c,
+                       ) };
     like( $@, qr/\QAll columns passed to add_foreign_key() must have a table./,
           'error when a column does not have a table' );
 
