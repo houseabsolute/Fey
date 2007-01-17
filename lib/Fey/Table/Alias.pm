@@ -64,7 +64,7 @@ EOF
         my $col = $self->table()->column($name)
             or return;
 
-        my $clone = $col->clone();
+        my $clone = $col->_clone();
         $clone->_set_table($self);
 
         return $self->{columns}{$name} = $clone;
@@ -176,6 +176,10 @@ Returns the appropriate SQL snippet for the alias.
 =head2 $alias->id()
 
 Returns a unique string identifying the alias.
+
+=head1 TRAITS
+
+This class does the C<Fey::Trait::Joinable> trait.
 
 =head1 AUTHOR
 

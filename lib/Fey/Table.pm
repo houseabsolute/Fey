@@ -304,6 +304,10 @@ Returns the appropriate SQL snippet for the table.
 
 Returns a unique identifier for the table.
 
+=head1 TRAITS
+
+This class does the C<Fey::Trait::Joinable> trait.
+
 =head1 AUTHOR
 
 Dave Rolsky, <autarch@urth.org>

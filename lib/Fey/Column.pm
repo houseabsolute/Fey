@@ -50,7 +50,6 @@ use Fey::Literal;
                     || $_[0]->isa('Fey::Literal') },
             },
           },
-          table             => TABLE_TYPE( optional => 1 ),
         };
     sub new
     {
@@ -121,20 +120,7 @@ use Fey::Literal;
     }
 }
 
-sub id
-{
-    my $self = shift;
-
-    my $table = $self->table();
-
-    object_state_error
-        'The id() method cannot be called on a column object which has no table.'
-            unless $table;
-
-    return $table->id() . '.' . $self->name();
-}
-
-sub clone
+sub _clone
 {
     my $self = shift;
 
@@ -164,7 +150,179 @@ sub sql_with_alias { goto &sql }
 
 sub sql_or_alias { goto &sql }
 
+sub id
+{
+    my $self = shift;
+
+    my $table = $self->table();
+
+    object_state_error
+        'The id() method cannot be called on a column object which has no table.'
+            unless $table;
+
+    return $table->id() . '.' . $self->name();
+}
+
 
 1;
 
 __END__
+
+=head1 NAME
+
+Fey::Column - Represents a column
+
+=head1 SYNOPSIS
+
+  my $column = Fey::Column->new( name              => 'user_id',
+                                 type              => 'integer',
+                                 is_auto_increment => 1,
+                               );
+
+=head1 DESCRIPTION
+
+This class represents a column in a table.
+
+=head1 METHODS
+
+This class provides the following methods:
+
+=head2 Fey::Column->new()
+
+This method constructs a new C<Fey::Column> object. It takes the
+following parameters:
+
+=over 4
+
+=item * name - required
+
+The name of the column.
+
+=item * type - required
+
+The type of the column. This should be a string. Do not include
+modifiers like length or precision.
+
+=item * generic_type - optional
+
+This should be one of the following types:
+
+=over 8
+
+=item * text
+
+=item * blob
+
+=item * integer
+
+=item * float
+
+=item * date
+
+=item * datetime
+
+=item * time
+
+=item * boolean
+
+=item * other
+
+=back
+
+This indicate a generic type for the column, which is intended to
+allow for a common description of column types across different DBMS
+platforms.
+
+If this parameter is not specified, then the constructor code will
+attempt to determine a reasonable value, defaulting to "other" if
+necessary.
+
+=item * length - optional
+
+The length of the column. This must be a positive integer.
+
+=item * precision - optional
+
+The precision of the column, for float-type columns. This must be an
+integer >= 0.
+
+=item * is_auto_increment - defaults to 0
+
+This indicates whether or not the column is auto-incremented.
+
+=item * is_nullable - defaults to 0
+
+A boolean indicating whether the column is nullab.e
+
+=item * default - optional
+
+This must be either a scalar (including undef) or a C<Fey::Literal>
+object. If a scalar is provided, it is turned into a C<Fey::Literal>
+object via C<< Fey::Literal->new_from_scalar() >>.
+
+=back
+
+=head2 $column->name()
+
+=head2 $column->type()
+
+=head2 $column->generic_type()
+
+=head2 $column->length()
+
+=head2 $column->precision()
+
+=head2 $column->is_auto_increment()
+
+=head2 $column->is_nullable()
+
+=head2 $column->default()
+
+Returns the specified attribute.
+
+=head2 $column->table()
+
+Returns the C<Fey::Table> object to which the column belongs, if any.
+
+=head2 $column->alias(%p)
+
+This method returns a new C<Fey::Column::Alias> object based on the
+column. Any parameters passed to this method will be passed through to
+C<< Fey::Column::Alias->new() >>.
+
+=head2 $column->is_alias()
+
+Always returns false.
+
+=head2 $column->sql()
+
+=head2 $column->sql_with_alias()
+
+=head2 $column->sql_or_alias()
+
+Returns the appropriate SQL snippet for the column.
+
+=head2 $column->id()
+
+Returns a unique identifier for the column.
+
+=head1 TRAITS
+
+This class does the C<Fey::Trait::ColumnLike> trait.
+
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 BUGS
+
+See C<Fey::Core> for details on how to report bugs.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2006-2007 Dave Rolsky, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
