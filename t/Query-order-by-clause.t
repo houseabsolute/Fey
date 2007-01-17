@@ -77,7 +77,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 {
     my $q = Fey::Query->new( dbh => $s->dbh() );
 
-    my $now = Fey::Literal->function( 'NOW' );
+    my $now = Fey::Literal::Function->new( 'NOW' );
     $now->_make_alias();
 
     $q->order_by($now);
@@ -89,7 +89,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 {
     my $q = Fey::Query->new( dbh => $s->dbh() );
 
-    my $now = Fey::Literal->function( 'NOW' );
+    my $now = Fey::Literal::Function->new( 'NOW' );
 
     eval { $q->order_by($now) };
     like( $@, qr/is orderable/,
@@ -99,7 +99,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 {
     my $q = Fey::Query->new( dbh => $s->dbh() );
 
-    my $term = Fey::Literal->term( q{"Foo"::text} );
+    my $term = Fey::Literal::Term->new( q{"Foo"::text} );
     $q->order_by($term);
 
     is( $q->_order_by_clause(), q{ORDER BY "Foo"::text},

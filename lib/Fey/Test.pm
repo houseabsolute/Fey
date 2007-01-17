@@ -162,7 +162,7 @@ sub _message_table
     my $message_date =
         Fey::Column->new( name      => 'message_date',
                           type      => 'date',
-                          default   => Fey::Literal->function('NOW'),
+                          default   => Fey::Literal::Function->new('NOW'),
                         );
 
     $t->add_column($_) for $message_id, $message, $quality, $message_date;

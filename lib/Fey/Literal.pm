@@ -18,40 +18,11 @@ sub new_from_scalar
 {
     return
         (   ! defined $_[1]
-          ? $_[0]->null()
+          ? Fey::Literal::Null->new()
           : looks_like_number( $_[1] )
-          ? $_[0]->number( $_[1] )
-          : $_[0]->string( $_[1] )
+          ? Fey::Literal::Number->new( $_[1] )
+          : Fey::Literal::String->new( $_[1] )
         );
-}
-
-sub function
-{
-    shift;
-    return Fey::Literal::Function->new(@_);
-}
-
-sub null
-{
-    return Fey::Literal::Null->new();
-}
-
-sub number
-{
-    shift;
-    return Fey::Literal::Number->new(@_);
-}
-
-sub string
-{
-    shift;
-    return Fey::Literal::String->new(@_);
-}
-
-sub term
-{
-    shift;
-    return Fey::Literal::Term->new(@_);
 }
 
 {
@@ -94,3 +65,52 @@ sub quote
 1;
 
 __END__
+
+
+=head1 NAME
+
+Fey::Literal - Represents a literal piece of a SQL statement
+
+=head1 SYNOPSIS
+
+  my $column = Fey::Literal->new_from_scalar($string_or_number_or_undef);
+
+=head1 DESCRIPTION
+
+This class represents a literal piece of a SQL statement, such as a
+string, number, or function.
+
+It is the superclass for several more specific C<Fey::Literal>
+subclasses, and also provides short
+
+=head1 METHODS
+
+This class provides the following methods:
+
+=head2 Fey::Literal->new_from_scalar($scalar)
+
+Given a string, number, or undef, this method returns a new object of
+the appropriate subclass. This will be either a
+C<Fey::Literal::String>, C<Fey::Literal::Number>, or
+C<Fey::Literal::Null>.
+
+=head2 $literal->id()
+
+Returns a unique id for a literal object.
+
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 BUGS
+
+See C<Fey::Core> for details on how to report bugs.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2006-2007 Dave Rolsky, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut

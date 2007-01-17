@@ -51,7 +51,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 {
     my $q = Fey::Query->new( dbh => $s->dbh() )->select();
 
-    my $now = Fey::Literal->function( 'NOW' );
+    my $now = Fey::Literal::Function->new( 'NOW' );
     $now->_make_alias();
 
     $q->group_by($now);
@@ -63,7 +63,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 {
     my $q = Fey::Query->new( dbh => $s->dbh() )->select();
 
-    my $now = Fey::Literal->function( 'NOW' );
+    my $now = Fey::Literal::Function->new( 'NOW' );
 
     eval { $q->group_by($now) };
     like( $@, qr/is groupable/,
@@ -73,7 +73,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 {
     my $q = Fey::Query->new( dbh => $s->dbh() )->select();
 
-    my $term = Fey::Literal->term( q{"Foo"::text} );
+    my $term = Fey::Literal::Term->new( q{"Foo"::text} );
     $q->group_by($term);
 
     is( $q->_group_by_clause(), q{GROUP BY "Foo"::text},

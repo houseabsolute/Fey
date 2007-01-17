@@ -114,9 +114,9 @@ my $s = Fey::Test->mock_test_schema();
 {
     my $q = Fey::Query->new( dbh => $s->dbh() );
 
-    my $concat = Fey::Literal->function( 'CONCAT',
+    my $concat = Fey::Literal::Function->new( 'CONCAT',
                                        $s->table('User')->column('user_id'),
-                                       Fey::Literal->string(' '),
+                                       Fey::Literal::String->new(' '),
                                        $s->table('User')->column('username'),
                                      );
     $q->select($concat);

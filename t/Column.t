@@ -80,7 +80,7 @@ use Fey::Column;
 {
     my $c = Fey::Column->new( name        => 'Test',
                             type        => 'text',
-                            default     => Fey::Literal->term('a term'),
+                            default     => Fey::Literal::Term->new('a term'),
                           );
 
     ok( $c->default()->isa('Fey::Literal::Term'),

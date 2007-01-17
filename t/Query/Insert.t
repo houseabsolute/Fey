@@ -110,7 +110,7 @@ $s->table('User')->add_column($size);
 
     $q->into( $s->table('User')->column('size') );
 
-    my $func = Fey::Literal->function('NOW');
+    my $func = Fey::Literal::Function->new('NOW');
     $q->values( size => $func );
     is( $q->_values_clause(), q{VALUES (NOW())},
         '_values_clause() for function as value' );
@@ -121,7 +121,7 @@ $s->table('User')->add_column($size);
 
     $q->into( $s->table('User')->column('size') );
 
-    my $term = Fey::Literal->term('term test');
+    my $term = Fey::Literal::Term->new('term test');
     $q->values( size => $term );
     is( $q->_values_clause(), q{VALUES (term test)},
         '_values_clause() for term as value' );

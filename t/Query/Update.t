@@ -113,7 +113,7 @@ $s->table('User')->add_column($size);
     my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
-             Fey::Literal->function( 'NOW' ),
+             Fey::Literal::Function->new( 'NOW' ),
            );
 
     is( $q->_set_clause(),
@@ -125,7 +125,7 @@ $s->table('User')->add_column($size);
     my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
-             Fey::Literal->term( 'thingy' ),
+             Fey::Literal::Term->new( 'thingy' ),
            );
 
     is( $q->_set_clause(),
@@ -137,7 +137,7 @@ $s->table('User')->add_column($size);
     my $q = Fey::Query->new( dbh => $s->dbh() );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
-             Fey::Literal->term( 'thingy' ),
+             Fey::Literal::Term->new( 'thingy' ),
            );
 
     is( $q->_set_clause(),
