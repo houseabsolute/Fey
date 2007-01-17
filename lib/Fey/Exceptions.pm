@@ -9,7 +9,6 @@ BEGIN
     %E = ( 'Fey::Exception' =>
            { description =>
              'Generic exception within the Alzabo API.  Should only be used as a base class.',
-             alias => 'exception',
            },
 
            'Fey::Exception::ObjectState' =>
@@ -46,3 +45,65 @@ our @EXPORT_OK = map { $_->{alias} || () } values %E;
 1;
 
 __END__
+
+=head1 NAME
+
+Fey::Exceptions - Defines exceptions used in the core Fey classes
+
+=head1 SYNOPSIS
+
+  use Fey::Exceptions qw( param_error );
+
+=head1 DESCRIPTION
+
+This module defines the exceptions which are used by the core Fey
+classes.
+
+=head1 EXCEPTIONS
+
+Loading this module defines the exception classes using
+C<Exception::Class>. This module also exports subroutines which can be
+used as a shorthand to throw a specific type of exception.
+
+=head2 Fey::Exception
+
+This is the base class for other exception classes, and should not be
+used directly.
+
+=head2 Fey::Exception::ObjectState
+
+=head3 object_state_error()
+
+This exception indicates that the object is in a state that means it
+cannot execute a certain method.
+
+=head2 Fey::Exception::Params
+
+=head3 param_error()
+
+This exception indicates that there was a problem with the parameters
+passed to a method.
+
+=head2 Fey::Exception::VirtualMethod
+
+=head3 virtual_method_error()
+
+This exception indicates that a virtual method was not overridden in
+the subclass on which it was called.
+
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 BUGS
+
+See C<Fey::Core> for details on how to report bugs.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2006-2007 Dave Rolsky, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
