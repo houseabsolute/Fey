@@ -59,7 +59,9 @@ User.creation_date )>, which is a valid Postgres expression. This
 would be created like this:
 
   my $term =
-      Fey::Literal::Term->new( 'DOY FROM TIMESTAMP ' . $column->sql_or_alias() );
+      Fey::Literal::Term->new
+          ( 'DOY FROM TIMESTAMP '
+             . $column->sql_or_alias( $query->quoter() ) );
 
   my $function = Fey::Literal::Function->new( 'EXTRACT', $term );
 
