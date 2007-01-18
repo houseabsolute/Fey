@@ -97,3 +97,89 @@ sub is_orderable { $_[0]->alias_name() ? 1 : 0 }
 1;
 
 __END__
+
+=head1 NAME
+
+Fey::Literal - Represents a literal piece of a SQL statement
+
+=head1 SYNOPSIS
+
+  my $column = Fey::Literal->new_from_scalar($string_or_number_or_undef);
+
+=head1 DESCRIPTION
+
+This class represents a literal piece of a SQL statement, such as a
+string, number, or function.
+
+It is the superclass for several more specific C<Fey::Literal>
+subclasses, and also provides short
+
+=head1 INHERITANCE
+
+This module is a subclass of C<Fey::Literal>.
+
+=head1 METHODS
+
+This class provides the following methods:
+
+=head2 Fey::Literal::Function->new( $function, @args )
+
+This method creates a new C<Fey::Literal::Function> object.
+
+It requires at least one argument, which is the name of the SQL
+function that this literal represents. It can accept any number of
+additional optional arguments. These arguments must be either scalars,
+literals, or columns which belong to a table.
+
+Any scalars passed in as arguments will be passed in turn to C<<
+Fey::Literal->new_from_scalar() >>.
+
+=head2 $function->function()
+
+The function's name, as passed to the constructor.
+
+=head2 $function->args()
+
+Returns the function's arguments, as passed to the constructor.
+
+=head2 $function->sql()
+
+=head2 $function->sql_with_alias()
+
+=head2 $function->sql_or_alias()
+
+Returns the appropriate SQL snippet.
+
+Calling C<< $function->sql_with_alias() >> causes a unique alias for
+the function to be created.
+
+=head1 TRAITS
+
+This class does the C<Fey::Trait::Selectable>,
+C<Fey::Trait::Comparable>, C<Fey::Trait::Groupable>, and
+C<Fey::Trait::Orderable> traits.
+
+This class overrides the C<is_groupable()> and C<is_orderable()>
+methods so that they only return true if the C<<
+$function->sql_with_alias() >> has been called previously. This
+function is called when a function is used in the C<SELECT> clause of
+a query. A function must be used in a C<SELECT> in order to be used in
+a C<GROUP BY> or C<ORDER BY> clause.
+
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 BUGS
+
+See C<Fey::Core> for details on how to report bugs.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2006-2007 Dave Rolsky, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
+
