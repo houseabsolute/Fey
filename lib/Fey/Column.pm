@@ -3,7 +3,7 @@ package Fey::Column;
 use strict;
 use warnings;
 
-use base 'Fey::Accessor';
+use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_ro_accessors
     ( qw( name type generic_type length precision
           is_auto_increment is_nullable default

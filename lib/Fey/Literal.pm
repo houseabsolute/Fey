@@ -3,7 +3,7 @@ package Fey::Literal;
 use strict;
 use warnings;
 
-use base 'Fey::Accessor';
+use base 'Class::Accessor::Fast';
 
 use Fey::Literal::Function;
 use Fey::Literal::Null;

@@ -3,7 +3,7 @@ package Fey::FK;
 use strict;
 use warnings;
 
-use base 'Fey::Accessor';
+use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_ro_accessors
     ( qw( id ) );
 

@@ -1,7 +1,6 @@
 Build.PL
 Changes
 GOALS
-lib/Fey/Accessor.pm
 lib/Fey/Column.pm
 lib/Fey/Column/Alias.pm
 lib/Fey/Core.pm
@@ -33,6 +32,7 @@ lib/Fey/Test.pm
 lib/Fey/Trait/ColumnLike.pm
 lib/Fey/Trait/Comparable.pm
 lib/Fey/Trait/Groupable.pm
+lib/Fey/Trait/Joinable.pm
 lib/Fey/Trait/Orderable.pm
 lib/Fey/Trait/Selectable.pm
 lib/Fey/Validate.pm
@@ -56,6 +56,7 @@ t/Query/Delete.t
 t/Query/Insert.t
 t/Query/Select-from-clause.t
 t/Query/Select-group-by-clause.t
+t/Query/Select-having-clause.t
 t/Query/Select-select-clause.t
 t/Query/Update.t
 t/Quoter.t
