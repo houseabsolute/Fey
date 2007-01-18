@@ -97,58 +97,86 @@ sub where
 {
     my $self = shift;
 
-    if ( @{ $self->{where} || [] }
-         && ! (    $self->{where}[-1]->isa('Fey::Query::Fragment::Where::Boolean')
-                || $self->{where}[-1]
-                       ->isa('Fey::Query::Fragment::Where::SubgroupStart')
-              )
-       )
+    $self->_condition( 'where', @_ );
+
+    return $self;
+}
+
+{
+    my %dispatch = ( 'and' => '_and',
+                     'or'  => '_or',
+                     '('   => '_subgroup_start',
+                     ')'   => '_subgroup_end',
+                   );
+    sub _condition
     {
-        $self->and();
+        my $self = shift;
+        my $key  = shift;
+
+        if ( @_ == 1 )
+        {
+            if ( my $meth = $dispatch{ lc $_[0] } )
+            {
+                $self->$meth($key);
+                return;
+            }
+        }
+
+        if ( @{ $self->{$key} || [] }
+             && ! (    $self->{$key}[-1]->isa('Fey::Query::Fragment::Where::Boolean')
+                    || $self->{$key}[-1]
+                            ->isa('Fey::Query::Fragment::Where::SubgroupStart')
+                  )
+           )
+        {
+            $self->_and($key);
+        }
+
+        push @{ $self->{$key} },
+            Fey::Query::Fragment::Where::Comparison->new(@_);
     }
-
-    push @{ $self->{where} },
-        Fey::Query::Fragment::Where::Comparison->new(@_);
-
-    return $self;
 }
 
-sub subgroup_start
+sub _and
 {
     my $self = shift;
+    my $key  = shift;
 
-    push @{ $self->{where} },
-        Fey::Query::Fragment::Where::SubgroupStart->new();
-
-    return $self;
-}
-
-sub subgroup_end
-{
-    my $self = shift;
-
-    push @{ $self->{where} },
-        Fey::Query::Fragment::Where::SubgroupEnd->new();
-
-    return $self;
-}
-
-sub and
-{
-    my $self = shift;
-
-    push @{ $self->{where} },
+    push @{ $self->{$key} },
         Fey::Query::Fragment::Where::Boolean->new( 'AND' );
 
     return $self;
 }
 
-sub or
+sub _or
 {
     my $self = shift;
+    my $key  = shift;
 
-    push @{ $self->{where} },
+    push @{ $self->{$key} },
         Fey::Query::Fragment::Where::Boolean->new( 'OR' );
+
+    return $self;
+}
+
+sub _subgroup_start
+{
+    my $self = shift;
+    my $key  = shift;
+
+    push @{ $self->{$key} },
+        Fey::Query::Fragment::Where::SubgroupStart->new();
+
+    return $self;
+}
+
+sub _subgroup_end
+{
+    my $self = shift;
+    my $key  = shift;
+
+    push @{ $self->{$key} },
+        Fey::Query::Fragment::Where::SubgroupEnd->new();
 
     return $self;
 }

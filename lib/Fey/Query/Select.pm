@@ -208,6 +208,15 @@ sub _check_outer_join_arguments
     }
 }
 
+sub having
+{
+    my $self = shift;
+
+    $self->_condition( 'having', @_ );
+
+    return $self;
+}
+
 sub sql
 {
     my $self = shift;
@@ -218,6 +227,7 @@ sub sql
           $self->_from_clause(),
           $self->_where_clause(),
           $self->_group_by_clause(),
+          $self->_having_clause(),
           $self->_order_by_clause(),
           $self->_limit_clause(),
         );
@@ -268,6 +278,18 @@ sub _group_by_clause
                @{ $self->{group_by} }
              )
            );
+}
+
+sub _having_clause
+{
+    return unless $_[0]->{having};
+
+    return ( 'HAVING '
+             . ( join ' ',
+                 map { $_->sql( $_[0]->quoter() ) }
+                 @{ $_[0]->{having} }
+               )
+           )
 }
 
 # REVIEW - Fakes being comparable so it will be transformed into a
