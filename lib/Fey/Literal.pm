@@ -72,7 +72,7 @@ Fey::Literal - Represents a literal piece of a SQL statement
 
 =head1 SYNOPSIS
 
-  my $column = Fey::Literal->new_from_scalar($string_or_number_or_undef);
+  my $literal = Fey::Literal->new_from_scalar($string_or_number_or_undef);
 
 =head1 DESCRIPTION
 

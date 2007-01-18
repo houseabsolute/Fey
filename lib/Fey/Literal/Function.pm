@@ -100,19 +100,16 @@ __END__
 
 =head1 NAME
 
-Fey::Literal::Function - Represents a literal piece of a SQL statement
+Fey::Literal::Function - Represents a literal function in a SQL statement
 
 =head1 SYNOPSIS
 
-  my $column = Fey::Literal::Function->new( 'LENGTH', $column );
+  my $function = Fey::Literal::Function->new( 'LENGTH', $column );
 
 =head1 DESCRIPTION
 
-This class represents a literal piece of a SQL statement, such as a
-string, number, or function.
-
-It is the superclass for several more specific C<Fey::Literal>
-subclasses, and also provides short
+This class represents a literal function in a SQL statement, such as
+C<NOW()> or C<LENGTH(User.username)>.
 
 =head1 INHERITANCE
 
@@ -182,4 +179,3 @@ This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
 =cut
-
