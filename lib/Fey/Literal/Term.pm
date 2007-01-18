@@ -39,6 +39,7 @@ sub sql_or_alias { goto &sql }
 1;
 
 __END__
+
 =head1 NAME
 
 Fey::Literal::Term - Represents a literal term in a SQL statement
