@@ -66,7 +66,6 @@ sub quote
 
 __END__
 
-
 =head1 NAME
 
 Fey::Literal - Represents a literal piece of a SQL statement
