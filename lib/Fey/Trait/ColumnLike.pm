@@ -33,3 +33,7 @@ sub is_comparable { return $_[0]->table() ? 1 : 0 }
 sub is_groupable  { return $_[0]->table() ? 1 : 0 }
 
 sub is_orderable  { return $_[0]->table() ? 1 : 0 }
+
+1;
+
+__END__
