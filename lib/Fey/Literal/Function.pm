@@ -37,7 +37,7 @@ use Scalar::Util qw( blessed );
         my $class = shift;
         my ( $func, @args ) = validate_pos( @_, $func_spec, ($arg_spec) x (@_ - 1) );
 
-        my $self = bless { function => $func };
+        my $self = bless { function => $func }, $class;
         $self->{args} =
             [ map { blessed $_ ? $_ : Fey::Literal->new_from_scalar($_) } @args ];
 
