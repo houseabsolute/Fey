@@ -140,7 +140,7 @@ L<Fey::Query::Insert>, and L<Fey::Query::Delete> for more details.
 
 =head1 WHERE CLAUSES
 
-Many types of queries allow where clauses via the a C<where()>
+Many types of queries allow C<WHERE> clauses via the a C<where()>
 method. The method accepts several different types of parameters:
 
 =head2 Comparisons
@@ -163,7 +163,7 @@ The left-hand side of a conditional does not need to be a column
 object, it could be a function or anything that produces valid SQL.
 
   my $length = Fey::Literal::Function->new( 'LENGTH', $name );
-  # WHERE LENGTH(name) = 10
+  # WHERE LENGTH(Part.name) = 10
   $query->where( $length, '=', 10 );
 
 The second parameter in a conditional can be anything that produces
@@ -195,10 +195,10 @@ If you use C<=>, C<!=>, or C<< <> >> as the comparison and the
 right-hand side is C<undef>, then the generated query will use C<IS
 NULL> or C<IS NOT NULL>, as appropriate:
 
-  # WHERE User.name IS NULL
+  # WHERE Part.name IS NULL
   $query->where( $name, '=', undef );
 
-  # WHERE User.name IS NOT NULL
+  # WHERE Part.name IS NOT NULL
   $query->where( $name, '!=', undef );
 
 Note that if you use a placeholder object in this case, then the query
@@ -228,14 +228,65 @@ You can pass the strings "(" and ")" to the C<where()> method in order
 to create subgroups.
 
   # WHERE Part.size > 10
-  #   AND ( User.name = 'Bob'
+  #   AND ( User.name = 'Widget'
   #         OR
-  #         User.name = 'Jack' )
-  $query->where( $size_col, '>', 10 );
+  #         User.name = 'Grommit' )
+  $query->where( $size, '>', 10 );
   $query->where( '(' );
-  $query->where( $name_col, '=', 'Bob' );
+  $query->where( $name, '=', 'Widget' );
   $query->where( 'or' );
-  $query->where( $name_col, '=', 'Jack' );
+  $query->where( $name, '=', 'Grommit' );
   $query->where( ')' );
+
+=head1 ORDER BY CLAUSES
+
+Many types of queries allow C<ORDER BY> clauses via the an
+C<order_by()> method. This method accepts a list of items. The items
+in the list may be things to order by, or sort directions. The things
+you can order by are columns (including aliases), functions, and
+terms. You may follow one of these with a sort direction, which must
+be one of C<'ASC'> or C<'DESC'> (case-insensitive).
+
+  # ORDER BY Part.size
+  $query->order_by( $size );
+
+  # ORDER BY Part.size DESC
+  $query->order_by( $size, 'DESC' );
+
+  # ORDER BY Part.size DESC, Part.name ASC
+  $query->order_by( $size, 'DESC', $name, 'ASC' );
+
+  my $length = Fey::Literal::Function->new( 'LENGTH', $name );
+  # ORDER BY LENGTH( Part.name ) ASC
+  $query->order_by( $length, 'ASC' );
+
+If you pass a function literal, and that literal has an alias, then
+the alias is used in the C<ORDER BY> clause.
+
+
+  my $length = Fey::Literal::Function->new( 'LENGTH', $name );
+  $query->select($length);
+
+  # SELECT LENGTH(Part.name) AS FUNCTION0 ...
+  # ORDER BY FUNCTION0 ASC
+  $query->order_by( $length, 'ASC' );
+
+=head1 LIMIT CLAUSES
+
+Many types of queries allow C<LIMIT> clauses via the an C<limit()>
+method. This method accepts two parameters, with the second being
+optional.
+
+The first parameter is the number of items. The second, optional
+parameter, is the offset for the limit clause.
+
+  # LIMIT 10
+  $query->limit( 10 );
+
+  # LIMIT 10 OFFSET 20
+  $query->limit( 10, 20 );
+
+  # LIMIT 0 OFFSET 20
+  $query->limit( 0, 20 );
 
 =cut
