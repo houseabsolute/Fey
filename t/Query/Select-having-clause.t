@@ -89,7 +89,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
     my $q = Fey::Query->new( dbh => $s->dbh() )->select();
 
     $q->having( $s->table('User')->column('user_id'), '=',
-               $q->placeholder() );
+                Fey::Placeholder->new() );
 
     is( $q->_having_clause(), q{HAVING "User"."user_id" = ?},
         'simple comparison - col = placeholder' );

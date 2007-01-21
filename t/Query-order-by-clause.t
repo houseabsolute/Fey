@@ -13,7 +13,7 @@ use Fey::Query;
 my $s = Fey::Test->mock_test_schema_with_fks();
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select( $s->table('User') );
 
     eval { $q->order_by() };
     like( $@, qr/0 parameters/,
@@ -21,7 +21,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select( $s->table('User') );
 
     $q->order_by( $s->table('User')->column('user_id') );
     is( $q->_order_by_clause(), q{ORDER BY "User"."user_id"},
@@ -29,7 +29,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select( $s->table('User') );
 
     $q->order_by( $s->table('User')->column('user_id'), 'ASC' );
     is( $q->_order_by_clause(), q{ORDER BY "User"."user_id" ASC},
@@ -37,7 +37,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select( $s->table('User') );
 
     $q->order_by( $s->table('User')->column('user_id'), 'DESC' );
     is( $q->_order_by_clause(), q{ORDER BY "User"."user_id" DESC},
@@ -45,7 +45,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select( $s->table('User') );
 
     $q->order_by( $s->table('User')->column('user_id'),
                   $s->table('User')->column('username'), 'ASC'
@@ -55,7 +55,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select( $s->table('User') );
 
     $q->order_by( $s->table('User')->column('user_id'), 'DESC',
                   $s->table('User')->column('username'), 'ASC'
@@ -65,7 +65,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select( $s->table('User') );
 
     $q->order_by( $s->table('User')->column('user_id')
                   ->alias( alias_name => 'alias_test' ) );
@@ -75,7 +75,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select( $s->table('User') );
 
     my $now = Fey::Literal::Function->new( 'NOW' );
     $now->_make_alias();
@@ -87,7 +87,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select( $s->table('User') );
 
     my $now = Fey::Literal::Function->new( 'NOW' );
 
@@ -97,7 +97,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::Query->new( dbh => $s->dbh() )->select( $s->table('User') );
 
     my $term = Fey::Literal::Term->new( q{"Foo"::text} );
     $q->order_by($term);

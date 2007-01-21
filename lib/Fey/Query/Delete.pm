@@ -5,6 +5,11 @@ use warnings;
 
 use base 'Fey::Query';
 
+use Class::Trait ( 'Fey::Trait::Query::HasWhereClause',
+                   'Fey::Trait::Query::HasOrderByClause',
+                   'Fey::Trait::Query::HasLimitClause',
+                 );
+
 use Fey::Validate
     qw( validate
         validate_pos
@@ -39,7 +44,6 @@ sub delete { return $_[0] }
         return $self;
     }
 }
-
 
 sub sql
 {

@@ -10,11 +10,6 @@ __PACKAGE__->mk_ro_accessors
 use Fey::Exceptions qw( param_error virtual_method );
 use Fey::Validate
     qw( validate
-        validate_pos
-        SCALAR
-        OBJECT
-        POS_INTEGER_TYPE
-        POS_OR_ZERO_INTEGER_TYPE
         DBI_TYPE
       );
 
@@ -24,15 +19,11 @@ use Fey::Query::Delete;
 use Fey::Query::Insert;
 use Fey::Query::Select;
 use Fey::Query::Update;
+use Fey::Query::Where;
 
 use Fey::Placeholder;
 
 use Fey::Quoter;
-
-use Fey::Query::Fragment::Where::Boolean;
-use Fey::Query::Fragment::Where::Comparison;
-use Fey::Query::Fragment::Where::SubgroupStart;
-use Fey::Query::Fragment::Where::SubgroupEnd;
 
 {
     my $spec = { dbh => DBI_TYPE };
@@ -77,6 +68,13 @@ sub delete
     $self->_rebless_for( 'delete', @_ );
 }
 
+sub where
+{
+    my $self = shift;
+
+    $self->_rebless_for( 'where', @_ );
+}
+
 sub _rebless_for
 {
     my $self = shift;
@@ -93,182 +91,151 @@ sub _rebless_for
     return $self->$type(@_);
 }
 
-sub where
-{
-    my $self = shift;
-
-    $self->_condition( 'where', @_ );
-
-    return $self;
-}
-
-{
-    my %dispatch = ( 'and' => '_and',
-                     'or'  => '_or',
-                     '('   => '_subgroup_start',
-                     ')'   => '_subgroup_end',
-                   );
-    sub _condition
-    {
-        my $self = shift;
-        my $key  = shift;
-
-        if ( @_ == 1 )
-        {
-            if ( my $meth = $dispatch{ lc $_[0] } )
-            {
-                $self->$meth($key);
-                return;
-            }
-        }
-
-        if ( @{ $self->{$key} || [] }
-             && ! (    $self->{$key}[-1]->isa('Fey::Query::Fragment::Where::Boolean')
-                    || $self->{$key}[-1]
-                            ->isa('Fey::Query::Fragment::Where::SubgroupStart')
-                  )
-           )
-        {
-            $self->_and($key);
-        }
-
-        push @{ $self->{$key} },
-            Fey::Query::Fragment::Where::Comparison->new(@_);
-    }
-}
-
-sub _and
-{
-    my $self = shift;
-    my $key  = shift;
-
-    push @{ $self->{$key} },
-        Fey::Query::Fragment::Where::Boolean->new( 'AND' );
-
-    return $self;
-}
-
-sub _or
-{
-    my $self = shift;
-    my $key  = shift;
-
-    push @{ $self->{$key} },
-        Fey::Query::Fragment::Where::Boolean->new( 'OR' );
-
-    return $self;
-}
-
-sub _subgroup_start
-{
-    my $self = shift;
-    my $key  = shift;
-
-    push @{ $self->{$key} },
-        Fey::Query::Fragment::Where::SubgroupStart->new();
-
-    return $self;
-}
-
-sub _subgroup_end
-{
-    my $self = shift;
-    my $key  = shift;
-
-    push @{ $self->{$key} },
-        Fey::Query::Fragment::Where::SubgroupEnd->new();
-
-    return $self;
-}
-
-sub placeholder { Fey::Placeholder->new() }
-
-{
-    my $spec = { type      => SCALAR|OBJECT,
-                 callbacks =>
-                 { 'is orderable or sort direction' =>
-                   sub { return 1
-                             if ! blessed $_[0] && $_[0] =~ /^(?:asc|desc)$/i;
-                         return 1 if
-                             (    blessed $_[0]
-                               && $_[0]->can('is_orderable')
-                               && $_[0]->is_orderable() ); },
-                 },
-               };
-
-    sub order_by
-    {
-        my $self = shift;
-
-        my $count = @_ ? @_ : 1;
-        my (@by) = validate_pos( @_, ($spec) x $count );
-
-        push @{ $self->{order_by} }, @by;
-    }
-}
-
-{
-    my @spec = ( POS_INTEGER_TYPE, POS_OR_ZERO_INTEGER_TYPE( optional => 1 ) );
-    sub limit
-    {
-        my $self = shift;
-        my @limit = validate_pos( @_, @spec );
-
-        $self->{limit}{number} = $limit[0];
-        $self->{limit}{offset} = $limit[1];
-    }
-}
-
-sub _where_clause
-{
-    return unless $_[0]->{where};
-
-    return ( 'WHERE '
-             . ( join ' ',
-                 map { $_->sql( $_[0]->quoter() ) }
-                 @{ $_[0]->{where} }
-               )
-           )
-}
-
-sub _order_by_clause
-{
-    my $self = shift;
-
-    return unless $self->{order_by};
-
-    my $sql = 'ORDER BY ';
-
-    for my $elt ( @{ $self->{order_by} } )
-    {
-        if ( ! blessed $elt )
-        {
-            $sql .= q{ } . uc $elt;
-        }
-        else
-        {
-            $sql .= ', ' if $elt != $self->{order_by}[0];
-            $sql .= $elt->sql_or_alias( $self->quoter() );
-        }
-    }
-
-    return $sql;
-}
-
-sub _limit_clause
-{
-    my $self = shift;
-
-    return unless $self->{limit}{number};
-
-    my $sql = 'LIMIT ' . $self->{limit}{number};
-    $sql .= ' OFFSET ' . $self->{limit}{offset}
-        if $self->{limit}{offset};
-
-    return $sql;
-}
-
 
 1;
 
 __END__
+
+=head1 NAME
+
+Fey::Query - A superclass for all types of SQL queries
+
+=head1 SYNOPSIS
+
+  my $query = Fey::Query->new( dbh => $dbh );
+
+  $query->select( @columns );
+
+=head1 DESCRIPTION
+
+This class provides the primary interface for generating SQL
+queries. All queries start with a C<Fey::Query> object, and are then
+transformed into a more specific subclass when the appropriate method
+is called.
+
+=head1 METHODS
+
+This class provides the following methods:
+
+=head2 Fey::Query->new( dbh => $dbh )
+
+This method creates a new C<Fey::Query> object. It requires a
+parameter named "dbh", which must be a DBI handle.
+
+=head2 $query->select(...)
+
+=head2 $query->update(...)
+
+=head2 $query->insert(...)
+
+=head2 $query->delete(...)
+
+These methods re-bless the query into the proper C<Fey::Query>
+subclass, and then call the specified method on the newly re-blessed
+object. Any parameters passed to this method will be passed on in the
+second call.
+
+See L<Fey::Query::Select>, L<Fey::Query::Update>,
+L<Fey::Query::Insert>, and L<Fey::Query::Delete> for more details.
+
+=head1 WHERE CLAUSES
+
+Many types of queries allow where clauses via the a C<where()>
+method. The method accepts several different types of parameters:
+
+=head2 Comparisons
+
+These all a similar form:
+
+  # WHERE Part.size = $value}
+  $query->where( $size, '=', $value );
+
+  # WHERE Part.size = AVG(Part.size);
+  $query->where( $size, '=', $avg_size_function );
+
+  # WHERE Part.size = ?
+  $query->where( $size, '=', $placeholder );
+
+  # WHERE User.user_id = Message.user_id
+  $query->where( $user_id, '=', $other_user_id );
+
+The left-hand side of a conditional does not need to be a column
+object, it could be a function or anything that produces valid SQL.
+
+  my $length = Fey::Literal::Function->new( 'LENGTH', $name );
+  # WHERE LENGTH(name) = 10
+  $query->where( $length, '=', 10 );
+
+The second parameter in a conditional can be anything that produces
+valid SQL:
+
+  # WHERE Message.body LIKE 'hello%'
+  $query->where( $body, 'LIKE', 'hello%' );
+
+  # WHERE Part.quantity > 10
+  $query->where( $quantity, '>', 10 );
+
+If you use a comparison operator like C<BETWEEN> or C<(NOT) IN>, you
+can pass more than three parameters to C<where()>.
+
+  # WHERE Part.size BETWEEN 4 AND 10
+  $query->where( $size, 'BETWEEN', 4, 10 );
+
+  # WHERE User.user_id IN (1, 2, 7, 9)
+  $query->where( $user_id, 'IN', 1, 2, 7, 9 );
+
+You can also pass a subselect when using C<IN>.
+
+  my $select = $query->select(...);
+
+  # WHERE User.user_id IN ( SELECT user_id FROM ... )
+  $query->where( $user_id, 'IN', $select );
+
+If you use C<=>, C<!=>, or C<< <> >> as the comparison and the
+right-hand side is C<undef>, then the generated query will use C<IS
+NULL> or C<IS NOT NULL>, as appropriate:
+
+  # WHERE User.name IS NULL
+  $query->where( $name, '=', undef );
+
+  # WHERE User.name IS NOT NULL
+  $query->where( $name, '!=', undef );
+
+Note that if you use a placeholder object in this case, then the query
+will not be transformed into an C<IS (NOT) NULL> expression, since the
+value of the placeholder is not known when the SQL is being generated.
+
+=head2 Boolean Combinations
+
+You can pass the strings "and" and "or" to the C<where()> method in
+order to create complex boolean checks. When you call C<where()> with
+multiple comparisons in a row, an implicit "and" is added between each
+one.
+
+  # WHERE Part.size > 10 OR Part.size = 5
+  $query->where( $size, '>', 10 );
+  $query->where( 'or' );
+  $query->where( $size, '=', 5 );
+
+  # WHERE Part.size > 10 AND Part.size < 20
+  $query->where( $size, '>', 10 );
+  # there is an implicit $query->where( 'and' ) here ...
+  $query->where( $size, '<', 10 );
+
+=head2 Subgroups
+
+You can pass the strings "(" and ")" to the C<where()> method in order
+to create subgroups.
+
+  # WHERE Part.size > 10
+  #   AND ( User.name = 'Bob'
+  #         OR
+  #         User.name = 'Jack' )
+  $query->where( $size_col, '>', 10 );
+  $query->where( '(' );
+  $query->where( $name_col, '=', 'Bob' );
+  $query->where( 'or' );
+  $query->where( $name_col, '=', 'Jack' );
+  $query->where( ')' );
+
+=cut

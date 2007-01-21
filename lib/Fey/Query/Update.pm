@@ -5,6 +5,11 @@ use warnings;
 
 use base 'Fey::Query';
 
+use Class::Trait ( 'Fey::Trait::Query::HasWhereClause',
+                   'Fey::Trait::Query::HasOrderByClause',
+                   'Fey::Trait::Query::HasLimitClause',
+                 );
+
 use Fey::Exceptions qw( param_error );
 use Fey::Validate
     qw( validate_pos
