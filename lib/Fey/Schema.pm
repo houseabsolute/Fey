@@ -21,7 +21,7 @@ use Scalar::Util qw( blessed );
 
 {
     my $spec = { name        => SCALAR_TYPE,
-                 query_class => SCALAR_TYPE( default => 'Fey::SQL' ),
+                 sql_class => SCALAR_TYPE( default => 'Fey::SQL' ),
                };
     sub new
     {
@@ -33,19 +33,19 @@ use Scalar::Util qw( blessed );
                     tables => {},
                   }, $class;
 
-        $self->_load_query_class();
+        $self->_load_sql_class();
 
         return $self;
     }
 }
 
-sub _load_query_class
+sub _load_sql_class
 {
     my $self = shift;
 
-    return if $self->{query_class}->can('new');
+    return if $self->{sql_class}->can('new');
 
-    eval "use $self->{query_class}";
+    eval "use $self->{sql_class}";
     die $@ if $@;
 }
 
@@ -217,7 +217,7 @@ sub tables
     }
 }
 
-sub query { $_[0]->{query_class}->new( dbh => $_[0]->dbh() ) }
+sub sql { $_[0]->{sql_class}->new( dbh => $_[0]->dbh() ) }
 
 
 1;
@@ -250,7 +250,7 @@ This class provides the following methods:
   my $schema = Fey::Schema->new( name => 'MySchema' );
 
   my $schema = Fey::Schema->new( name        => 'MySchema',
-                                 query_class => 'My::SQL' );
+                                 sql_class => 'My::SQL' );
 
 This method constructs a new C<Fey::Schema> object. It takes the
 following parameters:
@@ -261,10 +261,10 @@ following parameters:
 
 The name of the schema.
 
-=item * query_class - defaults to C<Fey::SQL>
+=item * sql_class - defaults to C<Fey::SQL>
 
-The name of the base class for queries. See the C<query()> method for
-details.
+The name of the base class for sql object. See the C<$schema->sql()>
+method for details.
 
 =back
 
@@ -337,11 +337,11 @@ Returns the database handle belonging to the schema, if it has one.
 This method sets the database handle for the schema. The object must
 be a DBI handle.
 
-=head2 $schema->query()
+=head2 $schema->sql()
 
-Returns a new query object with the database handle set to the value
-of C<< $schema->dbh() >>. The class used to construct the object can
-be changed by passing a "query_class" parameter to the C<Fey::Schema>
+Returns a new sql object with the database handle set to the value of
+C<< $schema->dbh() >>. The class used to construct the object can be
+changed by passing a "sql_class" parameter to the C<Fey::Schema>
 constructor. The default class is C<Fey::SQL>
 
 =head1 AUTHOR

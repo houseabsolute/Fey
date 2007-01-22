@@ -102,9 +102,9 @@ Fey::SQL - A superclass for all types of SQL queries
 
 =head1 SYNOPSIS
 
-  my $query = Fey::SQL->new( dbh => $dbh );
+  my $sql = Fey::SQL->new( dbh => $dbh );
 
-  $query->select( @columns );
+  $sql->select( @columns );
 
 =head1 DESCRIPTION
 
@@ -122,13 +122,13 @@ This class provides the following methods:
 This method creates a new C<Fey::SQL> object. It requires a
 parameter named "dbh", which must be a DBI handle.
 
-=head2 $query->select(...)
+=head2 $sql->select(...)
 
-=head2 $query->update(...)
+=head2 $sql->update(...)
 
-=head2 $query->insert(...)
+=head2 $sql->insert(...)
 
-=head2 $query->delete(...)
+=head2 $sql->delete(...)
 
 These methods re-bless the query into the proper C<Fey::SQL>
 subclass, and then call the specified method on the newly re-blessed
@@ -138,12 +138,12 @@ second call.
 See L<Fey::SQL::Select>, L<Fey::SQL::Update>,
 L<Fey::SQL::Insert>, and L<Fey::SQL::Delete> for more details.
 
-=head2 $query->where(...)
+=head2 $sql->where(...)
 
 This produces a C<Fey::SQL::Where> object, which is an object that
 just contains a where clause. This exists to allow you to add where
 clauses to joins. See the documentation on L<<
-Fey::SQL::Select->from()|Fey::SQL::Select/$query->from()/ >> for
+Fey::SQL::Select->from()|Fey::SQL::Select/$sql->from()/ >> for
 more details.
 
 =head1 WHERE CLAUSES
@@ -156,58 +156,58 @@ method. The method accepts several different types of parameters:
 These all a similar form:
 
   # WHERE Part.size = $value}
-  $query->where( $size, '=', $value );
+  $sql->where( $size, '=', $value );
 
   # WHERE Part.size = AVG(Part.size);
-  $query->where( $size, '=', $avg_size_function );
+  $sql->where( $size, '=', $avg_size_function );
 
   # WHERE Part.size = ?
-  $query->where( $size, '=', $placeholder );
+  $sql->where( $size, '=', $placeholder );
 
   # WHERE User.user_id = Message.user_id
-  $query->where( $user_id, '=', $other_user_id );
+  $sql->where( $user_id, '=', $other_user_id );
 
 The left-hand side of a conditional does not need to be a column
 object, it could be a function or anything that produces valid SQL.
 
   my $length = Fey::Literal::Function->new( 'LENGTH', $name );
   # WHERE LENGTH(Part.name) = 10
-  $query->where( $length, '=', 10 );
+  $sql->where( $length, '=', 10 );
 
 The second parameter in a conditional can be anything that produces
 valid SQL:
 
   # WHERE Message.body LIKE 'hello%'
-  $query->where( $body, 'LIKE', 'hello%' );
+  $sql->where( $body, 'LIKE', 'hello%' );
 
   # WHERE Part.quantity > 10
-  $query->where( $quantity, '>', 10 );
+  $sql->where( $quantity, '>', 10 );
 
 If you use a comparison operator like C<BETWEEN> or C<(NOT) IN>, you
 can pass more than three parameters to C<where()>.
 
   # WHERE Part.size BETWEEN 4 AND 10
-  $query->where( $size, 'BETWEEN', 4, 10 );
+  $sql->where( $size, 'BETWEEN', 4, 10 );
 
   # WHERE User.user_id IN (1, 2, 7, 9)
-  $query->where( $user_id, 'IN', 1, 2, 7, 9 );
+  $sql->where( $user_id, 'IN', 1, 2, 7, 9 );
 
 You can also pass a subselect when using C<IN>.
 
-  my $select = $query->select(...);
+  my $select = $sql->select(...);
 
   # WHERE User.user_id IN ( SELECT user_id FROM ... )
-  $query->where( $user_id, 'IN', $select );
+  $sql->where( $user_id, 'IN', $select );
 
 If you use C<=>, C<!=>, or C<< <> >> as the comparison and the
 right-hand side is C<undef>, then the generated query will use C<IS
 NULL> or C<IS NOT NULL>, as appropriate:
 
   # WHERE Part.name IS NULL
-  $query->where( $name, '=', undef );
+  $sql->where( $name, '=', undef );
 
   # WHERE Part.name IS NOT NULL
-  $query->where( $name, '!=', undef );
+  $sql->where( $name, '!=', undef );
 
 Note that if you use a placeholder object in this case, then the query
 will not be transformed into an C<IS (NOT) NULL> expression, since the
@@ -221,14 +221,14 @@ multiple comparisons in a row, an implicit "and" is added between each
 one.
 
   # WHERE Part.size > 10 OR Part.size = 5
-  $query->where( $size, '>', 10 );
-  $query->where( 'or' );
-  $query->where( $size, '=', 5 );
+  $sql->where( $size, '>', 10 );
+  $sql->where( 'or' );
+  $sql->where( $size, '=', 5 );
 
   # WHERE Part.size > 10 AND Part.size < 20
-  $query->where( $size, '>', 10 );
-  # there is an implicit $query->where( 'and' ) here ...
-  $query->where( $size, '<', 10 );
+  $sql->where( $size, '>', 10 );
+  # there is an implicit $sql->where( 'and' ) here ...
+  $sql->where( $size, '<', 10 );
 
 =head2 Subgroups
 
@@ -239,12 +239,12 @@ to create subgroups.
   #   AND ( User.name = 'Widget'
   #         OR
   #         User.name = 'Grommit' )
-  $query->where( $size, '>', 10 );
-  $query->where( '(' );
-  $query->where( $name, '=', 'Widget' );
-  $query->where( 'or' );
-  $query->where( $name, '=', 'Grommit' );
-  $query->where( ')' );
+  $sql->where( $size, '>', 10 );
+  $sql->where( '(' );
+  $sql->where( $name, '=', 'Widget' );
+  $sql->where( 'or' );
+  $sql->where( $name, '=', 'Grommit' );
+  $sql->where( ')' );
 
 =head1 ORDER BY CLAUSES
 
@@ -256,28 +256,28 @@ terms. You may follow one of these with a sort direction, which must
 be one of C<'ASC'> or C<'DESC'> (case-insensitive).
 
   # ORDER BY Part.size
-  $query->order_by( $size );
+  $sql->order_by( $size );
 
   # ORDER BY Part.size DESC
-  $query->order_by( $size, 'DESC' );
+  $sql->order_by( $size, 'DESC' );
 
   # ORDER BY Part.size DESC, Part.name ASC
-  $query->order_by( $size, 'DESC', $name, 'ASC' );
+  $sql->order_by( $size, 'DESC', $name, 'ASC' );
 
   my $length = Fey::Literal::Function->new( 'LENGTH', $name );
   # ORDER BY LENGTH( Part.name ) ASC
-  $query->order_by( $length, 'ASC' );
+  $sql->order_by( $length, 'ASC' );
 
 If you pass a function literal, and that literal has an alias, then
 the alias is used in the C<ORDER BY> clause.
 
 
   my $length = Fey::Literal::Function->new( 'LENGTH', $name );
-  $query->select($length);
+  $sql->select($length);
 
   # SELECT LENGTH(Part.name) AS FUNCTION0 ...
   # ORDER BY FUNCTION0 ASC
-  $query->order_by( $length, 'ASC' );
+  $sql->order_by( $length, 'ASC' );
 
 =head1 LIMIT CLAUSES
 
@@ -289,12 +289,12 @@ The first parameter is the number of items. The second, optional
 parameter, is the offset for the limit clause.
 
   # LIMIT 10
-  $query->limit( 10 );
+  $sql->limit( 10 );
 
   # LIMIT 10 OFFSET 20
-  $query->limit( 10, 20 );
+  $sql->limit( 10, 20 );
 
   # LIMIT 0 OFFSET 20
-  $query->limit( 0, 20 );
+  $sql->limit( 0, 20 );
 
 =cut

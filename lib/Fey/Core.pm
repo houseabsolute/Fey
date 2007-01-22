@@ -144,7 +144,7 @@ added>. Right now there's no nice simple way to do this. Specifying
 the table twice will cause an error. It would be nice to simply be
 able to do this
 
-  $query->join( $foo_table => $bar_table );
+  $sql->join( $foo_table => $bar_table );
 
 and have it do the right thing if that join already exists.
 

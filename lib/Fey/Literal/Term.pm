@@ -62,7 +62,7 @@ would be created like this:
   my $term =
       Fey::Literal::Term->new
           ( 'DOY FROM TIMESTAMP '
-             . $column->sql_or_alias( $query->quoter() ) );
+             . $column->sql_or_alias( $sql->quoter() ) );
 
   my $function = Fey::Literal::Function->new( 'EXTRACT', $term );
 
