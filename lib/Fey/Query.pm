@@ -22,8 +22,8 @@ use Fey::Query::Update;
 use Fey::Query::Where;
 
 use Fey::Placeholder;
-
 use Fey::Quoter;
+
 
 {
     my $spec = { dbh => DBI_TYPE };
