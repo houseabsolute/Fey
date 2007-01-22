@@ -1,9 +1,9 @@
-package Fey::Query::Insert;
+package Fey::SQL::Insert;
 
 use strict;
 use warnings;
 
-use base 'Fey::Query';
+use base 'Fey::SQL';
 
 use Fey::Validate
     qw( validate

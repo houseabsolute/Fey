@@ -1,4 +1,4 @@
-package Fey::Query::Fragment::Join;
+package Fey::SQL::Fragment::Join;
 
 use strict;
 use warnings;

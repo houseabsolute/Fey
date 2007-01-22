@@ -1,16 +1,16 @@
-package Fey::Query::Select;
+package Fey::SQL::Select;
 
 use strict;
 use warnings;
 
-use base 'Fey::Query';
+use base 'Fey::SQL';
 
 __PACKAGE__->mk_ro_accessors
     ( qw( is_distinct ) );
 
-use Class::Trait ( 'Fey::Trait::Query::HasWhereClause',
-                   'Fey::Trait::Query::HasOrderByClause',
-                   'Fey::Trait::Query::HasLimitClause',
+use Class::Trait ( 'Fey::Trait::SQL::HasWhereClause',
+                   'Fey::Trait::SQL::HasOrderByClause',
+                   'Fey::Trait::SQL::HasLimitClause',
                  );
 
 use Fey::Exceptions qw( param_error );
@@ -23,8 +23,8 @@ use Fey::Validate
       );
 
 use Fey::Literal;
-use Fey::Query::Fragment::Join;
-use Fey::Query::Fragment::SubSelect;
+use Fey::SQL::Fragment::Join;
+use Fey::SQL::Fragment::SubSelect;
 use List::MoreUtils qw( all );
 use Scalar::Util qw( blessed );
 
@@ -75,7 +75,7 @@ sub distinct
         my $meth =
             (   @_ == 1 && blessed $_[0] && $_[0]->can('is_joinable') && $_[0]->is_joinable()
               ? '_from_one_table'
-              : @_ == 1 && blessed $_[0] && $_[0]->isa('Fey::Query::Select')
+              : @_ == 1 && blessed $_[0] && $_[0]->isa('Fey::SQL::Select')
               ? '_from_subselect'
               : @_ == 2
               ? '_join'
@@ -85,7 +85,7 @@ sub distinct
               ? '_join'
               : @_ == 4 && $_[3]->isa('Fey::FK')
               ? '_outer_join'
-              : @_ == 4 && $_[3]->isa('Fey::Query')
+              : @_ == 4 && $_[3]->isa('Fey::SQL')
               ? '_outer_join_with_where'
               : @_ == 5
               ? '_outer_join_with_where'
@@ -105,7 +105,7 @@ sub _from_one_table
 {
     my $self = shift;
 
-    my $join = Fey::Query::Fragment::Join->new( $_[0] );
+    my $join = Fey::SQL::Fragment::Join->new( $_[0] );
     $self->{from}{ $join->id() } = $join;
 }
 
@@ -113,7 +113,7 @@ sub _from_subselect
 {
     my $self = shift;
 
-    my $subsel = Fey::Query::Fragment::SubSelect->new( $_[0] );
+    my $subsel = Fey::SQL::Fragment::SubSelect->new( $_[0] );
     $self->{from}{ $subsel->id() } = $subsel;
 }
 
@@ -126,7 +126,7 @@ sub _join
 
     my $fk = $_[2] || $self->_fk_for_join(@_);
 
-    my $join = Fey::Query::Fragment::Join->new( @_[0,1], $fk );
+    my $join = Fey::SQL::Fragment::Join->new( @_[0,1], $fk );
     $self->{from}{ $join->id() } = $join;
 }
 
@@ -166,7 +166,7 @@ sub _outer_join
     $fk = $self->_fk_for_join( @_[0, 2] )
         unless $fk;
 
-    my $join = Fey::Query::Fragment::Join->new( @_[0, 2], $fk, lc $_[1] );
+    my $join = Fey::SQL::Fragment::Join->new( @_[0, 2], $fk, lc $_[1] );
     $self->{from}{ $join->id() } = $join;
 }
 
@@ -181,7 +181,7 @@ sub _outer_join_with_where
 
     my $where = $_[4] ? $_[4] : $_[3];
 
-    my $join = Fey::Query::Fragment::Join->new( @_[0, 2], $fk, lc $_[1], $where );
+    my $join = Fey::SQL::Fragment::Join->new( @_[0, 2], $fk, lc $_[1], $where );
     $self->{from}{ $join->id() } = $join;
 }
 

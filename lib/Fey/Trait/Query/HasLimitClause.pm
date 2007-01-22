@@ -1,4 +1,4 @@
-package Fey::Trait::Query::HasLimitClause;
+package Fey::Trait::SQL::HasLimitClause;
 
 use strict;
 use warnings;

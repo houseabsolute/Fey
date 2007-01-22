@@ -1,4 +1,4 @@
-package Fey::Query::Fragment::Where::Comparison;
+package Fey::SQL::Fragment::Where::Comparison;
 
 use strict;
 use warnings;
@@ -14,7 +14,7 @@ use Fey::Validate
       );
 use Scalar::Util qw( blessed );
 
-use Fey::Query::Fragment::SubSelect;
+use Fey::SQL::Fragment::SubSelect;
 use Fey::Literal::Term;
 
 use constant LHS  => 0;
@@ -51,10 +51,10 @@ our $in_comp_re = qr/^(?:not\s+)?in$/i;
         {
             $_ = Fey::Literal->new_from_scalar($_)
                 unless blessed $_;
-            $_ = Fey::Query::Fragment::SubSelect->new($_)
-                if $_->isa('Fey::Query::Select');
+            $_ = Fey::SQL::Fragment::SubSelect->new($_)
+                if $_->isa('Fey::SQL::Select');
         }
-        if ( grep { $_->isa('Fey::Query::Fragment::SubSelect') } @rhs )
+        if ( grep { $_->isa('Fey::SQL::Fragment::SubSelect') } @rhs )
         {
             param_error "Cannot use a subselect on the right-hand side with $comp"
                 unless $comp =~ $in_comp_re;

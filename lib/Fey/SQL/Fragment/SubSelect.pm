@@ -1,4 +1,4 @@
-package Fey::Query::Fragment::SubSelect;
+package Fey::SQL::Fragment::SubSelect;
 
 use strict;
 use warnings;

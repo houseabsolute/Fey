@@ -8,7 +8,7 @@ our $VERSION = '0.01';
 
 use Fey::Column;
 use Fey::FK;
-use Fey::Query;
+use Fey::SQL;
 use Fey::Schema;
 use Fey::Table;
 

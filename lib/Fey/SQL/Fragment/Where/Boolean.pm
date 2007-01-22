@@ -1,4 +1,4 @@
-package Fey::Query::Fragment::Where::Boolean;
+package Fey::SQL::Fragment::Where::Boolean;
 
 use strict;
 use warnings;

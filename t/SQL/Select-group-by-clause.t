@@ -7,13 +7,13 @@ use Fey::Test;
 use Test::More tests => 7;
 
 use Fey::Literal;
-use Fey::Query;
+use Fey::SQL;
 
 
 my $s = Fey::Test->mock_test_schema_with_fks();
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
 
     eval { $q->group_by() };
     like( $@, qr/0 parameters/,
@@ -21,7 +21,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
 
     $q->group_by( $s->table('User')->column('user_id') );
     is( $q->_group_by_clause(), q{GROUP BY "User"."user_id"},
@@ -29,7 +29,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
 
     $q->group_by( $s->table('User')->column('user_id'),
                   $s->table('User')->column('username')
@@ -39,7 +39,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
 
     $q->group_by( $s->table('User')->column('user_id')
                   ->alias( alias_name => 'alias_test' ) );
@@ -49,7 +49,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
 
     my $now = Fey::Literal::Function->new( 'NOW' );
     $now->_make_alias();
@@ -61,7 +61,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
 
     my $now = Fey::Literal::Function->new( 'NOW' );
 
@@ -71,7 +71,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
 
     my $term = Fey::Literal::Term->new( q{"Foo"::text} );
     $q->group_by($term);

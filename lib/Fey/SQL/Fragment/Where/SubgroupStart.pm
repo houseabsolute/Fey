@@ -1,10 +1,10 @@
-package Fey::Query::Fragment::Where::SubgroupEnd;
+package Fey::SQL::Fragment::Where::SubgroupStart;
 
 use strict;
 use warnings;
 
 
-my $Paren = ')';
+my $Paren = '(';
 sub new
 {
     my $class = shift;

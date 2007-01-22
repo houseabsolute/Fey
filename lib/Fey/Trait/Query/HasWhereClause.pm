@@ -1,14 +1,14 @@
-package Fey::Trait::Query::HasWhereClause;
+package Fey::Trait::SQL::HasWhereClause;
 
 use strict;
 use warnings;
 
 use Class::Trait 'base';
 
-use Fey::Query::Fragment::Where::Boolean;
-use Fey::Query::Fragment::Where::Comparison;
-use Fey::Query::Fragment::Where::SubgroupStart;
-use Fey::Query::Fragment::Where::SubgroupEnd;
+use Fey::SQL::Fragment::Where::Boolean;
+use Fey::SQL::Fragment::Where::Comparison;
+use Fey::SQL::Fragment::Where::SubgroupStart;
+use Fey::SQL::Fragment::Where::SubgroupEnd;
 
 
 sub where
@@ -42,9 +42,9 @@ sub where
         }
 
         if ( @{ $self->{$key} || [] }
-             && ! (    $self->{$key}[-1]->isa('Fey::Query::Fragment::Where::Boolean')
+             && ! (    $self->{$key}[-1]->isa('Fey::SQL::Fragment::Where::Boolean')
                     || $self->{$key}[-1]
-                            ->isa('Fey::Query::Fragment::Where::SubgroupStart')
+                            ->isa('Fey::SQL::Fragment::Where::SubgroupStart')
                   )
            )
         {
@@ -52,7 +52,7 @@ sub where
         }
 
         push @{ $self->{$key} },
-            Fey::Query::Fragment::Where::Comparison->new(@_);
+            Fey::SQL::Fragment::Where::Comparison->new(@_);
     }
 }
 
@@ -62,7 +62,7 @@ sub _and
     my $key  = shift;
 
     push @{ $self->{$key} },
-        Fey::Query::Fragment::Where::Boolean->new( 'AND' );
+        Fey::SQL::Fragment::Where::Boolean->new( 'AND' );
 
     return $self;
 }
@@ -73,7 +73,7 @@ sub _or
     my $key  = shift;
 
     push @{ $self->{$key} },
-        Fey::Query::Fragment::Where::Boolean->new( 'OR' );
+        Fey::SQL::Fragment::Where::Boolean->new( 'OR' );
 
     return $self;
 }
@@ -84,7 +84,7 @@ sub _subgroup_start
     my $key  = shift;
 
     push @{ $self->{$key} },
-        Fey::Query::Fragment::Where::SubgroupStart->new();
+        Fey::SQL::Fragment::Where::SubgroupStart->new();
 
     return $self;
 }
@@ -95,7 +95,7 @@ sub _subgroup_end
     my $key  = shift;
 
     push @{ $self->{$key} },
-        Fey::Query::Fragment::Where::SubgroupEnd->new();
+        Fey::SQL::Fragment::Where::SubgroupEnd->new();
 
     return $self;
 }

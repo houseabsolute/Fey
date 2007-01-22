@@ -6,7 +6,7 @@ use lib 't/lib';
 use Fey::Test;
 use Test::More tests => 4;
 
-use Fey::Query;
+use Fey::SQL;
 
 
 my $s = Fey::Test->mock_test_schema();
@@ -19,21 +19,21 @@ my $size =
 $s->table('User')->add_column($size);
 
 {
-    eval { Fey::Query->new( dbh => $s->dbh() )->delete()->from() };
+    eval { Fey::SQL->new( dbh => $s->dbh() )->delete()->from() };
 
     like( $@, qr/1 was expected/,
           'from() without any parameters fails' );
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->delete()->from( $s->table('User') );
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->delete()->from( $s->table('User') );
 
     is( $q->_delete_clause(), q{DELETE FROM "User"},
         'delete clause for one table' );
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )
+    my $q = Fey::SQL->new( dbh => $s->dbh() )
                     ->delete()->from( $s->table('User'), $s->table('UserGroup') );
 
     is( $q->_delete_clause(), q{DELETE FROM "User", "UserGroup"},
@@ -41,7 +41,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $s->dbh() );
     $q->delete()->from( $s->table('User') );
     $q->where( $s->table('User')->column('user_id'), '=', 10 );
     $q->order_by( $s->table('User')->column('user_id') );

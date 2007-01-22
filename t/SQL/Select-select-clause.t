@@ -6,17 +6,17 @@ use lib 't/lib';
 use Fey::Test;
 use Test::More tests => 13;
 
-use Fey::Query;
+use Fey::SQL;
 
 
 my $s = Fey::Test->mock_test_schema();
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $s->dbh() );
 
     $q->select( $s->table('User') );
 
-    isa_ok( $q, 'Fey::Query::Select' );
+    isa_ok( $q, 'Fey::SQL::Select' );
 
     my $sql = q{SELECT "User"."email", "User"."user_id", "User"."username"};
     is( $q->_select_clause(), $sql,
@@ -35,7 +35,7 @@ my $s = Fey::Test->mock_test_schema();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $s->dbh() );
 
     $q->select( $s->table('User') );
 
@@ -61,7 +61,7 @@ my $s = Fey::Test->mock_test_schema();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $s->dbh() );
 
     $q->select( $s->table('User')->column('user_id') );
     $q->select( $s->table('User') );
@@ -73,7 +73,7 @@ my $s = Fey::Test->mock_test_schema();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $s->dbh() );
 
     $q->select( $s->table('User')->column('user_id') );
     $q->select( $s->table('User')->column('user_id')
@@ -86,7 +86,7 @@ my $s = Fey::Test->mock_test_schema();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $s->dbh() );
     $q->select( $s->table('User')->column('user_id') )->distinct();
 
     my $sql = q{SELECT DISTINCT "User"."user_id"};
@@ -94,7 +94,7 @@ my $s = Fey::Test->mock_test_schema();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $s->dbh() );
 
     $q->select( 'some literal thing' );
     my $sql = q{SELECT 'some literal thing'};
@@ -103,7 +103,7 @@ my $s = Fey::Test->mock_test_schema();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $s->dbh() );
 
     $q->select( 235.12 );
     my $sql = q{SELECT 235.12};
@@ -112,7 +112,7 @@ my $s = Fey::Test->mock_test_schema();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $s->dbh() );
 
     my $concat = Fey::Literal::Function->new( 'CONCAT',
                                        $s->table('User')->column('user_id'),

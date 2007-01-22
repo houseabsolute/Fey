@@ -14,14 +14,14 @@ use Fey::Validate
         TABLE_TYPE TABLE_OR_NAME_TYPE
         FK_TYPE DBI_TYPE );
 
-use Fey::Query;
+use Fey::SQL;
 use Fey::Table;
 use Scalar::Util qw( blessed );
 
 
 {
     my $spec = { name        => SCALAR_TYPE,
-                 query_class => SCALAR_TYPE( default => 'Fey::Query' ),
+                 query_class => SCALAR_TYPE( default => 'Fey::SQL' ),
                };
     sub new
     {
@@ -250,7 +250,7 @@ This class provides the following methods:
   my $schema = Fey::Schema->new( name => 'MySchema' );
 
   my $schema = Fey::Schema->new( name        => 'MySchema',
-                                 query_class => 'My::Query' );
+                                 query_class => 'My::SQL' );
 
 This method constructs a new C<Fey::Schema> object. It takes the
 following parameters:
@@ -261,7 +261,7 @@ following parameters:
 
 The name of the schema.
 
-=item * query_class - defaults to C<Fey::Query>
+=item * query_class - defaults to C<Fey::SQL>
 
 The name of the base class for queries. See the C<query()> method for
 details.
@@ -342,7 +342,7 @@ be a DBI handle.
 Returns a new query object with the database handle set to the value
 of C<< $schema->dbh() >>. The class used to construct the object can
 be changed by passing a "query_class" parameter to the C<Fey::Schema>
-constructor. The default class is C<Fey::Query>
+constructor. The default class is C<Fey::SQL>
 
 =head1 AUTHOR
 

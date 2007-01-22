@@ -1,13 +1,13 @@
-package Fey::Query::Update;
+package Fey::SQL::Update;
 
 use strict;
 use warnings;
 
-use base 'Fey::Query';
+use base 'Fey::SQL';
 
-use Class::Trait ( 'Fey::Trait::Query::HasWhereClause',
-                   'Fey::Trait::Query::HasOrderByClause',
-                   'Fey::Trait::Query::HasLimitClause',
+use Class::Trait ( 'Fey::Trait::SQL::HasWhereClause',
+                   'Fey::Trait::SQL::HasOrderByClause',
+                   'Fey::Trait::SQL::HasLimitClause',
                  );
 
 use Fey::Exceptions qw( param_error );

@@ -7,13 +7,13 @@ use Fey::Test;
 use Test::More tests => 3;
 
 use Fey::Literal;
-use Fey::Query;
+use Fey::SQL;
 
 
 my $s = Fey::Test->mock_test_schema_with_fks();
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->select( $s->table('User') );
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->select( $s->table('User') );
 
     eval { $q->limit() };
     like( $@, qr/0 parameters/,
@@ -21,7 +21,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->select( $s->table('User') );
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->select( $s->table('User') );
 
     $q->limit(10);
 
@@ -30,7 +30,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->select( $s->table('User') );
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->select( $s->table('User') );
 
     $q->limit( 10, 20 );
 

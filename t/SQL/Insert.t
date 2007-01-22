@@ -6,7 +6,7 @@ use lib 't/lib';
 use Fey::Test;
 use Test::More tests => 16;
 
-use Fey::Query;
+use Fey::SQL;
 
 my $s = Fey::Test->mock_test_schema();
 
@@ -19,7 +19,7 @@ $s->table('User')->add_column($size);
 
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->insert();
 
     eval { $q->into() };
     like( $@, qr/1 was expected/,
@@ -28,7 +28,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('username') );
 
@@ -39,7 +39,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('user_id'),
               $s->table('User')->column('username') );
@@ -51,7 +51,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('user_id'),
               $s->table('User')->column('username') );
@@ -64,7 +64,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('user_id'),
               $s->table('User')->column('username') );
@@ -75,7 +75,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('user_id'),
               $s->table('User')->column('username') );
@@ -86,7 +86,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -96,7 +96,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -106,7 +106,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -117,7 +117,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -128,7 +128,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -138,7 +138,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -148,7 +148,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -159,7 +159,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::Query->new( dbh => $s->dbh() )->insert();
+    my $q = Fey::SQL->new( dbh => $s->dbh() )->insert();
 
     $q->into( $s->table('User')->column('size') );
 

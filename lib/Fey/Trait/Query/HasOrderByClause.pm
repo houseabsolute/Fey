@@ -1,4 +1,4 @@
-package Fey::Trait::Query::HasOrderByClause;
+package Fey::Trait::SQL::HasOrderByClause;
 
 use strict;
 use warnings;

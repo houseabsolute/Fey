@@ -184,25 +184,25 @@ use Fey::Schema;
     my $s = Fey::Test->mock_test_schema();
 
     my $q = $s->query();
-    isa_ok( $q, 'Fey::Query' );
+    isa_ok( $q, 'Fey::SQL' );
 }
 
 {
     my $s = Fey::Schema->new( name        => 'Test2',
-                            query_class => 'Fey::Query::Test',
+                            query_class => 'Fey::SQL::Test',
                           );
 
     $s->set_dbh( Fey::Test->mock_dbh() );
 
     my $q = $s->query();
-    isa_ok( $q, 'Fey::Query::Test' );
+    isa_ok( $q, 'Fey::SQL::Test' );
 }
 
 {
     eval
     {
         my $s = Fey::Schema->new( name        => 'Test3',
-                                query_class => 'Fey::Query::DoesNotExist',
+                                query_class => 'Fey::SQL::DoesNotExist',
                               );
     };
 
@@ -210,6 +210,6 @@ use Fey::Schema;
           'specify non-existent query subclass' );
 }
 
-package Fey::Query::Test;
+package Fey::SQL::Test;
 
-use base 'Fey::Query';
+use base 'Fey::SQL';

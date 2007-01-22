@@ -1,4 +1,4 @@
-package Fey::Query;
+package Fey::SQL;
 
 use strict;
 use warnings;
@@ -15,11 +15,11 @@ use Fey::Validate
 
 use Scalar::Util qw( blessed );
 
-use Fey::Query::Delete;
-use Fey::Query::Insert;
-use Fey::Query::Select;
-use Fey::Query::Update;
-use Fey::Query::Where;
+use Fey::SQL::Delete;
+use Fey::SQL::Insert;
+use Fey::SQL::Select;
+use Fey::SQL::Update;
+use Fey::SQL::Where;
 
 use Fey::Placeholder;
 use Fey::Quoter;
@@ -98,18 +98,18 @@ __END__
 
 =head1 NAME
 
-Fey::Query - A superclass for all types of SQL queries
+Fey::SQL - A superclass for all types of SQL queries
 
 =head1 SYNOPSIS
 
-  my $query = Fey::Query->new( dbh => $dbh );
+  my $query = Fey::SQL->new( dbh => $dbh );
 
   $query->select( @columns );
 
 =head1 DESCRIPTION
 
 This class provides the primary interface for generating SQL
-queries. All queries start with a C<Fey::Query> object, and are then
+queries. All queries start with a C<Fey::SQL> object, and are then
 transformed into a more specific subclass when the appropriate method
 is called.
 
@@ -117,9 +117,9 @@ is called.
 
 This class provides the following methods:
 
-=head2 Fey::Query->new( dbh => $dbh )
+=head2 Fey::SQL->new( dbh => $dbh )
 
-This method creates a new C<Fey::Query> object. It requires a
+This method creates a new C<Fey::SQL> object. It requires a
 parameter named "dbh", which must be a DBI handle.
 
 =head2 $query->select(...)
@@ -130,20 +130,20 @@ parameter named "dbh", which must be a DBI handle.
 
 =head2 $query->delete(...)
 
-These methods re-bless the query into the proper C<Fey::Query>
+These methods re-bless the query into the proper C<Fey::SQL>
 subclass, and then call the specified method on the newly re-blessed
 object. Any parameters passed to this method will be passed on in the
 second call.
 
-See L<Fey::Query::Select>, L<Fey::Query::Update>,
-L<Fey::Query::Insert>, and L<Fey::Query::Delete> for more details.
+See L<Fey::SQL::Select>, L<Fey::SQL::Update>,
+L<Fey::SQL::Insert>, and L<Fey::SQL::Delete> for more details.
 
 =head2 $query->where(...)
 
-This produces a C<Fey::Query::Where> object, which is an object that
+This produces a C<Fey::SQL::Where> object, which is an object that
 just contains a where clause. This exists to allow you to add where
 clauses to joins. See the documentation on L<<
-Fey::Query::Select->from()|Fey::Query::Select/$query->from()/ >> for
+Fey::SQL::Select->from()|Fey::SQL::Select/$query->from()/ >> for
 more details.
 
 =head1 WHERE CLAUSES
