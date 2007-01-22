@@ -138,6 +138,14 @@ second call.
 See L<Fey::Query::Select>, L<Fey::Query::Update>,
 L<Fey::Query::Insert>, and L<Fey::Query::Delete> for more details.
 
+=head2 $query->where(...)
+
+This produces a C<Fey::Query::Where> object, which is an object that
+just contains a where clause. This exists to allow you to add where
+clauses to joins. See the documentation on L<<
+Fey::Query::Select->from()|Fey::Query::Select/$query->from()/ >> for
+more details.
+
 =head1 WHERE CLAUSES
 
 Many types of queries allow C<WHERE> clauses via the a C<where()>
