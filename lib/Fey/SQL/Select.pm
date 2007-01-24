@@ -8,7 +8,8 @@ use base 'Fey::SQL';
 __PACKAGE__->mk_ro_accessors
     ( qw( is_distinct ) );
 
-use Class::Trait ( 'Fey::Trait::SQL::HasWhereClause',
+use Class::Trait ( 'Fey::Trait::Comparable',
+                   'Fey::Trait::SQL::HasWhereClause',
                    'Fey::Trait::SQL::HasOrderByClause',
                    'Fey::Trait::SQL::HasLimitClause',
                  );
@@ -297,10 +298,6 @@ sub _having_clause
            )
 }
 
-# REVIEW - Fakes being comparable so it will be transformed into a
-# subselect fragment by query bits.
-sub is_comparable { 1 }
-
 
 1;
 
@@ -489,9 +486,14 @@ for more details.
 
 =head1 TRAITS
 
-This class does the C<Fey::Trait::SQL::HasWhereClause>,
+This class does
+C<Fey::Trait::SQL::HasWhereClause>,
 C<Fey::Trait::SQL::HasOrderByClause>, and
 C<Fey::Trait::SQL::HasLimitClause> traits.
+
+It also does the C<Fey::Trait::SQL::Comparable> trait. This allows a
+C<Fey::SQL::Select> object to be used as a subselect in C<WHERE>
+clauses.
 
 =head1 AUTHOR
 
