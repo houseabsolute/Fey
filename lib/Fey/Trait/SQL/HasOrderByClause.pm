@@ -66,3 +66,42 @@ sub _order_by_clause
 1;
 
 __END__
+
+=head1 NAME
+
+Fey::Trait::SQL::HasOrderByClause - A trait for queries which can include a ORDER BY clause
+
+=head1 SYNOPSIS
+
+  use Class::Trait ( 'Fey::Trait::SQL::HasOrderByClause' );
+
+=head1 DESCRIPTION
+
+Classes which do this trait represent a query which can include a
+C<ORDER BY> clause.
+
+=head1 METHODS
+
+This trait provides the following methods:
+
+=head2 $query->order_by()
+
+See the L<Fey::SQL section on ORDER BY Clauses|Fey::SQL/ORDER BY
+Clauses> for more details.
+
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 BUGS
+
+See C<Fey::Core> for details on how to report bugs.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2006-2007 Dave Rolsky, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut

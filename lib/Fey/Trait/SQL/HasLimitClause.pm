@@ -43,3 +43,42 @@ sub _limit_clause
 1;
 
 __END__
+
+=head1 NAME
+
+Fey::Trait::SQL::HasLimitClause - A trait for queries which can include a LIMIT clause
+
+=head1 SYNOPSIS
+
+  use Class::Trait ( 'Fey::Trait::SQL::HasLimitClause' );
+
+=head1 DESCRIPTION
+
+Classes which do this trait represent a query which can include a
+C<LIMIT> clause.
+
+=head1 METHODS
+
+This trait provides the following methods:
+
+=head2 $query->limit()
+
+See the L<Fey::SQL section on LIMIT Clauses|Fey::SQL/LIMIT Clauses>
+for more details.
+
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 BUGS
+
+See C<Fey::Core> for details on how to report bugs.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2006-2007 Dave Rolsky, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
