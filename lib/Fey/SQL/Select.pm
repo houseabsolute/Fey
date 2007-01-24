@@ -305,3 +305,207 @@ sub is_comparable { 1 }
 1;
 
 __END__
+
+=head1 NAME
+
+Fey::SQL::Select - Represents a SELECT query
+
+=head1 SYNOPSIS
+
+  my $sql = Fey::SQL->new( dbh => $dbh );
+
+  $sql->select( @columns );
+
+=head1 DESCRIPTOIN
+
+This class represents a C<SELECT> query.
+
+=head1 METHODS
+
+This class provides the following methods:
+
+=head2 Constructor
+
+To construct an object of this class, call C<< $query->select() >> on
+a C<Fey::SQL> object.
+
+=head2 $select->select(...)
+
+This method accepts a list of parameters, which are the things being
+selected.
+
+The list can include the following types of elements:
+
+=over 4
+
+=item * plain scalars, including C<undef>
+
+These will be passed to C<< Fey::Literal->new_from_scalar() >>.
+
+=item * C<Fey::Table> objects
+
+If a table is passed, then all of its columns will be included in the
+C<SELECT> clause.
+
+=item * C<Fey::Column> objects, and aliases
+
+This specifies an individual column (possibly aliased) to include in
+the select.
+
+The C<< $column->is_selectable() >> method must return true for these
+objects.
+
+This method can be called multiple times with different elements each
+time.
+
+=item * C<Fey::Literal> objects
+
+Any type of literal can be included in a C<SELECT> clause.
+
+=back
+
+=head2 $query->distinct()
+
+If this is called, the generated SQL will start with C<SELECT
+DISTINCT>.
+
+=head2 $query->from(...)
+
+This method specifies the C<FROM> clause of the query. It can accept a
+variety of argument lists.
+
+=over 4
+
+=item * ($table_or_alias)
+
+If called with a single C<Fey::Table> or table alias object, that
+table is included in the C<FROM> clause.
+
+  FROM Part
+
+=item * ($select_query)
+
+If called with a single C<Fey::SQL::Select> object, that object's SQL
+will be included in the C<FROM> clause as a subselect.
+
+  FROM (SELECT part_id FROM Part) AS SUBSELECT0
+
+=item * ($table1, $table2)
+
+If two tables (or aliases) are passed to this method, these two tables
+are included and joined together. The foreign key between these two
+tables will be looked up in the C<Fey::Schema> object for the
+tables. However, if the tables do not have a foreign key between them,
+or have more than one foreign key, an exception is thrown.
+
+  FROM Part, MachinePart
+       ON Part.part_id = MachinePart.part_id
+
+=item * ($table1, $table2, $fk)
+
+When joining two tables, you can manually specify the foreign key
+which should be used to join them. This is necessary when there are
+multiple foreign keys between two tables.
+
+You can also use this to "fake" a foreign key between two tables which
+don't really have one, but where it makes sense to join them
+anyway. If this paragraph doesn't make sense, don't worry about it ;)
+
+=item * ($table1, 'left_outer_join', $table2)
+
+If you want to do an outer join between two tables, pass the two
+tables, separated by one of the following string:
+
+=over 8
+
+=item * left_outer_join
+
+=item * right_outer_join
+
+=item * full_outer_join
+
+=back
+
+This will generate the appropriate outer join SQL in the C<FROM>
+clause.
+
+  FROM Part
+       LEFT OUTER JOIN MachinePart
+       ON Part.part_id = MachinePart.part_id
+
+Just as with a normal join, the C<<$query->from() >> will attempt to
+automatically find a foreign key between the two tables.
+
+=item * ($table1, 'left_outer_join', $table2, $fk)
+
+Just as with a normal join, you can manually specify the foreign key
+to use for an outer join as well.
+
+=item * ($table1, 'left_outer_join', $table2, $where_clause)
+
+If you want to specify a C<WHERE> clause as part of an outer join,
+include this as the fourth argument when calling C<< $query->from()
+>>.
+
+  FROM Part
+       LEFT OUTER JOIN MachinePart
+       ON Part.part_id = MachinePart.part_id
+       WHERE MachinePart.machine_id = ?
+
+To create a standalone C<WHERE> clause suitable for passing to this
+method, call C<< $query->where() >> on a new C<Fey::Query> object.
+
+=item * ($table1, 'left_outer_join', $table2, $fk, $where_clause)
+
+You can manually specify a foreign key I<and> include a where clause
+in an outer join.
+
+=back
+
+=head2 $query->where(...)
+
+See the L<Fey::SQL section on WHERE Clauses|Fey::SQL/WHERE Clauses>
+for more details.
+
+=head2 $query->group_by(...)
+
+This method accepts a list of elements. Each element can be a
+C<Fey::Column> object, a column alias, or a literal function or term.
+
+=head2 $query->having(...)
+
+The C<< $query->having() >> method accepts exactly the same arguments
+as the C<< $query->where() >> method.
+
+=head2 $query->order_by(...)
+
+See the L<Fey::SQL section on ORDER BY Clauses|Fey::SQL/ORDER BY
+Clauses> for more details.
+
+=head2 $query->limit(...)
+
+See the L<Fey::SQL section on LIMIT Clauses|Fey::SQL/LIMIT Clauses>
+for more details.
+
+=head1 TRAITS
+
+This class does the C<Fey::Trait::SQL::HasWhereClause>,
+C<Fey::Trait::SQL::HasOrderByClause>, and
+C<Fey::Trait::SQL::HasLimitClause> traits.
+
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 BUGS
+
+See C<Fey::Core> for details on how to report bugs.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2006-2007 Dave Rolsky, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
