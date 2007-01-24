@@ -146,12 +146,21 @@ clauses to joins. See the documentation on L<<
 Fey::SQL::Select->from()|Fey::SQL::Select/$sql->from()/ >> for
 more details.
 
-=head1 WHERE CLAUSES
+=head1 CREATING SQL
+
+The documentation for creating SQL in this module covers those clauses
+in SQL queries which are shared across different types of queries,
+including C<WHERE>, C<ORDER BY>, and C<LIMIT>. For SQL clauses that
+are specific to one type of query, see the appropriate subclass. For
+example, for C<SELECT> clauses, see the L<Fey::SQL::Select> class
+documentation.
+
+=head2 WHERE Clauses
 
 Many types of queries allow C<WHERE> clauses via the a C<where()>
 method. The method accepts several different types of parameters:
 
-=head2 Comparisons
+=head3 Comparisons
 
 These all a similar form:
 
@@ -213,7 +222,7 @@ Note that if you use a placeholder object in this case, then the query
 will not be transformed into an C<IS (NOT) NULL> expression, since the
 value of the placeholder is not known when the SQL is being generated.
 
-=head2 Boolean Combinations
+=head3 Boolean AND/OR
 
 You can pass the strings "and" and "or" to the C<where()> method in
 order to create complex boolean checks. When you call C<where()> with
@@ -246,7 +255,7 @@ to create subgroups.
   $sql->where( $name, '=', 'Grommit' );
   $sql->where( ')' );
 
-=head1 ORDER BY CLAUSES
+=head2 ORDER BY Clauses
 
 Many types of queries allow C<ORDER BY> clauses via the an
 C<order_by()> method. This method accepts a list of items. The items
@@ -279,7 +288,7 @@ the alias is used in the C<ORDER BY> clause.
   # ORDER BY FUNCTION0 ASC
   $sql->order_by( $length, 'ASC' );
 
-=head1 LIMIT CLAUSES
+=head2 LIMIT Clauses
 
 Many types of queries allow C<LIMIT> clauses via the an C<limit()>
 method. This method accepts two parameters, with the second being
