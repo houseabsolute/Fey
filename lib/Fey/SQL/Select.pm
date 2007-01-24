@@ -311,7 +311,17 @@ Fey::SQL::Select - Represents a SELECT query
 
   my $sql = Fey::SQL->new( dbh => $dbh );
 
-  $sql->select( @columns );
+  # SELECT Part.part_id, Part.part_name
+  #   FROM Part JOIN MachinePart
+  #        ON Part.part_id = MachinePart.part_id
+  #  WHERE MachinePart.machine_id = $value
+  # ORDER BY Part.name DESC
+  # LIMIT 10
+  $sql->select( $part_id, $part_name );
+  $sql->from( $Part, $MachinePart );
+  $sql->where( $machine_id, '=', $value );
+  $sql->order_by( $part_Name, 'DESC' );
+  $sql->limit(10);
 
 =head1 DESCRIPTOIN
 
@@ -447,7 +457,7 @@ include this as the fourth argument when calling C<< $query->from()
   FROM Part
        LEFT OUTER JOIN MachinePart
        ON Part.part_id = MachinePart.part_id
-       WHERE MachinePart.machine_id = ?
+       AND MachinePart.machine_id = ?
 
 To create a standalone C<WHERE> clause suitable for passing to this
 method, call C<< $query->where() >> on a new C<Fey::Query> object.
@@ -458,6 +468,10 @@ You can manually specify a foreign key I<and> include a where clause
 in an outer join.
 
 =back
+
+The C<< $query->from() >> method can be called multiple times with
+different join options. If you call the method with arguments that it
+has already seen, then it will effectively ignore that call.
 
 =head2 $query->where(...)
 
