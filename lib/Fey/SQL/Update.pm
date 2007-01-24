@@ -59,7 +59,7 @@ use Scalar::Util qw( blessed );
           callbacks =>
           { 'literal, placeholder, column, undef, or scalar' =>
             sub {    ! blessed $_[0]
-                  || ( $_[0]->isa('Fey::Column') && !$_[0]->is_alias() )
+                  || ( $_[0]->isa('Fey::Column') && ! $_[0]->is_alias() )
                   || $_[0]->isa('Fey::Literal')
                   || $_[0]->isa('Fey::Placeholder') },
           },
@@ -155,3 +155,102 @@ sub _set_clause
 1;
 
 __END__
+
+=head1 NAME
+
+Fey::SQL::Update - Represents a UPDATE query
+
+=head1 SYNOPSIS
+
+  my $sql = Fey::SQL->new( dbh => $dbh );
+
+  # UPDATE Part
+  #    SET quantity = 10
+  #  WHERE part_id IN (1, 5)
+  $sql->update($Part);
+  $sql->set( $quantity, 10 );
+  $sql->where( $part_id, 'IN', 1, 5 );
+
+=head1 DESCRIPTOIN
+
+This class represents a C<UPDATE> query.
+
+=head1 METHODS
+
+This class provides the following methods:
+
+=head2 Constructor
+
+To construct an object of this class, call C<< $query->update() >> on
+a C<Fey::SQL> object.
+
+=head2 $update->update()
+
+This method specifies the C<UPDATE> clause of the query. It expects
+one or more L<Fey::Table> objects (not aliases). Most RDBMS
+implementations only allow for a single table here, but some (like
+MySQL) do allow for multi-table updates.
+
+=head2 $update->set(...)
+
+This method takes a list of key/value pairs. The keys should be column
+objects, and the value can be one of the following:
+
+=over 4
+
+=item * a plain scalar, including undef
+
+This will be passed to C<< Fey::Literal->new_from_scalar() >>.
+
+=item * C<Fey::Literal> object
+
+=item * C<Fey::Column> object
+
+A column alias cannot be used.
+
+=item * C<Fey::Placeholder> object
+
+=back
+
+=head2 $query->where(...)
+
+See the L<Fey::SQL section on WHERE Clauses|Fey::SQL/WHERE Clauses>
+for more details.
+
+=head2 $query->order_by(...)
+
+See the L<Fey::SQL section on ORDER BY Clauses|Fey::SQL/ORDER BY
+Clauses> for more details.
+
+=head2 $query->limit(...)
+
+See the L<Fey::SQL section on LIMIT Clauses|Fey::SQL/LIMIT Clauses>
+for more details.
+
+=head2 $query->sql()
+
+Returns the full SQL statement which this object represents.
+
+=head1 TRAITS
+
+This class does
+C<Fey::Trait::SQL::HasWhereClause>,
+C<Fey::Trait::SQL::HasOrderByClause>, and
+C<Fey::Trait::SQL::HasLimitClause> traits.
+
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 BUGS
+
+See C<Fey::Core> for details on how to report bugs.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2006-2007 Dave Rolsky, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
