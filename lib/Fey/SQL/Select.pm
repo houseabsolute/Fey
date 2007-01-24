@@ -368,12 +368,12 @@ Any type of literal can be included in a C<SELECT> clause.
 
 =back
 
-=head2 $query->distinct()
+=head2 $select->distinct()
 
 If this is called, the generated SQL will start with C<SELECT
 DISTINCT>.
 
-=head2 $query->from(...)
+=head2 $select->from(...)
 
 This method specifies the C<FROM> clause of the query. It can accept a
 variety of argument lists.
@@ -437,7 +437,7 @@ clause.
        LEFT OUTER JOIN MachinePart
        ON Part.part_id = MachinePart.part_id
 
-Just as with a normal join, the C<<$query->from() >> will attempt to
+Just as with a normal join, the C<<$select->from() >> will attempt to
 automatically find a foreign key between the two tables.
 
 =item * ($table1, 'left_outer_join', $table2, $fk)
@@ -448,7 +448,7 @@ to use for an outer join as well.
 =item * ($table1, 'left_outer_join', $table2, $where_clause)
 
 If you want to specify a C<WHERE> clause as part of an outer join,
-include this as the fourth argument when calling C<< $query->from()
+include this as the fourth argument when calling C<< $select->from()
 >>.
 
   FROM Part
@@ -457,7 +457,7 @@ include this as the fourth argument when calling C<< $query->from()
        AND MachinePart.machine_id = ?
 
 To create a standalone C<WHERE> clause suitable for passing to this
-method, call C<< $query->where() >> on a new C<Fey::Query> object.
+method, call C<< $select->where() >> on a new C<Fey::Query> object.
 
 =item * ($table1, 'left_outer_join', $table2, $fk, $where_clause)
 
@@ -466,36 +466,36 @@ in an outer join.
 
 =back
 
-The C<< $query->from() >> method can be called multiple times with
+The C<< $select->from() >> method can be called multiple times with
 different join options. If you call the method with arguments that it
 has already seen, then it will effectively ignore that call.
 
-=head2 $query->where(...)
+=head2 $select->where(...)
 
 See the L<Fey::SQL section on WHERE Clauses|Fey::SQL/WHERE Clauses>
 for more details.
 
-=head2 $query->group_by(...)
+=head2 $select->group_by(...)
 
 This method accepts a list of elements. Each element can be a
 C<Fey::Column> object, a column alias, or a literal function or term.
 
-=head2 $query->having(...)
+=head2 $select->having(...)
 
-The C<< $query->having() >> method accepts exactly the same arguments
-as the C<< $query->where() >> method.
+The C<< $select->having() >> method accepts exactly the same arguments
+as the C<< $select->where() >> method.
 
-=head2 $query->order_by(...)
+=head2 $select->order_by(...)
 
 See the L<Fey::SQL section on ORDER BY Clauses|Fey::SQL/ORDER BY
 Clauses> for more details.
 
-=head2 $query->limit(...)
+=head2 $select->limit(...)
 
 See the L<Fey::SQL section on LIMIT Clauses|Fey::SQL/LIMIT Clauses>
 for more details.
 
-=head2 $query->sql()
+=head2 $select->sql()
 
 Returns the full SQL statement which this object represents.
 
