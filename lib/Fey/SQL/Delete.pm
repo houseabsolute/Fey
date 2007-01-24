@@ -107,29 +107,29 @@ a C<Fey::SQL> object.
 This method is basically a no-op that exists to so that L<Fey::SQL>
 has something to call after it constructs an object in this class.
 
-=head2 $query->from(...)
+=head2 $delete->from(...)
 
 This method specifies the C<FROM> clause of the query. It expects one
 or more L<Fey::Table> objects (not aliases). Most RDBMS
 implementations only allow for a single table here, but some (like
 MySQL) do allow for multi-table deletes.
 
-=head2 $query->where(...)
+=head2 $delete->where(...)
 
 See the L<Fey::SQL section on WHERE Clauses|Fey::SQL/WHERE Clauses>
 for more details.
 
-=head2 $query->order_by(...)
+=head2 $delete->order_by(...)
 
 See the L<Fey::SQL section on ORDER BY Clauses|Fey::SQL/ORDER BY
 Clauses> for more details.
 
-=head2 $query->limit(...)
+=head2 $delete->limit(...)
 
 See the L<Fey::SQL section on LIMIT Clauses|Fey::SQL/LIMIT Clauses>
 for more details.
 
-=head2 $query->sql()
+=head2 $delete->sql()
 
 Returns the full SQL statement which this object represents.
 
