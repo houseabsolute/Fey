@@ -109,12 +109,10 @@ has something to call after it constructs an object in this class.
 
 =head2 $query->from(...)
 
-This method specifies the C<FROM> clause of the query. It can accept a
-variety of argument lists.
-
-This method expects one or more L<Fey::Table> objects (not
-aliases). Most RDBMS implementations only allow for a single table
-here, but some (like MySQL) do allow for multi-table deletes.
+This method specifies the C<FROM> clause of the query. It expects one
+or more L<Fey::Table> objects (not aliases). Most RDBMS
+implementations only allow for a single table here, but some (like
+MySQL) do allow for multi-table deletes.
 
 =head2 $query->where(...)
 
