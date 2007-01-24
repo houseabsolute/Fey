@@ -136,7 +136,7 @@ __END__
 
 Fey::SQL::Fragment::Where::Boolean - Represents a comparison in a WHERE clause
 
-=head1 DESCRIPTOIN
+=head1 DESCRIPTION
 
 This class represents a comparison in a WHERE clause.
 

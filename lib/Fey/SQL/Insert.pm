@@ -165,7 +165,7 @@ Fey::SQL::Insert - Represents a INSERT query
   my $ph = Fey::Placeholder->new();
   $sql->values( $ph, $ph, $ph );
 
-=head1 DESCRIPTOIN
+=head1 DESCRIPTION
 
 This class represents a C<INSERT> query.
 

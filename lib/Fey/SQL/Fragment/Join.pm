@@ -99,7 +99,7 @@ __END__
 
 Fey::SQL::Fragment::Join - Represents a single join in a FROM clause
 
-=head1 DESCRIPTOIN
+=head1 DESCRIPTION
 
 This class represents part of a C<FROM> clause, usually a join, but it
 can also represent a single table or subselect.

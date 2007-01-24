@@ -52,7 +52,7 @@ __END__
 
 Fey::SQL::Fragment::Subselect - Represents a subselect
 
-=head1 DESCRIPTOIN
+=head1 DESCRIPTION
 
 This class represents a subselect.
 

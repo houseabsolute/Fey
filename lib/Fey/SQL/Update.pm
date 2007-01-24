@@ -171,7 +171,7 @@ Fey::SQL::Update - Represents a UPDATE query
   $sql->set( $quantity, 10 );
   $sql->where( $part_id, 'IN', 1, 5 );
 
-=head1 DESCRIPTOIN
+=head1 DESCRIPTION
 
 This class represents a C<UPDATE> query.
 

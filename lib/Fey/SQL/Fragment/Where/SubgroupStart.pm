@@ -26,7 +26,7 @@ __END__
 
 Fey::SQL::Fragment::Where::Boolean - Represents the start of a subgroup in a WHERE clause
 
-=head1 DESCRIPTOIN
+=head1 DESCRIPTION
 
 This class represents the start of a subgroup in a WHERE clause
 

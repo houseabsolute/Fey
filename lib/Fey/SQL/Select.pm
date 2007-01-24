@@ -320,7 +320,7 @@ Fey::SQL::Select - Represents a SELECT query
   $sql->order_by( $part_Name, 'DESC' );
   $sql->limit(10);
 
-=head1 DESCRIPTOIN
+=head1 DESCRIPTION
 
 This class represents a C<SELECT> query.
 

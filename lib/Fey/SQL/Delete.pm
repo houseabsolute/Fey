@@ -89,7 +89,7 @@ Fey::SQL::Delete - Represents a DELETE query
   $sql->from($Part);
   $sql->where( $name, 'LIKE', '%Widget' );
 
-=head1 DESCRIPTOIN
+=head1 DESCRIPTION
 
 This class represents a C<DELETE> query.
 
