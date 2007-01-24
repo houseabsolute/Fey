@@ -306,4 +306,19 @@ parameter, is the offset for the limit clause.
   # LIMIT 0 OFFSET 20
   $sql->limit( 0, 20 );
 
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 BUGS
+
+See C<Fey::Core> for details on how to report bugs.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2006-2007 Dave Rolsky, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
 =cut
