@@ -212,22 +212,22 @@ A column alias cannot be used.
 
 =back
 
-=head2 $query->where(...)
+=head2 $update->where(...)
 
 See the L<Fey::SQL section on WHERE Clauses|Fey::SQL/WHERE Clauses>
 for more details.
 
-=head2 $query->order_by(...)
+=head2 $update->order_by(...)
 
 See the L<Fey::SQL section on ORDER BY Clauses|Fey::SQL/ORDER BY
 Clauses> for more details.
 
-=head2 $query->limit(...)
+=head2 $update->limit(...)
 
 See the L<Fey::SQL section on LIMIT Clauses|Fey::SQL/LIMIT Clauses>
 for more details.
 
-=head2 $query->sql()
+=head2 $update->sql()
 
 Returns the full SQL statement which this object represents.
 
