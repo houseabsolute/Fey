@@ -5,9 +5,6 @@ use warnings;
 
 use base 'Fey::SQL';
 
-__PACKAGE__->mk_ro_accessors
-    ( qw( is_distinct ) );
-
 use Class::Trait ( 'Fey::Trait::Comparable',
                    'Fey::Trait::SQL::HasWhereClause',
                    'Fey::Trait::SQL::HasOrderByClause',
@@ -244,7 +241,7 @@ sub _select_clause
     my $self = shift;
 
     my $sql = 'SELECT ';
-    $sql .= 'DISTINCT ' if $self->is_distinct();
+    $sql .= 'DISTINCT ' if $self->{is_distinct};
     $sql .=
         ( join ', ',
           map { $self->{select}{$_}->sql_with_alias( $self->quoter() ) }
@@ -497,6 +494,10 @@ Clauses> for more details.
 
 See the L<Fey::SQL section on LIMIT Clauses|Fey::SQL/LIMIT Clauses>
 for more details.
+
+=head2 $query->sql()
+
+Returns the full SQL statement which this object represents.
 
 =head1 TRAITS
 
