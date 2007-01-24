@@ -25,7 +25,7 @@ sub new
 
     # REVIEW - this is a bit wack - maybe _where_clause() should be
     # public.
-    $self->[WHERE] = $self->[WHERE]->_where_clause()
+    $self->[WHERE] = $self->[WHERE]->_where_clause( 'no WHERE' )
         if $self->[WHERE];
 
     return $self;
@@ -84,7 +84,7 @@ sub sql_with_alias
 
     if ( $_[0]->[WHERE] )
     {
-        $join .= ' ' . $_[0]->[WHERE];
+        $join .= ' AND ' . $_[0]->[WHERE];
     }
 
     return $join;

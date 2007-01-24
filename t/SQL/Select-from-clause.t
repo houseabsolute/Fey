@@ -171,7 +171,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 
     my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
     $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
-    $sql .= q{ WHERE "User"."user_id" = 2};
+    $sql .= q{ AND "User"."user_id" = 2};
 
     is( $q->_from_clause(), $sql,
         '_from_clause for outer join with where clause' );
@@ -190,7 +190,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 
     my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
     $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
-    $sql .= q{ WHERE "User"."user_id" = 2};
+    $sql .= q{ AND "User"."user_id" = 2};
 
     is( $q->_from_clause(), $sql,
         '_from_clause for outer join with where clause and explicit fk' );

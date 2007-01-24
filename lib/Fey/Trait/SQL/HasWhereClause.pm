@@ -104,12 +104,16 @@ sub _where_clause
 {
     return unless $_[0]->{where};
 
-    return ( 'WHERE '
+    my $sql = '';
+    $sql = 'WHERE '
+        unless $_[1];
+
+    return ( $sql
              . ( join ' ',
                  map { $_->sql( $_[0]->quoter() ) }
                  @{ $_[0]->{where} }
                )
-           )
+           );
 }
 
 
