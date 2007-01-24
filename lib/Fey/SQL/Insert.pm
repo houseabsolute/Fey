@@ -148,3 +148,87 @@ sub _values_clause
 1;
 
 __END__
+
+=head1 NAME
+
+Fey::SQL::Insert - Represents a INSERT query
+
+=head1 SYNOPSIS
+
+  my $sql = Fey::SQL->new( dbh => $dbh );
+
+  # INSERT INTO Part
+  #             (part_id, name, quantity)
+  #      VALUES
+  #             (?, ?, ?)
+  $sql->insert()->into($Part);
+  my $ph = Fey::Placeholder->new();
+  $sql->values( $ph, $ph, $ph );
+
+=head1 DESCRIPTOIN
+
+This class represents a C<INSERT> query.
+
+=head1 METHODS
+
+This class provides the following methods:
+
+=head2 Constructor
+
+To construct an object of this class, call C<< $query->insert() >> on
+a C<Fey::SQL> object.
+
+=head2 $insert->insert()
+
+This method is basically a no-op that exists to so that L<Fey::SQL>
+has something to call after it constructs an object in this class.
+
+=head2 $insert->into()
+
+This method specifies the C<INTO> clause of the query. It expects a
+list of L<Fey::Column> and/or L<Fey::Table> objects, but not aliases.
+
+If you pass a table object, then the C<INTO> will include all of that
+table's column, in the order returned by the C<< $table->columns() >>
+method.
+
+Most RDBMS implementations only allow for a single table here, but
+some (like MySQL) do allow for multi-table inserts.
+
+=head2 $insert->values(...)
+
+This method takes a list of values. Each value can be of the
+following:
+
+=over 4
+
+=item * a plain scalar, including undef
+
+This will be passed to C<< Fey::Literal->new_from_scalar() >>.
+
+=item * C<Fey::Literal> object
+
+=item * C<Fey::Placeholder> object
+
+=back
+
+=head2 $query->sql()
+
+Returns the full SQL statement which this object represents.
+
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 BUGS
+
+See C<Fey::Core> for details on how to report bugs.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2006-2007 Dave Rolsky, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
