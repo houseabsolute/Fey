@@ -10,7 +10,7 @@ __PACKAGE__->mk_ro_accessors
 use Class::Trait ( 'Fey::Trait::Selectable' );
 use Class::Trait ( 'Fey::Trait::Comparable' );
 use Class::Trait ( 'Fey::Trait::Groupable' => { exclude => 'is_groupable' } );
-use Class::Trait ( 'Fey::Trait::Orderable' => { exclude => 'is_orderable' } );
+use Class::Trait ( 'Fey::Trait::Orderable' );
 
 use Fey::Validate
     qw( validate_pos
@@ -90,8 +90,6 @@ sub sql_or_alias
 }
 
 sub is_groupable { $_[0]->alias_name() ? 1 : 0 }
-
-sub is_orderable { $_[0]->alias_name() ? 1 : 0 }
 
 
 1;

@@ -83,17 +83,17 @@ my $s = Fey::Test->mock_test_schema_with_fks();
     $q->order_by($now);
 
     like( $q->_order_by_clause(), qr/ORDER BY "FUNCTION\d+"/,
-        'order_by() function' );
+          'order_by() function' );
 }
 
 {
     my $q = Fey::SQL->new( dbh => $s->dbh() )->select( $s->table('User') );
 
     my $now = Fey::Literal::Function->new( 'NOW' );
+    $q->order_by($now);
 
-    eval { $q->order_by($now) };
-    like( $@, qr/is orderable/,
-          'cannot order by function with no alias' );
+    like( $q->_order_by_clause(), qr/ORDER BY NOW()/,
+          'order_by() function without an alias' );
 }
 
 {
