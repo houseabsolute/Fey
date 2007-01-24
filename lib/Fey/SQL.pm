@@ -280,7 +280,6 @@ be one of C<'ASC'> or C<'DESC'> (case-insensitive).
 If you pass a function literal, and that literal has an alias, then
 the alias is used in the C<ORDER BY> clause.
 
-
   my $length = Fey::Literal::Function->new( 'LENGTH', $name );
   $sql->select($length);
 
