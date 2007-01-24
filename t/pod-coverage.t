@@ -3,7 +3,7 @@ eval "use Test::Pod::Coverage 1.04";
 plan skip_all => "Test::Pod::Coverage 1.04 required for testing POD coverage"
     if $@;
 
-my @mods = sort grep { ! /::Fragment::|::Test/ } Test::Pod::Coverage::all_modules();
+my @mods = sort grep { ! /::Fragment::|::Test|::Validate/ } Test::Pod::Coverage::all_modules();
 
 plan tests => scalar @mods;
 
