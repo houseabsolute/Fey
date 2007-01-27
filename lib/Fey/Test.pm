@@ -274,7 +274,7 @@ sub _mock_column_info
 
     my $table = $self->{__schema__}->table($table_name);
 
-    return Fey::Mock::STH->new() unless $table;
+    return Fey::Test::MockSTH->new() unless $table;
 
     my @columns;
     for my $col ( $table->columns() )
@@ -360,7 +360,7 @@ package Fey::Test::MockSTH;
 sub new
 {
     my $class = shift;
-    my $rows  = shift;
+    my $rows  = shift || [];
 
     return bless $rows, $class;
 }
