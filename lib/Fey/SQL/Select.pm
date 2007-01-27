@@ -3,7 +3,7 @@ package Fey::SQL::Select;
 use strict;
 use warnings;
 
-use base 'Fey::SQL';
+use base 'Fey::SQL::Base';
 
 use Class::Trait ( 'Fey::Trait::Comparable',
                    'Fey::Trait::SQL::HasWhereClause',
@@ -83,7 +83,7 @@ sub distinct
               ? '_join'
               : @_ == 4 && $_[3]->isa('Fey::FK')
               ? '_outer_join'
-              : @_ == 4 && $_[3]->isa('Fey::SQL')
+              : @_ == 4 && $_[3]->isa('Fey::SQL::Base')
               ? '_outer_join_with_where'
               : @_ == 5
               ? '_outer_join_with_where'
@@ -415,18 +415,18 @@ You can also use this to "fake" a foreign key between two tables which
 don't really have one, but where it makes sense to join them
 anyway. If this paragraph doesn't make sense, don't worry about it ;)
 
-=item * ($table1, 'left_outer_join', $table2)
+=item * ($table1, 'left', $table2)
 
 If you want to do an outer join between two tables, pass the two
 tables, separated by one of the following string:
 
 =over 8
 
-=item * left_outer_join
+=item * left
 
-=item * right_outer_join
+=item * right
 
-=item * full_outer_join
+=item * full
 
 =back
 
@@ -440,12 +440,12 @@ clause.
 Just as with a normal join, the C<<$select->from() >> will attempt to
 automatically find a foreign key between the two tables.
 
-=item * ($table1, 'left_outer_join', $table2, $fk)
+=item * ($table1, 'left', $table2, $fk)
 
 Just as with a normal join, you can manually specify the foreign key
 to use for an outer join as well.
 
-=item * ($table1, 'left_outer_join', $table2, $where_clause)
+=item * ($table1, 'left', $table2, $where_clause)
 
 If you want to specify a C<WHERE> clause as part of an outer join,
 include this as the fourth argument when calling C<< $select->from()
@@ -459,7 +459,7 @@ include this as the fourth argument when calling C<< $select->from()
 To create a standalone C<WHERE> clause suitable for passing to this
 method, call C<< $select->where() >> on a new C<Fey::Query> object.
 
-=item * ($table1, 'left_outer_join', $table2, $fk, $where_clause)
+=item * ($table1, 'left', $table2, $fk, $where_clause)
 
 You can manually specify a foreign key I<and> include a where clause
 in an outer join.

@@ -3,7 +3,7 @@ package Fey::SQL::Update;
 use strict;
 use warnings;
 
-use base 'Fey::SQL';
+use base 'Fey::SQL::Base';
 
 use Class::Trait ( 'Fey::Trait::SQL::HasWhereClause',
                    'Fey::Trait::SQL::HasOrderByClause',

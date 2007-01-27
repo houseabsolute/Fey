@@ -3,10 +3,6 @@ package Fey::SQL;
 use strict;
 use warnings;
 
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_ro_accessors
-    ( qw( dbh quoter ) );
-
 use Fey::Validate
     qw( validate
         DBI_TYPE
@@ -81,7 +77,7 @@ sub _rebless_for
 
     my $class = (ref $self) . '::' . ucfirst $type;
 
-    my $new = $class->new( dbh => $self->dbh() );
+    my $new = $class->new( dbh => $self->{dbh} );
 
     %$self = %$new;
 

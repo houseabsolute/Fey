@@ -3,7 +3,7 @@ package Fey::SQL::Insert;
 use strict;
 use warnings;
 
-use base 'Fey::SQL';
+use base 'Fey::SQL::Base';
 
 use Fey::Validate
     qw( validate
