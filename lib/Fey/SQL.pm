@@ -3,88 +3,11 @@ package Fey::SQL;
 use strict;
 use warnings;
 
-use Fey::Validate
-    qw( validate
-        DBI_TYPE
-      );
-
-use Scalar::Util qw( blessed );
-
 use Fey::SQL::Delete;
 use Fey::SQL::Insert;
 use Fey::SQL::Select;
 use Fey::SQL::Update;
 use Fey::SQL::Where;
-
-use Fey::Placeholder;
-use Fey::Quoter;
-
-
-{
-    my $spec = { dbh => DBI_TYPE };
-    sub new
-    {
-        my $class = shift;
-        my %p     = validate( @_, $spec );
-
-        my $quoter = Fey::Quoter->new( dbh => $p{dbh} );
-
-        return bless { %p,
-                       quoter => $quoter,
-                     }, $class;
-    }
-}
-
-sub select
-{
-    my $self = shift;
-
-    $self->_rebless_for( 'select', @_ );
-}
-
-sub insert
-{
-    my $self = shift;
-
-    return $self->_rebless_for( 'insert', @_ );
-}
-
-sub update
-{
-    my $self = shift;
-
-    $self->_rebless_for( 'update', @_ );
-}
-
-sub delete
-{
-    my $self = shift;
-
-    $self->_rebless_for( 'delete', @_ );
-}
-
-sub where
-{
-    my $self = shift;
-
-    $self->_rebless_for( 'where', @_ );
-}
-
-sub _rebless_for
-{
-    my $self = shift;
-    my $type = shift;
-
-    my $class = (ref $self) . '::' . ucfirst $type;
-
-    my $new = $class->new( dbh => $self->{dbh} );
-
-    %$self = %$new;
-
-    bless $self, ref $new;
-
-    return $self->$type(@_);
-}
 
 
 1;
@@ -93,62 +16,28 @@ __END__
 
 =head1 NAME
 
-Fey::SQL - A superclass for all types of SQL queries
+Fey::SQL - Documentation on SQL generation with Fey
 
 =head1 SYNOPSIS
 
-  my $sql = Fey::SQL->new( dbh => $dbh );
+  my $sql = Fey::SQL::Select->new( dbh => $dbh );
 
   $sql->select( @columns );
 
 =head1 DESCRIPTION
 
-This class provides the primary interface for generating SQL
-queries. All queries start with a C<Fey::SQL> object, and are then
-transformed into a more specific subclass when the appropriate method
-is called.
+This module mostly exists to provide documentation.
 
-=head1 METHODS
-
-This class provides the following methods:
-
-=head2 Fey::SQL->new( dbh => $dbh )
-
-This method creates a new C<Fey::SQL> object. It requires a
-parameter named "dbh", which must be a DBI handle.
-
-=head2 $sql->select(...)
-
-=head2 $sql->update(...)
-
-=head2 $sql->insert(...)
-
-=head2 $sql->delete(...)
-
-These methods re-bless the query into the proper C<Fey::SQL>
-subclass, and then call the specified method on the newly re-blessed
-object. Any parameters passed to this method will be passed on in the
-second call.
-
-See L<Fey::SQL::Select>, L<Fey::SQL::Update>,
-L<Fey::SQL::Insert>, and L<Fey::SQL::Delete> for more details.
-
-=head2 $sql->where(...)
-
-This produces a C<Fey::SQL::Where> object, which is an object that
-just contains a where clause. This exists to allow you to add where
-clauses to joins. See the documentation on L<<
-Fey::SQL::Select->from()|Fey::SQL::Select/$sql->from()/ >> for
-more details.
+For convenience, loading this module loads all of the C<Fey::SQL::*>
+classes, such as L<Fey::SQL::Select>, L<Fey::SQL::Delete>, etc.
 
 =head1 CREATING SQL
 
-The documentation for creating SQL in this module covers those clauses
-in SQL queries which are shared across different types of queries,
-including C<WHERE>, C<ORDER BY>, and C<LIMIT>. For SQL clauses that
-are specific to one type of query, see the appropriate subclass. For
-example, for C<SELECT> clauses, see the L<Fey::SQL::Select> class
-documentation.
+This documentation covers the clauses in SQL queries which are shared
+across different types of queries, including C<WHERE>, C<ORDER BY>,
+and C<LIMIT>. For SQL clauses that are specific to one type of query,
+see the appropriate subclass. For example, for C<SELECT> clauses, see
+the L<Fey::SQL::Select> class documentation.
 
 =head2 WHERE Clauses
 

@@ -13,7 +13,7 @@ my $s = Fey::Test->mock_test_schema();
 my $dbh = Fey::Test->mock_dbh();
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Select->new( dbh => $dbh );
 
     $q->select( $s->table('User') );
 
@@ -36,7 +36,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Select->new( dbh => $dbh );
 
     $q->select( $s->table('User') );
 
@@ -62,7 +62,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Select->new( dbh => $dbh );
 
     $q->select( $s->table('User')->column('user_id') );
     $q->select( $s->table('User') );
@@ -74,7 +74,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Select->new( dbh => $dbh );
 
     $q->select( $s->table('User')->column('user_id') );
     $q->select( $s->table('User')->column('user_id')
@@ -87,7 +87,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Select->new( dbh => $dbh );
     $q->select( $s->table('User')->column('user_id') )->distinct();
 
     my $sql = q{SELECT DISTINCT "User"."user_id"};
@@ -95,7 +95,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Select->new( dbh => $dbh );
 
     $q->select( 'some literal thing' );
     my $sql = q{SELECT 'some literal thing'};
@@ -104,7 +104,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Select->new( dbh => $dbh );
 
     $q->select( 235.12 );
     my $sql = q{SELECT 235.12};
@@ -113,7 +113,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Select->new( dbh => $dbh );
 
     my $concat =
         Fey::Literal::Function->new( 'CONCAT',

@@ -20,29 +20,29 @@ my $size =
 $s->table('User')->add_column($size);
 
 {
-    eval { Fey::SQL->new( dbh => $dbh )->update() };
+    eval { Fey::SQL::Update->new( dbh => $dbh )->update() };
 
     like( $@, qr/1 was expected/,
           'update() without any parameters fails' );
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh )->update( $s->table('User') );
+    my $q = Fey::SQL::Update->new( dbh => $dbh )->update( $s->table('User') );
 
     is( $q->_update_clause(), q{UPDATE "User"},
         'update clause for one table' );
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh )
-                    ->update( $s->table('User'), $s->table('UserGroup') );
+    my $q = Fey::SQL::Update->new( dbh => $dbh )
+                            ->update( $s->table('User'), $s->table('UserGroup') );
 
     is( $q->_update_clause(), q{UPDATE "User", "UserGroup"},
         'update clause for two tables' );
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Update->new( dbh => $dbh );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'), 'bubba' );
 
@@ -51,7 +51,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Update->new( dbh => $dbh );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'), 'bubba',
              $s->table('User')->column('email'), 'bubba@bubba.com',
@@ -63,7 +63,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Update->new( dbh => $dbh );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
              $s->table('User')->column('email'),
@@ -75,7 +75,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Update->new( dbh => $dbh );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('size'),
              Fey::Literal->new_from_scalar(undef),
@@ -87,7 +87,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Update->new( dbh => $dbh );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
              Fey::Literal->new_from_scalar('string'),
@@ -99,7 +99,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Update->new( dbh => $dbh );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
              Fey::Literal->new_from_scalar(42),
@@ -111,7 +111,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Update->new( dbh => $dbh );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
              Fey::Literal::Function->new( 'NOW' ),
@@ -123,7 +123,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Update->new( dbh => $dbh );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
              Fey::Literal::Term->new( 'thingy' ),
@@ -135,7 +135,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Update->new( dbh => $dbh );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
              Fey::Literal::Term->new( 'thingy' ),
@@ -147,7 +147,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Update->new( dbh => $dbh );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
              'hello'
@@ -162,7 +162,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Update->new( dbh => $dbh );
     $q->update( $s->table('User') );
     eval { $q->set() };
 
@@ -171,7 +171,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $dbh );
+    my $q = Fey::SQL::Update->new( dbh => $dbh );
     $q->update( $s->table('User') );
     eval { $q->set( $s->table('User')->column('username') ) };
 
