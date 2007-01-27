@@ -1,0 +1,5 @@
+#!/bin/sh
+
+perl Build.PL
+HARNESS_PERL_SWITCHES=-MDevel::Cover ./Build test
+cover -ignore blib/lib/Fey/Test.pm -report html_basic
