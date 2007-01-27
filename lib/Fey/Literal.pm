@@ -42,11 +42,6 @@ package # Hide from PAUSE
 
 sub new { bless \$_[0], $_[0] }
 
-sub get_info
-{
-    return;
-}
-
 sub isa
 {
     return 1 if $_[1] eq 'DBI::db';
