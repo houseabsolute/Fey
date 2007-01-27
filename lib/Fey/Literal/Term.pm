@@ -29,7 +29,7 @@ use Fey::Validate
     }
 }
 
-sub sql  { $_[0]->term() }
+sub sql { $_[0]->term() }
 
 sub sql_with_alias { goto &sql }
 
@@ -62,7 +62,7 @@ would be created like this:
   my $term =
       Fey::Literal::Term->new
           ( 'DOY FROM TIMESTAMP '
-             . $column->sql_or_alias( $sql->quoter() ) );
+             . $column->sql_or_alias( $sql->dbh() ) );
 
   my $function = Fey::Literal::Function->new( 'EXTRACT', $term );
 

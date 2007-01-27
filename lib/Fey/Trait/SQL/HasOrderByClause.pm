@@ -55,7 +55,7 @@ sub _order_by_clause
         else
         {
             $sql .= ', ' if $elt != $self->{order_by}[0];
-            $sql .= $elt->sql_or_alias( $self->quoter() );
+            $sql .= $elt->sql_or_alias( $self->dbh() );
         }
     }
 

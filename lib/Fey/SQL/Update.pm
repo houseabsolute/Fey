@@ -134,7 +134,7 @@ sub _update_clause
 sub _tables_subclause
 {
     return ( join ', ',
-             map { $_[0]->quoter()->quote_identifier( $_->name() ) }
+             map { $_[0]->dbh()->quote_identifier( $_->name() ) }
              @{ $_[0]->{tables} }
            );
 }
@@ -143,9 +143,9 @@ sub _set_clause
 {
     return ( 'SET '
              . ( join ', ',
-                 map {   $_->[0]->sql( $_[0]->quoter() )
+                 map {   $_->[0]->sql( $_[0]->dbh() )
                        . ' = '
-                       . $_->[1]->sql( $_[0]->quoter() ) }
+                       . $_->[1]->sql( $_[0]->dbh() ) }
                  @{ $_[0]->{set} }
                )
            );

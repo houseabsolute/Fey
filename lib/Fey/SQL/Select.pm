@@ -244,7 +244,7 @@ sub _select_clause
     $sql .= 'DISTINCT ' if $self->{is_distinct};
     $sql .=
         ( join ', ',
-          map { $self->{select}{$_}->sql_with_alias( $self->quoter() ) }
+          map { $self->{select}{$_}->sql_with_alias( $self->dbh() ) }
           sort
           keys %{ $self->{select} }
         );
@@ -259,7 +259,7 @@ sub _from_clause
     return ( 'FROM '
              .
              ( join ', ',
-               map { $self->{from}{$_}->sql_with_alias( $self->quoter() ) }
+               map { $self->{from}{$_}->sql_with_alias( $self->dbh() ) }
                # The sort means that the order that things appear in
                # will be repeatable, if not obvious.
                sort
@@ -277,7 +277,7 @@ sub _group_by_clause
     return ( 'GROUP BY '
              .
              ( join ', ',
-               map { $_->sql_or_alias( $self->quoter() ) }
+               map { $_->sql_or_alias( $self->dbh() ) }
                @{ $self->{group_by} }
              )
            );
@@ -289,7 +289,7 @@ sub _having_clause
 
     return ( 'HAVING '
              . ( join ' ',
-                 map { $_->sql( $_[0]->quoter() ) }
+                 map { $_->sql( $_[0]->dbh() ) }
                  @{ $_[0]->{having} }
                )
            )

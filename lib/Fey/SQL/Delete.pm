@@ -65,7 +65,7 @@ sub _delete_clause
 sub _tables_subclause
 {
     return ( join ', ',
-             map { $_[0]->quoter()->quote_identifier( $_->name() ) }
+             map { $_[0]->dbh()->quote_identifier( $_->name() ) }
              @{ $_[0]->{tables} }
            );
 }

@@ -28,7 +28,7 @@ use Fey::Validate
     }
 }
 
-sub sql  { $_[1]->quote_string( $_[0]->string() ) }
+sub sql { $_[1]->quote( $_[0]->string() ) }
 
 sub sql_with_alias { goto &sql }
 

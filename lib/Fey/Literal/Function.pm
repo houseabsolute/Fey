@@ -68,7 +68,7 @@ sub sql_with_alias
     my $sql = $_[0]->sql( $_[1] );
 
     $sql .= ' AS ';
-    $sql .= $_[0]->alias_name();
+    $sql .= $_[1]->quote_identifier( $_[0]->alias_name() );
 
     return $sql;
 }

@@ -27,7 +27,7 @@ use Fey::Validate
     }
 }
 
-sub sql  { $_[0]->number() }
+sub sql { $_[0]->number() }
 
 sub sql_with_alias { goto &sql }
 

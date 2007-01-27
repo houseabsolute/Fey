@@ -123,7 +123,7 @@ my $dbh = Fey::Test->mock_dbh();
                                    );
     $q->select($concat);
 
-    my $lit_with_alias = q{CONCAT("User"."user_id", ' ', "User"."username") AS FUNCTION0};
+    my $lit_with_alias = q{CONCAT("User"."user_id", ' ', "User"."username") AS "FUNCTION0"};
     my $sql = 'SELECT '. $lit_with_alias;
     is( $q->_select_clause(), $sql,
         '_select_clause after passing function to select()' );

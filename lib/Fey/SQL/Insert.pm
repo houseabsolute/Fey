@@ -104,7 +104,7 @@ sub _insert_clause
 {
     return
         ( 'INSERT INTO '
-          . $_[0]->quoter()->quote_identifier( $_[0]->{columns}[0]->table()->name() )
+          . $_[0]->dbh()->quote_identifier( $_[0]->{columns}[0]->table()->name() )
         );
 }
 
@@ -113,7 +113,7 @@ sub _into_clause
     return
         ( '('
           . ( join ', ',
-              map { $_[0]->quoter()->quote_identifier( $_->name() ) }
+              map { $_[0]->dbh()->quote_identifier( $_->name() ) }
               @{ $_[0]->{columns} }
             )
           . ')'
@@ -131,7 +131,7 @@ sub _values_clause
 
         $v .=
             ( join ', ',
-              map { $vals->{ $_->name() }->sql( $self->quoter() ) }
+              map { $vals->{ $_->name() }->sql( $self->dbh() ) }
               @{ $self->{columns} }
            );
 

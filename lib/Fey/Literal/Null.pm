@@ -23,7 +23,7 @@ sub new
     return bless \$Null, $class;
 }
 
-sub sql  { 'NULL' }
+sub sql { 'NULL' }
 
 sub sql_with_alias { goto &sql }
 

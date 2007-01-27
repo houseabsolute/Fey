@@ -8,7 +8,6 @@ use File::Temp ();
 
 use Fey::Column;
 use Fey::FK;
-use Fey::Quoter;
 use Fey::Schema;
 use Fey::Table;
 
@@ -175,6 +174,8 @@ sub mock_dbh
 
     $mock->mock( 'get_info', \&_mock_get_info );
 
+    $mock->mock( 'quote_identifier', \&_mock_quote_identifier );
+
     $mock->mock( 'quote', \&_mock_quote );
 
     $mock->mock( 'table_info', \&_mock_table_info );
@@ -204,6 +205,20 @@ sub mock_dbh
         my $num  = shift;
 
         return $Info{$num}
+    }
+}
+
+sub _mock_quote_identifier
+{
+    shift;
+
+    if ( @_ == 3 )
+    {
+        return q{"} . $_[1] . q{"} . q{.} . q{"} . $_[2] . q{"}
+    }
+    else
+    {
+        return q{"} . $_[0] . q{"};
     }
 }
 
@@ -261,8 +276,6 @@ sub _mock_column_info
 
     return Fey::Mock::STH->new() unless $table;
 
-    my $quoter = Fey::Quoter->new( dbh => $self );
-
     my @columns;
     for my $col ( $table->columns() )
     {
@@ -278,7 +291,7 @@ sub _mock_column_info
         $col{DECIMAL_DIGITS} = $col->precision()
             if defined $col->precision();
 
-        $col{COLUMN_DEF} = $col->default()->sql($quoter)
+        $col{COLUMN_DEF} = $col->default()->sql($self)
             if $col->default();
 
         push @columns, \%col;

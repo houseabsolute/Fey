@@ -117,7 +117,7 @@ sub _where_clause
 
     return ( $sql
              . ( join ' ',
-                 map { $_->sql( $_[0]->quoter() ) }
+                 map { $_->sql( $_[0]->dbh() ) }
                  @{ $_[0]->{where} }
                )
            );

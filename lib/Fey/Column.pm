@@ -140,10 +140,10 @@ sub alias
 
 sub sql
 {
-    $_[1]->join_table_and_column
-        ( $_[1]->quote_identifier( $_[0]->_containing_table_name_or_alias() ),
-          $_[1]->quote_identifier( $_[0]->name() )
-        );
+    $_[1]->quote_identifier( undef,
+                             $_[0]->_containing_table_name_or_alias(),
+                             $_[0]->name(),
+                           );
 }
 
 sub sql_with_alias { goto &sql }

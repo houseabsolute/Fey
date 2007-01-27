@@ -13,9 +13,9 @@ lib/Fey/Literal/Number.pm
 lib/Fey/Literal/String.pm
 lib/Fey/Literal/Term.pm
 lib/Fey/Placeholder.pm
-lib/Fey/Quoter.pm
 lib/Fey/Schema.pm
 lib/Fey/SQL.pm
+lib/Fey/SQL/Base.pm
 lib/Fey/SQL/Delete.pm
 lib/Fey/SQL/Fragment/Join.pm
 lib/Fey/SQL/Fragment/SubSelect.pm
@@ -52,7 +52,6 @@ t/Literal-as-sql.t
 t/Literal.t
 t/pod-coverage.t
 t/pod.t
-t/Quoter.t
 t/Schema-memory-cycle.t
 t/Schema.t
 t/SQL-limit-clause.t

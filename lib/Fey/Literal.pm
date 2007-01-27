@@ -10,7 +10,6 @@ use Fey::Literal::Null;
 use Fey::Literal::Number;
 use Fey::Literal::String;
 use Fey::Literal::Term;
-use Fey::Quoter;
 use Scalar::Util qw( looks_like_number );
 
 
@@ -26,16 +25,16 @@ sub new_from_scalar
 }
 
 {
-    my $quoter = Fey::Quoter->new( dbh => Fey::FakeDBI->new() );
+    my $dbh = Fey::FakeDBI->new();
     sub id
     {
-        return $_[0]->sql( $quoter );
+        return $_[0]->sql($dbh);
     }
 }
 
-# This package allows us to use the quoter class in id(). Even
-# though they may not be quoted properly for a given DBMS, it will
-# generate unique ids, and that's all that matters.
+# This package allows us to use a DBI handle in id(). Even though we
+# may not be quoting properly for a given DBMS, we will still generate
+# unique ids, and that's all that matters.
 
 package # Hide from PAUSE
     Fey::FakeDBI;
@@ -51,6 +50,20 @@ sub get_info
 sub isa
 {
     return 1 if $_[1] eq 'DBI::db';
+}
+
+sub quote_identifier
+{
+    shift;
+
+    if ( @_ == 3 )
+    {
+        return q{"} . $_[1] . q{"} . q{.} . q{"} . $_[2] . q{"}
+    }
+    else
+    {
+        return q{"} . $_[0] . q{"};
+    }
 }
 
 sub quote

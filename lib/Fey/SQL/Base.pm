@@ -5,7 +5,7 @@ use warnings;
 
 use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_ro_accessors
-    ( qw( dbh quoter ) );
+    ( qw( dbh ) );
 
 use Fey::Validate
     qw( validate
@@ -20,11 +20,7 @@ use Fey::Validate
         my $class = shift;
         my %p     = validate( @_, $spec );
 
-        my $quoter = Fey::Quoter->new( dbh => $p{dbh} );
-
-        return bless { %p,
-                       quoter => $quoter,
-                     }, $class;
+        return bless \%p, $class;
     }
 }
 
