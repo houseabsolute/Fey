@@ -4,24 +4,15 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 38;
+use Test::More tests => 33;
 
 use Fey::Schema;
 
 
 {
-    eval { my $s = Fey::Schema->new() };
-    like( $@, qr/Mandatory parameter .+ missing/,
-          'dbh is a required param' );
-}
-
-{
     my $s = Fey::Schema->new( name => 'Test' );
 
     is( $s->name(), 'Test', 'schema name is Test' );
-
-    $s->set_dbh( Fey::Test->mock_dbh() );
-    ok( $s->dbh(), 'set_dbh() sets the database handle' );
 }
 
 {
@@ -179,37 +170,3 @@ use Fey::Schema;
     @tables = sort map { $_->name() } $s->tables( 'NoSuchTable' );
     is( scalar @tables, 0, 'tables() ignores tables which do not exist' );
 }
-
-{
-    my $s = Fey::Test->mock_test_schema();
-
-    my $q = $s->sql();
-    isa_ok( $q, 'Fey::SQL' );
-}
-
-{
-    my $s = Fey::Schema->new( name        => 'Test2',
-                            sql_class => 'Fey::SQL::Test',
-                          );
-
-    $s->set_dbh( Fey::Test->mock_dbh() );
-
-    my $q = $s->sql();
-    isa_ok( $q, 'Fey::SQL::Test' );
-}
-
-{
-    eval
-    {
-        my $s = Fey::Schema->new( name        => 'Test3',
-                                sql_class => 'Fey::SQL::DoesNotExist',
-                              );
-    };
-
-    like( $@, qr/can't locate/i,
-          'specify non-existent sql subclass' );
-}
-
-package Fey::SQL::Test;
-
-use base 'Fey::SQL';

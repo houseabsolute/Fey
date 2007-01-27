@@ -27,7 +27,6 @@ use Test::MockObject;
 sub mock_test_schema
 {
     my $class    = shift;
-    my $skip_dbh = shift;
 
     my $schema = Fey::Schema->new( name => 'Test' );
 
@@ -38,9 +37,6 @@ sub mock_test_schema
     $schema->add_table( _user_group_table() );
 
     $schema->add_table( _message_table() );
-
-    $schema->set_dbh( mock_dbh() )
-        unless $skip_dbh;
 
     return $schema;
 }
@@ -191,7 +187,7 @@ sub mock_dbh
 
     $mock->{Driver}{Name} = 'Mock';
 
-    $mock->{__schema__} = __PACKAGE__->mock_test_schema_with_fks(1);
+    $mock->{__schema__} = __PACKAGE__->mock_test_schema_with_fks();
 
     $mock->{Name} = $mock->{__schema__}->name();
 

@@ -51,8 +51,9 @@ use Fey::Quoter;
 
 {
     my $s = Fey::Test->mock_test_schema();
+    my $dbh = Fey::Test->mock_dbh();
 
-    my $f = Fey::Quoter->new( dbh => $s->dbh() );
+    my $f = Fey::Quoter->new( dbh => $dbh );
 
     my $now = Fey::Literal::Function->new( 'NOW' );
     is( $now->sql_with_alias($f), q{NOW() AS FUNCTION0},
@@ -70,38 +71,43 @@ use Fey::Quoter;
     is( $now2->sql($f), q{NOW()},
         'NOW function sql - no alias' );
 
-    my $avg = Fey::Literal::Function->new( 'AVG',
+    my $avg =
+        Fey::Literal::Function->new( 'AVG',
                                      $s->table('User')->column('user_id') );
 
     is( $avg->sql_or_alias($f), q{AVG("User"."user_id")},
         'AVG function formatted' );
 
-    my $substr = Fey::Literal::Function->new( 'SUBSTR',
-                                       $s->table('User')->column('user_id'),
-                                       5, 2 );
+    my $substr =
+        Fey::Literal::Function->new( 'SUBSTR',
+                                     $s->table('User')->column('user_id'),
+                                     5, 2 );
     is( $substr->sql_or_alias($f), q{SUBSTR("User"."user_id", 5, 2)},
         'SUBSTR function formatted' );
 
-    my $ifnull = Fey::Literal::Function->new( 'IFNULL',
-                                       $s->table('User')->column('user_id'),
-                                       $s->table('User')->column('username'),
-                                     );
+    my $ifnull =
+        Fey::Literal::Function->new( 'IFNULL',
+                                     $s->table('User')->column('user_id'),
+                                     $s->table('User')->column('username'),
+                                   );
     is( $ifnull->sql_or_alias($f), q{IFNULL("User"."user_id", "User"."username")},
         'IFNULL function formatted' );
 
-    my $concat = Fey::Literal::Function->new( 'CONCAT',
-                                       $s->table('User')->column('user_id'),
-                                       Fey::Literal::String->new(' '),
-                                       $s->table('User')->column('username'),
-                                     );
+    my $concat =
+        Fey::Literal::Function->new( 'CONCAT',
+                                     $s->table('User')->column('user_id'),
+                                     Fey::Literal::String->new(' '),
+                                     $s->table('User')->column('username'),
+                                   );
     is( $concat->sql_or_alias($f),
         q{CONCAT("User"."user_id", ' ', "User"."username")},
         'CONCAT function formatted' );
 
-    my $ifnull2 = Fey::Literal::Function->new( 'IFNULL',
-                                        $s->table('User')->column('user_id'),
-                                        $concat,
-                                      );
+    my $ifnull2 =
+        Fey::Literal::Function->new( 'IFNULL',
+                                     $s->table('User')->column('user_id'),
+                                     $concat,
+                                   );
     is( $ifnull2->sql_or_alias($f),
         q{IFNULL("User"."user_id", CONCAT("User"."user_id", ' ', "User"."username"))},
         'IFNULL(..., CONCAT) function formatted' );

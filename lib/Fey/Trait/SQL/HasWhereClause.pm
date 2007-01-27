@@ -5,6 +5,8 @@ use warnings;
 
 use Class::Trait 'base';
 
+use Fey::Exceptions qw( param_error );
+
 use Fey::SQL::Fragment::Where::Boolean;
 use Fey::SQL::Fragment::Where::Comparison;
 use Fey::SQL::Fragment::Where::SubgroupStart;
@@ -38,6 +40,11 @@ sub where
             {
                 $self->$meth($key);
                 return;
+            }
+            else
+            {
+                param_error
+                    qq|Cannot pass one argument to $key() unless it is one of "and", "or", "(", or ")".|;
             }
         }
 

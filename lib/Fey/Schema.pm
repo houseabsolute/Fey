@@ -5,7 +5,7 @@ use warnings;
 
 use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_ro_accessors
-    ( qw( name dbh ) );
+    ( qw( name ) );
 
 use Fey::Exceptions qw( param_error );
 use Fey::Validate
@@ -20,9 +20,7 @@ use Scalar::Util qw( blessed );
 
 
 {
-    my $spec = { name        => SCALAR_TYPE,
-                 sql_class => SCALAR_TYPE( default => 'Fey::SQL' ),
-               };
+    my $spec = { name => SCALAR_TYPE };
     sub new
     {
         my $class = shift;
@@ -33,20 +31,8 @@ use Scalar::Util qw( blessed );
                     tables => {},
                   }, $class;
 
-        $self->_load_sql_class();
-
         return $self;
     }
-}
-
-sub _load_sql_class
-{
-    my $self = shift;
-
-    return if $self->{sql_class}->can('new');
-
-    eval "use $self->{sql_class}";
-    die $@ if $@;
 }
 
 {
@@ -204,21 +190,6 @@ sub tables
     }
 }
 
-{
-    my $spec = (DBI_TYPE);
-    sub set_dbh
-    {
-        my $self  = shift;
-        my ($dbh) = validate_pos( @_, $spec );
-
-        $self->{dbh} = $dbh;
-
-        return $self;
-    }
-}
-
-sub sql { $_[0]->{sql_class}->new( dbh => $_[0]->dbh() ) }
-
 
 1;
 
@@ -327,22 +298,6 @@ table can be specified as a name or a C<Fey::Table> object.
 
 Returns all the foreign keys which reference both tables. The tables
 can be specified as names or C<Fey::Table> objects.
-
-=head2 $schema->dbh()
-
-Returns the database handle belonging to the schema, if it has one.
-
-=head2 $schema->set_dbh($dbh)
-
-This method sets the database handle for the schema. The object must
-be a DBI handle.
-
-=head2 $schema->sql()
-
-Returns a new sql object with the database handle set to the value of
-C<< $schema->dbh() >>. The class used to construct the object can be
-changed by passing a "sql_class" parameter to the C<Fey::Schema>
-constructor. The default class is C<Fey::SQL>
 
 =head1 AUTHOR
 

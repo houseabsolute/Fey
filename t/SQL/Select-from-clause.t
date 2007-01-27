@@ -10,9 +10,10 @@ use Fey::SQL;
 
 
 my $s = Fey::Test->mock_test_schema_with_fks();
+my $dbh = Fey::Test->mock_dbh();
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     eval { $q->from() };
     like( $@, qr/from\(\) called with invalid parameters \(\)/,
@@ -20,7 +21,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->from( $s->table('User') );
 
@@ -28,7 +29,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     eval { $q->from('foo') };
     like( $@, qr/from\(\) called with invalid parameters \(foo\)/,
@@ -36,7 +37,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     my $alias = $s->table('User')->alias( alias_name => 'UserA' );
     $q->from($alias);
@@ -47,7 +48,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     eval { $q->from( $s->table('User'), $s->table('Group') ) };
     like( $@, qr/do not share a foreign key/,
@@ -55,7 +56,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     eval { $q->from( $s->table('User'), 'foo' ) };
     like( $@, qr/invalid first two arguments/,
@@ -67,7 +68,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->from( $s->table('User'), $s->table('UserGroup') );
 
@@ -77,7 +78,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     my @t = ( $s->table('User'), $s->table('UserGroup') );
     my ($fk) = $s->foreign_keys_between_tables(@t);
@@ -89,7 +90,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     my $fk = Fey::FK->new( source => $s->table('User')->column('user_id'),
                          target => $s->table('UserGroup')->column('group_id'),
@@ -104,7 +105,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->from( $s->table('User'), 'left', $s->table('UserGroup') );
 
@@ -115,7 +116,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     my @t = ( $s->table('User'), $s->table('UserGroup') );
     my ($fk) = $s->foreign_keys_between_tables(@t);
@@ -129,7 +130,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->from( $s->table('User'), 'right', $s->table('UserGroup') );
 
@@ -140,7 +141,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->from( $s->table('User'), 'full', $s->table('UserGroup') );
 
@@ -151,7 +152,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->from( $s->table('User'), 'full', $s->table('UserGroup') );
 
@@ -162,9 +163,9 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
-    my $q2 = Fey::SQL->new( dbh => $s->dbh() );
+    my $q2 = Fey::SQL->new( dbh => $dbh );
     $q2->where( $s->table('User')->column('user_id'), '=', 2 );
 
     $q->from( $s->table('User'), 'left', $s->table('UserGroup'), $q2 );
@@ -178,9 +179,9 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
-    my $q2 = Fey::SQL->new( dbh => $s->dbh() );
+    my $q2 = Fey::SQL->new( dbh => $dbh );
     $q2->where( $s->table('User')->column('user_id'), '=', 2 );
 
     my @t = ( $s->table('User'), $s->table('UserGroup') );
@@ -197,7 +198,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     eval { $q->from( $s->table('User')->column('user_id') ) };
     like( $@, qr/\Qfrom() called with invalid parameters/,
@@ -205,7 +206,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     eval { $q->from( $s->table('User'), 'foobar', $s->table('UserGroup') ) };
     like( $@, qr/invalid outer join type/,
@@ -213,7 +214,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     eval { $q->from( 'not a table', 'left', $s->table('UserGroup') ) };
     like( $@, qr/from\(\) was called with invalid arguments/,
@@ -221,7 +222,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     eval { $q->from( $s->table('UserGroup'), 'left', 'not a table' ) };
     like( $@, qr/from\(\) was called with invalid arguments/,
@@ -229,7 +230,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     eval { $q->from( $s->table('User'), 'full', $s->table('UserGroup'), 'invalid' ) };
     like( $@, qr/\Qfrom() called with invalid parameters/,
@@ -237,8 +238,8 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
-    my $subselect = Fey::SQL->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
+    my $subselect = Fey::SQL->new( dbh => $dbh );
     $subselect->select( $s->table('User')->column('user_id') )->from( $s->table('User') );
 
     $q->from($subselect);

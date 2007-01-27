@@ -10,9 +10,10 @@ use Fey::SQL;
 
 
 my $s = Fey::Test->mock_test_schema_with_fks();
+my $dbh = Fey::Test->mock_dbh();
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     eval { $q->having() };
     like( $@, qr/0 parameters/,
@@ -20,7 +21,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->having( $s->table('User')->column('user_id'), '=', 1 );
 
@@ -29,7 +30,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->having
         ( $s->table('User')->column('user_id')->alias( alias_name => 'alias' ),
@@ -40,7 +41,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->having( $s->table('User')->column('username'), 'LIKE',
                '%foo%' );
@@ -50,7 +51,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->having( 1, '=', $s->table('User')->column('user_id') );
 
@@ -59,7 +60,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->having( $s->table('User')->column('user_id'), '=', $s->table('User')->column('user_id') );
 
@@ -68,7 +69,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->having( $s->table('User')->column('user_id'), 'IN', 1, 2, 3 );
 
@@ -77,7 +78,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->having( $s->table('User')->column('user_id'), 'NOT IN', 1, 2, 3 );
 
@@ -86,7 +87,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->having( $s->table('User')->column('user_id'), '=',
                 Fey::Placeholder->new() );
@@ -96,9 +97,9 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
-    my $sub = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $sub = Fey::SQL->new( dbh => $dbh )->select();
     $sub->select( $s->table('User')->column('user_id') );
     $sub->from( $s->table('User') );
 
@@ -109,7 +110,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->having( $s->table('User')->column('user_id'), '=', undef );
 
@@ -118,7 +119,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->having( $s->table('User')->column('user_id'), '!=', undef );
 
@@ -127,7 +128,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->having( $s->table('User')->column('user_id'), 'BETWEEN', 1, 5 );
 
@@ -136,7 +137,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->having( $s->table('User')->column('user_id'), '=', 1 );
     $q->having( $s->table('User')->column('user_id'), '=', 2 );
@@ -146,7 +147,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->having( $s->table('User')->column('user_id'), '=', 1 );
     $q->having( 'or' );
@@ -158,7 +159,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     $q->having( '(' );
     $q->having( $s->table('User')->column('user_id'), '=', 2 );
@@ -169,7 +170,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     eval { $q->having( $s->table('User')->column('user_id'), '=', 1, 2 ) };
     like( $@, qr/more than one right-hand side/,
@@ -177,9 +178,9 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
-    my $sub = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $sub = Fey::SQL->new( dbh => $dbh )->select();
     $sub->select( $s->table('User')->column('user_id') );
     $sub->from( $s->table('User') );
 
@@ -189,7 +190,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() )->select();
+    my $q = Fey::SQL->new( dbh => $dbh )->select();
 
     eval { $q->having( $s->table('User')->column('user_id'), 'BETWEEN', 1 ) };
     like( $@, qr/requires two arguments/,

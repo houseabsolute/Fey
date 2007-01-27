@@ -7,7 +7,6 @@ use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_ro_accessors
     ( qw( dbh quoter ) );
 
-use Fey::Exceptions qw( param_error virtual_method );
 use Fey::Validate
     qw( validate
         DBI_TYPE

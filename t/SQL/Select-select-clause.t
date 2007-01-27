@@ -10,9 +10,10 @@ use Fey::SQL;
 
 
 my $s = Fey::Test->mock_test_schema();
+my $dbh = Fey::Test->mock_dbh();
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $dbh );
 
     $q->select( $s->table('User') );
 
@@ -35,7 +36,7 @@ my $s = Fey::Test->mock_test_schema();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $dbh );
 
     $q->select( $s->table('User') );
 
@@ -61,7 +62,7 @@ my $s = Fey::Test->mock_test_schema();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $dbh );
 
     $q->select( $s->table('User')->column('user_id') );
     $q->select( $s->table('User') );
@@ -73,7 +74,7 @@ my $s = Fey::Test->mock_test_schema();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $dbh );
 
     $q->select( $s->table('User')->column('user_id') );
     $q->select( $s->table('User')->column('user_id')
@@ -86,7 +87,7 @@ my $s = Fey::Test->mock_test_schema();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $dbh );
     $q->select( $s->table('User')->column('user_id') )->distinct();
 
     my $sql = q{SELECT DISTINCT "User"."user_id"};
@@ -94,7 +95,7 @@ my $s = Fey::Test->mock_test_schema();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $dbh );
 
     $q->select( 'some literal thing' );
     my $sql = q{SELECT 'some literal thing'};
@@ -103,7 +104,7 @@ my $s = Fey::Test->mock_test_schema();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $dbh );
 
     $q->select( 235.12 );
     my $sql = q{SELECT 235.12};
@@ -112,13 +113,14 @@ my $s = Fey::Test->mock_test_schema();
 }
 
 {
-    my $q = Fey::SQL->new( dbh => $s->dbh() );
+    my $q = Fey::SQL->new( dbh => $dbh );
 
-    my $concat = Fey::Literal::Function->new( 'CONCAT',
-                                       $s->table('User')->column('user_id'),
-                                       Fey::Literal::String->new(' '),
-                                       $s->table('User')->column('username'),
-                                     );
+    my $concat =
+        Fey::Literal::Function->new( 'CONCAT',
+                                     $s->table('User')->column('user_id'),
+                                     Fey::Literal::String->new(' '),
+                                     $s->table('User')->column('username'),
+                                   );
     $q->select($concat);
 
     my $lit_with_alias = q{CONCAT("User"."user_id", ' ', "User"."username") AS FUNCTION0};
