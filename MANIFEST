@@ -35,10 +35,10 @@ lib/Fey/Trait/Comparable.pm
 lib/Fey/Trait/Groupable.pm
 lib/Fey/Trait/Joinable.pm
 lib/Fey/Trait/Orderable.pm
-lib/Fey/Trait/Query/HasLimitClause.pm
-lib/Fey/Trait/Query/HasOrderByClause.pm
-lib/Fey/Trait/Query/HasWhereClause.pm
 lib/Fey/Trait/Selectable.pm
+lib/Fey/Trait/SQL/HasLimitClause.pm
+lib/Fey/Trait/SQL/HasOrderByClause.pm
+lib/Fey/Trait/SQL/HasWhereClause.pm
 lib/Fey/Validate.pm
 LICENSE
 MANIFEST			This list of files
