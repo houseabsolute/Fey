@@ -182,7 +182,7 @@ sub mock_dbh
 
     $mock->mock( 'column_info', \&_mock_column_info );
 
-    $mock->mock( 'primary_key', \&_mock_primary_key );
+    $mock->mock( 'primary_key_info', \&_mock_primary_key_info );
 
     $mock->mock( 'foreign_key_info', \&_mock_foreign_key_info );
 
@@ -300,16 +300,24 @@ sub _mock_column_info
     return Fey::Test::MockSTH->new(\@columns);
 }
 
-sub _mock_primary_key
+sub _mock_primary_key_info
 {
     my $self       = shift;
     my $table_name = $_[2];
 
     my $table = $self->{__schema__}->table($table_name);
 
-    return unless $table;
+    my $x = 1;
+    my @pk;
+    for my $pk ( $table->primary_key() )
+    {
+        push @pk,
+            { COLUMN_NAME => $pk->name(),
+              KEY_SEQ     => $x++,
+            };
+    }
 
-    return map { $_->name() } $table->primary_key();
+    return Fey::Test::MockSTH->new(\@pk);
 }
 
 sub _mock_foreign_key_info
@@ -338,10 +346,10 @@ sub _mock_foreign_key_info
         {
             push @fk,
                { ORDINAL_POSITION => $x + 1,
-                 UK_TABLE_NAME    => $source[$x]->table()->name(),
-                 UK_COLUMN_NAME   => $source[$x]->name(),
-                 FK_TABLE_NAME    => $target[$x]->table()->name(),
-                 FK_COLUMN_NAME   => $target[$x]->name(),
+                 UK_TABLE_NAME    => $target[$x]->table()->name(),
+                 UK_COLUMN_NAME   => $target[$x]->name(),
+                 FK_TABLE_NAME    => $source[$x]->table()->name(),
+                 FK_COLUMN_NAME   => $source[$x]->name(),
                  FK_NAME          =>
                      ( join '_', map { $_->name() }
                        $source[$x]->table(), $source[$x],
