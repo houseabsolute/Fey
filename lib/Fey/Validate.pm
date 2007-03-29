@@ -11,7 +11,8 @@ use Fey::Exceptions qw( param_error );
 
 
 my %Types;
-BEGIN {
+BEGIN
+{
     %Types =
         ( POS_INTEGER_TYPE =>
               { type      => SCALAR,
