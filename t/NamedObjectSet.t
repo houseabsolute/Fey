@@ -1,0 +1,70 @@
+use strict;
+use warnings;
+
+use Test::More tests => 12;
+
+use Fey::NamedObjectSet;
+
+
+{
+    my $set = Fey::NamedObjectSet->new();
+    ok( $set, 'made a named object set object' );
+
+    eval { $set->add(1) };
+    like( $@, qr/was a 'scalar'/,
+          'cannot add an integer to a NamedObjectSet' );
+
+    eval { $set->add( NoName->new() ) };
+    like( $@, qr/does not have the method: 'name'/,
+          'cannot add a NoName object to a NamedObjectSet');
+}
+
+{
+    my $set = Fey::NamedObjectSet->new();
+
+    my $bob  = Name->new('bob');
+    my $faye = Name->new('faye');
+
+    $set->add($bob);
+    my @objects = $set->objects();
+    is( scalar @objects, 1, 'set has one object' );
+    is( $objects[0]->name(), 'bob', 'that one object is bob' );
+
+    $set->add($faye);
+    @objects = sort { $a->name() cmp $b->name() } $set->objects();
+    is( scalar @objects, 2, 'set has two objects' );
+    is_deeply( [ map { $_->name() } @objects ],
+               [ 'bob', 'faye' ],
+               'those objects are bob and faye' );
+
+    $set->delete($bob);
+    @objects = $set->objects();
+    is( scalar @objects, 1, 'set has one object' );
+    is( $objects[0]->name(), 'faye', 'that one object is faye' );
+
+    $set->add($bob);
+    @objects = $set->objects('bob');
+    is( scalar @objects, 1, 'objects() returns one object named bob' );
+    is( $objects[0]->name(), 'bob', 'that one object is bob' );
+
+    is( $set->object('bob')->name(), 'bob',
+        'object() returns one object by name and it is bob' );
+}
+
+
+
+
+package NoName;
+
+sub new { return bless {}, shift }
+
+package Name;
+
+sub new 
+{
+    my $class = shift;
+
+    return bless { name => shift }, $class;
+}
+
+sub name { $_[0]->{name} }

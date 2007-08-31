@@ -34,6 +34,11 @@ BEGIN
               { type => OBJECT,
                 isa  => 'DBI::db',
               },
+
+          NAMED_OBJECT_TYPE =>
+              { type => OBJECT,
+                can  => 'name',
+              },
         );
 
 

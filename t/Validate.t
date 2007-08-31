@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 12;
 
 use Fey::Table;
 use Fey::Validate qw( validate :types );
@@ -60,3 +60,25 @@ use Fey::Validate qw( validate :types );
     like( $@, qr/is a Fey::Table object or name/,
           'TABLE_OR_NAME_TYPE failed with Foo object' );
 }
+
+{
+    my @p = ( object => NoName->new() );
+    eval { validate( @p, { object => NAMED_OBJECT_TYPE } ) };
+    like( $@, qr/does not have the method: 'name'/,
+          'NAMED_OBJECT_TYPE failed with NoName object' );
+
+    @p = ( object => Name->new() );
+    eval { validate( @p, { object => NAMED_OBJECT_TYPE } ) };
+    is( $@, '',
+        'test NAMED_OBJECT_TYPE with a Name object' );
+}
+
+package NoName;
+
+sub new { return bless {}, shift }
+
+package Name;
+
+sub new { return bless {}, shift }
+
+sub name { 'Bob' }

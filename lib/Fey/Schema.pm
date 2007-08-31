@@ -3,10 +3,6 @@ package Fey::Schema;
 use strict;
 use warnings;
 
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_ro_accessors
-    ( qw( name ) );
-
 use Fey::Exceptions qw( param_error );
 use Fey::Validate
     qw( validate validate_pos
@@ -14,26 +10,30 @@ use Fey::Validate
         TABLE_TYPE TABLE_OR_NAME_TYPE
         FK_TYPE DBI_TYPE );
 
+use Fey::NamedObjectSet;
 use Fey::SQL;
 use Fey::Table;
 use Scalar::Util qw( blessed );
 
+use Moose::Policy 'Fey::Policy';
+use Moose;
 
-{
-    my $spec = { name => SCALAR_TYPE };
-    sub new
-    {
-        my $class = shift;
-        my %p     = validate( @_, $spec );
+has 'name' =>
+    ( is       => 'rw',
+      isa      => 'Str',
+      required => 1,
+    );
 
-        my $self =
-            bless { %p,
-                    tables => {},
-                  }, $class;
+has '_tables' =>
+    ( is      => 'ro',
+      isa     => 'Fey::NamedObjectSet',
+      default => sub { return Fey::NamedObjectSet->new() },
+      handles => { tables => 'objects',
+                   table  => 'object',
+                 },
+    );
 
-        return $self;
-    }
-}
+no Moose;
 
 {
     my $spec = (TABLE_TYPE);
@@ -46,7 +46,8 @@ use Scalar::Util qw( blessed );
         param_error "The schema already contains a table named $name."
             if $self->table($name);
 
-        $self->{tables}{$name} = $table;
+        $self->_tables->add($table);
+
         $table->_set_schema($self);
 
         return $self;
@@ -68,34 +69,12 @@ use Scalar::Util qw( blessed );
             $self->remove_foreign_key($fk);
         }
 
-        my $name = $table->name();
+        $self->_tables()->delete($table);
 
-        delete $self->{tables}{$name};
         $table->_set_schema(undef);
 
         return $self;
     }
-}
-
-{
-    my $spec = (SCALAR_TYPE);
-    sub table
-    {
-        my $self = shift;
-        my ($name) = validate_pos( @_, $spec );
-
-        return unless $self->{tables}{$name};
-        return $self->{tables}{$name};
-    }
-}
-
-sub tables
-{
-    my $self = shift;
-
-    return values %{ $self->{tables} } unless @_;
-
-    return map { $self->{tables}{$_} || () } @_;
 }
 
 {
