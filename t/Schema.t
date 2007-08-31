@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 33;
+use Test::More tests => 34;
 
 use Fey::Schema;
 
@@ -13,6 +13,10 @@ use Fey::Schema;
     my $s = Fey::Schema->new( name => 'Test' );
 
     is( $s->name(), 'Test', 'schema name is Test' );
+
+    $s->set_name('NewTest');
+
+    is( $s->name(), 'NewTest', 'schema name is now NewTest' );
 }
 
 {
