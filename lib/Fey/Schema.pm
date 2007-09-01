@@ -34,6 +34,8 @@ has '_tables' =>
     );
 
 no Moose;
+__PACKAGE__->meta()->make_immutable();
+
 
 {
     my $spec = (TABLE_TYPE);
