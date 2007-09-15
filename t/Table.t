@@ -10,7 +10,7 @@ use Fey::Table;
 
 
 {
-    eval { my $s = Fey::Table->new() };
+    eval { my $t = Fey::Table->new() };
     like( $@, qr/\QAttribute (name) is required/,
           'name is a required param' );
 }
