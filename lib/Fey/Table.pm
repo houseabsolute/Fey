@@ -5,8 +5,6 @@ use warnings;
 
 use Scalar::Util qw( blessed weaken );
 
-use Class::Trait ( 'Fey::Trait::Joinable' );
-
 use Fey::Exceptions qw( param_error );
 use Fey::Validate
     qw( validate validate_pos
@@ -18,6 +16,8 @@ use Fey::Validate
 use Moose::Policy 'Fey::Policy';
 use Moose;
 use Moose::Util::TypeConstraints;
+
+with 'Fey::Role::Joinable';
 
 has 'name' =>
     ( is       => 'ro',
@@ -276,9 +276,9 @@ Returns the appropriate SQL snippet for the table.
 
 Returns a unique identifier for the table.
 
-=head1 TRAITS
+=head1 ROLES
 
-This class does the C<Fey::Trait::Joinable> trait.
+This class does the C<Fey::Role::Joinable> role.
 
 =head1 AUTHOR
 

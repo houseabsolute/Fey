@@ -1,12 +1,10 @@
-package Fey::Trait::Joinable;
+package Fey::Role::Joinable;
 
 use strict;
 use warnings;
 
-use Class::Trait 'base';
+use Moose::Role;
 
-
-our @REQUIRES = qw( is_joinable );
 
 sub is_joinable { $_[0]->schema() ? 1 : 0 }
 

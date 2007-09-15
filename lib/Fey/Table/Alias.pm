@@ -3,8 +3,6 @@ package Fey::Table::Alias;
 use strict;
 use warnings;
 
-use Class::Trait ( 'Fey::Trait::Joinable' );
-
 use Fey::Exceptions qw(param_error);
 use Fey::Validate
     qw( validate validate_pos
@@ -15,6 +13,8 @@ use Fey::Table;
 
 use Moose::Policy 'Fey::Policy';
 use Moose;
+
+with 'Fey::Role::Joinable';
 
 has 'table' =>
     ( is      => 'ro',
@@ -171,9 +171,9 @@ Returns the appropriate SQL snippet for the alias.
 
 Returns a unique string identifying the alias.
 
-=head1 TRAITS
+=head1 ROLES
 
-This class does the C<Fey::Trait::Joinable> trait.
+This class does the C<Fey::Role::Joinable> role.
 
 =head1 AUTHOR
 
