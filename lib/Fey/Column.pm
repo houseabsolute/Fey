@@ -3,18 +3,9 @@ package Fey::Column;
 use strict;
 use warnings;
 
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_ro_accessors
-    ( qw( name type generic_type length precision
-          is_auto_increment is_nullable default
-          table ) );
-
-use Class::Trait ( 'Fey::Trait::ColumnLike' );
-
-
 use Scalar::Util qw( blessed weaken );
 
-use Fey::Exceptions qw( object_state_error );
+use Fey::Exceptions qw( param_error object_state_error );
 use Fey::Validate
     qw( validate validate_pos
         SCALAR UNDEF OBJECT
@@ -22,50 +13,102 @@ use Fey::Validate
         POS_INTEGER_TYPE POS_OR_ZERO_INTEGER_TYPE
         TABLE_TYPE );
 
+use Moose::Policy 'Fey::Policy';
+use Moose;
+use Moose::Util::TypeConstraints qw( subtype as where coerce from via );
+
+with 'Fey::Role::ColumnLike';
+
+has 'name' =>
+    ( is       => 'ro',
+      isa      => 'Str',
+      required => 1,
+    );
+
+subtype 'GenericTypeName'
+    => as 'Str'
+    => where { /^(?:text|blob|integer|float|date|datetime|time|boolean|other)$/ };
+has 'generic_type' =>
+    ( is      => 'ro',
+      isa     => 'GenericTypeName',
+      lazy    => 1,
+      default => \&_guess_generic_type,
+    );
+
+has type =>
+    ( is       => 'ro',
+      isa      => 'Str',
+      required => 1,
+    );
+
+subtype 'PosInteger'
+    => as 'Int'
+    => where { $_ > 0 };
+has length =>
+    ( is       => 'ro',
+      isa      => 'PosInteger',
+      required => 0
+    );
+
+subtype 'PosOrZeroInteger'
+    => as 'Int'
+    => where { $_ >= 0 };
+# How to say that precision requires length as well?
+has precision =>
+    ( is       => 'ro',
+      isa      => 'PosOrZeroInteger',
+      required => 0
+    );
+
+has is_auto_increment =>
+    ( is      => 'ro',
+      isa     => 'Bool',
+      default => 0,
+    );
+
+has is_nullable =>
+    ( is      => 'ro',
+      isa     => 'Bool',
+      default => 0,
+    );
+
+subtype 'DefaultValue'
+    => as 'Fey::Literal';
+coerce 'DefaultValue'
+    => from 'Undef',
+    => via { Fey::Literal::Null->new() },
+    => from 'Value',
+    => via { Fey::Literal->new_from_scalar($_) };
+
+has default =>
+    ( is     => 'ro',
+      isa    => 'DefaultValue',
+      coerce => 1,
+    );
+
+has 'table' =>
+    ( is       => 'rw',
+      isa      => 'Undef | Fey::Table | Fey::Table::Alias',
+      weak_ref => 1,
+      writer   => '_set_table',
+    );
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
+
 use Fey::Column::Alias;
 use Fey::Literal;
+use Fey::Table;
+use Fey::Table::Alias;
 
 
+sub BUILD
 {
-    my $gen_type_re =
-        qr/text|blob|integer|float|date|datetime|time|boolean|other/;
+    my $self = shift;
+    my $p    = shift;
 
-    my $spec =
-        { name              => SCALAR_TYPE,
-          generic_type      => SCALAR_TYPE( regex    => $gen_type_re,
-                                            optional => 1,
-                                          ),
-          type              => SCALAR_TYPE,
-          length            => POS_INTEGER_TYPE( optional => 1 ),
-          precision         => POS_OR_ZERO_INTEGER_TYPE( optional => 1,
-                                                         depends => [ 'length' ] ),
-          is_auto_increment => BOOLEAN_TYPE( default => 0 ),
-          is_nullable       => BOOLEAN_TYPE( default => 0 ),
-          default           =>
-          { type      => SCALAR|UNDEF|OBJECT,
-            optional  => 1,
-            callbacks =>
-            { 'is a scalar, undef, or literal' =>
-              sub {    ! blessed $_[0]
-                    || $_[0]->isa('Fey::Literal') },
-            },
-          },
-        };
-    sub new
-    {
-        my $class = shift;
-        my %p     = validate( @_, $spec );
-
-        $p{generic_type} = $class->_guess_generic_type( $p{type} )
-            unless defined $p{generic_type};
-
-        $p{default} = Fey::Literal->new_from_scalar( $p{default} )
-            if exists $p{default} && ! blessed $p{default};
-
-        my $self = bless \%p, $class;
-
-        return $self;
-    }
+    param_error "Cannot set precision unless length is also set"
+        if defined $p->{precision} && ! $p->{length};
 }
 
 {
@@ -85,7 +128,8 @@ use Fey::Literal;
 
     sub _guess_generic_type
     {
-        my $type = $_[1];
+        my $self = shift;
+        my $type = $self->type();
 
         for my $p (@TypesRe)
         {
@@ -93,30 +137,6 @@ use Fey::Literal;
         }
 
         return 'other';
-    }
-}
-
-{
-    # This method is private but intended to be called by Fey::Table and
-    # Fey::Table::Alias but not by anything else.
-    my $spec = ( { type => UNDEF | OBJECT,
-                   callbacks =>
-                   { 'undef or table' =>
-                     sub { ! defined $_[0]
-                           || $_[0]->isa('Fey::Table')
-                           || $_[0]->isa('Fey::Table::Alias') },
-                   },
-                 } );
-    sub _set_table
-    {
-        my $self    = shift;
-        my ($table) = validate_pos( @_, $spec );
-
-        $self->{table} = $table;
-        weaken $self->{table}
-            if $self->{table};
-
-        return $self
     }
 }
 
@@ -306,9 +326,9 @@ Returns the appropriate SQL snippet for the column.
 
 Returns a unique identifier for the column.
 
-=head1 TRAITS
+=head1 ROLES
 
-This class does the C<Fey::Trait::ColumnLike> trait.
+This class does the C<Fey::Role::ColumnLike> role.
 
 =head1 AUTHOR
 

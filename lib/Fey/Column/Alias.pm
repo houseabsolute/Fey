@@ -3,52 +3,46 @@ package Fey::Column::Alias;
 use strict;
 use warnings;
 
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_ro_accessors
-    ( qw( alias_name column ) );
-
-use Class::Trait ( 'Fey::Trait::ColumnLike' );
-
 use Fey::Exceptions qw( object_state_error );
 use Fey::Validate
     qw( validate
         SCALAR_TYPE
         COLUMN_TYPE );
 
+use Moose::Policy 'Fey::Policy';
+use Moose;
+
+with 'Fey::Role::ColumnLike';
+
+has 'column' =>
+    ( is      => 'ro',
+      isa     => 'Fey::Column',
+      handles => [ qw( name type generic_type length precision
+                       is_auto_increment is_nullable table ) ],
+    );
+
+has 'alias_name' =>
+    ( is      => 'ro',
+      isa     => 'Str',
+      lazy    => 1,
+      default => \&_default_alias_name,
+    );
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
+
 use Fey::Column;
 
-{
-    for my $meth ( qw( name type generic_type length precision
-                       is_auto_increment is_nullable table ) )
-    {
-        eval <<"EOF";
-sub $meth
-{
-    shift->column()->$meth(\@_);
-}
-EOF
-    }
-}
 
 {
     my %Numbers;
-    my $spec = { column     => COLUMN_TYPE,
-                 alias_name => SCALAR_TYPE( optional => 1 ),
-               };
-    sub new
+    sub _default_alias_name
     {
-        my $class = shift;
-        my %p     = validate( @_, $spec );
+        my $self = shift;
 
-        unless ( $p{alias_name} )
-        {
-            my $name = $p{column}->name();
-            $Numbers{$name} ||= 1;
-
-            $p{alias_name} = $name . $Numbers{$name}++;
-        }
-
-        return bless \%p, $class;
+        my $name = $self->name();
+        $Numbers{$name} ||= 0;
+        return $name . ++$Numbers{$name};
     }
 }
 
@@ -171,9 +165,9 @@ Returns the appropriate SQL snippet for the alias.
 Returns a unique identifier for the column. This method throws an
 exception if the alias does not belong to a table.
 
-=head1 TRAITS
+=head1 ROLES
 
-This class does the C<Fey::Trait::ColumnLike> trait.
+This class does the C<Fey::Role::ColumnLike> role.
 
 =head1 AUTHOR
 

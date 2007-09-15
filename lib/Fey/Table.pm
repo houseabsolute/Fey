@@ -15,7 +15,6 @@ use Fey::Validate
 
 use Moose::Policy 'Fey::Policy';
 use Moose;
-use Moose::Util::TypeConstraints;
 
 with 'Fey::Role::Joinable';
 

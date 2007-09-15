@@ -13,26 +13,26 @@ use Fey::Schema;
 {
     my $s = Fey::Test->mock_test_schema();
 
-    eval { Fey::FK->new( source => [],
-                         target => [ $s->table('UserGroup')->column('user_id') ],
+    eval { Fey::FK->new( source_columns => [],
+                         target_columns => [],
                        ) };
-    like( $@, qr/requires at least one column/,
+    like( $@, qr/\QAttribute (source_columns) does not pass the type constraint (ArrayOfColumns)/,
           'error when column count for source and target differ' );
 
-    eval { Fey::FK->new( source => $s->table('User')->column('user_id'),
-                         target => [ $s->table('UserGroup')->column('user_id'),
-                                     $s->table('UserGroup')->column('group_id'),
-                                   ],
+    eval { Fey::FK->new( source_columns => $s->table('User')->column('user_id'),
+                         target_columns => [ $s->table('UserGroup')->column('user_id'),
+                                             $s->table('UserGroup')->column('group_id'),
+                                           ],
                        ) };
     like( $@, qr/must contain the same number of columns/,
           'error when column count for source and target differ' );
 
-    eval { Fey::FK->new( source => [ $s->table('User')->column('user_id'),
-                                     $s->table('User')->column('username'),
-                                   ],
-                         target => [ $s->table('UserGroup')->column('user_id'),
-                                     $s->table('User')->column('username'),
-                                   ],
+    eval { Fey::FK->new( source_columns => [ $s->table('User')->column('user_id'),
+                                             $s->table('User')->column('username'),
+                                           ],
+                         target_columns => [ $s->table('UserGroup')->column('user_id'),
+                                             $s->table('User')->column('username'),
+                                           ],
                        ) };
     my $err =
         'Each column in the target argument to add_foreign_key()'
@@ -43,16 +43,16 @@ use Fey::Schema;
     my $c = Fey::Column->new( name => 'no_table',
                               type => 'text',
                             );
-    eval { Fey::FK->new( source => $s->table('User')->column('user_id'),
-                         target => $c,
+    eval { Fey::FK->new( source_columns => $s->table('User')->column('user_id'),
+                         target_columns => $c,
                        ) };
     like( $@, qr/\QAll columns passed to add_foreign_key() must have a table./,
           'error when a column does not have a table' );
 
     my $fk =
         Fey::FK->new
-            ( source => $s->table('User')->column('user_id'),
-              target => $s->table('UserGroup')->column('user_id'),
+            ( source_columns => $s->table('User')->column('user_id'),
+              target_columns => $s->table('UserGroup')->column('user_id'),
             );
 
     is( $fk->source_table()->name(), 'User',
@@ -70,8 +70,8 @@ use Fey::Schema;
 
     my $fk2 =
         Fey::FK->new
-            ( target => $s->table('User')->column('user_id'),
-              source => $s->table('UserGroup')->column('user_id'),
+            ( target_columns => $s->table('User')->column('user_id'),
+              source_columns => $s->table('UserGroup')->column('user_id'),
             );
 
     is( $fk->id(), $fk2->id(),

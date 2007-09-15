@@ -3,10 +3,6 @@ package Fey::FK;
 use strict;
 use warnings;
 
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_ro_accessors
-    ( qw( id ) );
-
 use Fey::Exceptions qw(param_error);
 use Fey::Validate
     qw( validate validate_pos
@@ -14,77 +10,97 @@ use Fey::Validate
         COLUMN_TYPE
         TABLE_OR_NAME_TYPE );
 
-use List::Util qw( first );
-use List::MoreUtils qw(uniq);
-use Scalar::Util qw(blessed);
+use List::MoreUtils qw( uniq all );
+use Scalar::Util qw( blessed );
+
+use Moose::Policy 'Fey::Policy';
+use Moose;
+use Moose::Util::TypeConstraints;
+
+has 'id' =>
+    ( is      => 'ro',
+      lazy    => 1,
+      default => \&_make_id,
+    );
+
+subtype 'ArrayOfColumns'
+    => as 'ArrayRef'
+    => where { @{ $_ } >= 1 && all { $_->isa('Fey::Column') } @{$_} };
+
+coerce 'ArrayOfColumns'
+    => from 'Fey::Column'
+    => via { [ $_ ] };
+
+has 'source_columns' =>
+    ( is       => 'ro',
+      isa      => 'ArrayOfColumns',
+      required => 1,
+      coerce   => 1,
+      auto_deref => 1,
+    );
+
+has 'target_columns' =>
+    ( is       => 'ro',
+      isa      => 'ArrayOfColumns',
+      required => 1,
+      coerce   => 1,
+      auto_deref => 1,
+    );
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
+
+use Fey::Column;
 
 
+sub BUILD
 {
-    my $col_array_spec =
-        { type => OBJECT|ARRAYREF,
-          callbacks =>
-          { 'all elements are columns' =>
-            sub { ( ! grep { ! ( blessed($_) && $_->isa('Fey::Column') ) }
-                    blessed $_[0] ? $_[0] : @{ $_[0] } ) }
-          },
-        };
-    my $spec = { source => $col_array_spec,
-                 target => $col_array_spec,
-               };
-    sub new
+    my $self = shift;
+    my $p    = shift;
+
+    param_error "The id will be generated automatically"
+        if defined $p->{id};
+
+    my @source = $self->source_columns();
+    my @target = $self->target_columns();
+
+    unless ( @source == @target )
     {
-        my $class = shift;
-        my %p     = validate( @_, $spec );
+        param_error
+            ( "The source and target arrays passed to add_foreign_key()"
+              . " must contain the same number of columns." );
+    }
 
-        my @source = blessed $p{source} ? $p{source} : @{ $p{source} };
-        my @target = blessed $p{target} ? $p{target} : @{ $p{target} };
+    if ( grep { ! $_->table() } @source, @target )
+    {
+        param_error "All columns passed to add_foreign_key() must have a table.";
+    }
 
-        unless ( @source && @target )
+    for my $p ( [ source => \@source ], [ target => \@target ]  )
+    {
+        my ( $name, $array ) = @$p;
+        if ( uniq( map { $_->table() } @$array ) > 1 )
         {
             param_error
-                "A foreign key requires at least one column for the source and target."
+                ( "Each column in the $name argument to add_foreign_key()"
+                  . " must come from the same table." );
         }
-
-        if ( @source != @target )
-        {
-            param_error
-                ( "The source and target arrays passed to add_foreign_key()"
-                  . " must contain the same number of columns." );
-        }
-
-        if ( grep { ! $_->table() } @source, @target )
-        {
-            param_error "All columns passed to add_foreign_key() must have a table.";
-        }
-
-        for my $p ( [ source => \@source ], [ target => \@target ]  )
-        {
-            my ( $name, $array ) = @$p;
-            if ( uniq( map { $_->table() } @$array ) > 1 )
-            {
-                param_error
-                    ( "Each column in the $name argument to add_foreign_key()"
-                      . " must come from the same table." );
-            }
-        }
-
-        my $id = join "\0",
-                 sort
-                 map { $_->table()->name() . '.' . $_->name() }
-                 @source, @target;
-
-        return bless { source => \@source,
-                       target => \@target,
-                       id     => $id,
-                     }, $class;
     }
 }
 
-sub source_table { $_[0]->{source}[0]->table() }
-sub target_table { $_[0]->{target}[0]->table() }
+sub _make_id
+{
+    my $self = shift;
 
-sub source_columns { @{ $_[0]->{source} } }
-sub target_columns { @{ $_[0]->{target} } }
+    return join "\0",
+        ( sort
+          map { $_->table()->name() . '.' . $_->name() }
+          $self->source_columns(), $self->target_columns()
+        );
+    }
+
+sub source_table { ( $_[0]->source_columns() )[0]->table() }
+sub target_table { ( $_[0]->target_columns() )[0]->table() }
 
 {
     my $spec = (TABLE_OR_NAME_TYPE);

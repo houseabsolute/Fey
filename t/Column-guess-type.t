@@ -38,7 +38,10 @@ use Fey::Column;
         );
     while ( my ( $type, $generic ) = each %MysqlTypes )
     {
-        is( Fey::Column->_guess_generic_type( $type ), $generic,
+        my $c = Fey::Column->new( name => 'test',
+                                  type => $type,
+                                );
+        is( $c->_guess_generic_type( $type ), $generic,
             "guessed $generic for generic type of $type" );
     }
 }
@@ -85,7 +88,10 @@ use Fey::Column;
         );
     while ( my ( $type, $generic ) = each %PgTypes )
     {
-        is( Fey::Column->_guess_generic_type( $type ), $generic,
+        my $c = Fey::Column->new( name => 'test',
+                                  type => $type,
+                                );
+        is( $c->_guess_generic_type( $type ), $generic,
             "guessed $generic for generic type of $type" );
     }
 }

@@ -3,24 +3,24 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 28;
+use Test::More tests => 29;
 
 use Fey::Column;
 
 
 {
-    eval { my $s = Fey::Column->new() };
-    like( $@, qr/Mandatory parameters .+ missing/,
+    eval { my $c = Fey::Column->new() };
+    like( $@, qr/\QAttribute (name) is required/,
           'name, generic_type and type are required params' );
 }
 
 {
-    my $c = Fey::Column->new( name         => 'Test',
-                            type         => 'foobar',
-                            generic_type => 'text',
-                          );
+    my $c = Fey::Column->new( name         => 'test',
+                              type         => 'foobar',
+                              generic_type => 'text',
+                            );
 
-    is( $c->name(), 'Test', 'column name is Test' );
+    is( $c->name(), 'test', 'column name is Test' );
     is( $c->type(), 'foobar', 'column type is foobar' );
     is( $c->generic_type(), 'text', 'column generic type is text' );
     ok( ! defined $c->length(), 'column has no length' );
@@ -39,7 +39,7 @@ use Fey::Column;
     isa_ok( $@, 'Fey::Exception::ObjectState' );
 
     my $clone = $c->_clone();
-    is( $clone->name(), 'Test', 'clone name is Test' );
+    is( $clone->name(), 'test', 'clone name is Test' );
     is( $clone->type(), 'foobar', 'clone type is foobar' );
     is( $clone->generic_type(), 'text', 'clone generic type is text' );
     ok( ! defined $clone->length(), 'clone has no length' );
@@ -49,39 +49,52 @@ use Fey::Column;
 }
 
 {
-    my $c = Fey::Column->new( name        => 'Test',
-                            type        => 'text',
-                            is_nullable => 1,
-                          );
+    eval
+    {
+        my $c = Fey::Column->new( name      => 'test',
+                                  type      => 'float',
+                                  precision => 5,
+                                );
+    };
+    like( $@, qr/Cannot set precision unless length is also set/,
+          'precision requires length'
+        );
+}
+
+{
+    my $c = Fey::Column->new( name        => 'test',
+                              type        => 'text',
+                              is_nullable => 1,
+                            );
 
     ok( $c->is_nullable(), 'column is nullable' );
 }
 
 {
-    my $c = Fey::Column->new( name        => 'Test',
-                            type        => 'text',
-                            default     => 'hello',
-                          );
+    my $c = Fey::Column->new( name    => 'test',
+                              type    => 'text',
+                              default => 'hello',
+                            );
 
     ok( $c->default()->isa('Fey::Literal::String'),
         'column has default which is a string literal' );
 }
 
 {
-    my $c = Fey::Column->new( name        => 'Test',
-                            type        => 'text',
-                            default     => undef,
-                          );
+    my $c = Fey::Column->new( name    => 'test',
+                              type    => 'text',
+                              default => undef,
+                            );
 
     ok( $c->default()->isa('Fey::Literal::Null'),
         'column has default which is a null literal' );
 }
 
 {
-    my $c = Fey::Column->new( name        => 'Test',
-                            type        => 'text',
-                            default     => Fey::Literal::Term->new('a term'),
-                          );
+    my $c = Fey::Column->new( name    => 'test',
+                              type    => 'text',
+                              default => Fey::Literal::Term->new('a term'),
+                            );
 
     ok( $c->default()->isa('Fey::Literal::Term'),
         'column has default which is a term literal' );
@@ -91,9 +104,9 @@ use Fey::Column;
     require Fey::Table;
 
     my $t = Fey::Table->new( name => 'Test' );
-    my $c1 = Fey::Column->new( name         => 'test_id',
-                             type         => 'text',
-                           );
+    my $c1 = Fey::Column->new( name => 'test_id',
+                               type => 'text',
+                             );
 
     $t->add_column($c1);
 

@@ -1,9 +1,9 @@
-package Fey::Trait::ColumnLike;
+package Fey::Role::ColumnLike;
 
 use strict;
 use warnings;
 
-use Class::Trait 'base';
+use Moose::Role;
 
 use Class::Trait ( 'Fey::Trait::Selectable' => { exclude => 'is_selectable' },
                    'Fey::Trait::Comparable' => { exclude => 'is_comparable' },
@@ -12,12 +12,7 @@ use Class::Trait ( 'Fey::Trait::Selectable' => { exclude => 'is_selectable' },
                  );
 
 
-our @REQUIRES
-    = qw( id
-          is_alias
-          _containing_table_name_or_alias
-          is_selectable
-          is_comparable );
+requires 'id', 'is_alias';
 
 
 sub _containing_table_name_or_alias
