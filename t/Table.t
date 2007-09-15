@@ -11,7 +11,7 @@ use Fey::Table;
 
 {
     eval { my $s = Fey::Table->new() };
-    like( $@, qr/Mandatory parameter 'name' missing/,
+    like( $@, qr/\QAttribute (name) is required/,
           'name is a required param' );
 }
 

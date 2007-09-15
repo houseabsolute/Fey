@@ -10,11 +10,6 @@ use Fey::Validate
         TABLE_TYPE TABLE_OR_NAME_TYPE
         FK_TYPE DBI_TYPE );
 
-use Fey::NamedObjectSet;
-use Fey::SQL;
-use Fey::Table;
-use Scalar::Util qw( blessed );
-
 use Moose::Policy 'Fey::Policy';
 use Moose;
 
@@ -35,6 +30,11 @@ has '_tables' =>
 
 no Moose;
 __PACKAGE__->meta()->make_immutable();
+
+use Fey::NamedObjectSet;
+use Fey::SQL;
+use Fey::Table;
+use Scalar::Util qw( blessed );
 
 
 {

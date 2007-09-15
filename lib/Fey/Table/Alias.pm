@@ -3,10 +3,6 @@ package Fey::Table::Alias;
 use strict;
 use warnings;
 
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_ro_accessors
-    ( qw( alias_name table ) );
-
 use Class::Trait ( 'Fey::Trait::Joinable' );
 
 use Fey::Exceptions qw(param_error);
@@ -17,37 +13,35 @@ use Fey::Validate
 
 use Fey::Table;
 
-{
-    for my $meth ( qw( schema name ) )
-    {
-        eval <<"EOF";
-sub $meth
-{
-    shift->table()->$meth(\@_);
-}
-EOF
-    }
-}
+use Moose::Policy 'Fey::Policy';
+use Moose;
+
+has 'table' =>
+    ( is      => 'ro',
+      isa     => 'Fey::Table',
+      handles => [ 'schema', 'name' ],
+    );
+
+has 'alias_name' =>
+    ( is      => 'ro',
+      isa     => 'Str',
+      lazy    => 1,
+      default => \&_default_alias_name,
+    );
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
+
 
 {
     my %Numbers;
-    my $spec = { table      => TABLE_TYPE,
-                 alias_name => SCALAR_TYPE( optional => 1 ),
-               };
-    sub new
+    sub _default_alias_name
     {
-        my $class = shift;
-        my %p     = validate( @_, $spec );
+        my $self = shift;
 
-        unless ( $p{alias_name} )
-        {
-            my $name = $p{table}->name();
-            $Numbers{$name} ||= 1;
-
-            $p{alias_name} = $name . $Numbers{$name}++;
-        }
-
-        return bless \%p, $class;
+        my $name = $self->name();
+        $Numbers{$name} ||= 0;
+        return $name . ++$Numbers{$name};
     }
 }
 
