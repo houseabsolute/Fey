@@ -6,6 +6,12 @@ use warnings;
 use Moose::Role;
 
 {
+    # This is a nasty hack because when M::M::R sees a conflicting
+    # role (two roles sharing the same method) it simply adds that
+    # role to the list of required methods for the importing class,
+    # but in this case it makes no sense, since I want ColumnLike to
+    # basically replace the various is_* methods from Seletable,
+    # Comparable, etc.
     package Moose::Meta::Role;
 
     no warnings 'redefine';
