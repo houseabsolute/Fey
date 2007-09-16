@@ -29,7 +29,14 @@ before '_process_options' => sub
         elsif ( $options->{is} eq 'rw' )
         {
             $options->{reader} = $name;
-            $options->{writer} = 'set_' . $name;
+
+            my $prefix = 'set';
+            if ( $name =~ s/^_// )
+            {
+                $prefix = '_set';
+            }
+
+            $options->{writer} = $prefix . q{_} . $name;
         }
 
         delete $options->{is};
