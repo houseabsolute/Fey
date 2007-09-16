@@ -76,16 +76,18 @@ sub BUILD
         param_error "All columns passed to add_foreign_key() must have a table.";
     }
 
-    for my $p ( [ source => \@source ], [ target => \@target ]  )
+    for my $p ( [ source => \@source ], [ target => \@target ]  ) ## no critic (Comma)
     {
-        my ( $name, $array ) = @$p;
-        if ( uniq( map { $_->table() } @$array ) > 1 )
+        my ( $name, $array ) = @{$p};
+        if ( uniq( map { $_->table() } @{$array} ) > 1 )
         {
             param_error
                 ( "Each column in the $name argument to add_foreign_key()"
                   . " must come from the same table." );
         }
     }
+
+    return
 }
 
 sub _make_id
@@ -94,17 +96,28 @@ sub _make_id
 
     return join "\0",
         ( sort
-          map { $_->table()->name() . '.' . $_->name() }
+          map { $_->table()->name() . q{.} . $_->name() }
           $self->source_columns(), $self->target_columns()
         );
     }
 
-sub source_table { ( $_[0]->source_columns() )[0]->table() }
-sub target_table { ( $_[0]->target_columns() )[0]->table() }
+sub source_table
+{
+    my $self = shift;
+
+    return ( $self->source_columns() )[0]->table();
+}
+
+sub target_table
+{
+    my $self = shift;
+
+    return ( $self->target_columns() )[0]->table();
+}
 
 {
     my $spec = (TABLE_OR_NAME_TYPE);
-    sub has_tables
+    sub has_tables ## no critic (Subroutines::RequireArgUnpacking)
     {
         my $self = shift;
         my ( $table1, $table2 ) = validate_pos( @_, $spec, $spec );
@@ -116,15 +129,14 @@ sub target_table { ( $_[0]->target_columns() )[0]->table() }
         my @have =
             sort map { $_->name() } $self->source_table(), $self->target_table();
 
-        return 1
-            if (    $looking_for[0] eq $have[0]
+        return (    $looking_for[0] eq $have[0]
                  && $looking_for[1] eq $have[1] );
    }
 }
 
 {
     my $spec = (COLUMN_TYPE);
-    sub has_column
+    sub has_column ## no critic (Subroutines::RequireArgUnpacking)
     {
         my $self  = shift;
         my ($col) = validate_pos( @_, $spec );
