@@ -25,7 +25,7 @@ has 'id' =>
 
 subtype 'ArrayOfColumns'
     => as 'ArrayRef'
-    => where { @{ $_ } >= 1 && all { $_->isa('Fey::Column') } @{$_} };
+    => where { @{ $_ } >= 1 && all { $_ && $_->isa('Fey::Column') } @{$_} };
 
 coerce 'ArrayOfColumns'
     => from 'Fey::Column'
