@@ -1,9 +1,9 @@
-package Fey::Trait::SQL::HasLimitClause;
+package Fey::Role::SQL::HasLimitClause;
 
 use strict;
 use warnings;
 
-use Class::Trait 'base';
+use Moose::Role;
 
 use Fey::Validate
     qw( validate_pos

@@ -3,7 +3,13 @@ package Fey::SQL::Insert;
 use strict;
 use warnings;
 
-use base 'Fey::SQL::Base';
+use Moose::Policy 'Fey::Policy';
+use Moose;
+
+extends 'Fey::SQL::Base';
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 use Fey::Validate
     qw( validate

@@ -3,12 +3,16 @@ package Fey::SQL::Delete;
 use strict;
 use warnings;
 
-use base 'Fey::SQL::Base';
+use Moose::Policy 'Fey::Policy';
+use Moose;
 
-use Class::Trait ( 'Fey::Trait::SQL::HasWhereClause',
-                   'Fey::Trait::SQL::HasOrderByClause',
-                   'Fey::Trait::SQL::HasLimitClause',
-                 );
+extends 'Fey::SQL::Base';
+
+with 'Fey::Role::SQL::HasWhereClause', 'Fey::Role::SQL::HasOrderByClause',
+     'Fey::Role::SQL::HasLimitClause';
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 use Fey::Validate
     qw( validate

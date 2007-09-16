@@ -1,9 +1,9 @@
-package Fey::Trait::SQL::HasOrderByClause;
+package Fey::Role::SQL::HasOrderByClause;
 
 use strict;
 use warnings;
 
-use Class::Trait 'base';
+use Moose::Role;
 
 use Fey::Validate
     qw( validate_pos

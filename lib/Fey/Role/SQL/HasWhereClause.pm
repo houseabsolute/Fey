@@ -1,9 +1,9 @@
-package Fey::Trait::SQL::HasWhereClause;
+package Fey::Role::SQL::HasWhereClause;
 
 use strict;
 use warnings;
 
-use Class::Trait 'base';
+use Moose::Role;
 
 use Fey::Exceptions qw( param_error );
 

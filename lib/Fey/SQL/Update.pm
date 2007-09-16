@@ -3,12 +3,16 @@ package Fey::SQL::Update;
 use strict;
 use warnings;
 
-use base 'Fey::SQL::Base';
+use Moose::Policy 'Fey::Policy';
+use Moose;
 
-use Class::Trait ( 'Fey::Trait::SQL::HasWhereClause',
-                   'Fey::Trait::SQL::HasOrderByClause',
-                   'Fey::Trait::SQL::HasLimitClause',
-                 );
+extends 'Fey::SQL::Base';
+
+with 'Fey::Role::SQL::HasWhereClause', 'Fey::Role::SQL::HasOrderByClause',
+     'Fey::Role::SQL::HasLimitClause';
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 use Fey::Exceptions qw( param_error );
 use Fey::Validate
@@ -33,7 +37,7 @@ use Scalar::Util qw( blessed );
 
     sub update
     {
-        my $self     = shift;
+        my $self = shift;
 
         my $count = @_ ? @_ : 1;
         my (@tables) = validate_pos( @_, ($spec) x $count );

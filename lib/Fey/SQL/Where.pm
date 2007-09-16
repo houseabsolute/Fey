@@ -3,9 +3,15 @@ package Fey::SQL::Where;
 use strict;
 use warnings;
 
-use base 'Fey::SQL::Base';
+use Moose::Policy 'Fey::Policy';
+use Moose;
 
-use Class::Trait ( 'Fey::Trait::SQL::HasWhereClause' );
+extends 'Fey::SQL::Base';
+
+with 'Fey::Role::SQL::HasWhereClause';
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 
 1;
