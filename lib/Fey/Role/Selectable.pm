@@ -1,14 +1,12 @@
-package Fey::Trait::Comparable;
+package Fey::Role::Selectable;
 
 use strict;
 use warnings;
 
-use Class::Trait 'base';
+use Moose::Role;
 
 
-our @REQUIRES = qw( is_comparable );
-
-sub is_comparable { 1 }
+sub is_selectable { 1 }
 
 
 1;
@@ -17,22 +15,22 @@ __END__
 
 =head1 NAME
 
-Fey::Trait::Comparable - A trait for things that can be part of a WHERE clause
+Fey::Trait::Selectable - A trait for things that can go in a SELECT clause
 
 =head1 SYNOPSIS
 
-  use Class::Trait ( 'Fey::Trait::Comparable' );
+  use Class::Trait ( 'Fey::Trait::Selectable' );
 
 =head1 DESCRIPTION
 
-Classes which do this trait represent an object which can be compared
-to a column in a C<WHERE> clause.
+Classes which do this trait represent an object which can go in a
+C<SELECT> clause.
 
 =head1 METHODS
 
 This trait provides the following methods:
 
-=head2 $object->is_comparable()
+=head2 $object->is_selectable()
 
 Returns true.
 

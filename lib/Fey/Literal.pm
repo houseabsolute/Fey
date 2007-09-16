@@ -3,7 +3,11 @@ package Fey::Literal;
 use strict;
 use warnings;
 
-use base 'Class::Accessor::Fast';
+use Moose::Policy 'Fey::Policy';
+use Moose;
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 use Fey::Literal::Function;
 use Fey::Literal::Null;
@@ -51,6 +55,7 @@ sub quote_identifier
 {
     shift;
 
+    # XXX - 3 but then we use [1] & [2] - wtf?
     if ( @_ == 3 )
     {
         return q{"} . $_[1] . q{"} . q{.} . q{"} . $_[2] . q{"}

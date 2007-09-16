@@ -3,25 +3,16 @@ package Fey::Literal::Null;
 use strict;
 use warnings;
 
-use base 'Fey::Literal';
-__PACKAGE__->mk_ro_accessors
-    ( qw( term ) );
+use Moose::Policy 'Fey::Policy';
+use Moose;
 
-use Class::Trait ( 'Fey::Trait::Selectable' );
-use Class::Trait ( 'Fey::Trait::Comparable' );
+extends 'Fey::Literal';
 
-use Fey::Validate
-    qw( validate_pos
-        SCALAR_TYPE
-      );
+with 'Fey::Role::Comparable', 'Fey::Role::Selectable';
 
-my $Null = 'NULL';
-sub new
-{
-    my $class  = shift;
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
-    return bless \$Null, $class;
-}
 
 sub sql { 'NULL' }
 

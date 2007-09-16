@@ -4,10 +4,6 @@ use strict;
 use warnings;
 
 use Fey::Exceptions qw( object_state_error );
-use Fey::Validate
-    qw( validate
-        SCALAR_TYPE
-        COLUMN_TYPE );
 
 use Moose::Policy 'Fey::Policy';
 use Moose;

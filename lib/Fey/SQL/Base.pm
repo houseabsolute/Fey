@@ -3,26 +3,14 @@ package Fey::SQL::Base;
 use strict;
 use warnings;
 
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_ro_accessors
-    ( qw( dbh ) );
+use Moose::Policy 'Fey::Policy';
+use Moose;
 
-use Fey::Validate
-    qw( validate
-        DBI_TYPE
-      );
-
-
-{
-    my $spec = { dbh => DBI_TYPE };
-    sub new
-    {
-        my $class = shift;
-        my %p     = validate( @_, $spec );
-
-        return bless \%p, $class;
-    }
-}
+has 'dbh' =>
+    ( is       => 'ro',
+      isa      => 'DBI::db',
+      required => 1,
+    );
 
 
 1;

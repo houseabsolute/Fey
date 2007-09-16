@@ -3,29 +3,36 @@ package Fey::Literal::Term;
 use strict;
 use warnings;
 
-use base 'Fey::Literal';
-__PACKAGE__->mk_ro_accessors
-    ( qw( term ) );
+use Moose::Policy 'Fey::Policy';
+use Moose;
 
-use Class::Trait ( 'Fey::Trait::Selectable' );
-use Class::Trait ( 'Fey::Trait::Comparable' );
-use Class::Trait ( 'Fey::Trait::Groupable' );
-use Class::Trait ( 'Fey::Trait::Orderable' );
+extends 'Fey::Literal';
 
-use Fey::Validate
-    qw( validate_pos
-        SCALAR_TYPE
-      );
+with 'Fey::Role::Comparable', 'Fey::Role::Selectable',
+     'Fey::Role::Orderable', 'Fey::Role::Groupable';
+
+has 'term' =>
+    ( is       => 'ro',
+      isa      => 'Value',
+      required => 1,
+    );
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 
+
+sub new
 {
-    my $spec = (SCALAR_TYPE);
-    sub new
-    {
-        my $class  = shift;
-        my ($term) = validate_pos( @_, $spec );
+    my $class = shift;
 
-        return bless { term => $term }, $class;
+    if ( @_ == 1 )
+    {
+        return $class->new( term => shift );
+    }
+    else
+    {
+        return $class->SUPER::new(@_);
     }
 }
 

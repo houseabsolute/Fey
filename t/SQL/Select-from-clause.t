@@ -92,9 +92,9 @@ my $dbh = Fey::Test->mock_dbh();
 {
     my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
 
-    my $fk = Fey::FK->new( source => $s->table('User')->column('user_id'),
-                         target => $s->table('UserGroup')->column('group_id'),
-                       );
+    my $fk = Fey::FK->new( source_columns => $s->table('User')->column('user_id'),
+                           target_columns => $s->table('UserGroup')->column('group_id'),
+                         );
     $s->add_foreign_key($fk);
 
     eval { $q->from( $s->table('User'), $s->table('UserGroup') ) };

@@ -3,7 +3,10 @@ package Fey::Placeholder;
 use strict;
 use warnings;
 
-use Class::Trait ( 'Fey::Trait::Comparable' );
+use Moose::Policy 'Fey::Policy';
+use Moose;
+
+with 'Fey::Role::Comparable';
 
 
 sub new

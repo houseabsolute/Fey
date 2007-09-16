@@ -3,49 +3,77 @@ package Fey::Literal::Function;
 use strict;
 use warnings;
 
-use base 'Fey::Literal';
-__PACKAGE__->mk_ro_accessors
-    ( qw( alias_name function ) );
-
-use Class::Trait ( 'Fey::Trait::Selectable' );
-use Class::Trait ( 'Fey::Trait::Comparable' );
-use Class::Trait ( 'Fey::Trait::Groupable' => { exclude => 'is_groupable' } );
-use Class::Trait ( 'Fey::Trait::Orderable' );
-
-use Fey::Validate
-    qw( validate_pos
-        SCALAR_TYPE
-        SCALAR
-        OBJECT
-      );
-
 use Scalar::Util qw( blessed );
 
+use Moose::Policy 'Fey::Policy';
+use Moose;
+use Moose::Util::TypeConstraints;
+
+extends 'Fey::Literal';
+
+with 'Fey::Role::Comparable', 'Fey::Role::Selectable',
+     'Fey::Role::Orderable', 'Fey::Role::Groupable';
+
+has 'function' =>
+    ( is       => 'ro',
+      isa      => 'Str',
+      required => 1,
+    );
+
+subtype 'FunctionArg'
+    => as 'Fey::Literal | Fey::Column'
+    => where { $_->does('Fey::Role::Selectable') };
+
+coerce 'FunctionArg'
+    => from 'Undef'
+    => via { Fey::Literal::Null->new() }
+    => from 'Value'
+    => via { Fey::Literal->new_from_scalar($_) };
 
 {
-    my $func_spec = SCALAR_TYPE;
-    my $arg_spec  = { type      => SCALAR|OBJECT,
-                      callbacks =>
-                      { 'is scalar, column (with table) or literal'
-                        => sub {    ! blessed $_[0]
-                                 || (    $_[0]->can('is_selectable')
-                                      && $_[0]->is_selectable() ) }
-                      },
-                    };
-    sub new
-    {
-        my $class = shift;
-        my ( $func, @args ) = validate_pos( @_, $func_spec, ($arg_spec) x (@_ - 1) );
+    my $constraint = find_type_constraint('FunctionArg');
+    subtype 'FunctionArgs'
+        => as 'ArrayRef'
+        => where { for my $arg ( @{$_} ) { $constraint->check($arg) || return; } 1; };
 
-        my $self = bless { function => $func }, $class;
-        $self->{args} =
-            [ map { blessed $_ ? $_ : Fey::Literal->new_from_scalar($_) } @args ];
-
-        return $self;
-    }
+    coerce 'FunctionArgs'
+        => from 'ArrayRef'
+        => via { [ map { $constraint->coerce($_) } @{ $_ } ] };
 }
 
-sub args { @{ $_[0]->{args} } }
+has 'args' =>
+    ( is         => 'ro',
+      isa        => 'FunctionArgs',
+      default    => sub { [] },
+      coerce     => 1,
+      auto_deref => 1,
+    );
+
+has 'alias_name' =>
+    ( is      => 'ro',
+      isa     => 'Str',
+      writer  => '_set_alias_name',
+    );
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
+
+
+sub new
+{
+    my $class = shift;
+
+    if ( @_ % 2 || $_[0] ne 'function' )
+    {
+        return $class->new( function => shift,
+                            args     => [ @_ ],
+                          );
+    }
+    else
+    {
+        return $class->SUPER::new(@_);
+    }
+}
 
 sub sql
 {
@@ -77,7 +105,9 @@ sub sql_with_alias
     my $Number = 0;
     sub _make_alias
     {
-        $_[0]->{alias_name} = 'FUNCTION' . $Number++;
+        my $self = shift;
+
+        $self->_set_alias_name( 'FUNCTION' . $Number++ );
     }
 }
 

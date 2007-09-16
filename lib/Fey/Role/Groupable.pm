@@ -1,14 +1,12 @@
-package Fey::Trait::Orderable;
+package Fey::Role::Groupable;
 
 use strict;
 use warnings;
 
-use Class::Trait 'base';
+use Moose::Role;
 
 
-our @REQUIRES = qw( is_orderable );
-
-sub is_orderable { 1 }
+sub is_groupable { 1 }
 
 
 1;
@@ -17,22 +15,22 @@ __END__
 
 =head1 NAME
 
-Fey::Trait::Orderable - A trait for things that can be part of a ORDER BY clause
+Fey::Trait::Groupable - A trait for things that can be part of a GROUP BY clause
 
 =head1 SYNOPSIS
 
-  use Class::Trait ( 'Fey::Trait::Orderable' );
+  use Class::Trait ( 'Fey::Trait::Groupable' );
 
 =head1 DESCRIPTION
 
 Classes which do this trait represent an object which can be part of a
-C<ORDER BY> clause.
+C<GROUP BY> clause.
 
 =head1 METHODS
 
 This trait provides the following methods:
 
-=head2 $object->is_orderable()
+=head2 $object->is_groupable()
 
 Returns true.
 

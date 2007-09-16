@@ -54,8 +54,8 @@ use Fey::Schema;
 
     my $fk =
         Fey::FK->new
-            ( source => $s->table('User')->column('user_id'),
-              target => $s->table('UserGroup')->column('user_id'),
+            ( source_columns => $s->table('User')->column('user_id'),
+              target_columns => $s->table('UserGroup')->column('user_id'),
             );
 
     $s->add_foreign_key($fk);
@@ -111,8 +111,8 @@ use Fey::Schema;
     $s->add_table($user_t);
     $fk =
         Fey::FK->new
-            ( source => $s->table('User')->column('user_id'),
-              target => $s->table('UserGroup')->column('user_id'),
+            ( source_columns => $s->table('User')->column('user_id'),
+              target_columns => $s->table('UserGroup')->column('user_id'),
             );
     $s->add_foreign_key($fk);
 
@@ -147,8 +147,8 @@ use Fey::Schema;
 
     $t->add_column($c);
 
-    my $fk = Fey::FK->new( source => $c,
-                           target => $s->table('UserGroup')->column('user_id'),
+    my $fk = Fey::FK->new( source_columns => $c,
+                           target_columns => $s->table('UserGroup')->column('user_id'),
                          );
 
     eval { $s->add_foreign_key($fk) };

@@ -75,9 +75,9 @@ has is_nullable =>
 subtype 'DefaultValue'
     => as 'Fey::Literal';
 coerce 'DefaultValue'
-    => from 'Undef',
-    => via { Fey::Literal::Null->new() },
-    => from 'Value',
+    => from 'Undef'
+    => via { Fey::Literal::Null->new() }
+    => from 'Value'
     => via { Fey::Literal->new_from_scalar($_) };
 
 has default =>

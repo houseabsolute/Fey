@@ -5,12 +5,48 @@ use warnings;
 
 use Moose::Role;
 
-use Class::Trait ( 'Fey::Trait::Selectable' => { exclude => 'is_selectable' },
-                   'Fey::Trait::Comparable' => { exclude => 'is_comparable' },
-                   'Fey::Trait::Groupable' => { exclude => 'is_groupable' },
-                   'Fey::Trait::Orderable' => { exclude => 'is_orderable' },
-                 );
+{
+    package Moose::Meta::Role;
 
+    no warnings 'redefine';
+sub _apply_methods {
+    my ($self, $other) = @_;
+    foreach my $method_name ($self->get_method_list) {
+        # it if it has one already
+        if ($other->has_method($method_name) &&
+            # and if they are not the same thing ...
+            $other->get_method($method_name)->body != $self->get_method($method_name)->body) {
+            # see if we are composing into a role
+            if ($other->isa('Moose::Meta::Role')) {
+                # NOTE:
+                # we have to remove the method from our 
+                # role, if this is being called from combine()
+                # which means the meta is an anon class
+                # this *may* cause problems later, but it 
+                # is probably fairly safe to assume that 
+                # anon classes will only be used internally
+                # or by people who know what they are doing
+                $other->Moose::Meta::Class::remove_method($method_name)
+                    if $other->name =~ /__COMPOSITE_ROLE_SANDBOX__/;
+            }
+            else {
+                next;
+            }
+        }
+        else {
+            # add it, although it could be overriden 
+            $other->alias_method(
+                $method_name,
+                $self->get_method($method_name)
+            );
+        }
+    }
+}
+}
+
+
+with 'Fey::Role::Selectable', 'Fey::Role::Comparable',
+     'Fey::Role::Groupable', 'Fey::Role::Orderable';
 
 requires 'id', 'is_alias';
 

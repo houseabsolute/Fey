@@ -3,10 +3,17 @@ package Fey::SQL::Select;
 use strict;
 use warnings;
 
-use base 'Fey::SQL::Base';
+use Moose::Policy 'Fey::Policy';
+use Moose;
 
-use Class::Trait ( 'Fey::Trait::Comparable',
-                   'Fey::Trait::SQL::HasWhereClause',
+extends 'Fey::SQL::Base';
+
+with 'Fey::Role::Comparable';
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
+
+use Class::Trait ( 'Fey::Trait::SQL::HasWhereClause',
                    'Fey::Trait::SQL::HasOrderByClause',
                    'Fey::Trait::SQL::HasLimitClause',
                  );
