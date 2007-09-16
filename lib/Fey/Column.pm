@@ -27,7 +27,7 @@ has 'name' =>
 
 subtype 'GenericTypeName'
     => as 'Str'
-    => where { /^(?:text|blob|integer|float|date|datetime|time|boolean|other)$/ };
+    => where { /^(?:text|blob|integer|float|date|datetime|time|boolean|other)$/xism };
 has 'generic_type' =>
     ( is      => 'ro',
       isa     => 'GenericTypeName',
@@ -109,21 +109,23 @@ sub BUILD
 
     param_error "Cannot set precision unless length is also set"
         if defined $p->{precision} && ! $p->{length};
+
+    return;
 }
 
 {
     my @TypesRe =
-        ( [ text     => qr/(?:text|char(?:acter)?)\b/i ],
-          [ blob     => qr/blob\b|bytea\b/i ],
+        ( [ text     => qr/(?:text|char(?:acter)?)\b/xism ],
+          [ blob     => qr/blob\b|bytea\b/xism ],
           # The year type comes from MySQL
-          [ integer  => qr/(?:int(?:eger)?\d*|year)\b/i ],
-          [ float    => qr/(?:float\d*|decimal|real|double|money|numeric)\b/i ],
+          [ integer  => qr/(?:int(?:eger)?\d*|year)\b/xism ],
+          [ float    => qr/(?:float\d*|decimal|real|double|money|numeric)\b/xism ],
           # MySQL's timestamp is not always a datetime, it depends on
           # the length of the column, but this is the best _guess_.
-          [ datetime => qr/datetime\b|^timestamp/i ],
-          [ date     => qr/date\b/i ],
-          [ time     => qr/^time|time\b/i ],
-          [ boolean  => qr/\bbool/i ],
+          [ datetime => qr/datetime\b|^timestamp/xism ],
+          [ date     => qr/date\b/xism ],
+          [ time     => qr/^time|time\b/xism ],
+          [ boolean  => qr/\bbool/xism ],
         );
 
     sub _guess_generic_type
@@ -133,7 +135,7 @@ sub BUILD
 
         for my $p (@TypesRe)
         {
-            return $p->[0] if $type =~ /$p->[1]/;
+            return $p->[0] if $type =~ /$p->[1]/; ## no critic (RegularExpressions)
         }
 
         return 'other';
@@ -144,14 +146,14 @@ sub _clone
 {
     my $self = shift;
 
-    my %clone = %$self;
+    my %clone = %{$self};
 
     return bless \%clone, ref $self;
 }
 
-sub is_alias { 0 }
+sub is_alias { return 0 }
 
-sub alias
+sub alias ## no critic (Subroutines::RequireArgUnpacking)
 {
     my $self = shift;
 
@@ -160,10 +162,14 @@ sub alias
 
 sub sql
 {
-    $_[1]->quote_identifier( undef,
-                             $_[0]->_containing_table_name_or_alias(),
-                             $_[0]->name(),
-                           );
+    my $self = shift;
+    my $dbh  = shift;
+
+    return
+        $dbh->quote_identifier( undef,
+                                $self->_containing_table_name_or_alias(),
+                                $self->name(),
+                              );
 }
 
 sub sql_with_alias { goto &sql }
@@ -180,7 +186,7 @@ sub id
         'The id() method cannot be called on a column object which has no table.'
             unless $table;
 
-    return $table->id() . '.' . $self->name();
+    return $table->id() . q{.} . $self->name();
 }
 
 
