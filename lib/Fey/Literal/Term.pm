@@ -102,14 +102,14 @@ Returns the term as passed to the constructor.
 
 Returns the appropriate SQL snippet.
 
-=head1 TRAITS
+=head1 ROLES
 
-This class does the C<Fey::Trait::Selectable>,
-C<Fey::Trait::Comparable>, C<Fey::Trait::Groupable>, and
-C<Fey::Trait::Orderable> traits.
+This class does the C<Fey::Role::Selectable>,
+C<Fey::Role::Comparable>, C<Fey::Role::Groupable>, and
+C<Fey::Role::Orderable> roles.
 
 Of course, the contents of a given term may not really allow for any
-of these things, but having this class do these traits means you can
+of these things, but having this class do these roles means you can
 freely use a term object in any part of a SQL snippet.
 
 =head1 AUTHOR

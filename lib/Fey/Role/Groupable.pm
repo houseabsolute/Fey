@@ -16,20 +16,22 @@ __END__
 
 =head1 NAME
 
-Fey::Trait::Groupable - A trait for things that can be part of a GROUP BY clause
+Fey::Role::Groupable - A role for things that can be part of a GROUP BY clause
 
 =head1 SYNOPSIS
 
-  use Class::Trait ( 'Fey::Trait::Groupable' );
+  use Moose;
+
+  with 'Fey::Role::Groupable';
 
 =head1 DESCRIPTION
 
-Classes which do this trait represent an object which can be part of a
+Classes which do this role represent an object which can be part of a
 C<GROUP BY> clause.
 
 =head1 METHODS
 
-This trait provides the following methods:
+This role provides the following methods:
 
 =head2 $object->is_groupable()
 

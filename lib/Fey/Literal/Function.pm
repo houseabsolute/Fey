@@ -178,11 +178,11 @@ Returns the appropriate SQL snippet.
 Calling C<< $function->sql_with_alias() >> causes a unique alias for
 the function to be created.
 
-=head1 TRAITS
+=head1 ROLES
 
-This class does the C<Fey::Trait::Selectable>,
-C<Fey::Trait::Comparable>, C<Fey::Trait::Groupable>, and
-C<Fey::Trait::Orderable> traits.
+This class does the C<Fey::Role::Selectable>,
+C<Fey::Role::Comparable>, C<Fey::Role::Groupable>, and
+C<Fey::Role::Orderable> roles.
 
 This class overrides the C<is_groupable()> and C<is_orderable()>
 methods so that they only return true if the C<<

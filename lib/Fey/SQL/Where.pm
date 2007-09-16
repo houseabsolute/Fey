@@ -48,9 +48,9 @@ a C<Fey::SQL> object.
 See the L<Fey::SQL section on WHERE Clauses|Fey::SQL/WHERE Clauses>
 for more details.
 
-=head1 TRAITS
+=head1 ROLES
 
-This class does C<Fey::Trait::SQL::HasWhereClause> trait.
+This class does C<Fey::Role::SQL::HasWhereClause> role.
 
 =head1 AUTHOR
 

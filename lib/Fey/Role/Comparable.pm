@@ -16,20 +16,22 @@ __END__
 
 =head1 NAME
 
-Fey::Trait::Comparable - A trait for things that can be part of a WHERE clause
+Fey::Role::Comparable - A role for things that can be part of a WHERE clause
 
 =head1 SYNOPSIS
 
-  use Class::Trait ( 'Fey::Trait::Comparable' );
+  use Moose;
+
+  with 'Fey::Role::Comparable';
 
 =head1 DESCRIPTION
 
-Classes which do this trait represent an object which can be compared
+Classes which do this role represent an object which can be compared
 to a column in a C<WHERE> clause.
 
 =head1 METHODS
 
-This trait provides the following methods:
+This role provides the following methods:
 
 =head2 $object->is_comparable()
 

@@ -57,10 +57,10 @@ This method creates a new C<Fey::Literal::Null> object.
 
 Returns the appropriate SQL snippet.
 
-=head1 TRAITS
+=head1 ROLES
 
-This class does the C<Fey::Trait::Selectable> and
-C<Fey::Trait::Comparable> traits.
+This class does the C<Fey::Role::Selectable> and
+C<Fey::Role::Comparable> roles.
 
 =head1 AUTHOR
 

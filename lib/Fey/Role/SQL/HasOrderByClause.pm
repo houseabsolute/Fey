@@ -69,20 +69,22 @@ __END__
 
 =head1 NAME
 
-Fey::Trait::SQL::HasOrderByClause - A trait for queries which can include a ORDER BY clause
+Fey::Role::SQL::HasOrderByClause - A role for queries which can include a ORDER BY clause
 
 =head1 SYNOPSIS
 
-  use Class::Trait ( 'Fey::Trait::SQL::HasOrderByClause' );
+  use Moose;
+
+  with 'Fey::Role::SQL::HasOrderByClause';
 
 =head1 DESCRIPTION
 
-Classes which do this trait represent a query which can include a
+Classes which do this role represent a query which can include a
 C<ORDER BY> clause.
 
 =head1 METHODS
 
-This trait provides the following methods:
+This role provides the following methods:
 
 =head2 $query->order_by()
 

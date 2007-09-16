@@ -16,20 +16,22 @@ __END__
 
 =head1 NAME
 
-Fey::Trait::Orderable - A trait for things that can be part of a ORDER BY clause
+Fey::Role::Orderable - A role for things that can be part of a ORDER BY clause
 
 =head1 SYNOPSIS
 
-  use Class::Trait ( 'Fey::Trait::Orderable' );
+  use Moose;
+
+  with 'Fey::Role::Orderable';
 
 =head1 DESCRIPTION
 
-Classes which do this trait represent an object which can be part of a
+Classes which do this role represent an object which can be part of a
 C<ORDER BY> clause.
 
 =head1 METHODS
 
-This trait provides the following methods:
+This role provides the following methods:
 
 =head2 $object->is_orderable()
 

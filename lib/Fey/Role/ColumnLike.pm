@@ -33,21 +33,23 @@ __END__
 
 =head1 NAME
 
-Fey::Trait::ColumnLike - A trait for "column-like" behavior
+Fey::Role::ColumnLike - A role for "column-like" behavior
 
 =head1 SYNOPSIS
 
-  use Class::Trait ( 'Fey::Trait::ColumnLike' );
+  use Moose;
+
+  with 'Fey::Role::ColumnLike';
 
 =head1 DESCRIPTION
 
-Class which do this trait are "column-like" . This trait aggregates
-several other traits for the L<Fey::Column> and L<Fey::Column::Alias>
+Class which do this role are "column-like" . This role aggregates
+several other roles for the L<Fey::Column> and L<Fey::Column::Alias>
 classes.
 
 =head1 METHODS
 
-This trait provides the following methods:
+This role provides the following methods:
 
 =head2 $column->is_selectable()
 
@@ -60,11 +62,11 @@ This trait provides the following methods:
 These methods all return true when the C<< $column->table() >>
 returns an object.
 
-=head1 TRAITS
+=head1 ROLES
 
-This class does the C<Fey::Trait::Selectable>,
-C<Fey::Trait::Comparable>, C<Fey::Trait::Groupable>, and
-C<Fey::Trait::Orderable> traits.
+This class does the C<Fey::Role::Selectable>,
+C<Fey::Role::Comparable>, C<Fey::Role::Groupable>, and
+C<Fey::Role::Orderable> roles.
 
 =head1 AUTHOR
 

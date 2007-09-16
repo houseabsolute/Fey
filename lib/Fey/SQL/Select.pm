@@ -502,14 +502,14 @@ for more details.
 
 Returns the full SQL statement which this object represents.
 
-=head1 TRAITS
+=head1 ROLES
 
 This class does
-C<Fey::Trait::SQL::HasWhereClause>,
-C<Fey::Trait::SQL::HasOrderByClause>, and
-C<Fey::Trait::SQL::HasLimitClause> traits.
+C<Fey::Role::SQL::HasWhereClause>,
+C<Fey::Role::SQL::HasOrderByClause>, and
+C<Fey::Role::SQL::HasLimitClause> roles.
 
-It also does the C<Fey::Trait::SQL::Comparable> trait. This allows a
+It also does the C<Fey::Role::SQL::Comparable> role. This allows a
 C<Fey::SQL::Select> object to be used as a subselect in C<WHERE>
 clauses.
 

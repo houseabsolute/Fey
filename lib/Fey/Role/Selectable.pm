@@ -16,20 +16,22 @@ __END__
 
 =head1 NAME
 
-Fey::Trait::Selectable - A trait for things that can go in a SELECT clause
+Fey::Role::Selectable - A role for things that can go in a SELECT clause
 
 =head1 SYNOPSIS
 
-  use Class::Trait ( 'Fey::Trait::Selectable' );
+  use Moose;
+
+  with 'Fey::Role::Selectable';
 
 =head1 DESCRIPTION
 
-Classes which do this trait represent an object which can go in a
+Classes which do this role represent an object which can go in a
 C<SELECT> clause.
 
 =head1 METHODS
 
-This trait provides the following methods:
+This role provides the following methods:
 
 =head2 $object->is_selectable()
 

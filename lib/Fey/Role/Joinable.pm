@@ -16,20 +16,22 @@ __END__
 
 =head1 NAME
 
-Fey::Trait::Joinable - A trait for things that can be part of a JOIN BY clause
+Fey::Role::Joinable - A role for things that can be part of a JOIN BY clause
 
 =head1 SYNOPSIS
 
-  use Class::Trait ( 'Fey::Trait::Joinable' );
+  use Moose;
+
+  with 'Fey::Role::Joinable';
 
 =head1 DESCRIPTION
 
-Classes which do this trait represent an object which can be part of a
+Classes which do this role represent an object which can be part of a
 C<FROM> clause.
 
 =head1 METHODS
 
-This trait provides the following methods:
+This role provides the following methods:
 
 =head2 $object->is_joinable()
 

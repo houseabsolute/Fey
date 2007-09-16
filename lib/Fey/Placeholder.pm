@@ -53,9 +53,9 @@ This method creates a new C<Fey::Placeholder> object.
 
 Returns the appropriate SQL snippet.
 
-=head1 TRAITS
+=head1 ROLES
 
-This class does the C<Fey::Trait::Comparable> trait.
+This class does the C<Fey::Role::Comparable> role.
 
 =head1 AUTHOR
 
