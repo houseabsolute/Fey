@@ -3,7 +3,7 @@ package Fey::NamedObjectSet;
 use strict;
 use warnings;
 
-use Moose;
+use List::MoreUtils qw( all pairwise );
 
 use Fey::Validate
     qw( validate_pos SCALAR_TYPE NAMED_OBJECT_TYPE );
@@ -51,6 +51,19 @@ sub objects
     validate_pos( @_, ( SCALAR_TYPE ) x @_ );
 
     return @_ ? @{ $self }{ grep { exists $self->{$_} } @_ } : values %{ $self };
+}
+
+sub is_same_as
+{
+    my $self  = shift;
+    my $other = shift;
+
+    my @self_names  = sort keys %{ $self };
+    my @other_names = sort keys %{ $other };
+
+    return 0 unless @self_names == @other_names;
+
+    return all { $_ } pairwise { $a eq $b } @self_names, @other_names;
 }
 
 

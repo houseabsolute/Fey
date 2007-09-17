@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 12;
+use Test::More tests => 16;
 
 use Fey::NamedObjectSet;
 
@@ -49,6 +49,21 @@ use Fey::NamedObjectSet;
 
     is( $set->object('bob')->name(), 'bob',
         'object() returns one object by name and it is bob' );
+
+    ok( $set->is_same_as($set),
+        'set is_same_as() itself' );
+
+    my $other_set = Fey::NamedObjectSet->new();
+    ok( ! $set->is_same_as($other_set),
+        'set not is_same_as() empty set' );
+
+    $other_set->add($bob);
+    ok( ! $set->is_same_as($other_set),
+        'set not is_same_as() other set with just one object' );
+
+    $other_set->add($faye);
+    ok( $set->is_same_as($other_set),
+        'set not is_same_as() other set which has the same objects' );
 }
 
 

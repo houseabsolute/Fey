@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 23;
+use Test::More tests => 28;
 
 use Fey::Table;
 
@@ -78,11 +78,16 @@ use Fey::Table;
 
     is( scalar $t->columns, 2, 'table has two columns' );
 
-    eval { $t->set_primary_key('no_such_thing') };
+    eval { $t->add_candidate_key('no_such_thing') };
     like( $@, qr/The column no_such_thing is not part of the Test table./,
-          'add_key() called with invalid column name' );
+          'add_candidate_key() called with invalid column name' );
 
-    $t->set_primary_key('test_id');
+    $t->add_candidate_key('test_id');
+    is_deeply( _keys_to_names( $t->candidate_keys() ),
+               [ [ 'test_id' ] ],
+               'one key set and it contains only test_id'
+             );
+
     my @pk = $t->primary_key();
     is( scalar @pk, 1, 'table has a one column pk' );
     is( $pk[0]->name(), 'test_id', 'pk column is test_id' );
@@ -104,4 +109,40 @@ use Fey::Table;
 
     @cols = sort map { $_->name() } $t->columns( 'no_such_column' );
     is( scalar @cols, 0, 'columns() ignores columns which do not exist' );
+}
+
+{
+    my $s = Fey::Test->mock_test_schema();
+    my $t = $s->table('User');
+
+    $t->add_candidate_key('user_id');
+    $t->add_candidate_key( 'username', 'email' );
+
+    is_deeply( _keys_to_names( $t->candidate_keys() ),
+               [ [ 'user_id' ], [ 'email', 'username' ] ],
+               'two keys, one for user_id and one for email + username'
+             );
+
+    my @pk = $t->primary_key();
+    is( scalar @pk, 1, 'table has one pk column' );
+    is( $pk[0]->name(), 'user_id', 'pk is user_id' );
+
+    $t->remove_candidate_key('user_id');
+    is_deeply( _keys_to_names( $t->candidate_keys() ),
+               [ [ 'email', 'username' ] ],
+               'one key, email + username'
+             );
+}
+
+sub _keys_to_names
+{
+    my @k = @_;
+
+    my @n;
+    for my $k (@k)
+    {
+        push @n, [ sort map { $_->name() } @{ $k } ];
+    }
+
+    return \@n;
 }

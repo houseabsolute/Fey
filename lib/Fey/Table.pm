@@ -3,6 +3,7 @@ package Fey::Table;
 use strict;
 use warnings;
 
+use List::MoreUtils qw( any all first_index );
 use Scalar::Util qw( blessed weaken );
 
 use Fey::Exceptions qw( param_error );
@@ -15,6 +16,7 @@ use Fey::Validate
 
 use Moose::Policy 'Fey::Policy';
 use Moose;
+use Moose::Util::TypeConstraints;
 
 with 'Fey::Role::Joinable';
 
@@ -28,6 +30,21 @@ has 'is_view' =>
     ( is      => 'ro',
       isa     => 'Bool',
       default => 0,
+    );
+
+subtype 'ArrayOfNamedObjectSets'
+    => as 'ArrayRef'
+    => where { for my $arg ( @{ $_ } )
+               {
+                   return unless blessed $arg && $arg->isa('Fey::NamedObjectSet');
+               }
+               return 1;
+             };
+
+has '_keys' =>
+    ( is         => 'rw',
+      isa        => 'ArrayOfNamedObjectSets',
+      default    => sub { [] },
     );
 
 has '_columns' =>
@@ -57,11 +74,11 @@ use Scalar::Util qw( blessed );
 
 
 {
-    my @spec = (COLUMN_TYPE);
+    my $spec = (COLUMN_TYPE);
     sub add_column
     {
         my $self = shift;
-        my ($col) = validate_pos( @_, @spec );
+        my ($col) = validate_pos( @_, $spec );
 
         my $name = $col->name();
         param_error "The table already has a column named $name."
@@ -96,8 +113,11 @@ use Scalar::Util qw( blessed );
 
         my $name = $col->name();
 
-        $self->set_primary_key
-            ( grep { $_->name() ne $name } $self->primary_key() );
+        for my $k ( @{ $self->_keys() } )
+        {
+            $self->remove_candidate_key( $k->objects() )
+                if $k->object($name);
+        }
 
         $self->_columns()->delete($col);
 
@@ -107,29 +127,79 @@ use Scalar::Util qw( blessed );
     }
 }
 
+sub candidate_keys
+{
+    my $self = shift;
+
+    return map { [ $_->objects() ] } @{ $self->_keys() };
+}
+
+sub primary_key
+{
+    my $self = shift;
+
+    my @keys = $self->candidate_keys();
+
+    return  @{ $keys[0] || [] };
+}
+
 {
     my $spec = (COLUMN_OR_NAME_TYPE);
-    sub set_primary_key
+    sub add_candidate_key
     {
         my $self = shift;
-        my @names =
-            ( map { ref $_ ? $_->name() : $_ }
-              validate_pos( @_, ($spec) x @_ )
-            );
+        my (@cols) = validate_pos( @_, ( $spec ) x ( @_ ? @_ : 1 ) );
 
-        for my $name (@names)
+        for my $name ( map { blessed $_ ? $_->name() : $_ } @cols )
         {
             param_error "The column $name is not part of the " . $self->name() . ' table.'
                 unless $self->column($name);
         }
 
-        $self->{pk} = [ map { $self->column($_) } @names ];
+        $_ = $self->column($_) for grep { ! blessed $_ } @cols;
 
-        return $self;
+        my $keys = $self->_keys();
+
+        my $set = Fey::NamedObjectSet->new();
+
+        $set->add($_) for @cols;
+
+        push @{ $keys }, $set
+            unless any { $set->is_same_as($_) } @{ $keys };
+
+        return;
     }
 }
 
-sub primary_key { @{ $_[0]->{pk} || [] } }
+{
+    my $spec = (COLUMN_OR_NAME_TYPE);
+    sub remove_candidate_key
+    {
+        my $self = shift;
+        my (@cols) = validate_pos( @_, ( $spec ) x ( @_ ? @_ : 1 ) );
+
+        for my $name ( map { blessed $_ ? $_->name() : $_ } @cols )
+        {
+            param_error "The column $name is not part of the " . $self->name() . ' table.'
+                unless $self->column($name);
+        }
+
+        $_ = $self->column($_) for grep { ! blessed $_ } @cols;
+
+        my $keys = $self->_keys();
+
+        my $set = Fey::NamedObjectSet->new();
+
+        $set->add($_) for @cols;
+
+        my $idx = first_index { $_->is_same_as($set) } @{ $keys };
+        splice @{ $keys }, $idx, 1
+            if $idx >= 0;
+
+        return;
+    }
+}
+
 
 sub alias
 {
@@ -222,9 +292,9 @@ thrown.
 =head2 $table->remove_column($column)
 
 Remove the specified column from the table. If the column was part of
-any foreign keys, these are remvoed from the schema. It will also be
-removed from the table's primary key if necessary. Removing the column
-unsets the table for the column.
+any foreign keys, these are remvoed from the schema. If this column is
+part of any keys for the table, those keys will be removed. Removing
+the column unsets the table for the column.
 
 The table can be specified either by name or by passing in a
 C<Fey::Column> object.
@@ -243,17 +313,35 @@ columns in the table. If given a list of names, it returns only the
 specified columns. If a name is given which doesn't match a column in
 the table, then it is ignored.
 
-=head2 $table->set_primary_key(@columns)
+=head2 $table->add_candidate_key(@columns)
 
-This method sets the columns primary key. The list of columns can
-contain either names or C<Fey::Column> objects.
+This method adds a new candidate key to the table. The list of columns
+can contain either names or C<Fey::Column> objects.
+
+A candidate key is one or more columns which uniquely identify a row
+in that table.
 
 If a name or column is specified which doesn't belong to the table, an
 exception will be thrown.
 
+=head2 $table->remove_candidate_key(@columns)
+
+This method removes a candidate key for the table. The list of columns
+can contain either names or C<Fey::Column> objects.
+
+If a name or column is specified which doesn't belong to the table, an
+exception will be thrown.
+
+=head2 $table->keys()
+
+Returns a list of all the candidate keys. Each items in the list is an
+array reference containing one or more column objects.
+
 =head2 $table->primary_key()
 
-Returns the list of columns which make up the table's primary key.
+This is a convenience method that simply returns the first candidate
+key added to the table. The key is returned as a list of column
+objects.
 
 =head2 $table->alias(%p)
 

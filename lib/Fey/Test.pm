@@ -84,7 +84,7 @@ sub _user_table
                         );
 
     $t->add_column($_) for $user_id, $username, $email;
-    $t->set_primary_key($user_id);
+    $t->add_candidate_key($user_id);
 
     return $t;
 }
@@ -105,7 +105,7 @@ sub _group_table
                         );
 
     $t->add_column($_) for $group_id, $name;
-    $t->set_primary_key($group_id);
+    $t->add_candidate_key($group_id);
 
     return $t;
 }
@@ -125,7 +125,7 @@ sub _user_group_table
                         );
 
     $t->add_column($_) for $user_id, $group_id;
-    $t->set_primary_key( $user_id, $group_id );
+    $t->add_candidate_key( $user_id, $group_id );
 
     return $t;
 }
@@ -161,7 +161,7 @@ sub _message_table
                         );
 
     $t->add_column($_) for $message_id, $message, $quality, $message_date;
-    $t->set_primary_key($message_id);
+    $t->add_candidate_key($message_id);
 
     return $t;
 }
@@ -250,7 +250,7 @@ sub _mock_table_info
                                   );
 
         $table->add_column($col);
-        $table->set_primary_key($col);
+        $table->add_candidate_key($col);
 
         $self->{__schema__}->add_table($table);
     }
