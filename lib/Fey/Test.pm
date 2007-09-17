@@ -106,6 +106,7 @@ sub _group_table
 
     $t->add_column($_) for $group_id, $name;
     $t->add_candidate_key($group_id);
+    $t->add_candidate_key($name);
 
     return $t;
 }
@@ -183,6 +184,8 @@ sub mock_dbh
     $mock->mock( 'column_info', \&_mock_column_info );
 
     $mock->mock( 'primary_key_info', \&_mock_primary_key_info );
+
+    $mock->mock( 'statistics_info', \&_mock_statistics_info );
 
     $mock->mock( 'foreign_key_info', \&_mock_foreign_key_info );
 
@@ -318,6 +321,30 @@ sub _mock_primary_key_info
     }
 
     return Fey::Test::MockSTH->new(\@pk);
+}
+
+sub _mock_statistics_info
+{
+    my $self       = shift;
+    my $table_name = $_[2];
+
+    my $table = $self->{__schema__}->table($table_name);
+
+    my @ck;
+    for my $ck ( $table->candidate_keys() )
+    {
+        my $x = 1;
+        for my $col ( @{ $ck } )
+        {
+            push @ck,
+                { INDEX_NAME       => $table_name . $ck,
+                  COLUMN_NAME      => $col->name(),
+                  ORDINAL_POSITION => $x++,
+                };
+        }
+    }
+
+    return Fey::Test::MockSTH->new(\@ck);
 }
 
 sub _mock_foreign_key_info
