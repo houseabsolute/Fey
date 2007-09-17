@@ -15,22 +15,23 @@ my @mods = sort grep { ! /::Fragment::|::Test|::Validate/ } Test::Pod::Coverage:
 plan tests => scalar @mods;
 
 
-my %TraitMethods;
-for my $trait ( grep { /^Fey::Trait/ } @mods )
+my %RoleMethods;
+for my $role ( grep { /^Fey::Role/ } @mods )
 {
-    my $pc = Pod::Coverage->new( package => $trait );
-    @TraitMethods{ $pc->_get_syms($trait) } = ();
+    my $pc = Pod::Coverage->new( package => $role );
+    @RoleMethods{ $pc->_get_syms($role) } = ();
 }
 
-my $trait_meth_re =
-    join '|', sort keys %TraitMethods;
-$trait_meth_re = qr/^(?:$trait_meth_re)$/;
+my $role_meth_re =
+    join '|', map { quotemeta } sort keys %RoleMethods;
+$role_meth_re = qr/^(?:$role_meth_re)$/;
 
 for my $mod (@mods)
 {
-    my $trustme = {};
-    $trustme = { trustme => [ $trait_meth_re ] }
-        unless $mod =~ /::Trait::/;
+    my @trustme = qr/^(?:meta|BUILD)$/;
+    push @trustme, $role_meth_re,
+        unless $mod =~ /::Role::/;
 
-    pod_coverage_ok( $mod, $trustme, "pod coverage for $mod" );
+    pod_coverage_ok( $mod, { trustme => \@trustme },
+                     "pod coverage for $mod" );
 }
