@@ -51,14 +51,21 @@ use Moose::Role ();
     # role (two roles sharing the same method) it simply adds that
     # role to the list of required methods for the importing class,
     # but in this case it makes no sense, since I want ColumnLike to
-    # basically replace the various is_* methods from Seletable,
+    # basically replace the various is_* methods from Selectable,
     # Comparable, etc.
     package # avoid PAUSE recognition
         Moose::Meta::Role;
 
+    my $original;
+    BEGIN { $original = Moose::Meta::Role->can('_apply_methods') }
+
     no warnings 'redefine';
 sub _apply_methods {
     my ($self, $other) = @_;
+
+    return $self->$original($other)
+        unless $other->name() =~ /^Fey::/;
+
     foreach my $method_name ($self->get_method_list) {
         # it if it has one already
         if ($other->has_method($method_name) &&
