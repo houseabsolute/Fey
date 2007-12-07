@@ -21,7 +21,7 @@ has 'function' =>
     );
 
 subtype 'FunctionArg'
-    => as 'Fey::Literal | Fey::Column'
+    => as 'Object'
     => where { $_->does('Fey::Role::Selectable') };
 
 coerce 'FunctionArg'
