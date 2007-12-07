@@ -57,10 +57,11 @@ has '_columns' =>
     );
 
 has 'schema' =>
-    ( is       => 'rw',
-      isa      => 'Undef | Fey::Schema',
-      weak_ref => 1,
-      writer   => '_set_schema',
+    ( is        => 'rw',
+      isa       => 'Undef | Fey::Schema',
+      weak_ref  => 1,
+      writer    => '_set_schema',
+      predicate => 'has_schema',
     );
 
 no Moose;
