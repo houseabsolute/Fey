@@ -123,7 +123,7 @@ sub _join
     my $self = shift;
 
     param_error 'from() was called with with an invalid first two arguments.'
-        unless all { $_->can('is_joinable') && $_->is_joinable() } @_[0,1];
+        unless all { blessed $_ && $_->can('is_joinable') && $_->is_joinable() } @_[0,1];
 
     my $fk = $_[2] || $self->_fk_for_join(@_);
 
