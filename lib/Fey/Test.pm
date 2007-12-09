@@ -135,7 +135,7 @@ sub _message_table
     my $message =
         Fey::Column->new( name    => 'message',
                           type    => 'text',
-                          default => 'Some message \' text',
+                          default => q{Some message '" text},
                         );
 
     my $quality =
