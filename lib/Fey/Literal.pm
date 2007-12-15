@@ -3,7 +3,7 @@ package Fey::Literal;
 use strict;
 use warnings;
 
-use Moose::Policy 'Fey::Policy';
+use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 
 no Moose;
@@ -40,11 +40,15 @@ sub new_from_scalar
 # may not be quoting properly for a given DBMS, we will still generate
 # unique ids, and that's all that matters.
 
+## no critic
 package # Hide from PAUSE
     Fey::FakeDBI;
 
 
-sub new { bless \$_[0], $_[0] }
+sub new
+{
+    return bless \$_[0], $_[0];
+}
 
 sub isa
 {

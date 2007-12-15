@@ -24,9 +24,11 @@ sub add
     validate_pos( @_, ( NAMED_OBJECT_TYPE ) x $count );
 
     $self->{ $_->name() } = $_ for @_;
+
+    return;
 }
 
-sub delete
+sub delete ## no critic Homonym
 {
     my $self = shift;
 
@@ -34,6 +36,8 @@ sub delete
     validate_pos( @_, ( NAMED_OBJECT_TYPE ) x $count );
 
     delete $self->{ $_->name() } for @_;
+
+    return;
 }
 
 sub object

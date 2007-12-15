@@ -3,7 +3,7 @@ package Fey::Role::ColumnLike;
 use strict;
 use warnings;
 
-use Fey::Policy;
+use Fey::Role;
 use Moose::Role;
 
 with 'Fey::Role::Selectable', 'Fey::Role::Comparable',

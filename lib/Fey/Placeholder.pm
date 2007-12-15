@@ -3,7 +3,7 @@ package Fey::Placeholder;
 use strict;
 use warnings;
 
-use Moose::Policy 'Fey::Policy';
+use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 
 with 'Fey::Role::Comparable';
@@ -12,12 +12,16 @@ with 'Fey::Role::Comparable';
 sub new
 {
     my $str = '?';
+
     return bless \$str, $_[0];
 }
 
-sub sql { '?' }
+sub sql
+{
+    return '?';
+}
 
-sub sql_or_alias { goto &sql }
+sub sql_or_alias { goto &sql; }
 
 
 1;

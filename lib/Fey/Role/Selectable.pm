@@ -3,7 +3,7 @@ package Fey::Role::Selectable;
 use strict;
 use warnings;
 
-use Fey::Policy;
+use Fey::Role;
 use Moose::Role;
 
 

@@ -3,7 +3,7 @@ package Fey::Literal::String;
 use strict;
 use warnings;
 
-use Moose::Policy 'Fey::Policy';
+use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 
 extends 'Fey::Literal';

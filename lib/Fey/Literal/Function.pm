@@ -5,7 +5,7 @@ use warnings;
 
 use Scalar::Util qw( blessed );
 
-use Moose::Policy 'Fey::Policy';
+use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 use Moose::Util::TypeConstraints;
 

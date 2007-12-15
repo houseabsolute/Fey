@@ -10,7 +10,7 @@ use Fey::Validate
         TABLE_TYPE TABLE_OR_NAME_TYPE
         FK_TYPE DBI_TYPE );
 
-use Moose::Policy 'Fey::Policy';
+use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 
 has 'name' =>

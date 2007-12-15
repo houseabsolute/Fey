@@ -13,7 +13,7 @@ use Fey::Validate
         POS_INTEGER_TYPE POS_OR_ZERO_INTEGER_TYPE
         TABLE_TYPE );
 
-use Moose::Policy 'Fey::Policy';
+use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 use Moose::Util::TypeConstraints qw( subtype as where coerce from via );
 

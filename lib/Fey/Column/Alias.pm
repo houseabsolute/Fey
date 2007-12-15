@@ -5,7 +5,7 @@ use warnings;
 
 use Fey::Exceptions qw( object_state_error );
 
-use Moose::Policy 'Fey::Policy';
+use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 
 with 'Fey::Role::ColumnLike';

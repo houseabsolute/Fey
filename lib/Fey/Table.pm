@@ -14,7 +14,7 @@ use Fey::Validate
         COLUMN_TYPE COLUMN_OR_NAME_TYPE
         SCHEMA_TYPE );
 
-use Moose::Policy 'Fey::Policy';
+use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 use Moose::Util::TypeConstraints;
 

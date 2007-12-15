@@ -11,7 +11,7 @@ use Fey::Validate
 
 use Fey::Table;
 
-use Moose::Policy 'Fey::Policy';
+use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 
 with 'Fey::Role::Joinable';

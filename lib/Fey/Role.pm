@@ -1,48 +1,4 @@
-package Fey::Policy;
-
-use strict;
-use warnings;
-
-# This is all more or less copy & pasted from Moose::Policy::FollowPBP.
-
-use constant attribute_metaclass => 'Fey::Policy::Attribute';
-
-package Fey::Policy::Attribute;
-
-use Moose;
-
-extends 'Moose::Meta::Attribute';
-
-before '_process_options' => sub
-{
-    my $class   = shift;
-    my $name    = shift;
-    my $options = shift;
-
-    if ( exists $options->{is} &&
-         ! ( exists $options->{reader} || exists $options->{writer} ) )
-    {
-        if ( $options->{is} eq 'ro' )
-        {
-            $options->{reader} = $name;
-        }
-        elsif ( $options->{is} eq 'rw' )
-        {
-            $options->{reader} = $name;
-
-            my $prefix = 'set';
-            if ( $name =~ s/^_// )
-            {
-                $prefix = '_set';
-            }
-
-            $options->{writer} = $prefix . q{_} . $name;
-        }
-
-        delete $options->{is};
-    }
-};
-
+package Fey::Role;
 
 use Moose::Role ();
 
@@ -53,7 +9,8 @@ use Moose::Role ();
     # but in this case it makes no sense, since I want ColumnLike to
     # basically replace the various is_* methods from Selectable,
     # Comparable, etc.
-    package # avoid PAUSE recognition
+
+    package # hide from PAUSE
         Moose::Meta::Role;
 
     my $original;
@@ -98,7 +55,3 @@ sub _apply_methods {
     }
 }
 }
-
-
-
-1;

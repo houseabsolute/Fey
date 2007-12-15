@@ -3,7 +3,7 @@ package Fey::SQL::Base;
 use strict;
 use warnings;
 
-use Moose::Policy 'Fey::Policy';
+use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 
 has 'dbh' =>
