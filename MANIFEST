@@ -12,7 +12,18 @@ lib/Fey/Literal/Null.pm
 lib/Fey/Literal/Number.pm
 lib/Fey/Literal/String.pm
 lib/Fey/Literal/Term.pm
+lib/Fey/NamedObjectSet.pm
 lib/Fey/Placeholder.pm
+lib/Fey/Role.pm
+lib/Fey/Role/ColumnLike.pm
+lib/Fey/Role/Comparable.pm
+lib/Fey/Role/Groupable.pm
+lib/Fey/Role/Joinable.pm
+lib/Fey/Role/Orderable.pm
+lib/Fey/Role/Selectable.pm
+lib/Fey/Role/SQL/HasLimitClause.pm
+lib/Fey/Role/SQL/HasOrderByClause.pm
+lib/Fey/Role/SQL/HasWhereClause.pm
 lib/Fey/Schema.pm
 lib/Fey/SQL.pm
 lib/Fey/SQL/Base.pm
@@ -30,15 +41,6 @@ lib/Fey/SQL/Where.pm
 lib/Fey/Table.pm
 lib/Fey/Table/Alias.pm
 lib/Fey/Test.pm
-lib/Fey/Trait/ColumnLike.pm
-lib/Fey/Trait/Comparable.pm
-lib/Fey/Trait/Groupable.pm
-lib/Fey/Trait/Joinable.pm
-lib/Fey/Trait/Orderable.pm
-lib/Fey/Trait/Selectable.pm
-lib/Fey/Trait/SQL/HasLimitClause.pm
-lib/Fey/Trait/SQL/HasOrderByClause.pm
-lib/Fey/Trait/SQL/HasWhereClause.pm
 lib/Fey/Validate.pm
 LICENSE
 MANIFEST			This list of files
@@ -50,6 +52,8 @@ t/Exceptions.t
 t/FK.t
 t/Literal-as-sql.t
 t/Literal.t
+t/NamedObjectSet.t
+t/perlcritic.t
 t/pod-coverage.t
 t/pod.t
 t/Schema-memory-cycle.t
