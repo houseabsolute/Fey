@@ -14,6 +14,14 @@ use Fey::Table;
 use Test::MockObject;
 
 
+BEGIN
+{
+    # This freaking module is reporting warnings from overload.pm,
+    # which is calling can() as a method. Test::MockObject insists on
+    # loading it for some reason.
+    $INC{'UNIVERSAL/can.pm'} = 1;
+}
+
 sub mock_test_schema
 {
     my $class    = shift;
