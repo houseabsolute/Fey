@@ -59,14 +59,13 @@ sub quote_identifier
 {
     shift;
 
-    # XXX - 3 but then we use [1] & [2] - wtf?
     if ( @_ == 3 )
     {
         return q{"} . $_[1] . q{"} . q{.} . q{"} . $_[2] . q{"}
     }
     else
     {
-        return q{"} . $_[0] . q{"};
+        return q{"} . $_[1] . q{"};
     }
 }
 
