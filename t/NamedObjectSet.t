@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 16;
+use Test::More tests => 18;
 
 use Fey::NamedObjectSet;
 
@@ -25,6 +25,10 @@ use Fey::NamedObjectSet;
     my $bob  = Name->new('bob');
     my $faye = Name->new('faye');
 
+    eval { $set->add() };
+    like( $@, qr/0 parameters were passed/,
+          'add() requires at least one argument' );
+
     $set->add($bob);
     my @objects = $set->objects();
     is( scalar @objects, 1, 'set has one object' );
@@ -36,6 +40,10 @@ use Fey::NamedObjectSet;
     is_deeply( [ map { $_->name() } @objects ],
                [ 'bob', 'faye' ],
                'those objects are bob and faye' );
+
+    eval { $set->delete() };
+    like( $@, qr/0 parameters were passed/,
+          'delete() requires at least one argument' );
 
     $set->delete($bob);
     @objects = $set->objects();
