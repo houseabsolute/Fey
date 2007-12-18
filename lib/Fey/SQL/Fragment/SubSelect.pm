@@ -37,6 +37,9 @@ sub sql { '( ' . $_[0][SELECT]->sql() . ' )' }
 
 sub sql_or_alias
 {
+    # XXX - I'm not sure that this case is actually possible. A
+    # subselect only gets an alias if it's used in the FROM clause. If
+    # that's the case, then it should not be re-used elsewhere (
     return $_[1]->quote_identifier( $_[0]->[ALIAS_NAME] )
         if $_[0]->[ALIAS_NAME];
 
