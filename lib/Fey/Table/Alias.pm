@@ -29,9 +29,6 @@ has 'alias_name' =>
       default => \&_default_alias_name,
     );
 
-no Moose;
-__PACKAGE__->meta()->make_immutable();
-
 
 {
     my %Numbers;
@@ -89,6 +86,8 @@ sub sql_with_alias
 
 sub id { $_[0]->alias_name() }
 
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

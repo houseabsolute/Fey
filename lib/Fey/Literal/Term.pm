@@ -17,23 +17,13 @@ has 'term' =>
       required => 1,
     );
 
-no Moose;
-__PACKAGE__->meta()->make_immutable();
-
 
 
 sub new
 {
     my $class = shift;
 
-    if ( @_ == 1 )
-    {
-        return $class->new( term => shift );
-    }
-    else
-    {
-        return $class->SUPER::new(@_);
-    }
+    return $class->SUPER::new( term => shift );
 }
 
 sub sql { $_[0]->term() }
@@ -42,6 +32,8 @@ sub sql_with_alias { goto &sql }
 
 sub sql_or_alias { goto &sql }
 
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

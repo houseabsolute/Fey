@@ -6,9 +6,6 @@ use warnings;
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 
-no Moose;
-__PACKAGE__->meta()->make_immutable();
-
 use Fey::Literal::Function;
 use Fey::Literal::Null;
 use Fey::Literal::Number;
@@ -35,6 +32,9 @@ sub new_from_scalar
         return $_[0]->sql($dbh);
     }
 }
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 # This package allows us to use a DBI handle in id(). Even though we
 # may not be quoting properly for a given DBMS, we will still generate
@@ -77,7 +77,6 @@ sub quote
     $text =~ s/"/""/g;
     return q{"} . $text . q{"};
 }
-
 
 1;
 

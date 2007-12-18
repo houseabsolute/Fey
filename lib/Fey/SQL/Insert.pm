@@ -8,9 +8,6 @@ use Moose;
 
 extends 'Fey::SQL::Base';
 
-no Moose;
-__PACKAGE__->meta()->make_immutable();
-
 use Fey::Validate
     qw( validate
         validate_pos
@@ -149,7 +146,8 @@ sub _values_clause
     return 'VALUES ' . join ',', @v;
 }
 
-
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

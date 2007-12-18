@@ -24,9 +24,6 @@ has 'alias_name' =>
       default => \&_default_alias_name,
     );
 
-no Moose;
-__PACKAGE__->meta()->make_immutable();
-
 use Fey::Column;
 
 
@@ -75,6 +72,8 @@ sub id
     return $table->id() . '.' . $self->alias_name();
 }
 
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

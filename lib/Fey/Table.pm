@@ -64,9 +64,6 @@ has 'schema' =>
       predicate => 'has_schema',
     );
 
-no Moose;
-__PACKAGE__->meta()->make_immutable();
-
 use Fey::Column;
 use Fey::NamedObjectSet;
 use Fey::Schema;
@@ -220,6 +217,8 @@ sub sql_with_alias { goto &sql }
 
 sub id { $_[0]->name() }
 
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

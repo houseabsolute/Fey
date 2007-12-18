@@ -10,9 +10,6 @@ extends 'Fey::Literal';
 
 with 'Fey::Role::Comparable', 'Fey::Role::Selectable';
 
-no Moose;
-__PACKAGE__->meta()->make_immutable();
-
 
 sub sql { 'NULL' }
 
@@ -20,6 +17,8 @@ sub sql_with_alias { goto &sql }
 
 sub sql_or_alias { goto &sql }
 
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

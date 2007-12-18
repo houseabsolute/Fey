@@ -47,9 +47,6 @@ has 'target_columns' =>
       auto_deref => 1,
     );
 
-no Moose;
-__PACKAGE__->meta()->make_immutable();
-
 use Fey::Column;
 
 
@@ -164,6 +161,8 @@ sub target_table
     }
 }
 
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

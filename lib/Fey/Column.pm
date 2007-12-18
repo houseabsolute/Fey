@@ -93,9 +93,6 @@ has 'table' =>
       writer   => '_set_table',
     );
 
-no Moose;
-__PACKAGE__->meta()->make_immutable();
-
 use Fey::Column::Alias;
 use Fey::Literal;
 use Fey::Table;
@@ -189,6 +186,8 @@ sub id
     return $table->id() . q{.} . $self->name();
 }
 
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

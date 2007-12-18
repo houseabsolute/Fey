@@ -11,9 +11,6 @@ extends 'Fey::SQL::Base';
 with 'Fey::Role::SQL::HasWhereClause', 'Fey::Role::SQL::HasOrderByClause',
      'Fey::Role::SQL::HasLimitClause';
 
-no Moose;
-__PACKAGE__->meta()->make_immutable();
-
 use Fey::Exceptions qw( param_error );
 use Fey::Validate
     qw( validate_pos
@@ -155,6 +152,8 @@ sub _set_clause
            );
 }
 
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

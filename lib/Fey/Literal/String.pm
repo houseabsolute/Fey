@@ -16,22 +16,12 @@ has 'string' =>
       required => 1,
     );
 
-no Moose;
-__PACKAGE__->meta()->make_immutable();
-
 
 sub new
 {
     my $class = shift;
 
-    if ( @_ == 1 )
-    {
-        return $class->new( string => shift );
-    }
-    else
-    {
-        return $class->SUPER::new(@_);
-    }
+    return $class->SUPER::new( string => shift );
 }
 
 sub sql { $_[1]->quote( $_[0]->string() ) }
@@ -40,6 +30,8 @@ sub sql_with_alias { goto &sql }
 
 sub sql_or_alias { goto &sql }
 
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

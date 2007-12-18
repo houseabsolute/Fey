@@ -23,6 +23,8 @@ sub sql
 
 sub sql_or_alias { goto &sql; }
 
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

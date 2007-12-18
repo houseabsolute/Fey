@@ -55,24 +55,14 @@ has 'alias_name' =>
       writer  => '_set_alias_name',
     );
 
-no Moose;
-__PACKAGE__->meta()->make_immutable();
-
 
 sub new
 {
     my $class = shift;
 
-    if ( @_ % 2 || $_[0] ne 'function' )
-    {
-        return $class->new( function => shift,
-                            args     => [ @_ ],
-                          );
-    }
-    else
-    {
-        return $class->SUPER::new(@_);
-    }
+    return $class->SUPER::new( function => shift,
+                               args     => [ @_ ],
+                             );
 }
 
 sub sql
@@ -121,6 +111,8 @@ sub sql_or_alias
 
 sub is_groupable { $_[0]->alias_name() ? 1 : 0 }
 
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
 
