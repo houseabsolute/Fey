@@ -65,6 +65,7 @@ sub distinct
 }
 
 {
+    # XXX - need to handle subselect as if it were a table rather than as a special case
     sub from
     {
         my $self = shift;
