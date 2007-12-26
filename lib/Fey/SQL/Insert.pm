@@ -6,14 +6,13 @@ use warnings;
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 
-extends 'Fey::SQL::Base';
-
 use Fey::Validate
     qw( validate
         validate_pos
         SCALAR
         UNDEF
         OBJECT
+        DBI_TYPE
       );
 
 use Scalar::Util qw( blessed );
@@ -92,22 +91,27 @@ sub insert { return $_[0] }
     }
 }
 
-sub sql
 {
-    my $self = shift;
+    my @spec = ( DBI_TYPE );
 
-    return ( join ' ',
-             $self->_insert_clause(),
-             $self->_into_clause(),
-             $self->_values_clause(),
-           );
+    sub sql
+    {
+        my $self  = shift;
+        my ($dbh) = validate_pos( @_, @spec );
+
+        return ( join ' ',
+                 $self->_insert_clause($dbh),
+                 $self->_into_clause($dbh),
+                 $self->_values_clause($dbh),
+               );
+    }
 }
 
 sub _insert_clause
 {
     return
         ( 'INSERT INTO '
-          . $_[0]->dbh()->quote_identifier( $_[0]->{columns}[0]->table()->name() )
+          . $_[1]->quote_identifier( $_[0]->{columns}[0]->table()->name() )
         );
 }
 
@@ -116,7 +120,7 @@ sub _into_clause
     return
         ( '('
           . ( join ', ',
-              map { $_[0]->dbh()->quote_identifier( $_->name() ) }
+              map { $_[1]->quote_identifier( $_->name() ) }
               @{ $_[0]->{columns} }
             )
           . ')'
@@ -126,6 +130,7 @@ sub _into_clause
 sub _values_clause
 {
     my $self = shift;
+    my $dbh  = shift;
 
     my @v;
     for my $vals ( @{ $self->{values} } )
@@ -134,7 +139,7 @@ sub _values_clause
 
         $v .=
             ( join ', ',
-              map { $vals->{ $_->name() }->sql( $self->dbh() ) }
+              map { $vals->{ $_->name() }->sql($dbh) }
               @{ $self->{columns} }
            );
 
@@ -159,7 +164,7 @@ Fey::SQL::Insert - Represents a INSERT query
 
 =head1 SYNOPSIS
 
-  my $sql = Fey::SQL::Insert->new( dbh => $dbh );
+  my $sql = Fey::SQL::Insert->new();
 
   # INSERT INTO Part
   #             (part_id, name, quantity)
@@ -168,6 +173,8 @@ Fey::SQL::Insert - Represents a INSERT query
   $sql->insert()->into($Part);
   my $ph = Fey::Placeholder->new();
   $sql->values( $ph, $ph, $ph );
+
+  print $sql->sql($dbh);
 
 =head1 DESCRIPTION
 
@@ -216,9 +223,10 @@ This will be passed to C<< Fey::Literal->new_from_scalar() >>.
 
 =back
 
-=head2 $query->sql()
+=head2 $insert->sql()
 
-Returns the full SQL statement which this object represents.
+Returns the full SQL statement which this object represents. A DBI
+handle must be passed so that identifiers can be properly quoted.
 
 =head1 AUTHOR
 

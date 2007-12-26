@@ -41,6 +41,7 @@ use Scalar::Util qw( blessed );
 sub _order_by_clause
 {
     my $self = shift;
+    my $dbh  = shift;
 
     return unless $self->{order_by};
 
@@ -55,7 +56,7 @@ sub _order_by_clause
         else
         {
             $sql .= ', ' if $elt != $self->{order_by}[0];
-            $sql .= $elt->sql_or_alias( $self->dbh() );
+            $sql .= $elt->sql_or_alias($dbh);
         }
     }
 

@@ -23,11 +23,6 @@ sub new
     $self->[OUTER] = ''
         unless $self->[OUTER];
 
-    # REVIEW - this is a bit wack - maybe _where_clause() should be
-    # public.
-    $self->[WHERE] = $self->[WHERE]->_where_clause( 'no WHERE' )
-        if $self->[WHERE];
-
     return $self;
 }
 
@@ -46,7 +41,10 @@ sub id
         );
 
     my @outer = $_[0]->[OUTER] ? $_[0]->[OUTER] : ();
-    my @where = $_[0]->[WHERE] ? $_[0]->[WHERE] : ();
+
+    # REVIEW - this is a bit wack - maybe _where_clause() should be
+    # public.
+    my @where = $_[0]->[WHERE] ? $_[0]->[WHERE]->_where_clause( $_[1], 'no WHERE' ) : ();
 
     return
         ( join "\0",

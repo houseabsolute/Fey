@@ -19,7 +19,7 @@ sub id { goto &sql }
 sub sql_with_alias
 {
     return
-        (   $_[0]->sql()
+        (   $_[0]->sql( $_[1] )
           . ' AS '
           . $_[0]->_make_alias()
         );
@@ -33,7 +33,7 @@ sub sql_with_alias
     }
 }
 
-sub sql { '( ' . $_[0][SELECT]->sql() . ' )' }
+sub sql { '( ' . $_[0][SELECT]->sql( $_[1] ) . ' )' }
 
 sub sql_or_alias
 {

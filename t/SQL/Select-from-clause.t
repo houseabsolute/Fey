@@ -13,7 +13,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 my $dbh = Fey::Test->mock_dbh();
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     eval { $q->from() };
     like( $@, qr/from\(\) called with invalid parameters \(\)/,
@@ -21,15 +21,15 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     $q->from( $s->table('User') );
 
-    is( $q->_from_clause(), q{FROM "User"}, '_from_clause for one table' );
+    is( $q->_from_clause($dbh), q{FROM "User"}, '_from_clause() for one table' );
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     eval { $q->from('foo') };
     like( $@, qr/from\(\) called with invalid parameters \(foo\)/,
@@ -37,18 +37,18 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     my $alias = $s->table('User')->alias( alias_name => 'UserA' );
     $q->from($alias);
 
-    is( $q->_from_clause(), q{FROM "User" AS "UserA"},
-        '_from_clause for one table alias' );
+    is( $q->_from_clause($dbh), q{FROM "User" AS "UserA"},
+        '_from_clause() for one table alias' );
 
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     eval { $q->from( $s->table('User'), $s->table('Group') ) };
     like( $@, qr/do not share a foreign key/,
@@ -56,7 +56,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     eval { $q->from( $s->table('User'), 'foo' ) };
     like( $@, qr/invalid first two arguments/,
@@ -68,29 +68,29 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     $q->from( $s->table('User'), $s->table('UserGroup') );
 
     my $sql = q{FROM "User" JOIN "UserGroup" ON "UserGroup"."user_id" = "User"."user_id"};
-    is( $q->_from_clause(), $sql,
-        '_from_clause for two tables, fk not provided' );
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for two tables, fk not provided' );
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     my @t = ( $s->table('User'), $s->table('UserGroup') );
     my ($fk) = $s->foreign_keys_between_tables(@t);
     $q->from( @t, $fk );
 
     my $sql = q{FROM "User" JOIN "UserGroup" ON "UserGroup"."user_id" = "User"."user_id"};
-    is( $q->_from_clause(), $sql,
-        '_from_clause for two tables with fk provided' );
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for two tables with fk provided' );
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     my $fk = Fey::FK->new( source_columns => $s->table('User')->column('user_id'),
                            target_columns => $s->table('UserGroup')->column('group_id'),
@@ -105,18 +105,18 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     $q->from( $s->table('User'), 'left', $s->table('UserGroup') );
 
     my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
     $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
-    is( $q->_from_clause(), $sql,
-        '_from_clause for two tables with left outer join' );
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for two tables with left outer join' );
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     my @t = ( $s->table('User'), $s->table('UserGroup') );
     my ($fk) = $s->foreign_keys_between_tables(@t);
@@ -125,47 +125,47 @@ my $dbh = Fey::Test->mock_dbh();
 
     my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
     $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
-    is( $q->_from_clause(), $sql,
-        '_from_clause for two tables with left outer join with explicit fk' );
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for two tables with left outer join with explicit fk' );
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     $q->from( $s->table('User'), 'right', $s->table('UserGroup') );
 
     my $sql = q{FROM "User" RIGHT OUTER JOIN "UserGroup"};
     $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
-    is( $q->_from_clause(), $sql,
-        '_from_clause for two tables with right outer join' );
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for two tables with right outer join' );
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     $q->from( $s->table('User'), 'full', $s->table('UserGroup') );
 
     my $sql = q{FROM "User" FULL OUTER JOIN "UserGroup"};
     $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
-    is( $q->_from_clause(), $sql,
-        '_from_clause for two tables with full outer join' );
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for two tables with full outer join' );
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     $q->from( $s->table('User'), 'full', $s->table('UserGroup') );
 
     my $sql = q{FROM "User" FULL OUTER JOIN "UserGroup"};
     $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
-    is( $q->_from_clause(), $sql,
-        '_from_clause for two tables with full outer join' );
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for two tables with full outer join' );
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
-    my $q2 = Fey::SQL::Where->new( dbh => $dbh );
+    my $q2 = Fey::SQL::Where->new();
     $q2->where( $s->table('User')->column('user_id'), '=', 2 );
 
     $q->from( $s->table('User'), 'left', $s->table('UserGroup'), $q2 );
@@ -174,14 +174,14 @@ my $dbh = Fey::Test->mock_dbh();
     $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
     $sql .= q{ AND "User"."user_id" = 2};
 
-    is( $q->_from_clause(), $sql,
-        '_from_clause for outer join with where clause' );
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for outer join with where clause' );
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
-    my $q2 = Fey::SQL::Where->new( dbh => $dbh );
+    my $q2 = Fey::SQL::Where->new();
     $q2->where( $s->table('User')->column('user_id'), '=', 2 );
 
     my @t = ( $s->table('User'), $s->table('UserGroup') );
@@ -193,12 +193,12 @@ my $dbh = Fey::Test->mock_dbh();
     $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
     $sql .= q{ AND "User"."user_id" = 2};
 
-    is( $q->_from_clause(), $sql,
-        '_from_clause for outer join with where clause and explicit fk' );
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for outer join with where clause() and explicit fk' );
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     eval { $q->from( $s->table('User')->column('user_id') ) };
     like( $@, qr/\Qfrom() called with invalid parameters/,
@@ -206,7 +206,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     eval { $q->from( $s->table('User'), 'foobar', $s->table('UserGroup') ) };
     like( $@, qr/invalid outer join type/,
@@ -214,7 +214,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     eval { $q->from( 'not a table', 'left', $s->table('UserGroup') ) };
     like( $@, qr/from\(\) was called with invalid arguments/,
@@ -222,7 +222,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     eval { $q->from( $s->table('UserGroup'), 'left', 'not a table' ) };
     like( $@, qr/from\(\) was called with invalid arguments/,
@@ -230,7 +230,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
 
     eval { $q->from( $s->table('User'), 'full', $s->table('UserGroup'), 'invalid' ) };
     like( $@, qr/\Qfrom() called with invalid parameters/,
@@ -238,19 +238,19 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
-    my $subselect = Fey::SQL::Select->new( dbh => $dbh );
+    my $q = Fey::SQL::Select->new()->select();
+    my $subselect = Fey::SQL::Select->new();
     $subselect->select( $s->table('User')->column('user_id') )->from( $s->table('User') );
 
     $q->from($subselect);
 
     my $sql = q{FROM ( SELECT "User"."user_id" FROM "User" ) AS SUBSELECT0};
-    is( $q->_from_clause(), $sql,
-        '_from_clause for subselect' );
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for subselect' );
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $q = Fey::SQL::Select->new()->select();
     my $table = Fey::Table->new( name => 'NewTable' );
 
     eval { $q->from($table) };

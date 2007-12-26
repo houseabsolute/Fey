@@ -6,8 +6,6 @@ use warnings;
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 
-extends 'Fey::SQL::Base';
-
 with 'Fey::Role::SQL::HasWhereClause';
 
 no Moose;

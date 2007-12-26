@@ -6,8 +6,6 @@ use warnings;
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 
-extends 'Fey::SQL::Base';
-
 with 'Fey::Role::SQL::HasWhereClause', 'Fey::Role::SQL::HasOrderByClause',
      'Fey::Role::SQL::HasLimitClause';
 
@@ -17,6 +15,7 @@ use Fey::Validate
         SCALAR
         UNDEF
         OBJECT
+        DBI_TYPE
       );
 
 use Scalar::Util qw( blessed );
@@ -46,27 +45,32 @@ sub delete { return $_[0] }
     }
 }
 
-sub sql
 {
-    my $self = shift;
+    my @spec = ( DBI_TYPE );
 
-    return ( join ' ',
-             $self->_delete_clause(),
-             $self->_where_clause(),
-             $self->_order_by_clause(),
-             $self->_limit_clause(),
-           );
+    sub sql
+    {
+        my $self  = shift;
+        my ($dbh) = validate_pos( @_, @spec );
+
+        return ( join ' ',
+                 $self->_delete_clause($dbh),
+                 $self->_where_clause($dbh),
+                 $self->_order_by_clause($dbh),
+                 $self->_limit_clause($dbh),
+               );
+    }
 }
 
 sub _delete_clause
 {
-    return 'DELETE FROM ' . $_[0]->_tables_subclause();
+    return 'DELETE FROM ' . $_[0]->_tables_subclause( $_[1] );
 }
 
 sub _tables_subclause
 {
     return ( join ', ',
-             map { $_[0]->dbh()->quote_identifier( $_->name() ) }
+             map { $_[1]->quote_identifier( $_->name() ) }
              @{ $_[0]->{tables} }
            );
 }
@@ -84,13 +88,15 @@ Fey::SQL::Delete - Represents a DELETE query
 
 =head1 SYNOPSIS
 
-  my $sql = Fey::SQL::Delete->new( dbh => $dbh );
+  my $sql = Fey::SQL::Delete->new();
 
   # DELETE FROM Part
   #       WHERE Part.name LIKE '%Widget'
   $sql->delete();
   $sql->from($Part);
   $sql->where( $name, 'LIKE', '%Widget' );
+
+  print $sql->sql($dbh);
 
 =head1 DESCRIPTION
 
@@ -134,7 +140,8 @@ for more details.
 
 =head2 $delete->sql()
 
-Returns the full SQL statement which this object represents.
+Returns the full SQL statement which this object represents. A DBI
+handle must be passed so that identifiers can be properly quoted.
 
 =head1 ROLES
 

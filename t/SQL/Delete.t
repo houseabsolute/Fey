@@ -20,35 +20,35 @@ my $size =
 $s->table('User')->add_column($size);
 
 {
-    eval { Fey::SQL::Delete->new( dbh => $dbh )->delete()->from() };
+    eval { Fey::SQL::Delete->new()->delete()->from() };
 
     like( $@, qr/1 was expected/,
           'from() without any parameters fails' );
 }
 
 {
-    my $q = Fey::SQL::Delete->new( dbh => $dbh )->delete()->from( $s->table('User') );
+    my $q = Fey::SQL::Delete->new()->delete()->from( $s->table('User') );
 
-    is( $q->_delete_clause(), q{DELETE FROM "User"},
+    is( $q->_delete_clause($dbh), q{DELETE FROM "User"},
         'delete clause for one table' );
 }
 
 {
-    my $q = Fey::SQL::Delete->new( dbh => $dbh )
+    my $q = Fey::SQL::Delete->new()
                             ->delete()->from( $s->table('User'), $s->table('UserGroup') );
 
-    is( $q->_delete_clause(), q{DELETE FROM "User", "UserGroup"},
+    is( $q->_delete_clause($dbh), q{DELETE FROM "User", "UserGroup"},
         'delete clause for two tables' );
 }
 
 {
-    my $q = Fey::SQL::Delete->new( dbh => $dbh );
+    my $q = Fey::SQL::Delete->new();
     $q->delete()->from( $s->table('User') );
     $q->where( $s->table('User')->column('user_id'), '=', 10 );
     $q->order_by( $s->table('User')->column('user_id') );
     $q->limit(10);
 
-    is( $q->sql(),
+    is( $q->sql($dbh),
         q{DELETE FROM "User" WHERE "User"."user_id" = 10 ORDER BY "User"."user_id" LIMIT 10},
         'delete sql with where clause, order by, and limit' );
 }

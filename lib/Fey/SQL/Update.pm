@@ -6,8 +6,6 @@ use warnings;
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 
-extends 'Fey::SQL::Base';
-
 with 'Fey::Role::SQL::HasWhereClause', 'Fey::Role::SQL::HasOrderByClause',
      'Fey::Role::SQL::HasLimitClause';
 
@@ -17,6 +15,7 @@ use Fey::Validate
         SCALAR
         UNDEF
         OBJECT
+        DBI_TYPE
       );
 
 use Fey::Literal;
@@ -114,28 +113,33 @@ use Scalar::Util qw( blessed );
     }
 }
 
-sub sql
 {
-    my $self = shift;
+    my @spec = ( DBI_TYPE );
 
-    return ( join ' ',
-             $self->_update_clause(),
-             $self->_set_clause(),
-             $self->_where_clause(),
-             $self->_order_by_clause(),
-             $self->_limit_clause(),
-           );
+    sub sql
+    {
+        my $self  = shift;
+        my ($dbh) = validate_pos( @_, @spec );
+
+        return ( join ' ',
+                 $self->_update_clause($dbh),
+                 $self->_set_clause($dbh),
+                 $self->_where_clause($dbh),
+                 $self->_order_by_clause($dbh),
+                 $self->_limit_clause($dbh),
+               );
+    }
 }
 
 sub _update_clause
 {
-    return 'UPDATE ' . $_[0]->_tables_subclause();
+    return 'UPDATE ' . $_[0]->_tables_subclause( $_[1] );
 }
 
 sub _tables_subclause
 {
     return ( join ', ',
-             map { $_[0]->dbh()->quote_identifier( $_->name() ) }
+             map { $_[1]->quote_identifier( $_->name() ) }
              @{ $_[0]->{tables} }
            );
 }
@@ -144,9 +148,9 @@ sub _set_clause
 {
     return ( 'SET '
              . ( join ', ',
-                 map {   $_->[0]->sql( $_[0]->dbh() )
+                 map {   $_->[0]->sql( $_[1] )
                        . ' = '
-                       . $_->[1]->sql( $_[0]->dbh() ) }
+                       . $_->[1]->sql( $_[1] ) }
                  @{ $_[0]->{set} }
                )
            );
@@ -165,7 +169,7 @@ Fey::SQL::Update - Represents a UPDATE query
 
 =head1 SYNOPSIS
 
-  my $sql = Fey::SQL::Update->new( dbh => $dbh );
+  my $sql = Fey::SQL::Update->new();
 
   # UPDATE Part
   #    SET quantity = 10
@@ -173,6 +177,8 @@ Fey::SQL::Update - Represents a UPDATE query
   $sql->update($Part);
   $sql->set( $quantity, 10 );
   $sql->where( $part_id, 'IN', 1, 5 );
+
+  print $sql->sql($dbh);
 
 =head1 DESCRIPTION
 
@@ -230,9 +236,10 @@ Clauses> for more details.
 See the L<Fey::SQL section on LIMIT Clauses|Fey::SQL/LIMIT Clauses>
 for more details.
 
-=head2 $update->sql()
+=head2 $update->sql($dbh)
 
-Returns the full SQL statement which this object represents.
+Returns the full SQL statement which this object represents. A DBI
+handle must be passed so that identifiers can be properly quoted.
 
 =head1 ROLES
 

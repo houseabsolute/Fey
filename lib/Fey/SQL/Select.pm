@@ -6,8 +6,6 @@ use warnings;
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 
-extends 'Fey::SQL::Base';
-
 with 'Fey::Role::Comparable', 'Fey::Role::SQL::HasWhereClause',
      'Fey::Role::SQL::HasOrderByClause', 'Fey::Role::SQL::HasLimitClause';
 
@@ -18,6 +16,7 @@ use Fey::Validate
         OBJECT
         POS_INTEGER_TYPE
         POS_OR_ZERO_INTEGER_TYPE
+        DBI_TYPE
       );
 
 use Fey::Literal;
@@ -221,31 +220,37 @@ sub having
     return $self;
 }
 
-sub sql
 {
-    my $self = shift;
+    my @spec = ( DBI_TYPE );
 
-    return
-        ( join ' ',
-          $self->_select_clause(),
-          $self->_from_clause(),
-          $self->_where_clause(),
-          $self->_group_by_clause(),
-          $self->_having_clause(),
-          $self->_order_by_clause(),
-          $self->_limit_clause(),
-        );
+    sub sql
+    {
+        my $self  = shift;
+        my ($dbh) = validate_pos( @_, @spec );
+
+        return
+            ( join ' ',
+              $self->_select_clause($dbh),
+              $self->_from_clause($dbh),
+              $self->_where_clause($dbh),
+              $self->_group_by_clause($dbh),
+              $self->_having_clause($dbh),
+              $self->_order_by_clause($dbh),
+              $self->_limit_clause($dbh),
+            );
+    }
 }
 
 sub _select_clause
 {
     my $self = shift;
+    my $dbh  = shift;
 
     my $sql = 'SELECT ';
     $sql .= 'DISTINCT ' if $self->{is_distinct};
     $sql .=
         ( join ', ',
-          map { $self->{select}{$_}->sql_with_alias( $self->dbh() ) }
+          map { $self->{select}{$_}->sql_with_alias($dbh) }
           sort
           keys %{ $self->{select} }
         );
@@ -256,11 +261,12 @@ sub _select_clause
 sub _from_clause
 {
     my $self = shift;
+    my $dbh  = shift;
 
     return ( 'FROM '
              .
              ( join ', ',
-               map { $self->{from}{$_}->sql_with_alias( $self->dbh() ) }
+               map { $self->{from}{$_}->sql_with_alias($dbh) }
                # The sort means that the order that things appear in
                # will be repeatable, if not obvious.
                sort
@@ -272,13 +278,14 @@ sub _from_clause
 sub _group_by_clause
 {
     my $self = shift;
+    my $dbh  = shift;
 
     return unless $self->{group_by};
 
     return ( 'GROUP BY '
              .
              ( join ', ',
-               map { $_->sql_or_alias( $self->dbh() ) }
+               map { $_->sql_or_alias($dbh) }
                @{ $self->{group_by} }
              )
            );
@@ -286,12 +293,15 @@ sub _group_by_clause
 
 sub _having_clause
 {
-    return unless $_[0]->{having};
+    my $self = shift;
+    my $dbh  = shift;
+
+    return unless $self->{having};
 
     return ( 'HAVING '
              . ( join ' ',
-                 map { $_->sql( $_[0]->dbh() ) }
-                 @{ $_[0]->{having} }
+                 map { $_->sql($dbh) }
+                 @{ $self->{having} }
                )
            )
 }
@@ -309,7 +319,7 @@ Fey::SQL::Select - Represents a SELECT query
 
 =head1 SYNOPSIS
 
-  my $sql = Fey::SQL::Select->new( dbh => $dbh );
+  my $sql = Fey::SQL::Select->new();
 
   # SELECT Part.part_id, Part.part_name
   #   FROM Part JOIN MachinePart
@@ -322,6 +332,8 @@ Fey::SQL::Select - Represents a SELECT query
   $sql->where( $machine_id, '=', $value );
   $sql->order_by( $part_Name, 'DESC' );
   $sql->limit(10);
+
+  print $sql->sql($dbh);
 
 =head1 DESCRIPTION
 
@@ -500,9 +512,10 @@ Clauses> for more details.
 See the L<Fey::SQL section on LIMIT Clauses|Fey::SQL/LIMIT Clauses>
 for more details.
 
-=head2 $select->sql()
+=head2 $select->sql($dbh)
 
-Returns the full SQL statement which this object represents.
+Returns the full SQL statement which this object represents. A DBI
+handle must be passed so that identifiers can be properly quoted.
 
 =head1 ROLES
 

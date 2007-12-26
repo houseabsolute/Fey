@@ -113,11 +113,11 @@ sub _where_clause
 
     my $sql = '';
     $sql = 'WHERE '
-        unless $_[1];
+        unless $_[2];
 
     return ( $sql
              . ( join ' ',
-                 map { $_->sql( $_[0]->dbh() ) }
+                 map { $_->sql( $_[1] ) }
                  @{ $_[0]->{where} }
                )
            );

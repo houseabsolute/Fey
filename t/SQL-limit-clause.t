@@ -14,7 +14,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 my $dbh = Fey::Test->mock_dbh();
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select( $s->table('User') );
+    my $q = Fey::SQL::Select->new()->select( $s->table('User') );
 
     eval { $q->limit() };
     like( $@, qr/0 parameters/,
@@ -22,19 +22,19 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select( $s->table('User') );
+    my $q = Fey::SQL::Select->new()->select( $s->table('User') );
 
     $q->limit(10);
 
-    is( $q->_limit_clause(), 'LIMIT 10',
+    is( $q->_limit_clause($dbh), 'LIMIT 10',
         'simple limit clause' );
 }
 
 {
-    my $q = Fey::SQL::Select->new( dbh => $dbh )->select( $s->table('User') );
+    my $q = Fey::SQL::Select->new()->select( $s->table('User') );
 
     $q->limit( 10, 20 );
 
-    is( $q->_limit_clause(), 'LIMIT 10 OFFSET 20',
+    is( $q->_limit_clause($dbh), 'LIMIT 10 OFFSET 20',
         'limit clause with offset' );
 }
