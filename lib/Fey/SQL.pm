@@ -46,7 +46,7 @@ method. The method accepts several different types of parameters:
 
 =head3 Comparisons
 
-These all a similar form:
+Comparing a column to a given value ...
 
   # WHERE Part.size = $value}
   $sql->where( $size, '=', $value );
@@ -67,8 +67,8 @@ object, it could be a function or anything that produces valid SQL.
   # WHERE LENGTH(Part.name) = 10
   $sql->where( $length, '=', 10 );
 
-The second parameter in a conditional can be anything that produces
-valid SQL:
+The second parameter in a conditional can any comparison operator that
+produces valid SQL:
 
   # WHERE Message.body LIKE 'hello%'
   $sql->where( $body, 'LIKE', 'hello%' );
@@ -109,9 +109,9 @@ value of the placeholder is not known when the SQL is being generated.
 =head3 Boolean AND/OR
 
 You can pass the strings "and" and "or" to the C<where()> method in
-order to create complex boolean checks. When you call C<where()> with
-multiple comparisons in a row, an implicit "and" is added between each
-one.
+order to create complex boolean conditions. When you call C<where()>
+with multiple comparisons in a row, an implicit "and" is added between
+each one.
 
   # WHERE Part.size > 10 OR Part.size = 5
   $sql->where( $size, '>', 10 );
@@ -141,12 +141,9 @@ to create subgroups.
 
 =head2 ORDER BY Clauses
 
-Many types of queries allow C<ORDER BY> clauses via the an
-C<order_by()> method. This method accepts a list of items. The items
-in the list may be things to order by, or sort directions. The things
-you can order by are columns (including aliases), functions, and
-terms. You may follow one of these with a sort direction, which must
-be one of C<'ASC'> or C<'DESC'> (case-insensitive).
+Many types of queries allow C<ORDER BY> clauses via the C<order_by()>
+method. This method accepts a list of items. The items in the list may
+be columns, functions, terms, or sort directions ("ASC" or "DESC").
 
   # ORDER BY Part.size
   $sql->order_by( $size );
@@ -161,8 +158,9 @@ be one of C<'ASC'> or C<'DESC'> (case-insensitive).
   # ORDER BY LENGTH( Part.name ) ASC
   $sql->order_by( $length, 'ASC' );
 
-If you pass a function literal, and that literal has an alias, then
-the alias is used in the C<ORDER BY> clause.
+If you pass a function literal to the C<order_by()> method and the
+literal was used previously in the select clause, then an alias is
+used in the C<ORDER BY> clause.
 
   my $length = Fey::Literal::Function->new( 'LENGTH', $name );
   $sql->select($length);
@@ -173,7 +171,7 @@ the alias is used in the C<ORDER BY> clause.
 
 =head2 LIMIT Clauses
 
-Many types of queries allow C<LIMIT> clauses via the an C<limit()>
+Many types of queries allow C<LIMIT> clauses via the C<limit()>
 method. This method accepts two parameters, with the second being
 optional.
 
