@@ -83,7 +83,7 @@ sub distinct
               ? '_join'
               : @_ == 4 && $_[3]->isa('Fey::FK')
               ? '_outer_join'
-              : @_ == 4 && $_[3]->isa('Fey::SQL::Base')
+              : @_ == 4 && $_[3]->isa('Fey::SQL::Where')
               ? '_outer_join_with_where'
               : @_ == 5
               ? '_outer_join_with_where'

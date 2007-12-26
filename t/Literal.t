@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 6;
 use Fey::Literal;
 
 
@@ -23,14 +23,4 @@ use Fey::Literal;
 
     $lit = Fey::Literal->new_from_scalar('');
     isa_ok( $lit, 'Fey::Literal::String' );
-}
-
-{
-    my $fake = Fey::FakeDBI->new();
-
-    isa_ok( $fake, 'DBI::db' );
-    ok( ! $fake->isa('Foo'), 'FakeDBI is not a Foo' );
-
-    is( $fake->quote('foo'), q{"foo"}, 'FakeDBI->quote foo' );
-    is( $fake->quote(q{"blah"}), q{"""blah"""}, 'FakeDBI->quote "blah"' );
 }

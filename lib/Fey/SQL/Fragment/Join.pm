@@ -3,6 +3,7 @@ package Fey::SQL::Fragment::Join;
 use strict;
 use warnings;
 
+use Fey::FakeDBI;
 use List::MoreUtils qw( pairwise );
 
 use constant TABLE1 => 0;
@@ -44,7 +45,7 @@ sub id
 
     # REVIEW - this is a bit wack - maybe _where_clause() should be
     # public.
-    my @where = $_[0]->[WHERE] ? $_[0]->[WHERE]->_where_clause( $_[1], 'no WHERE' ) : ();
+    my @where = $_[0]->[WHERE] ? $_[0]->[WHERE]->_where_clause( 'Fey::FakeDBI', 'no WHERE' ) : ();
 
     return
         ( join "\0",
@@ -82,7 +83,7 @@ sub sql_with_alias
 
     if ( $_[0]->[WHERE] )
     {
-        $join .= ' AND ' . $_[0]->[WHERE];
+        $join .= ' AND ' . $_[0]->[WHERE]->_where_clause( $_[1], 'no WHERE' );
     }
 
     return $join;

@@ -6,6 +6,7 @@ use warnings;
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
 
+use Fey::FakeDBI;
 use Fey::Literal::Function;
 use Fey::Literal::Null;
 use Fey::Literal::Number;
@@ -25,57 +26,13 @@ sub new_from_scalar
         );
 }
 
+sub id
 {
-    my $dbh = Fey::FakeDBI->new();
-    sub id
-    {
-        return $_[0]->sql($dbh);
-    }
+    return $_[0]->sql('Fey::FakeDBI');
 }
 
 no Moose;
 __PACKAGE__->meta()->make_immutable();
-
-# This package allows us to use a DBI handle in id(). Even though we
-# may not be quoting properly for a given DBMS, we will still generate
-# unique ids, and that's all that matters.
-
-## no critic
-package # Hide from PAUSE
-    Fey::FakeDBI;
-
-
-sub new
-{
-    return bless \$_[0], $_[0];
-}
-
-sub isa
-{
-    return 1 if $_[1] eq 'DBI::db';
-}
-
-sub quote_identifier
-{
-    shift;
-
-    if ( @_ == 3 )
-    {
-        return q{"} . $_[1] . q{"} . q{.} . q{"} . $_[2] . q{"}
-    }
-    else
-    {
-        return q{"} . $_[1] . q{"};
-    }
-}
-
-sub quote
-{
-    my $text = $_[1];
-
-    $text =~ s/"/""/g;
-    return q{"} . $text . q{"};
-}
 
 1;
 

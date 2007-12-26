@@ -31,7 +31,7 @@ BEGIN
               },
 
           DBI_TYPE =>
-              { type => OBJECT,
+              { type => SCALAR | OBJECT,
                 isa  => 'DBI::db',
               },
 
