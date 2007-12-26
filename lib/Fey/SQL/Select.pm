@@ -390,6 +390,8 @@ table is included in the C<FROM> clause.
 
   FROM Part
 
+  FROM Part as Part0
+
 =item * ($select_query)
 
 If called with a single C<Fey::SQL::Select> object, that object's SQL
@@ -460,7 +462,7 @@ include this as the fourth argument when calling C<< $select->from()
        AND MachinePart.machine_id = ?
 
 To create a standalone C<WHERE> clause suitable for passing to this
-method, call C<< $select->where() >> on a new C<Fey::Query> object.
+method, use the C<Fey::SQL::Where> class.
 
 =item * ($table1, 'left', $table2, $fk, $where_clause)
 
