@@ -309,7 +309,7 @@ Fey::SQL::Select - Represents a SELECT query
 
 =head1 SYNOPSIS
 
-  my $sql = Fey::SQL->new( dbh => $dbh );
+  my $sql = Fey::SQL::Select->new( dbh => $dbh );
 
   # SELECT Part.part_id, Part.part_name
   #   FROM Part JOIN MachinePart

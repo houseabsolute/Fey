@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 23;
+use Test::More tests => 24;
 
 use Fey::SQL;
 
@@ -247,4 +247,13 @@ my $dbh = Fey::Test->mock_dbh();
     my $sql = q{FROM ( SELECT "User"."user_id" FROM "User" ) AS SUBSELECT0};
     is( $q->_from_clause(), $sql,
         '_from_clause for subselect' );
+}
+
+{
+    my $q = Fey::SQL::Select->new( dbh => $dbh )->select();
+    my $table = Fey::Table->new( name => 'NewTable' );
+
+    eval { $q->from($table) };
+    like( $@, qr/\Qfrom() called with invalid parameters/,
+          'cannot pass a table without a schema to from()' );
 }
