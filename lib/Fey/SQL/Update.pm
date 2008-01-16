@@ -169,7 +169,7 @@ Fey::SQL::Update - Represents a UPDATE query
 
 =head1 SYNOPSIS
 
-  my $sql = Fey::SQL::Update->new();
+  my $sql = Fey::SQL->new_update();
 
   # UPDATE Part
   #    SET quantity = 10

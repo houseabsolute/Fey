@@ -164,7 +164,7 @@ Fey::SQL::Insert - Represents a INSERT query
 
 =head1 SYNOPSIS
 
-  my $sql = Fey::SQL::Insert->new();
+  my $sql = Fey::SQL->new_insert();
 
   # INSERT INTO Part
   #             (part_id, name, quantity)

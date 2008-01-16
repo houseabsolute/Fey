@@ -88,7 +88,7 @@ Fey::SQL::Delete - Represents a DELETE query
 
 =head1 SYNOPSIS
 
-  my $sql = Fey::SQL::Delete->new();
+  my $sql = Fey::SQL->new_delete();
 
   # DELETE FROM Part
   #       WHERE Part.name LIKE '%Widget'

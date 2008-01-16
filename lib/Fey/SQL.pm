@@ -10,6 +10,32 @@ use Fey::SQL::Update;
 use Fey::SQL::Where;
 
 
+sub new_delete
+{
+    return Fey::SQL::Delete->new();
+}
+
+sub new_insert
+{
+    return Fey::SQL::Insert->new();
+}
+
+sub new_select
+{
+    return Fey::SQL::Select->new();
+}
+
+sub new_update
+{
+    return Fey::SQL::Update->new();
+}
+
+sub new_where
+{
+    return Fey::SQL::Where->new();
+}
+
+
 1;
 
 __END__
@@ -20,13 +46,14 @@ Fey::SQL - Documentation on SQL generation with Fey
 
 =head1 SYNOPSIS
 
-  my $sql = Fey::SQL::Select->new( dbh => $dbh );
+  my $sql = Fey::SQL->new_select();
 
   $sql->select( @columns );
 
 =head1 DESCRIPTION
 
-This module mostly exists to provide documentation.
+This module mostly exists to provide documentation and a factory
+interface for making SQL statement objects.
 
 For convenience, loading this module loads all of the C<Fey::SQL::*>
 classes, such as L<Fey::SQL::Select>, L<Fey::SQL::Delete>, etc.
