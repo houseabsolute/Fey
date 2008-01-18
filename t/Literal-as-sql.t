@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 29;
+use Test::More tests => 33;
 
 use Fey::Literal;
 
@@ -61,6 +61,18 @@ use Fey::Literal;
         'NOW function sql_or_alias - with alias' );
     is( $now->sql($dbh), 'NOW()',
         'NOW function sql - with alias' );
+
+    my $now_with_alias = Fey::Literal::Function->new( 'NOW' );
+    $now_with_alias->set_alias_name('rightnow');
+
+    is( $now_with_alias->sql_with_alias($dbh), q{NOW() AS "rightnow"},
+        'aliased NOW function sql_with_alias' );
+    is( $now_with_alias->sql_with_alias($dbh), q{NOW() AS "rightnow"},
+        'aliased NOW function sql_with_alias - second time' );
+    is( $now_with_alias->sql_or_alias($dbh), q{"rightnow"},
+        'aliased NOW function sql_or_alias - with alias' );
+    is( $now_with_alias->sql($dbh), 'NOW()',
+        'aliased NOW function sql' );
 
     my $now2 = Fey::Literal::Function->new( 'NOW' );
     is( $now2->sql_or_alias($dbh), q{NOW()},
