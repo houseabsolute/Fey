@@ -92,7 +92,7 @@ use Scalar::Util qw( blessed );
         {
             push @spec, $column_spec;
             push @spec,
-                $_[$x]->is_nullable()
+                ref $_[$x] && $_[$x]->is_nullable()
                 ? $nullable_col_value_type
                 : $non_nullable_col_value_type;
         }
@@ -146,14 +146,32 @@ sub _tables_subclause
 
 sub _set_clause
 {
+    my $self = shift;
+    my $dbh  = shift;
+
+    # SQLite objects when the table name is provided ("User"."email")
+    # on the LHS of the set. I'm hoping that a DBMS which allows a
+    # multi-table update also allows the table name in the LHS.
+    my $col_quote = @{ $self->{tables} } > 1 ? '_name_and_table' : '_name';
+
     return ( 'SET '
              . ( join ', ',
-                 map {   $_->[0]->sql( $_[1] )
+                 map {   $self->$col_quote( $_->[0], $dbh )
                        . ' = '
-                       . $_->[1]->sql( $_[1] ) }
-                 @{ $_[0]->{set} }
+                       . $_->[1]->sql( $dbh ) }
+                 @{ $self->{set} }
                )
            );
+}
+
+sub _name_and_table
+{
+    return $_[1]->sql( $_[2] );
+}
+
+sub _name
+{
+    return $_[2]->quote_identifier( $_[1]->name() );
 }
 
 no Moose;

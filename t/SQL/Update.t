@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 15;
+use Test::More tests => 16;
 
 use Fey::SQL;
 
@@ -46,7 +46,7 @@ $s->table('User')->add_column($size);
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'), 'bubba' );
 
-    is( $q->_set_clause($dbh), q{SET "User"."username" = 'bubba'},
+    is( $q->_set_clause($dbh), q{SET "username" = 'bubba'},
         '_set_clause() for one column' );
 }
 
@@ -58,7 +58,7 @@ $s->table('User')->add_column($size);
            );
 
     is( $q->_set_clause($dbh),
-        q{SET "User"."username" = 'bubba', "User"."email" = 'bubba@bubba.com'},
+        q{SET "username" = 'bubba', "email" = 'bubba@bubba.com'},
         '_set_clause() for two columns' );
 }
 
@@ -70,7 +70,7 @@ $s->table('User')->add_column($size);
            );
 
     is( $q->_set_clause($dbh),
-        q{SET "User"."username" = "User"."email"},
+        q{SET "username" = "User"."email"},
         '_set_clause() for column = columns' );
 }
 
@@ -82,7 +82,7 @@ $s->table('User')->add_column($size);
            );
 
     is( $q->_set_clause($dbh),
-        q{SET "User"."size" = NULL},
+        q{SET "size" = NULL},
         '_set_clause() for column = NULL (literal)' );
 }
 
@@ -94,7 +94,7 @@ $s->table('User')->add_column($size);
            );
 
     is( $q->_set_clause($dbh),
-        q{SET "User"."username" = 'string'},
+        q{SET "username" = 'string'},
         '_set_clause() for column = string (literal)' );
 }
 
@@ -106,7 +106,7 @@ $s->table('User')->add_column($size);
            );
 
     is( $q->_set_clause($dbh),
-        q{SET "User"."username" = 42},
+        q{SET "username" = 42},
         '_set_clause() for column = number (literal)' );
 }
 
@@ -118,7 +118,7 @@ $s->table('User')->add_column($size);
            );
 
     is( $q->_set_clause($dbh),
-        q{SET "User"."username" = NOW()},
+        q{SET "username" = NOW()},
         '_set_clause() for column = function (literal)' );
 }
 
@@ -130,7 +130,7 @@ $s->table('User')->add_column($size);
            );
 
     is( $q->_set_clause($dbh),
-        q{SET "User"."username" = thingy},
+        q{SET "username" = thingy},
         '_set_clause() for column = term (literal)' );
 }
 
@@ -142,7 +142,7 @@ $s->table('User')->add_column($size);
            );
 
     is( $q->_set_clause($dbh),
-        q{SET "User"."username" = thingy},
+        q{SET "username" = thingy},
         '_set_clause() for column = term (literal)' );
 }
 
@@ -157,8 +157,17 @@ $s->table('User')->add_column($size);
     $q->limit(10);
 
     is( $q->sql($dbh),
-        q{UPDATE "User" SET "User"."username" = 'hello' WHERE "User"."user_id" = 10 ORDER BY "User"."user_id" LIMIT 10},
+        q{UPDATE "User" SET "username" = 'hello' WHERE "User"."user_id" = 10 ORDER BY "User"."user_id" LIMIT 10},
         'update sql with where clause, order by, and limit' );
+}
+
+{
+    my $q = Fey::SQL->new_update();
+    $q->update( $s->table('User'), $s->table('Group') );
+    $q->set( $s->table('User')->column('username'), $s->table('Group')->column('name') );
+
+    is( $q->_set_clause($dbh), q{SET "User"."username" = "Group"."name"},
+        '_set_clause() for multi-table update' );
 }
 
 {
