@@ -100,12 +100,18 @@ method.
 I also hope that this module can be used as a building block to build
 other tools. A good example would be an RDBMS-OO mapper.
 
+=head2 Random ideas to elaborate on ...
+
+* Why building queries via method calls on objects is easier
+* Join support is crucial
+* De-coupling of query from ORM
+
 =head1 HISTORY AND GOALS
 
 This module comes from my experience writing and using Alzabo. Alzabo
 does everything this module does, and a lot more. The fact that Alzabo
 does so many things has become a fairly problematic in its
-maintenance, and Alzabo is over 6 years old at the time this project
+maintenance, and Alzabo was over 6 years old at the time this project
 was begun (August of 2006).
 
 =head2 Goals
@@ -124,8 +130,9 @@ following:
 =item *
 
 Provide a simple way to generate queries dynamically. I really like
-the way this works with Alzabo, except that Alzabo is not as flexible
-as I'd like.
+how this works with Alzabo conceptually, but Alzabo is not as flexible
+as I'd like and it's "biuld a data structure" approach to query
+building can become very cumbersome.
 
 Specifically, Fey will be able to issue updates and deletes to more than
 one row at a time. Fey will support sub-selects, unions, etc. and all
@@ -144,9 +151,10 @@ added>. Right now there's no nice simple way to do this. Specifying
 the table twice will cause an error. It would be nice to simply be
 able to do this
 
-  $sql->join( $foo_table => $bar_table );
+  $select->join( $foo_table => $bar_table );
 
-and have it do the right thing if that join already exists.
+and have it do the right thing if that join already
+exists. C<Fey::SQL> does exactly that.
 
 =item *
 
@@ -160,6 +168,11 @@ not represent data in the DBMS.
 Finally, it will have support the same type of simple "unique
 row/object cache" that Alzabo provides. This type of dirt-simple
 caching has proven to be a big win in many applications I've written.
+
+=item *
+
+Be declarative like Moose. In particular, Fey's ORM pieces will be as
+declarative as possible, and aim to emulate Moose where possible.
 
 =back
 
@@ -177,10 +190,12 @@ users from shooting themselves in the foot, and required a lot of
 specific code for each DBMS to achieve this.
 
 In retrospect, being a lot dumber and allowing for foot-shooting makes
-supporting a new DBMS much easier.
+supporting a new DBMS much easier. People generally know how their
+DBMS works, and if they generate an invalid query or table name, it
+will throw an error.
 
-For example, while Fey can accomodate per-DBMS query (sub)classes, it does
-not include any by default, and is capable of supporting many
+For example, while Fey can accomodate per-DBMS query (sub)classes, it
+does not include any by default, and is capable of supporting many
 DBMS-specific features without per-DBMS classes.
 
 =item *
@@ -194,16 +209,11 @@ This means that you're limited to what that subclass defines.
 By contrast, Fey has simple generic support for arbitrary functions
 via the C<Fey::Literal::Function> class. If you need more flexibility
 you can use the C<Fey::Literal::Term> subclass to generate an
-arbitrary snippet of SQL.
+arbitrary snippet to insert into your SQL.
 
-You can still make helper functions that use these for your own use,
-but you're not limited by what Fey provides.
-
-=item *
-
-Alzabo doesn't support multiple versions of a DBMS very well. Either
-it doesn't work with an older version at all, or it doesn't support
-some enhanced capability of a newer version.
+A related problem is that Alzabo doesn't support multiple versions of
+a DBMS very well. Either it doesn't work with an older version at all,
+or it doesn't support some enhanced capability of a newer version.
 
 =item *
 
@@ -241,8 +251,8 @@ existing schema, or to allow users to define it in code.
 =item *
 
 Alzabo's referential integrity checking code was really cool back when
-I mostly used MySQL with MYISAM tables, but is a just a maintenance
-burden nowadays, and makes it hard to add some features to Alzabo.
+I mostly used MySQL with MYISAM tables. Now it's just a maintenance
+burden and a barrier for various new features.
 
 =item *
 
@@ -275,8 +285,8 @@ insight into my mind. You have been warned.
 
 This module is "SQL-y", as in "related to SQL". However, this name is
 bad for a number of reasons. First, it's not clear how to pronounce
-it. It may make think of a YACC grammar ("SQL.y"). It's a weird combo
-of upper- and lower-case letters.
+it. It may make you think of a YACC grammar ("SQL.y"). It's a weird
+combo of upper- and lower-case letters.
 
 =item * SQLy => Squall
 
