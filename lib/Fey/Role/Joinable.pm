@@ -3,7 +3,6 @@ package Fey::Role::Joinable;
 use strict;
 use warnings;
 
-use Fey::Role;
 use Moose::Role;
 
 

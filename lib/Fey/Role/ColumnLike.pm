@@ -3,11 +3,16 @@ package Fey::Role::ColumnLike;
 use strict;
 use warnings;
 
-use Fey::Role;
 use Moose::Role;
 
-with 'Fey::Role::Selectable', 'Fey::Role::Comparable',
-     'Fey::Role::Groupable', 'Fey::Role::Orderable';
+# This seems weird, but basically we're saying that column-like things
+# do these four roles, but the implementation is different for
+# column-like things (than for example, selectable things).
+with ( 'Fey::Role::Selectable' => { excludes => 'is_selectable' },
+       'Fey::Role::Comparable' => { excludes => 'is_comparable' },
+       'Fey::Role::Groupable'  => { excludes => 'is_groupable' },
+       'Fey::Role::Orderable'  => { excludes => 'is_orderable' },
+     );
 
 requires 'id', 'is_alias';
 

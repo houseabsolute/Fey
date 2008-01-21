@@ -3,7 +3,6 @@ package Fey::Role::Groupable;
 use strict;
 use warnings;
 
-use Fey::Role;
 use Moose::Role;
 
 
