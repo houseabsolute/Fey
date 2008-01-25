@@ -115,6 +115,8 @@ use Fey::Table;
     my $s = Fey::Test->mock_test_schema();
     my $t = $s->table('User');
 
+    $t->remove_candidate_key( @{$_} ) for $t->candidate_keys();
+
     $t->add_candidate_key('user_id');
     $t->add_candidate_key( 'username', 'email' );
 

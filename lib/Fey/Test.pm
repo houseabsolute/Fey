@@ -83,6 +83,7 @@ sub _user_table
 
     $t->add_column($_) for $user_id, $username, $email;
     $t->add_candidate_key($user_id);
+    $t->add_candidate_key($username);
 
     return $t;
 }
