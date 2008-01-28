@@ -10,7 +10,7 @@ use Fey::Validate
         COLUMN_TYPE
         TABLE_OR_NAME_TYPE );
 
-use List::MoreUtils qw( uniq all );
+use List::MoreUtils qw( uniq all pairwise );
 use Scalar::Util qw( blessed );
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
@@ -32,18 +32,18 @@ coerce 'ArrayOfColumns'
     => via { [ $_ ] };
 
 has 'source_columns' =>
-    ( is       => 'ro',
-      isa      => 'ArrayOfColumns',
-      required => 1,
-      coerce   => 1,
+    ( is         => 'ro',
+      isa        => 'ArrayOfColumns',
+      required   => 1,
+      coerce     => 1,
       auto_deref => 1,
     );
 
 has 'target_columns' =>
-    ( is       => 'ro',
-      isa      => 'ArrayOfColumns',
-      required => 1,
-      coerce   => 1,
+    ( is         => 'ro',
+      isa        => 'ArrayOfColumns',
+      required   => 1,
+      coerce     => 1,
       auto_deref => 1,
     );
 
@@ -96,7 +96,17 @@ sub _make_id
           map { $_->table()->name() . q{.} . $_->name() }
           $self->source_columns(), $self->target_columns()
         );
-    }
+}
+
+sub column_pairs
+{
+    my $self = shift;
+
+    my @s = $self->source_columns();
+    my @t = $self->target_columns();
+
+    return pairwise { [ $a, $b ] } @s, @t;
+}
 
 sub source_table
 {
@@ -216,6 +226,12 @@ Returns the appropriate C<Fey::Table> object.
 =head2 $fk->target_columns()
 
 Returns the appropriate list of C<Fey::Column> objects.
+
+=head2 $fk->column_pairs()
+
+Returns a list of array references. Each reference contains two
+C<Fey::Column> objects, one from the source table and one from the
+target.
 
 =head2 $fk->has_tables( $table1, $table2 )
 

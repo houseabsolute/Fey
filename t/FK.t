@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 19;
+use Test::More tests => 20;
 
 use Fey::FK;
 use Fey::Schema;
@@ -67,6 +67,10 @@ use Fey::Schema;
     my @target = $fk->target_columns();
     is( scalar @target, 1, 'one target column' );
     is( $target[0]->name(), 'user_id', 'target column is user_id' );
+
+    is_deeply( [ sort map { $_->[0]->name(), $_->[1]->name() } $fk->column_pairs() ],
+               [ 'user_id', 'user_id' ],
+               'column_pairs() returns expected pairs of columns' );
 
     my $fk2 =
         Fey::FK->new
