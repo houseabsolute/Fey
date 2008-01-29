@@ -13,7 +13,11 @@ sub new
 {
     my $class = shift;
 
-    return bless {}, $class;
+    my $self = bless {}, $class;
+
+    $self->add(@_) if @_;
+
+    return $self;
 }
 
 sub add

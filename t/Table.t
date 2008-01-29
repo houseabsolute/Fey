@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 28;
+use Test::More tests => 31;
 
 use Fey::Table;
 
@@ -128,6 +128,15 @@ use Fey::Table;
     my @pk = $t->primary_key();
     is( scalar @pk, 1, 'table has one pk column' );
     is( $pk[0]->name(), 'user_id', 'pk is user_id' );
+
+    ok( $t->has_candidate_key( 'user_id' ),
+        'table has key for (user_Id)' );
+
+    ok( $t->has_candidate_key( 'username', 'email' ),
+        'table has key for (username, email)' );
+
+    ok( ! $t->has_candidate_key( 'username' ),
+        'table does not have key for (username)' );
 
     $t->remove_candidate_key('user_id');
     is_deeply( _keys_to_names( $t->candidate_keys() ),

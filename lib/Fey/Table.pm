@@ -156,14 +156,13 @@ sub primary_key
 
         $_ = $self->column($_) for grep { ! blessed $_ } @cols;
 
+        return if $self->has_candidate_key(@cols);
+
         my $keys = $self->_keys();
 
-        my $set = Fey::NamedObjectSet->new();
+        my $set = Fey::NamedObjectSet->new(@cols);
 
-        $set->add($_) for @cols;
-
-        push @{ $keys }, $set
-            unless any { $set->is_same_as($_) } @{ $keys };
+        push @{ $keys }, $set;
 
         return;
     }
@@ -186,9 +185,7 @@ sub primary_key
 
         my $keys = $self->_keys();
 
-        my $set = Fey::NamedObjectSet->new();
-
-        $set->add($_) for @cols;
+        my $set = Fey::NamedObjectSet->new(@cols);
 
         my $idx = first_index { $_->is_same_as($set) } @{ $keys };
         splice @{ $keys }, $idx, 1
@@ -198,6 +195,30 @@ sub primary_key
     }
 }
 
+{
+    my $spec = (COLUMN_OR_NAME_TYPE);
+    sub has_candidate_key
+    {
+        my $self = shift;
+        my (@cols) = validate_pos( @_, ( $spec ) x ( @_ ? @_ : 1 ) );
+
+        for my $name ( map { blessed $_ ? $_->name() : $_ } @cols )
+        {
+            param_error "The column $name is not part of the " . $self->name() . ' table.'
+                unless $self->column($name);
+        }
+
+        $_ = $self->column($_) for grep { ! blessed $_ } @cols;
+
+        my $set = Fey::NamedObjectSet->new(@cols);
+
+        return 1 if
+            any { $_->is_same_as($set) }
+            @{ $self->_keys() };
+
+        return 0;
+    }
+}
 
 sub alias
 {

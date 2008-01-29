@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 18;
+use Test::More tests => 19;
 
 use Fey::NamedObjectSet;
 
@@ -74,7 +74,18 @@ use Fey::NamedObjectSet;
         'set not is_same_as() other set which has the same objects' );
 }
 
+{
+    my $bob  = Name->new('bob');
+    my $faye = Name->new('faye');
 
+    my $set1 = Fey::NamedObjectSet->new( $bob, $faye );
+
+    my $set2 = Fey::NamedObjectSet->new();
+    $set2->add($_) for $bob, $faye;
+
+    ok( $set1->is_same_as($set2),
+        'set with items added at construction is same as set with items added via add()' );
+}
 
 
 package NoName;
