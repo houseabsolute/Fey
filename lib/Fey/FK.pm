@@ -171,6 +171,13 @@ sub target_table
     }
 }
 
+sub is_self_referential
+{
+    my $self = shift;
+
+    return $self->source_table()->name() eq $self->target_table()->name();
+}
+
 no Moose;
 __PACKAGE__->meta()->make_immutable();
 
@@ -244,8 +251,10 @@ C<Fey::Table> objects.
 Given a C<Fey::Column> object, this method returns true if the foreign
 key includes the specified column.
 
+=head2 $fk->is_self_referential
 
-
+This returns true if the the source and target tables for the foreign
+key are the same table.
 
 =head1 AUTHOR
 

@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 20;
+use Test::More tests => 22;
 
 use Fey::FK;
 use Fey::Schema;
@@ -72,6 +72,8 @@ use Fey::Schema;
                [ 'user_id', 'user_id' ],
                'column_pairs() returns expected pairs of columns' );
 
+    ok( ! $fk->is_self_referential(), 'fk is not self-rerential' );
+
     my $fk2 =
         Fey::FK->new
             ( target_columns => $s->table('User')->column('user_id'),
@@ -101,4 +103,16 @@ use Fey::Schema;
         'fk does not have User.username column' );
     ok( ! $fk->has_column( $s->table('Group')->column('group_id') ),
         'fk does have Group.group_id column' );
+}
+
+{
+    my $s = Fey::Test->mock_test_schema();
+
+    my $fk =
+        Fey::FK->new
+            ( source_columns => [ $s->table('Message')->column('parent_message_id') ],
+              target_columns => [ $s->table('Message')->column('message_id') ],
+            );
+
+    ok( $fk->is_self_referential(), 'fk is self-rerential' );
 }
