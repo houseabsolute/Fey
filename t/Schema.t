@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 34;
+use Test::More tests => 38;
 
 use Fey::Schema;
 
@@ -132,6 +132,30 @@ use Fey::Schema;
     @fk = $s->foreign_keys_between_tables( $s->table('Message'), $s->table('Message') );
     is( scalar @fk, 0,
         'no fks between Message and Message' );
+}
+
+{
+    my $s = Fey::Test->mock_test_schema();
+
+    my $fk =
+        Fey::FK->new
+            ( source_columns => $s->table('Message')->column('parent_message_id'),
+              target_columns => $s->table('Message')->column('message_id'),
+            );
+
+    $s->add_foreign_key($fk);
+
+    my @fks = $s->foreign_keys_for_table('Message');
+    is( @fks, 1,
+        'foreign_keys_for_table() returns just one fk in the case of a self-referential fk' );
+    is_deeply( [ map { $_->name() } $fks[0]->source_columns() ], [ 'parent_message_id' ],
+               'source_columns() returns Message.parent_message_id' );
+
+    @fks = $s->foreign_keys_between_tables( 'Message', 'Message' );
+    is( @fks, 1,
+        'foreign_keys_between_tables() returns just one fk in the case of a self-referential fk' );
+    is_deeply( [ map { $_->name() } $fks[0]->source_columns() ], [ 'parent_message_id' ],
+               'source_columns() returns Message.parent_message_id' );
 }
 
 {

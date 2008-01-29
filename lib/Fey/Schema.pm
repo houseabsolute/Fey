@@ -9,6 +9,7 @@ use Fey::Validate
         SCALAR_TYPE ARRAYREF_TYPE
         TABLE_TYPE TABLE_OR_NAME_TYPE
         FK_TYPE DBI_TYPE );
+use List::MoreUtils qw( uniq );
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
@@ -146,10 +147,13 @@ use Scalar::Util qw( blessed );
 
         my $name = blessed $table ? $table->name() : $table;
 
-        return
-            ( map { values %{ $self->{fk}{$name}{$_} } }
+        my %fks =
+            ( map { $_->id() => $_ }
+              map { values %{ $self->{fk}{$name}{$_} } }
               keys %{ $self->{fk}{$name} || {} }
             );
+
+        return @fks{ uniq keys %fks };
     }
 }
 
@@ -163,11 +167,13 @@ use Scalar::Util qw( blessed );
         my $name1 = blessed $table1 ? $table1->name() : $table1;
         my $name2 = blessed $table2 ? $table2->name() : $table2;
 
-        return
-            ( grep { $_->has_tables( $name1, $name2 ) }
-              map { values %{ $self->{fk}{$name1}{$_} } }
-              keys %{ $self->{fk}{$name1} || {} }
-            );
+        my %fks =
+            map { $_->id() => $_ }
+            grep { $_->has_tables( $name1, $name2 ) }
+            map { values %{ $self->{fk}{$name1}{$_} } }
+            keys %{ $self->{fk}{$name1} || {} };
+
+        return @fks{ uniq keys %fks };
     }
 }
 
