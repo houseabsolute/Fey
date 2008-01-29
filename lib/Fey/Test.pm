@@ -10,6 +10,7 @@ use Fey::Column;
 use Fey::FK;
 use Fey::Schema;
 use Fey::Table;
+use List::MoreUtils qw( all );
 
 BEGIN
 {
@@ -55,7 +56,13 @@ sub mock_test_schema_with_fks
               target_columns => [ $schema->table('Group')->column('group_id') ],
             );
 
-    $schema->add_foreign_key($_) for $fk1, $fk2;
+    my $fk3 =
+        Fey::FK->new
+            ( source_columns => [ $schema->table('Message')->column('parent_message_id') ],
+              target_columns => [ $schema->table('Message')->column('message_id') ],
+            );
+
+    $schema->add_foreign_key($_) for $fk1, $fk2, $fk3;
 
     return $schema;
 }
@@ -160,7 +167,13 @@ sub _message_table
                           default => Fey::Literal::Function->new('NOW'),
                         );
 
-    $t->add_column($_) for $message_id, $message, $quality, $message_date;
+    my $parent_message_id =
+        Fey::Column->new( name        => 'parent_message_id',
+                          type        => 'integer',
+                          is_nullable => 1,
+                        );
+
+    $t->add_column($_) for $message_id, $message, $quality, $message_date, $parent_message_id;
     $t->add_candidate_key($message_id);
 
     return $t;
@@ -355,7 +368,6 @@ sub _mock_foreign_key_info
 
     return unless $table;
 
-    my $x = 1;
     my @fk;
     my %pk = map { $_->name() => 1 } $table->primary_key();
 
@@ -363,8 +375,9 @@ sub _mock_foreign_key_info
     {
         my @source = $fk->source_columns();
 
-        next unless @source == keys %pk;
-        next if grep { ! $pk{ $_->name() } } @source;
+        next if
+            @source == keys %pk
+            && all { $pk{ $_->name() } } @source;
 
         my @target = $fk->target_columns();
 
