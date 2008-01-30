@@ -9,7 +9,6 @@ use Fey::Validate
         SCALAR_TYPE ARRAYREF_TYPE
         TABLE_TYPE TABLE_OR_NAME_TYPE
         FK_TYPE DBI_TYPE );
-use List::MoreUtils qw( uniq );
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use Moose;
@@ -153,7 +152,7 @@ use Scalar::Util qw( blessed );
               keys %{ $self->{fk}{$name} || {} }
             );
 
-        return @fks{ uniq keys %fks };
+        return values %fks;
     }
 }
 
@@ -173,7 +172,7 @@ use Scalar::Util qw( blessed );
             map { values %{ $self->{fk}{$name1}{$_} } }
             keys %{ $self->{fk}{$name1} || {} };
 
-        return @fks{ uniq keys %fks };
+        return values %fks;
     }
 }
 
