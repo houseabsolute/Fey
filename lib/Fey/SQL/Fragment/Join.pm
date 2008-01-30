@@ -71,8 +71,8 @@ sub sql_with_alias
     $join .= $_[0][TABLE2]->sql_with_alias( $_[1] );
     $join .= ' ON ';
 
-    my @s = $_[0]->[FK]->source_columns();
-    my @t = $_[0]->[FK]->target_columns();
+    my @s = @{ $_[0]->[FK]->source_columns() };
+    my @t = @{ $_[0]->[FK]->target_columns() };
 
     for my $p ( pairwise { [ $a, $b ] } @s, @t )
     {

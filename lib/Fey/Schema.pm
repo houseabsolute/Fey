@@ -99,12 +99,12 @@ use Scalar::Util qw( blessed );
 
         my $fk_id = $fk->id();
 
-        for my $col_name ( map { $_->name() } $fk->source_columns() )
+        for my $col_name ( map { $_->name() } @{ $fk->source_columns() } )
         {
             $self->{fk}{$source_table_name}{$col_name}{$fk_id} = $fk;
         }
 
-        for my $col_name ( map { $_->name() } $fk->target_columns() )
+        for my $col_name ( map { $_->name() } @{ $fk->target_columns() } )
         {
             $self->{fk}{$target_table_name}{$col_name}{$fk_id} = $fk;
         }
@@ -123,13 +123,13 @@ use Scalar::Util qw( blessed );
         my $fk_id = $fk->id();
 
         my $source_table_name = $fk->source_table()->name();
-        for my $col_name ( map { $_->name() } $fk->source_columns() )
+        for my $col_name ( map { $_->name() } @{ $fk->source_columns() } )
         {
             delete $self->{fk}{$source_table_name}{$col_name}{$fk_id};
         }
 
         my $target_table_name = $fk->target_table()->name();
-        for my $col_name ( map { $_->name() } $fk->target_columns() )
+        for my $col_name ( map { $_->name() } @{ $fk->target_columns() } )
         {
             delete $self->{fk}{$target_table_name}{$col_name}{$fk_id};
         }

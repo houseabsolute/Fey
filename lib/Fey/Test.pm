@@ -385,13 +385,13 @@ sub _mock_foreign_key_info
 
     for my $fk ( $self->{__schema__}->foreign_keys_for_table($table) )
     {
-        my @source = $fk->source_columns();
+        my @source = @{ $fk->source_columns() };
 
         next if
             @source == keys %pk
             && all { $pk{ $_->name() } } @source;
 
-        my @target = $fk->target_columns();
+        my @target = @{ $fk->target_columns() };
 
         for ( my $x = 0; $x < @source; $x++ )
         {

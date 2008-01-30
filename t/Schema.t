@@ -69,7 +69,7 @@ use Fey::Schema;
     is( scalar @fk, 1, 'one fk for User table - passed as object' );
     is( $fk[0]->source_table()->name(), 'User',
         'source table is user' );
-    is( ($fk[0]->source_columns())[0]->name(), 'user_id',
+    is( $fk[0]->source_columns()->[0]->name(), 'user_id',
         'source column is user_id' );
 
     $s->add_foreign_key($fk);
@@ -148,13 +148,13 @@ use Fey::Schema;
     my @fks = $s->foreign_keys_for_table('Message');
     is( @fks, 1,
         'foreign_keys_for_table() returns just one fk in the case of a self-referential fk' );
-    is_deeply( [ map { $_->name() } $fks[0]->source_columns() ], [ 'parent_message_id' ],
+    is_deeply( [ map { $_->name() } @{ $fks[0]->source_columns() } ], [ 'parent_message_id' ],
                'source_columns() returns Message.parent_message_id' );
 
     @fks = $s->foreign_keys_between_tables( 'Message', 'Message' );
     is( @fks, 1,
         'foreign_keys_between_tables() returns just one fk in the case of a self-referential fk' );
-    is_deeply( [ map { $_->name() } $fks[0]->source_columns() ], [ 'parent_message_id' ],
+    is_deeply( [ map { $_->name() } @{ $fks[0]->source_columns() } ], [ 'parent_message_id' ],
                'source_columns() returns Message.parent_message_id' );
 }
 

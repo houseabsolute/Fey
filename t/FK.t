@@ -60,11 +60,11 @@ use Fey::Schema;
     is( $fk->target_table()->name(), 'UserGroup',
         'source_table() is UserEmail' );
 
-    my @source = $fk->source_columns();
+    my @source = @{ $fk->source_columns() };
     is( scalar @source, 1, 'one source column' );
     is( $source[0]->name(), 'user_id', 'source column is user_id' );
 
-    my @target = $fk->target_columns();
+    my @target = @{ $fk->target_columns() };
     is( scalar @target, 1, 'one target column' );
     is( $target[0]->name(), 'user_id', 'target column is user_id' );
 

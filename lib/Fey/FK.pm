@@ -32,19 +32,17 @@ coerce 'ArrayOfColumns'
     => via { [ $_ ] };
 
 has 'source_columns' =>
-    ( is         => 'ro',
-      isa        => 'ArrayOfColumns',
-      required   => 1,
-      coerce     => 1,
-      auto_deref => 1,
+    ( is       => 'ro',
+      isa      => 'ArrayOfColumns',
+      required => 1,
+      coerce   => 1,
     );
 
 has 'target_columns' =>
-    ( is         => 'ro',
-      isa        => 'ArrayOfColumns',
-      required   => 1,
-      coerce     => 1,
-      auto_deref => 1,
+    ( is       => 'ro',
+      isa      => 'ArrayOfColumns',
+      required => 1,
+      coerce   => 1,
     );
 
 use Fey::Column;
@@ -58,8 +56,8 @@ sub BUILD
     param_error "The id will be generated automatically"
         if defined $p->{id};
 
-    my @source = $self->source_columns();
-    my @target = $self->target_columns();
+    my @source = @{ $self->source_columns() };
+    my @target = @{ $self->target_columns() };
 
     unless ( @source == @target )
     {
@@ -94,7 +92,7 @@ sub _make_id
     return join "\0",
         ( sort
           map { $_->table()->name() . q{.} . $_->name() }
-          $self->source_columns(), $self->target_columns()
+          @{ $self->source_columns() }, @{ $self->target_columns() }
         );
 }
 
@@ -102,8 +100,8 @@ sub column_pairs
 {
     my $self = shift;
 
-    my @s = $self->source_columns();
-    my @t = $self->target_columns();
+    my @s = @{ $self->source_columns() };
+    my @t = @{ $self->target_columns() };
 
     return pairwise { [ $a, $b ] } @s, @t;
 }
@@ -112,14 +110,14 @@ sub source_table
 {
     my $self = shift;
 
-    return ( $self->source_columns() )[0]->table();
+    return $self->source_columns()->[0]->table();
 }
 
 sub target_table
 {
     my $self = shift;
 
-    return ( $self->target_columns() )[0]->table();
+    return $self->target_columns()->[0]->table();
 }
 
 {
@@ -157,7 +155,7 @@ sub target_table
             if ( $self->$table_meth()->name() eq $table_name )
             {
                 my $col_meth = $part . '_columns';
-                @cols = $self->$col_meth();
+                @cols = @{ $self->$col_meth() };
             }
         }
 
@@ -232,7 +230,8 @@ Returns the appropriate C<Fey::Table> object.
 
 =head2 $fk->target_columns()
 
-Returns the appropriate list of C<Fey::Column> objects.
+Returns the appropriate list of C<Fey::Column> objects as an array
+reference.
 
 =head2 $fk->column_pairs()
 
