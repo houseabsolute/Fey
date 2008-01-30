@@ -117,10 +117,11 @@ was begun (August of 2006).
 =head2 Goals
 
 Rather than coming up with a very smart solution that allows us to use
-80% of a DBMS's functionality, I'd rather come up with a 100% solution
-that's dumber. It's easy to add smarts on top of a dumb layer, but it
-can be terribly hard to add that last 20% once you've got something
-really smart.
+80% of a DBMS's functionality, I'd rather come up with a solution
+that's dumber but supports all (or at least 99%) of the DBMS's
+features. It's easy to add smarts on top of a dumb layer, but it can
+be terribly hard to add that last 20% once you've got something really
+smart.
 
 The goals for Fey, based on my experience with Alzabo, are the
 following:
@@ -131,11 +132,11 @@ following:
 
 Provide a simple way to generate queries dynamically. I really like
 how this works with Alzabo conceptually, but Alzabo is not as flexible
-as I'd like and it's "biuld a data structure" approach to query
+as I'd like and it's "build a data structure" approach to query
 building can become very cumbersome.
 
-Specifically, Fey will be able to issue updates and deletes to more than
-one row at a time. Fey will support sub-selects, unions, etc. and all
+Fey, unlike Alzabo, will be able to easily generate multi-row updates
+and deletes, and it will support sub-selects, unions, etc. and all
 that other good stuff.
 
 =item *
@@ -186,7 +187,7 @@ Here are some of the problems I've had with Alzabo over the years:
 
 Adding support for a new DBMS is a lot of work, so it only supports
 MySQL and Postgres. Alzabo tries to be really smart about preventing
-users from shooting themselves in the foot, and required a lot of
+users from shooting themselves in the foot, and requires a lot of
 specific code for each DBMS to achieve this.
 
 In retrospect, being a lot dumber and allowing for foot-shooting makes
@@ -252,7 +253,7 @@ existing schema, or to allow users to define it in code.
 
 Alzabo's referential integrity checking code was really cool back when
 I mostly used MySQL with MYISAM tables. Now it's just a maintenance
-burden and a barrier for various new features.
+burden and a barrier for new features.
 
 =item *
 
