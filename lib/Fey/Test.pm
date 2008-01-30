@@ -62,7 +62,13 @@ sub mock_test_schema_with_fks
               target_columns => [ $schema->table('Message')->column('message_id') ],
             );
 
-    $schema->add_foreign_key($_) for $fk1, $fk2, $fk3;
+    my $fk4 =
+        Fey::FK->new
+          ( source_columns => [ $schema->table('Message')->column('user_id') ],
+            target_columns => [ $schema->table('User')->column('user_id') ],
+          );
+
+    $schema->add_foreign_key($_) for $fk1, $fk2, $fk3, $fk4;
 
     return $schema;
 }
@@ -173,7 +179,13 @@ sub _message_table
                           is_nullable => 1,
                         );
 
-    $t->add_column($_) for $message_id, $message, $quality, $message_date, $parent_message_id;
+    my $user_id =
+        Fey::Column->new( name => 'user_id',
+                          type => 'integer',
+                        );
+
+    $t->add_column($_)
+        for $message_id, $message, $quality, $message_date, $parent_message_id, $user_id;
     $t->add_candidate_key($message_id);
 
     return $t;
