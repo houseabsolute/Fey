@@ -1,16 +1,9 @@
-package Fey::Core;
+package Fey;
 
 use strict;
 use warnings;
 
 our $VERSION = '0.01';
-
-
-use Fey::Column;
-use Fey::FK;
-use Fey::SQL;
-use Fey::Schema;
-use Fey::Table;
 
 
 1;
@@ -19,13 +12,11 @@ __END__
 
 =head1 NAME
 
-Fey::Core - Core classes for Fey
+Fey - Better SQL Generation Through
 
 =head1 SYNOPSIS
 
-  use Fey::Core;
-
-  # loads all the modules in the Fey::Core distro
+  # See Fey::SQL, Fey::Schema, Fey::Table, Fey::Column, and more
 
 =head1 DESCRIPTION
 
@@ -35,28 +26,53 @@ generating SQL queries based on that schema.
 
 =head1 USAGE
 
-The C<Fey::Core> I<module> itself provides no methods. Loading this
-module simply loads the various modules in the C<Fey::Core>
-distribution, such as C<Fey::Schema>, F<Fey::Table>, C<Fey::Column>,
-etc.
+Loading this module does nothing. It's just here to provide docs and a
+version number for the distro.
 
-=head1 WHAT IS Fey::Core?
+=head1 WHAT IS Fey(-Core)?
 
-The goal of the C<Fey::Core> is to provide a (relatively) simple,
-flexible way to I<dynamically> generate complex SQL queries in
-Perl. The emphasis here is on dynamic, and by that I mean that the
-structure of the SQL query may change dynamically.
+The goal of the C<Fey-Core> distro is to provide a simple, flexible
+way of I<dynamically> generating complex SQL queries in Perl. The
+emphasis here is on dynamic, particularly on the tables/columns/etc
+involved in the query, not just the bound parameters.
 
-This is different from simply changing the parameters of a query
-dynamically. For example:
+In other words, this is I<not> what I mean by a dynamic query ...
 
  SELECT user_id FROM User where username = ?
 
-While this is a dynamic query in the sense that the username is
-parameter-ized, and may change on each invocation, it is still easily
-handled by a phrasebook class. If that is all you need, I suggest
-checking out C<Class::Phrasebook::SQL>, C<Data::Phrasebook>, or
-C<SQL::Library> on CPAN.
+While this is dynamic in the sense that the username is parameter-ized
+and may change on each invocation, it is still easily handled by a
+phrasebook class. If that is all you need, I suggest checking out any
+of C<Class::Phrasebook::SQL>, C<Data::Phrasebook>, or C<SQL::Library>
+on CPAN.
+
+Imagine that we have a database with a User table and a Message table,
+where each message has a user who is that message's creator. We might
+want to grab all the users in the database, in which case we would do
+a simple C<SELECT> against the User table ...
+
+ SELECT * FROM User
+
+But maybe we want to get all the users who have created a message in
+the last week:
+
+ SELECT User.*
+   FROM User JOIN Message
+        USING (user_id)
+  WHERE Message.creation_date >= ?
+
+The resultset for our query is still the smae (0+ users) but the
+constraints of the query are more complex. Now imagine another dozen
+or so permutations on how we search for users. This is what I mean by
+"dynamically" generating queries.
+
+=head1 GETTING STARTED
+
+
+=head1 RATIONALE
+
+You probably don't need to read this if you just wanted to know how to
+use Fey.
 
 =head2 Why Not Use a Phrasebook?
 
@@ -85,26 +101,23 @@ The next idea that might come to mind is to dump the phrasebook in
 favor of string manipulation. This is simple enough at first, but
 quickly gets ugly. Handling all of the possible options correctly
 requires lots of fiddly code that has to concatenate bits of SQL in
-the correct order.
+the correct order, taking into account where to put in commas,
+C<WHERE> vs C<AND>, and so on and so forth. I've been there, and trust
+me, it's madness.
 
 =head2 The Solution
 
-Hopefully, this module provides a solution to this problem. It allows
-you to specify queries in the form of I<Perl methods and data
-structures>. It provides a set of objects to represent the parts of a
-schema, specifically tables, columns, and foreign keys. Using these
-objects you can easily generate very complex queries by combining them
-with strings and passing them to the appropriate query-generating
-method.
+Hopefully, C<Fey-Core> provides a solution to the dynamic SQL
+problem. It allows you to specify queries in the form of I<Perl
+methods and data structures>. It provides a set of objects to
+represent the parts of a schema, specifically tables, columns, and
+foreign keys. Using these objects you can easily generate very complex
+queries by combining them with strings and passing them to the
+appropriate query-generating method.
 
-I also hope that this module can be used as a building block to build
-other tools. A good example would be an RDBMS-OO mapper.
-
-=head2 Random ideas to elaborate on ...
-
-* Why building queries via method calls on objects is easier
-* Join support is crucial
-* De-coupling of query from ORM
+C<Fey-Core> is also intended to be the foundation for building
+higher-level tools like an ORM. See C<Fey-Class> for just such a
+thing.
 
 =head1 HISTORY AND GOALS
 
@@ -135,60 +148,68 @@ how this works with Alzabo conceptually, but Alzabo is not as flexible
 as I'd like and it's "build a data structure" approach to query
 building can become very cumbersome.
 
-Fey, unlike Alzabo, will be able to easily generate multi-row updates
-and deletes, and it will support sub-selects, unions, etc. and all
-that other good stuff.
+Rather than complex data structures, with Fey you call methods on a
+C<Fey::SQL> object to build up a query. This turns out to be simpler
+to work with.
+
+Fey, unlike Alzabo, can be used to generate multi-row updates and
+deletes, and it supports sub-selects, unions, etc. and all that other
+good stuff.
 
 =item *
 
-Fey will support complex query creation with less fiddliness than
-Alzabo. This means that the class to represent queries will be a
-little smarter and more flexible about the order in which bits are
-added.
+Fey supports complex query creation with less fiddliness than
+Alzabo. This means that the class to represent queries is a little
+smarter and more flexible about the order in which bits are added.
 
-For example, in using Alzabo I often come across cases where I want to
-add a table to a query's join I<if it hasn't already been
-added>. Right now there's no nice simple way to do this. Specifying
-the table twice will cause an error. It would be nice to simply be
-able to do this
+For example, in using Alzabo I often came across cases where I wanted
+to add a table to a query's join I<if it hasn't already been
+added>. With Alzabo, there's no nice clean way to do this. Simply
+adding the table to the join parameter twice will cause an error. It
+would be nice to simply be able to do this
 
   $select->join( $foo_table => $bar_table );
 
-and have it do the right thing if that join already
-exists. C<Fey::SQL> does exactly that.
+and have it do the right thing if that join already exists (where the
+right thing is just do nothing). C<Fey::SQL> does exactly that.
 
 =item *
 
 Provide the core for an RDBMS-OO mapper similar to a combination of
 C<Alzabo::Runtime::Row> and C<Class::AlzaboWrapper>.
 
-This mapper will support something like Alzabo's "potential" rows,
-which are objects that have the same API as these row objects, but do
-not represent data in the DBMS.
-
-Finally, it will have support the same type of simple "unique
-row/object cache" that Alzabo provides. This type of dirt-simple
-caching has proven to be a big win in many applications I've written.
+At the same time, query generation and the ORM are de-coupled. You can
+use C<Fey-Core> to generate queries without having to every use the
+C<Fey-Class> ORM.
 
 =item *
 
-Be declarative like Moose. In particular, Fey's ORM pieces will be as
-declarative as possible, and aim to emulate Moose where possible.
+Be declarative like Moose. In particular, the C<Fey-Class> ORM is as
+declarative as possible, and aims to emulate Moose's declarative sugar
+style where possible.
+
+=item *
+
+Leverage the API user's SQL knowledge. Building up queries with Fey
+looks enough like SQL that you shouldn't have to think I<too> hard
+about it. This means join support is baked in at a core level, as are
+subselects and ideally anything else you can do in SQL.
 
 =back
 
 =head2 Problems with Alzabo
 
-Here are some of the problems I've had with Alzabo over the years:
+Here are some of the problems I've had with Alzabo over the years
+which inspired me to create Fey ...
 
 =over 4
 
 =item *
 
-Adding support for a new DBMS is a lot of work, so it only supports
-MySQL and Postgres. Alzabo tries to be really smart about preventing
-users from shooting themselves in the foot, and requires a lot of
-specific code for each DBMS to achieve this.
+Adding support for a new DBMS to Alzabo is a lot of work, so it only
+supports MySQL and Postgres. Alzabo tries to be really smart about
+preventing users from shooting themselves in the foot, and requires a
+lot of DBMS-specific code to achieve this.
 
 In retrospect, being a lot dumber and allowing for foot-shooting makes
 supporting a new DBMS much easier. People generally know how their
@@ -203,9 +224,9 @@ DBMS-specific features without per-DBMS classes.
 
 Alzabo has too much DBMS-specific knowledge. If you want to use a SQL
 function in a query, you have to import a corresponding Perl function
-from the appropriate C<Alzabo::SQLMaker> subclass.
-
-This means that you're limited to what that subclass defines.
+from the appropriate C<Alzabo::SQLMaker>, which limits you to what's
+already defined, or forces you to go through a cumbersome API to
+define a new SQL function for use in your Perl code.
 
 By contrast, Fey has simple generic support for arbitrary functions
 via the C<Fey::Literal::Function> class. If you need more flexibility
@@ -214,7 +235,9 @@ arbitrary snippet to insert into your SQL.
 
 A related problem is that Alzabo doesn't support multiple versions of
 a DBMS very well. Either it doesn't work with an older version at all,
-or it doesn't support some enhanced capability of a newer version.
+or it doesn't support some enhanced capability of a newer version. It
+mostly supports whatever version I happened to be using when I wrote a
+specific piece of functionality.
 
 =item *
 
@@ -314,18 +337,6 @@ Some of its meanings are "otherworldly" or "magical". Attempting to
 combine SQL and OO in any way is certainly unnatural, and if done
 right, perhaps magical. Fey can also mean "appearing slightly
 crazy". This project is certainly that.
-
-=back
-
-=head1 OTHER MODULES
-
-This module is based on many years of using and maintaining C<Alzabo>,
-which is a much more ambitious project. There are modules similar to
-this one on CPAN:
-
-=over 4
-
-=item * SQL::Abstract
 
 =back
 
