@@ -6,6 +6,7 @@ use Module::Build;
 my $builder =
     Module::Build->new
         ( module_name        => 'Fey::Core',
+          dist_version_from  => 'lib/Fey.pm',
           license            => 'perl',
           requires =>
           { 'Class::Accessor::Fast'                  => 0,
