@@ -133,6 +133,14 @@ Note that if you use a placeholder object in this case, then the query
 will not be transformed into an C<IS (NOT) NULL> expression, since the
 value of the placeholder is not known when the SQL is being generated.
 
+You can also use C<and()> instead of where if you like the look ...
+
+  $sql->where( $size, '=', $value )
+      ->and  ( $quantity, '>', 10 );
+
+The C<and()> method is just sugar, since by default, multiple calls to
+C<where()> end up concatenated with an C<AND> in the resulting SQL.
+
 =head3 Boolean AND/OR
 
 You can pass the strings "and" and "or" to the C<where()> method in

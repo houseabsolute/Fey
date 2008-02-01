@@ -22,6 +22,13 @@ sub where
     return $self;
 }
 
+# Just some sugar
+sub and
+{
+    my $self = shift;
+
+    $self->where(@_);
+}
 
 {
     my %dispatch = ( 'and' => '_and',
@@ -148,6 +155,11 @@ C<WHERE> clause.
 This role provides the following methods:
 
 =head2 $query->where()
+
+See the L<Fey::SQL section on WHERE Clauses|Fey::SQL/WHERE Clauses>
+for more details.
+
+=head2 $query->and()
 
 See the L<Fey::SQL section on WHERE Clauses|Fey::SQL/WHERE Clauses>
 for more details.

@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 20;
+use Test::More tests => 21;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -168,6 +168,16 @@ my $dbh = Fey::Test->mock_dbh();
 
     is( $q->_where_clause($dbh), q{WHERE ( "User"."user_id" = 2 )},
         'subgroup in where clause' );
+}
+
+{
+    my $q = Fey::SQL->new_select()->select();
+
+    $q->where( $s->table('User')->column('user_id'), '=', 2 )
+      ->and  ( $s->table('User')->column('username'), '=', 'bob' );
+
+    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = 2 AND "User"."username" = 'bob'},
+        'where() and and() methods' );
 }
 
 {
