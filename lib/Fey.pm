@@ -12,11 +12,31 @@ __END__
 
 =head1 NAME
 
-Fey - Better SQL Generation Through
+Fey - Better SQL Generation Through Perl
 
 =head1 SYNOPSIS
 
-  # See Fey::SQL, Fey::Schema, Fey::Table, Fey::Column, and more
+  use Fey::Literal::Function;
+  use Fey::Placeholder;
+  use Fey::Schema;
+  use Fey::SQL;
+
+
+  my $schema = hand_waving();
+
+  my $user  = $schema->table('User');
+  my $group = $schema->table('Group')
+
+  my $select = Fey::SQL->new_insert();
+
+  my $func = Fey::Literal::Function->new( 'LCASE', $user->column('username') );
+
+  $select->select( $user->columns( 'user_id', 'username' ) )
+         ->from( $user, $group )
+         ->where( $group->group_id, 'IN', 1, 2, 3, )
+         ->and  ( $func, 'LIKE', 'smith%' );
+
+  print $select->sql($dbh);
 
 =head1 DESCRIPTION
 
