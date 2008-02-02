@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 24;
+use Test::More tests => 25;
 
 use Fey::SQL;
 
@@ -59,11 +59,11 @@ my $dbh = Fey::Test->mock_dbh();
     my $q = Fey::SQL->new_select()->select();
 
     eval { $q->from( $s->table('User'), 'foo' ) };
-    like( $@, qr/invalid first two arguments/,
+    like( $@, qr/\Qthe first two arguments to from() were not valid (not tables or something else joinable)/,
           'from() called with two args, one not a table' );
 
     eval { $q->from( 'foo', $s->table('User') ) };
-    like( $@, qr/invalid first two arguments/,
+    like( $@, qr/\Qthe first two arguments to from() were not valid (not tables or something else joinable)/,
           'from() called with two args, one not a table' );
 }
 
@@ -255,5 +255,16 @@ my $dbh = Fey::Test->mock_dbh();
 
     eval { $q->from($table) };
     like( $@, qr/\Qfrom() called with invalid parameters/,
+          'cannot pass a table without a schema to from()' );
+}
+
+{
+    my $q = Fey::SQL->new_select()->select();
+    my $table = Fey::Table->new( name => 'NewTable' );
+
+    my $non_table = bless {}, 'Thingy';
+
+    eval { $q->from( $table, $non_table ) };
+    like( $@, qr/\Qthe first two arguments to from() were not valid (not tables or something else joinable)/,
           'cannot pass a table without a schema to from()' );
 }
