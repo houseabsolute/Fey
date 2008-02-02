@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 31;
+use Test::More tests => 32;
 
 use Fey::Table;
 
@@ -80,6 +80,10 @@ use Fey::Table;
 
     eval { $t->add_candidate_key('no_such_thing') };
     like( $@, qr/The column no_such_thing is not part of the Test table./,
+          'add_candidate_key() called with invalid column name' );
+
+    eval { $t->add_candidate_key() };
+    like( $@, qr/\Q0 parameters/,
           'add_candidate_key() called with invalid column name' );
 
     $t->add_candidate_key('test_id');
