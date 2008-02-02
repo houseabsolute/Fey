@@ -44,6 +44,11 @@ The C<Fey> distribution contains a set of modules for representing the
 components of a DBMS schema, and for dynamically generating SQL
 queries based on that schema.
 
+=head1 EARLY VERSION WARNING
+
+B<This is still very new software, and APIs may change in future
+releases without notice. You have been warned.>
+
 =head1 USAGE
 
 Loading this module does nothing. It's just here to provide docs and a
