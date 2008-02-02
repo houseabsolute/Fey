@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 37;
+use Test::More tests => 38;
 
 use Fey::Table;
 
@@ -152,6 +152,10 @@ use Fey::Table;
     like( $@, qr/\Q0 parameters/,
           'has_candidate_key() called with no parameters' );
 
+    eval { $t->has_candidate_key('no_such_thing') };
+    like( $@, qr/The column no_such_thing is not part of the User table./,
+          'has_candidate_key() called with invalid column name' );
+
     $t->remove_candidate_key('user_id');
     is_deeply( _keys_to_names( $t->candidate_keys() ),
                [ [ 'email', 'username' ] ],
@@ -164,7 +168,7 @@ use Fey::Table;
                'one key, email + username after removing key which is not in table'
              );
 
-    eval { $t->add_candidate_key('no_such_thing') };
+    eval { $t->remove_candidate_key('no_such_thing') };
     like( $@, qr/The column no_such_thing is not part of the User table./,
           'remove_candidate_key() called with invalid column name' );
 
