@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 32;
+use Test::More tests => 33;
 
 use Fey::Table;
 
@@ -90,6 +90,12 @@ use Fey::Table;
     is_deeply( _keys_to_names( $t->candidate_keys() ),
                [ [ 'test_id' ] ],
                'one key set and it contains only test_id'
+             );
+
+    $t->add_candidate_key('test_id');
+    is_deeply( _keys_to_names( $t->candidate_keys() ),
+               [ [ 'test_id' ] ],
+               'one key set and it contains only test_id (after adding same key twice)'
              );
 
     my @pk = $t->primary_key();
