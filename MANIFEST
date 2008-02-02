@@ -1,10 +1,12 @@
+.shipit
 Build.PL
 Changes
 GOALS
+lib/Fey.pm
 lib/Fey/Column.pm
 lib/Fey/Column/Alias.pm
-lib/Fey/Core.pm
 lib/Fey/Exceptions.pm
+lib/Fey/FakeDBI.pm
 lib/Fey/FK.pm
 lib/Fey/Literal.pm
 lib/Fey/Literal/Function.pm
@@ -25,7 +27,6 @@ lib/Fey/Role/SQL/HasOrderByClause.pm
 lib/Fey/Role/SQL/HasWhereClause.pm
 lib/Fey/Schema.pm
 lib/Fey/SQL.pm
-lib/Fey/SQL/Base.pm
 lib/Fey/SQL/Delete.pm
 lib/Fey/SQL/Fragment/Join.pm
 lib/Fey/SQL/Fragment/SubSelect.pm
@@ -48,6 +49,7 @@ t/Column-guess-type.t
 t/Column.t
 t/Column/Alias.t
 t/Exceptions.t
+t/FakeDBI.t
 t/FK.t
 t/Literal-as-sql.t
 t/Literal.t
@@ -71,3 +73,5 @@ t/SQL/Update.t
 t/Table.t
 t/Table/Alias.t
 t/Validate.t
+Makefile.PL
+META.yml
