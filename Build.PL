@@ -32,6 +32,7 @@ my $builder =
           },
           create_makefile_pl   => 'passthrough',
           create_readme        => 1,
+          sign                 => 1,
           recursive_test_files => 1,
         );
 
