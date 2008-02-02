@@ -71,7 +71,7 @@ sub BUILD
         param_error "All columns passed to add_foreign_key() must have a table.";
     }
 
-    for my $p ( [ source => \@source ], [ target => \@target ]  ) ## no critic (Comma)
+    for my $p ( [ source => \@source ], [ target => \@target ]  )
     {
         my ( $name, $array ) = @{$p};
         if ( uniq( map { $_->table() } @{$array} ) > 1 )
@@ -122,7 +122,7 @@ sub target_table
 
 {
     my $spec = (TABLE_OR_NAME_TYPE);
-    sub has_tables ## no critic (Subroutines::RequireArgUnpacking)
+    sub has_tables
     {
         my $self = shift;
         my ( $table1, $table2 ) = validate_pos( @_, $spec, $spec );
@@ -141,7 +141,7 @@ sub target_table
 
 {
     my $spec = (COLUMN_TYPE);
-    sub has_column ## no critic (Subroutines::RequireArgUnpacking)
+    sub has_column
     {
         my $self  = shift;
         my ($col) = validate_pos( @_, $spec );

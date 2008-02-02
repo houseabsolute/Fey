@@ -10,29 +10,29 @@ eval 'use Test::Pod::Coverage 1.04; use Pod::Coverage::Moose;';
 plan skip_all => 'Test::Pod::Coverage 1.04 and Pod::Coverage::Moose required for testing POD coverage'
     if $@;
 
-my @mods = sort grep { ! /::Fragment::|::Test|::Validate/ } Test::Pod::Coverage::all_modules();
+my @mods = sort grep { include($_) } Test::Pod::Coverage::all_modules();
 
 plan tests => scalar @mods;
 
 
-my %RoleMethods;
-for my $role ( grep { /^Fey::Role/ } @mods )
-{
-    my $pc = Pod::Coverage->new( package => $role );
-    @RoleMethods{ $pc->_get_syms($role) } = ();
-}
-
-my $role_meth_re =
-    join '|', map { quotemeta } sort keys %RoleMethods;
-$role_meth_re = qr/^(?:$role_meth_re)$/;
-
 for my $mod (@mods)
 {
-    my @trustme = qr/^(?:meta|BUILD)$/;
-    push @trustme, $role_meth_re,
-        unless $mod =~ /::Role::/;
+    my @trustme = qr/^BUILD$/;
 
     pod_coverage_ok( $mod, { coverage_class => 'Pod::Coverage::Moose',
-                             trustme => \@trustme },
+                             trustme => \@trustme,
+                           },
                      "pod coverage for $mod" );
+}
+
+sub include
+{
+    my $mod = shift;
+
+    return 0 if $mod =~ /::Fragment::/;
+    return 0 if $mod =~ /::Test/;
+    return 0 if $mod =~ /::Validate/;
+    return 0 if $mod =~ /::FakeDBI/;
+
+    return 1;
 }

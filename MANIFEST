@@ -56,7 +56,6 @@ t/FK.t
 t/Literal-as-sql.t
 t/Literal.t
 t/NamedObjectSet.t
-t/perlcritic.t
 t/pod-coverage.t
 t/pod.t
 t/Schema-memory-cycle.t

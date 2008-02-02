@@ -132,7 +132,7 @@ sub BUILD
 
         for my $p (@TypesRe)
         {
-            return $p->[0] if $type =~ /$p->[1]/; ## no critic (RegularExpressions)
+            return $p->[0] if $type =~ /$p->[1]/;
         }
 
         return 'other';
@@ -150,7 +150,7 @@ sub _clone
 
 sub is_alias { return 0 }
 
-sub alias ## no critic (Subroutines::RequireArgUnpacking)
+sub alias
 {
     my $self = shift;
 

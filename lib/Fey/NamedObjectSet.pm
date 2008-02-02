@@ -32,7 +32,7 @@ sub add
     return;
 }
 
-sub delete ## no critic Homonym
+sub delete
 {
     my $self = shift;
 
