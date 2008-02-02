@@ -36,6 +36,6 @@
 #   Mac OSX SMB mount metadata files
 \B\._
 # Avoid archives of this distribution
-\bQ-[\d\.\_]+
+\bFey-Core-[\d\.\_]+
 
-dev
+\bGOALS\b
