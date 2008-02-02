@@ -1,7 +1,7 @@
 .shipit
 Build.PL
 Changes
-GOALS
+dev/run-cover
 lib/Fey.pm
 lib/Fey/Column.pm
 lib/Fey/Column/Alias.pm
@@ -43,7 +43,9 @@ lib/Fey/Table/Alias.pm
 lib/Fey/Test.pm
 lib/Fey/Validate.pm
 LICENSE
+Makefile.PL
 MANIFEST			This list of files
+META.yml
 README
 t/Column-guess-type.t
 t/Column.t
@@ -73,5 +75,3 @@ t/SQL/Update.t
 t/Table.t
 t/Table/Alias.t
 t/Validate.t
-Makefile.PL
-META.yml
