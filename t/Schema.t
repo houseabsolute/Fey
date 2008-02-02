@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 38;
+use Test::More tests => 37;
 
 use Fey::Schema;
 
@@ -156,28 +156,6 @@ use Fey::Schema;
         'foreign_keys_between_tables() returns just one fk in the case of a self-referential fk' );
     is_deeply( [ map { $_->name() } @{ $fks[0]->source_columns() } ], [ 'parent_message_id' ],
                'source_columns() returns Message.parent_message_id' );
-}
-
-{
-    my $s = Fey::Test->mock_test_schema();
-
-    my $s2 = Fey::Schema->new( name => 'AnotherSchema' );
-    my $t = Fey::Table->new( name => 'User' );
-    $s2->add_table($t);
-
-    my $c = Fey::Column->new( name => 'user_id',
-                              type => 'integer',
-                            );
-
-    $t->add_column($c);
-
-    my $fk = Fey::FK->new( source_columns => $c,
-                           target_columns => $s->table('UserGroup')->column('user_id'),
-                         );
-
-    eval { $s->add_foreign_key($fk) };
-    like( $@, qr/does not contain/,
-          'Cannot add a foreign key for tables not in the schema' );
 }
 
 {

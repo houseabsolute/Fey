@@ -83,22 +83,16 @@ use Scalar::Util qw( blessed );
         my $self = shift;
         my ($fk) = validate_pos( @_, $spec );
 
-        my $source_table_name = $fk->source_table()->name();
-        my $target_table_name = $fk->target_table()->name();
-
-        param_error "This schema does not contain the $source_table_name and $target_table_name tables"
-            unless (    $fk->source_table()->schema()
-                     && $fk->target_table()->schema()
-                     &&    $fk->source_table()->schema()->name()
-                        eq $fk->target_table()->schema()->name()
-                   );
-
         my $fk_id = $fk->id();
+
+        my $source_table_name = $fk->source_table()->name();
 
         for my $col_name ( map { $_->name() } @{ $fk->source_columns() } )
         {
             $self->{fk}{$source_table_name}{$col_name}{$fk_id} = $fk;
         }
+
+        my $target_table_name = $fk->target_table()->name();
 
         for my $col_name ( map { $_->name() } @{ $fk->target_columns() } )
         {
