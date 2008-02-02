@@ -58,6 +58,33 @@ interface for making SQL statement objects.
 For convenience, loading this module loads all of the C<Fey::SQL::*>
 classes, such as L<Fey::SQL::Select>, L<Fey::SQL::Delete>, etc.
 
+=head1 METHODS
+
+This class acts as a factory for the various SQL statement classes,
+such as L<Fey::SQL::Select> or L<Fey::SQL::Update>. This is simply
+sugar which makes it easy to replace C<Fey::SQL> with a subclass,
+either for your application or for a specific DBMS.
+
+=head2 Fey::SQL->new_select()
+
+Returns a new C<Fey::SQL::Select> object.
+
+=head2 Fey::SQL->new_insert()
+
+Returns a new C<Fey::SQL::Insert> object.
+
+=head2 Fey::SQL->new_update()
+
+Returns a new C<Fey::SQL::Update> object.
+
+=head2 Fey::SQL->new_delete()
+
+Returns a new C<Fey::SQL::Delete> object.
+
+=head2 Fey::SQL->new_where()
+
+Returns a new C<Fey::SQL::Where> object.
+
 =head1 CREATING SQL
 
 This documentation covers the clauses in SQL queries which are shared
