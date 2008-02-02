@@ -334,6 +334,17 @@ columns in the table. If given a list of names, it returns only the
 specified columns. If a name is given which doesn't match a column in
 the table, then it is ignored.
 
+=head2 $table->candidate_keys()
+
+Returns all of the candidate keys for the table as a list. Each
+element of the list is an array reference containing one or more
+columns.
+
+=head2 $table->has_candidate_key(@columns)
+
+This method returns true if the table has the given key. A key is
+identified as a list of names or C<Fey::Column> objects.
+
 =head2 $table->add_candidate_key(@columns)
 
 This method adds a new candidate key to the table. The list of columns
