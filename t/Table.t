@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 33;
+use Test::More tests => 34;
 
 use Fey::Table;
 
@@ -84,7 +84,7 @@ use Fey::Table;
 
     eval { $t->add_candidate_key() };
     like( $@, qr/\Q0 parameters/,
-          'add_candidate_key() called with invalid column name' );
+          'add_candidate_key() called with no parameters' );
 
     $t->add_candidate_key('test_id');
     is_deeply( _keys_to_names( $t->candidate_keys() ),
@@ -153,6 +153,10 @@ use Fey::Table;
                [ [ 'email', 'username' ] ],
                'one key, email + username'
              );
+
+    eval { $t->remove_candidate_key() };
+    like( $@, qr/\Q0 parameters/,
+          'remove_candidate_key() called with no parameters' );
 }
 
 sub _keys_to_names
