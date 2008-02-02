@@ -86,7 +86,7 @@ Dave Rolsky, <autarch@urth.org>
 
 =head1 BUGS
 
-See C<Fey::Core> for details on how to report bugs.
+See L<Fey> for details on how to report bugs.
 
 =head1 COPYRIGHT & LICENSE
 
