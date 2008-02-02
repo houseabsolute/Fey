@@ -18,9 +18,10 @@ use Moose;
 use Moose::Util::TypeConstraints;
 
 has 'id' =>
-    ( is      => 'ro',
-      lazy    => 1,
-      default => \&_make_id,
+    ( is       => 'ro',
+      lazy     => 1,
+      default  => \&_make_id,
+      init_arg => "\0id",
     );
 
 subtype 'ArrayOfColumns'
@@ -52,9 +53,6 @@ sub BUILD
 {
     my $self = shift;
     my $p    = shift;
-
-    param_error "The id will be generated automatically"
-        if defined $p->{id};
 
     my @source = @{ $self->source_columns() };
     my @target = @{ $self->target_columns() };
