@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 35;
+use Test::More tests => 36;
 
 use Fey::Table;
 
@@ -152,6 +152,12 @@ use Fey::Table;
     is_deeply( _keys_to_names( $t->candidate_keys() ),
                [ [ 'email', 'username' ] ],
                'one key, email + username'
+             );
+
+    $t->remove_candidate_key('user_id');
+    is_deeply( _keys_to_names( $t->candidate_keys() ),
+               [ [ 'email', 'username' ] ],
+               'one key, email + username after removing key which is not in table'
              );
 
     eval { $t->add_candidate_key('no_such_thing') };
