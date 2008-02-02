@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 36;
+use Test::More tests => 37;
 
 use Fey::Table;
 
@@ -147,6 +147,10 @@ use Fey::Table;
 
     ok( ! $t->has_candidate_key( 'username' ),
         'table does not have key for (username)' );
+
+    eval { $t->has_candidate_key() };
+    like( $@, qr/\Q0 parameters/,
+          'has_candidate_key() called with no parameters' );
 
     $t->remove_candidate_key('user_id');
     is_deeply( _keys_to_names( $t->candidate_keys() ),
