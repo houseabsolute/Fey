@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 34;
+use Test::More tests => 35;
 
 use Fey::Table;
 
@@ -153,6 +153,10 @@ use Fey::Table;
                [ [ 'email', 'username' ] ],
                'one key, email + username'
              );
+
+    eval { $t->add_candidate_key('no_such_thing') };
+    like( $@, qr/The column no_such_thing is not part of the User table./,
+          'remove_candidate_key() called with invalid column name' );
 
     eval { $t->remove_candidate_key() };
     like( $@, qr/\Q0 parameters/,
