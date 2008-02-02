@@ -28,9 +28,6 @@ has '_tables' =>
                  },
     );
 
-no Moose;
-__PACKAGE__->meta()->make_immutable();
-
 use Fey::NamedObjectSet;
 use Fey::SQL;
 use Fey::Table;
@@ -176,6 +173,8 @@ use Scalar::Util qw( blessed );
     }
 }
 
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
 
