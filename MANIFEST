@@ -53,6 +53,7 @@ t/Column/Alias.t
 t/Exceptions.t
 t/FakeDBI.t
 t/FK.t
+t/kwalitee.t
 t/Literal-as-sql.t
 t/Literal.t
 t/NamedObjectSet.t
