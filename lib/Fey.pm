@@ -40,21 +40,46 @@ Fey - Better SQL Generation Through Perl
 
 =head1 DESCRIPTION
 
-The C<Fey::Core> distribution contains a set of modules for
-representing the components of a DBMS schema, and for dynamically
-generating SQL queries based on that schema.
+The C<Fey> distribution contains a set of modules for representing the
+components of a DBMS schema, and for dynamically generating SQL
+queries based on that schema.
 
 =head1 USAGE
 
 Loading this module does nothing. It's just here to provide docs and a
 version number for the distro.
 
-=head1 WHAT IS Fey(-Core)?
+=head1 WHAT IS Fey?
 
-The goal of the C<Fey-Core> distro is to provide a simple, flexible
-way of I<dynamically> generating complex SQL queries in Perl. The
-emphasis here is on dynamic, particularly on the tables/columns/etc
-involved in the query, not just the bound parameters.
+The goal of the core C<Fey> distro is to provide a simple, flexible
+way of I<dynamically> generating complex SQL queries in Perl. Other
+packages build on top of this functionality to create a complete ORM
+(C<Fey-Class>).
+
+=head1 GETTING STARTED
+
+If you're interested in an ORM, you should probably start by looking
+at the C<Fey-Class> distro.
+
+To generate SQL with Fey, you first need to create a set of objects
+representing the tables and foreign keys in your schema. The simplest
+way to do this is to use the C<Fey-Loader> distro, which will connect
+to an existing schema and generate a set of objects for you.
+
+Alternatively, you can create these objects via Fey's API. You would
+first create a L<Fey::Schema> object. This object will hold all of
+your tables and foreign keys. If you want to create your schema this
+way, you should start with the L<Fey::Schema>, L<Fey::Table>, and
+L<Fey::FK> APIs. You'll also want to use the L<Fey::Column> API.
+
+Once you have a schema, you can generate SQL using L<Fey::SQL>, or a
+DBMS-specific subclass of L<Fey::SQL>.
+
+=head1 THE CORE FEY DISTRO
+
+The emphasis in the core Fey distro is on dynamic, particularly on the
+tables/columns/etc involved in the query, not just the bound
+parameters.
 
 In other words, this is I<not> what I mean by a dynamic query ...
 
@@ -85,9 +110,6 @@ The resultset for our query is still the smae (0+ users) but the
 constraints of the query are more complex. Now imagine another dozen
 or so permutations on how we search for users. This is what I mean by
 "dynamically" generating queries.
-
-=head1 GETTING STARTED
-
 
 =head1 RATIONALE
 
