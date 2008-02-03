@@ -81,7 +81,7 @@ __END__
 
 =head1 NAME
 
-Fey::Column - Represents an alias for a column
+Fey::Column::Alias - Represents an alias for a column
 
 =head1 SYNOPSIS
 
