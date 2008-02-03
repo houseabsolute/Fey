@@ -58,7 +58,7 @@ __END__
 
 =head1 NAME
 
-Fey::SQL::Fragment::Subselect - Represents a subselect
+Fey::SQL::Fragment::SubSelect - Represents a subselect
 
 =head1 DESCRIPTION
 
