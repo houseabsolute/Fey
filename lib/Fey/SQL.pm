@@ -42,7 +42,7 @@ __END__
 
 =head1 NAME
 
-Fey::SQL - Documentation on SQL generation with Fey
+Fey::SQL - Documentation on SQL generation with Fey and SQL object factory
 
 =head1 SYNOPSIS
 
