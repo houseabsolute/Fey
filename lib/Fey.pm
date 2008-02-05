@@ -59,12 +59,12 @@ version number for the distro.
 The goal of the core C<Fey> distro is to provide a simple, flexible
 way of I<dynamically> generating complex SQL queries in Perl. Other
 packages build on top of this functionality to create a complete ORM
-(C<Fey-ORM>).
+(C<Fey::ORM>).
 
 =head1 GETTING STARTED
 
 If you're interested in an ORM, you should probably start by looking
-at the C<Fey-ORM> distro.
+at the C<Fey::ORM> distro.
 
 To generate SQL with Fey, you first need to create a set of objects
 representing the tables and foreign keys in your schema. The simplest
@@ -163,7 +163,7 @@ queries by combining them with strings and passing them to the
 appropriate query-generating method.
 
 C<Fey-Core> is also intended to be the foundation for building
-higher-level tools like an ORM. See C<Fey-ORM> for just such a
+higher-level tools like an ORM. See C<Fey::ORM> for just such a
 thing.
 
 =head1 HISTORY AND GOALS
@@ -227,11 +227,11 @@ C<Alzabo::Runtime::Row> and C<Class::AlzaboWrapper>.
 
 At the same time, query generation and the ORM are de-coupled. You can
 use C<Fey-Core> to generate queries without having to every use the
-C<Fey-ORM> ORM.
+C<Fey::ORM> ORM.
 
 =item *
 
-Be declarative like Moose. In particular, the C<Fey-ORM> ORM is as
+Be declarative like Moose. In particular, the C<Fey::ORM> ORM is as
 declarative as possible, and aims to emulate Moose's declarative sugar
 style where possible.
 
