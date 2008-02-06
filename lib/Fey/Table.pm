@@ -15,7 +15,7 @@ use Fey::Validate
         SCHEMA_TYPE );
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
-use Moose;
+use MooseX::StrictConstructor;
 use Moose::Util::TypeConstraints;
 
 with 'Fey::Role::Joinable';

@@ -4,12 +4,20 @@ use strict;
 use warnings;
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
-use Moose;
+use MooseX::StrictConstructor;
 
-with 'Fey::Role::SQL::HasWhereClause';
+with 'Fey::Role::SQL::HasBindParams',
+     'Fey::Role::SQL::HasWhereClause';
 
 no Moose;
 __PACKAGE__->meta()->make_immutable();
+
+sub bind_params
+{
+    my $self = shift;
+
+    return $self->_where_clause_bind_params();
+}
 
 
 1;
@@ -45,6 +53,11 @@ a C<Fey::SQL> object.
 
 See the L<Fey::SQL section on WHERE Clauses|Fey::SQL/WHERE Clauses>
 for more details.
+
+=head2 $where->bind_params()
+
+See the L<Fey::SQL section on Bind Parameters|Fey::SQL/Bind
+Parameters> for more details.
 
 =head1 ROLES
 

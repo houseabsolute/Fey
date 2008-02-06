@@ -50,7 +50,7 @@ Fey::Role::SQL::HasLimitClause - A role for queries which can include a LIMIT cl
 
 =head1 SYNOPSIS
 
-  use Moose;
+  use MooseX::StrictConstructor;
 
   with 'Fey::Role::SQL::HasLimitClause';
 

@@ -15,11 +15,13 @@ use Fey::Validate
 use Scalar::Util qw( blessed );
 
 use Fey::SQL::Fragment::SubSelect;
-use Fey::Literal::Term;
+use Fey::Literal;
+use Fey::Placeholder;
 
-use constant LHS  => 0;
-use constant COMP => 1;
-use constant RHS  => 2;
+use constant LHS         => 0;
+use constant COMP        => 1;
+use constant RHS         => 2;
+use constant BIND_PARAMS => 3;
 
 our $eq_comp_re = qr/^(?:=|!=|<>)$/;
 our $in_comp_re = qr/^(?:not\s+)?in$/i;
@@ -40,20 +42,40 @@ our $in_comp_re = qr/^(?:not\s+)?in$/i;
 
     sub new
     {
-        my $class = shift;
+        my $class            = shift;
+        my $auto_placeholders = shift;
+
         my $rhs_count = @_ - 2;
         $rhs_count = 1 if $rhs_count < 1;
 
         my ( $lhs, $comp, @rhs ) =
             validate_pos( @_, $comparable, $operator, ($comparable) x $rhs_count );
 
+        my @bind;
         for ( $lhs, @rhs )
         {
-            $_ = Fey::Literal->new_from_scalar($_)
-                unless blessed $_;
-            $_ = Fey::SQL::Fragment::SubSelect->new($_)
-                if $_->isa('Fey::SQL::Select');
+            unless ( blessed $_ && $_->can('is_comparable') )
+            {
+                if ( defined $_ && $auto_placeholders )
+                {
+                    push @bind, $_;
+
+                    $_ = Fey::Placeholder->new();
+                }
+                else
+                {
+                    $_ = Fey::Literal->new_from_scalar($_);
+                }
+            }
+
+            if ( $_->isa('Fey::SQL::Select') )
+            {
+                push @bind, $_->bind_params();
+
+                $_ = Fey::SQL::Fragment::SubSelect->new($_);
+            }
         }
+
         if ( grep { $_->isa('Fey::SQL::Fragment::SubSelect') } @rhs )
         {
             param_error "Cannot use a subselect on the right-hand side with $comp"
@@ -72,7 +94,7 @@ our $in_comp_re = qr/^(?:not\s+)?in$/i;
                 unless $comp =~ /^(?:$in_comp_re|between)$/i;
         }
 
-        return bless [ $lhs, $comp, \@rhs ], $class;
+        return bless [ $lhs, $comp, \@rhs, \@bind ], $class;
     }
 }
 
@@ -125,6 +147,11 @@ sub sql
           . ' '
           . $_[0][RHS][0]->sql_or_alias( $_[1] )
         );
+}
+
+sub bind_params
+{
+    return @{ $_[0]->[BIND_PARAMS] };
 }
 
 

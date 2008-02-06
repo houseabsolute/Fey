@@ -165,7 +165,7 @@ my $dbh = Fey::Test->mock_dbh();
 {
     my $q = Fey::SQL->new_select()->select();
 
-    my $q2 = Fey::SQL->new_where();
+    my $q2 = Fey::SQL->new_where( auto_placeholders => 0 );
     $q2->where( $s->table('User')->column('user_id'), '=', 2 );
 
     $q->from( $s->table('User'), 'left', $s->table('UserGroup'), $q2 );
@@ -181,7 +181,7 @@ my $dbh = Fey::Test->mock_dbh();
 {
     my $q = Fey::SQL->new_select()->select();
 
-    my $q2 = Fey::SQL->new_where();
+    my $q2 = Fey::SQL->new_where( auto_placeholders => 0 );
     $q2->where( $s->table('User')->column('user_id'), '=', 2 );
 
     my @t = ( $s->table('User'), $s->table('UserGroup') );

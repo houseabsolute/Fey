@@ -4,9 +4,11 @@ use strict;
 use warnings;
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
-use Moose;
+use MooseX::StrictConstructor;
 
-with 'Fey::Role::SQL::HasWhereClause', 'Fey::Role::SQL::HasOrderByClause',
+with 'Fey::Role::SQL::HasBindParams',
+     'Fey::Role::SQL::HasWhereClause',
+     'Fey::Role::SQL::HasOrderByClause',
      'Fey::Role::SQL::HasLimitClause';
 
 use Fey::Exceptions qw( param_error );
@@ -101,12 +103,23 @@ use Scalar::Util qw( blessed );
 
         for ( my $x = 0; $x < @_; $x += 2 )
         {
-            push @{ $self->{set} },
-                [ $_[$x],
-                  blessed $_[ $x + 1 ]
-                  ? $_[ $x + 1 ]
-                  : Fey::Literal->new_from_scalar( $_[ $x + 1 ] )
-                ];
+            my $val = $_[ $x + 1 ];
+
+            unless ( blessed $val )
+            {
+                if ( $self->auto_placeholders() )
+                {
+                    push @{ $self->{bind_params} }, $val;
+
+                    $val = Fey::Placeholder->new();
+                }
+                else
+                {
+                    $val = Fey::Literal->new_from_scalar($val );
+                }
+            }
+
+            push @{ $self->{set} }, [ $_[$x], $val ];
         }
 
         return $self;
@@ -172,6 +185,15 @@ sub _name_and_table
 sub _name
 {
     return $_[2]->quote_identifier( $_[1]->name() );
+}
+
+sub bind_params
+{
+    my $self = shift;
+
+    return ( @{ $self->{bind_params} || [] },
+             $self->_where_clause_bind_params(),
+           );
 }
 
 no Moose;
@@ -258,6 +280,11 @@ for more details.
 
 Returns the full SQL statement which this object represents. A DBI
 handle must be passed so that identifiers can be properly quoted.
+
+=head2 $update->bind_params()
+
+See the L<Fey::SQL section on Bind Parameters|Fey::SQL/Bind
+Parameters> for more details.
 
 =head1 ROLES
 

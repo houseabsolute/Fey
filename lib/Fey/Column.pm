@@ -14,7 +14,7 @@ use Fey::Validate
         TABLE_TYPE );
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
-use Moose;
+use MooseX::StrictConstructor;
 use Moose::Util::TypeConstraints qw( subtype as where coerce from via );
 
 with 'Fey::Role::ColumnLike';

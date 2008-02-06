@@ -19,7 +19,7 @@ Fey::Role::Comparable - A role for things that can be part of a WHERE clause
 
 =head1 SYNOPSIS
 
-  use Moose;
+  use MooseX::StrictConstructor;
 
   with 'Fey::Role::Comparable';
 

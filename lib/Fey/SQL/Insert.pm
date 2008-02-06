@@ -4,7 +4,9 @@ use strict;
 use warnings;
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
-use Moose;
+use MooseX::StrictConstructor;
+
+with 'Fey::Role::SQL::HasBindParams';
 
 use Fey::Validate
     qw( validate
@@ -81,8 +83,19 @@ sub insert { return $_[0] }
 
         for ( values %vals )
         {
-            $_ = Fey::Literal->new_from_scalar($_)
-                unless blessed $_;
+            unless ( blessed $_ )
+            {
+                if ( defined $_ && $self->auto_placeholders() )
+                {
+                    push @{ $self->{bind_params} }, $_;
+
+                    $_ = Fey::Placeholder->new();
+                }
+                else
+                {
+                    $_ = Fey::Literal->new_from_scalar($_);
+                }
+            }
         }
 
         push @{ $self->{values} }, \%vals;
@@ -149,6 +162,13 @@ sub _values_clause
     }
 
     return 'VALUES ' . join ',', @v;
+}
+
+sub bind_params
+{
+    my $self = shift;
+
+    return @{ $self->{bind_params} || [] };
 }
 
 no Moose;
@@ -227,6 +247,11 @@ This will be passed to C<< Fey::Literal->new_from_scalar() >>.
 
 Returns the full SQL statement which this object represents. A DBI
 handle must be passed so that identifiers can be properly quoted.
+
+=head2 $insert->bind_params()
+
+See the L<Fey::SQL section on Bind Parameters|Fey::SQL/Bind
+Parameters> for more details.
 
 =head1 AUTHOR
 

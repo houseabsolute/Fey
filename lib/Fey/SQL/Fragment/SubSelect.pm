@@ -51,6 +51,10 @@ sub sql_or_alias
     return $_[0]->sql( $_[1] );
 }
 
+sub bind_params
+{
+    return $_[0][SELECT]->bind_params();
+}
 
 1;
 

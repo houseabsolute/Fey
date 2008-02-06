@@ -4,10 +4,13 @@ use strict;
 use warnings;
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
-use Moose;
+use MooseX::StrictConstructor;
 
-with 'Fey::Role::Comparable', 'Fey::Role::SQL::HasWhereClause',
-     'Fey::Role::SQL::HasOrderByClause', 'Fey::Role::SQL::HasLimitClause';
+with 'Fey::Role::Comparable',
+     'Fey::Role::SQL::HasBindParams',
+     'Fey::Role::SQL::HasWhereClause',
+     'Fey::Role::SQL::HasOrderByClause',
+     'Fey::Role::SQL::HasLimitClause';
 
 use Fey::Exceptions qw( param_error );
 use Fey::Validate
@@ -296,7 +299,7 @@ sub _having_clause
     my $self = shift;
     my $dbh  = shift;
 
-    return unless $self->{having};
+    return unless @{ $self->{having} || [] };
 
     return ( 'HAVING '
              . ( join ' ',
@@ -304,6 +307,26 @@ sub _having_clause
                  @{ $self->{having} }
                )
            )
+}
+
+sub bind_params
+{
+    my $self = shift;
+
+    return
+        ( ( map { $_->bind_params() }
+            grep { $_->can('bind_params') }
+            map { $self->{from}{$_} }
+            sort keys %{ $self->{from} }
+          ),
+
+          $self->_where_clause_bind_params(),
+
+          ( map { $_->bind_params() }
+            grep { $_->can('bind_params') }
+            @{ $self->{having} }
+          ),
+        );
 }
 
 no Moose;
@@ -516,6 +539,11 @@ for more details.
 
 Returns the full SQL statement which this object represents. A DBI
 handle must be passed so that identifiers can be properly quoted.
+
+=head2 $select->bind_params()
+
+See the L<Fey::SQL section on Bind Parameters|Fey::SQL/Bind
+Parameters> for more details.
 
 =head1 ROLES
 

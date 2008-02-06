@@ -16,6 +16,7 @@ my $builder =
             'Moose'                                  => 0.34,
             'Moose::Policy'                          => 0.03,
             'MooseX::Policy::SemiAffordanceAccessor' => 0.02,
+            'MooseX::StrictConstructor'              => 0,
             'Params::Validate'                       => 0.82,
             'Scalar::Util'                           => 0,
             'Task::Weaken'                           => 0.99,

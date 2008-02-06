@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 21;
+use Test::More tests => 22;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -14,7 +14,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 my $dbh = Fey::Test->mock_dbh();
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     eval { $q->where() };
     like( $@, qr/0 parameters/,
@@ -22,7 +22,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where( $s->table('User')->column('user_id'), '=', 1 );
 
@@ -31,7 +31,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where
         ( $s->table('User')->column('user_id')->alias( alias_name => 'alias' ),
@@ -42,7 +42,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where( $s->table('User')->column('username'), 'LIKE',
                '%foo%' );
@@ -52,7 +52,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where( 1, '=', $s->table('User')->column('user_id') );
 
@@ -61,7 +61,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where( $s->table('User')->column('user_id'), '=', $s->table('User')->column('user_id') );
 
@@ -70,7 +70,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where( $s->table('User')->column('user_id'), 'IN', 1, 2, 3 );
 
@@ -79,7 +79,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where( $s->table('User')->column('user_id'), 'NOT IN', 1, 2, 3 );
 
@@ -88,7 +88,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where( $s->table('User')->column('user_id'), '=',
                Fey::Placeholder->new() );
@@ -98,9 +98,9 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
-    my $sub = Fey::SQL->new_select()->select();
+    my $sub = Fey::SQL->new_select( auto_placeholders => 0 )->select();
     $sub->select( $s->table('User')->column('user_id') );
     $sub->from( $s->table('User') );
 
@@ -111,7 +111,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where( $s->table('User')->column('user_id'), '=', undef );
 
@@ -120,7 +120,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where( $s->table('User')->column('user_id'), '!=', undef );
 
@@ -129,7 +129,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where( $s->table('User')->column('user_id'), 'BETWEEN', 1, 5 );
 
@@ -138,7 +138,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where( $s->table('User')->column('user_id'), '=', 1 );
     $q->where( $s->table('User')->column('user_id'), '=', 2 );
@@ -148,7 +148,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where( $s->table('User')->column('user_id'), '=', 1 );
     $q->where( 'or' );
@@ -160,7 +160,7 @@ my $dbh = Fey::Test->mock_dbh();
 
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where( '(' );
     $q->where( $s->table('User')->column('user_id'), '=', 2 );
@@ -171,7 +171,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     $q->where( $s->table('User')->column('user_id'), '=', 2 )
       ->and  ( $s->table('User')->column('username'), '=', 'bob' );
@@ -181,7 +181,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     eval { $q->where( $s->table('User')->column('user_id'), '=', 1, 2 ) };
     like( $@, qr/more than one right-hand side/,
@@ -189,9 +189,9 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
-    my $sub = Fey::SQL->new_select()->select();
+    my $sub = Fey::SQL->new_select( auto_placeholders => 0 )->select();
     $sub->select( $s->table('User')->column('user_id') );
     $sub->from( $s->table('User') );
 
@@ -201,7 +201,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     eval { $q->where( $s->table('User')->column('user_id'), 'BETWEEN', 1 ) };
     like( $@, qr/requires two arguments/,
@@ -209,9 +209,18 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
 
     eval { $q->where( 'totally bogus' ) };
     like( $@, qr/cannot pass one argument to where/i,
           'error when passing one arg to where' );
+}
+
+{
+    my $q = Fey::SQL->new_select( auto_placeholders => 1 )->select();
+
+    $q->where( $s->table('User')->column('user_id'), '=', undef );
+
+    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" IS NULL},
+        'undef in comparison (=) with auto placeholders' );
 }

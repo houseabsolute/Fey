@@ -42,7 +42,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_update();
+    my $q = Fey::SQL->new_update( auto_placeholders => 0 );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'), 'bubba' );
 
@@ -51,7 +51,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_update();
+    my $q = Fey::SQL->new_update( auto_placeholders => 0 );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'), 'bubba',
              $s->table('User')->column('email'), 'bubba@bubba.com',
@@ -147,7 +147,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_update();
+    my $q = Fey::SQL->new_update( auto_placeholders => 0 );
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'),
              'hello'

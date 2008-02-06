@@ -42,7 +42,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_delete();
+    my $q = Fey::SQL->new_delete( auto_placeholders => 0 );
     $q->delete()->from( $s->table('User') );
     $q->where( $s->table('User')->column('user_id'), '=', 10 );
     $q->order_by( $s->table('User')->column('user_id') );

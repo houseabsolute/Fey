@@ -6,7 +6,7 @@ use warnings;
 use Scalar::Util qw( blessed );
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
-use Moose;
+use MooseX::StrictConstructor;
 use Moose::Util::TypeConstraints;
 
 extends 'Fey::Literal';

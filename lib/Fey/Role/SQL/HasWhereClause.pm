@@ -5,6 +5,9 @@ use warnings;
 
 use Moose::Role;
 
+# doesn't work with attributes
+#requires 'use_placeholders';
+
 use Fey::Exceptions qw( param_error );
 
 use Fey::SQL::Fragment::Where::Boolean;
@@ -66,7 +69,7 @@ sub and
         }
 
         push @{ $self->{$key} },
-            Fey::SQL::Fragment::Where::Comparison->new(@_);
+            Fey::SQL::Fragment::Where::Comparison->new( $self->auto_placeholders(), @_ );
     }
 }
 
@@ -116,7 +119,7 @@ sub _subgroup_end
 
 sub _where_clause
 {
-    return unless $_[0]->{where};
+    return unless @{ $_[0]->{where} || [] };
 
     my $sql = '';
     $sql = 'WHERE '
@@ -130,6 +133,14 @@ sub _where_clause
            );
 }
 
+sub _where_clause_bind_params
+{
+    return
+        ( map { $_->bind_params() }
+          grep { $_->can('bind_params') }
+          @{ $_[0]->{where} }
+        );
+}
 
 1;
 
@@ -141,7 +152,7 @@ Fey::Role::SQL::HasWhereClause - A role for queries which can include a WHERE cl
 
 =head1 SYNOPSIS
 
-  use Moose;
+  use MooseX::StrictConstructor;
 
   with 'Fey::Role::SQL::HasWhereClause';
 

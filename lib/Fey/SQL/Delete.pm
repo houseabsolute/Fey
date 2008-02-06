@@ -4,9 +4,11 @@ use strict;
 use warnings;
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
-use Moose;
+use MooseX::StrictConstructor;
 
-with 'Fey::Role::SQL::HasWhereClause', 'Fey::Role::SQL::HasOrderByClause',
+with 'Fey::Role::SQL::HasBindParams',
+     'Fey::Role::SQL::HasWhereClause',
+     'Fey::Role::SQL::HasOrderByClause',
      'Fey::Role::SQL::HasLimitClause';
 
 use Fey::Validate
@@ -73,6 +75,13 @@ sub _tables_subclause
              map { $_[1]->quote_identifier( $_->name() ) }
              @{ $_[0]->{tables} }
            );
+}
+
+sub bind_params
+{
+    my $self = shift;
+
+    return $self->_where_clause_bind_params();
 }
 
 no Moose;
@@ -142,6 +151,11 @@ for more details.
 
 Returns the full SQL statement which this object represents. A DBI
 handle must be passed so that identifiers can be properly quoted.
+
+=head2 $delete->bind_params()
+
+See the L<Fey::SQL section on Bind Parameters|Fey::SQL/Bind
+Parameters> for more details.
 
 =head1 ROLES
 

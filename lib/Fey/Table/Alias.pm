@@ -12,7 +12,7 @@ use Fey::Validate
 use Fey::Table;
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
-use Moose;
+use MooseX::StrictConstructor;
 
 with 'Fey::Role::Joinable';
 

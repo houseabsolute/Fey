@@ -19,7 +19,7 @@ Fey::Role::Joinable - A role for things that can be part of a JOIN BY clause
 
 =head1 SYNOPSIS
 
-  use Moose;
+  use MooseX::StrictConstructor;
 
   with 'Fey::Role::Joinable';
 

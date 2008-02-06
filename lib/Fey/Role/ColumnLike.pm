@@ -42,7 +42,7 @@ Fey::Role::ColumnLike - A role for "column-like" behavior
 
 =head1 SYNOPSIS
 
-  use Moose;
+  use MooseX::StrictConstructor;
 
   with 'Fey::Role::ColumnLike';
 

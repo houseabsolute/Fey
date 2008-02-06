@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 16;
+use Test::More tests => 17;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -22,7 +22,7 @@ $s->table('User')->add_column($size);
 
 
 {
-    my $q = Fey::SQL->new_insert()->insert();
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     eval { $q->into() };
     like( $@, qr/1 was expected/,
@@ -31,7 +31,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_insert()->insert();
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $q->into( $s->table('User')->column('username') );
 
@@ -42,7 +42,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_insert()->insert();
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $q->into( $s->table('User')->column('user_id'),
               $s->table('User')->column('username') );
@@ -54,7 +54,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_insert()->insert();
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $q->into( $s->table('User')->column('user_id'),
               $s->table('User')->column('username') );
@@ -67,7 +67,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_insert()->insert();
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $q->into( $s->table('User')->column('user_id'),
               $s->table('User')->column('username') );
@@ -78,7 +78,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_insert()->insert();
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $q->into( $s->table('User')->column('user_id'),
               $s->table('User')->column('username') );
@@ -89,7 +89,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_insert()->insert();
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -99,7 +99,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_insert()->insert();
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -109,7 +109,17 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_insert()->insert();
+    my $q = Fey::SQL->new_insert( auto_placeholders => 1 )->insert();
+
+    $q->into( $s->table('User')->column('size') );
+
+    $q->values( size => undef );
+    is( $q->_values_clause($dbh), q{VALUES (NULL)},
+        '_values_clause() for null as value with auto placeholders' );
+}
+
+{
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -120,7 +130,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_insert()->insert();
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -131,7 +141,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_insert()->insert();
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -141,7 +151,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_insert()->insert();
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -151,7 +161,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_insert()->insert();
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $q->into( $s->table('User')->column('size') );
 
@@ -162,7 +172,7 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_insert()->insert();
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $q->into( $s->table('User')->column('size') );
 

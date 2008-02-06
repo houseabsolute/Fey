@@ -74,7 +74,7 @@ Fey::Role::SQL::HasOrderByClause - A role for queries which can include a ORDER 
 
 =head1 SYNOPSIS
 
-  use Moose;
+  use MooseX::StrictConstructor;
 
   with 'Fey::Role::SQL::HasOrderByClause';
 

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
-use Moose;
+use MooseX::StrictConstructor;
 
 use Fey::FakeDBI;
 use Fey::Literal::Function;

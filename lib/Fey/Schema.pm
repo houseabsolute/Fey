@@ -11,7 +11,7 @@ use Fey::Validate
         FK_TYPE DBI_TYPE );
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
-use Moose;
+use MooseX::StrictConstructor;
 
 has 'name' =>
     ( is       => 'rw',

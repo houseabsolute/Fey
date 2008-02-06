@@ -14,7 +14,7 @@ use List::MoreUtils qw( uniq all pairwise );
 use Scalar::Util qw( blessed );
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
-use Moose;
+use MooseX::StrictConstructor;
 use Moose::Util::TypeConstraints;
 
 has 'id' =>

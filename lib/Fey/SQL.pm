@@ -12,27 +12,32 @@ use Fey::SQL::Where;
 
 sub new_delete
 {
-    return Fey::SQL::Delete->new();
+    shift;
+    return Fey::SQL::Delete->new(@_);
 }
 
 sub new_insert
 {
-    return Fey::SQL::Insert->new();
+    shift;
+    return Fey::SQL::Insert->new(@_);
 }
 
 sub new_select
 {
-    return Fey::SQL::Select->new();
+    shift;
+    return Fey::SQL::Select->new(@_);
 }
 
 sub new_update
 {
-    return Fey::SQL::Update->new();
+    shift;
+    return Fey::SQL::Update->new(@_);
 }
 
 sub new_where
 {
-    return Fey::SQL::Where->new();
+    shift;
+    return Fey::SQL::Where->new(@_);
 }
 
 
@@ -248,6 +253,27 @@ parameter, is the offset for the limit clause.
 
   # LIMIT 0 OFFSET 20
   $sql->limit( 0, 20 );
+
+=head2 Bind Parameters
+
+By default, whenever you pass a non-object value where a placeholder
+could go, the SQL class replaces this with a placeholder and stores
+the value as a bind parameter. This applies to things like C<WHERE>
+and C<HAVING> clauses, as well as the C<VALUES> clause of an
+C<INSERT>, and the C<SET> clause of an C<UPDATE>.
+
+You can retrieve the bind parameters by calling C<<
+$sql->bind_params() >>. These will be returned in the proper order for
+passing to C<DBI>'s C<execute()> method.
+
+If you do not want values automatically converted to placeholders, you
+can turn this behavior off by setting C<auto_placeholders> to a false
+value when creating the object:
+
+  my $select = Fey::SQL->new_select( auto_placeholders => 0 );
+
+In this case, values will be quoted as needed and inserted directly
+into the generated SQL.
 
 =head1 AUTHOR
 

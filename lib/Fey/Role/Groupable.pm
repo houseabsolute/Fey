@@ -19,7 +19,7 @@ Fey::Role::Groupable - A role for things that can be part of a GROUP BY clause
 
 =head1 SYNOPSIS
 
-  use Moose;
+  use MooseX::StrictConstructor;
 
   with 'Fey::Role::Groupable';
 
