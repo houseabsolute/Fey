@@ -95,7 +95,7 @@ __END__
 
 =head1 NAME
 
-Fey::Table - Represents an alias for a table
+Fey::Table::Alias - Represents an alias for a table
 
 =head1 SYNOPSIS
 
