@@ -1,4 +1,4 @@
-0.04    
+0.04    2008-02-13
 
 - Some SQL methods (order_by() and limit()) did not return the object
   on which they were called, so they broke method chaining.
