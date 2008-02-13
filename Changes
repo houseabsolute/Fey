@@ -1,4 +1,10 @@
-0.03    2007-02-06
+0.04    
+
+- Some SQL methods (order_by() and limit()) did not return the object
+  on which they were called, so they broke method chaining.
+
+
+0.03    2008-02-06
 
 - Renamed the distro from Fey-Core to just Fey.
 

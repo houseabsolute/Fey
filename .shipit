@@ -1,0 +1,7 @@
+# auto-generated shipit config file.
+steps = FindVersion, ChangeVersion, CheckChangeLog, DistTest, Tag, MakeDist, DistClean
+
+svn.tagpattern = %v
+svn.tagpattern = https://svn.urth.org/svn/Fey/tags/%v
+
+CheckChangeLog.files = Changes
