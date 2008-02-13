@@ -39,3 +39,5 @@
 \bFey-Core-[\d\.\_]+
 
 \bGOALS\b
+
+\b\.shipit\b
