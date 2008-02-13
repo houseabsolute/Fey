@@ -30,7 +30,7 @@ sub and
 {
     my $self = shift;
 
-    $self->where(@_);
+    return $self->where(@_);
 }
 
 {

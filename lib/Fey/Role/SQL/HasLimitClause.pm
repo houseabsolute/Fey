@@ -23,6 +23,8 @@ use Scalar::Util qw( blessed );
 
         $self->{limit}{number} = $limit[0];
         $self->{limit}{offset} = $limit[1];
+
+        return $self;
     }
 }
 

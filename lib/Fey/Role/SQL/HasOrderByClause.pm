@@ -35,6 +35,8 @@ use Scalar::Util qw( blessed );
         my (@by) = validate_pos( @_, ($spec) x $count );
 
         push @{ $self->{order_by} }, @by;
+
+        return $self;
     }
 }
 
