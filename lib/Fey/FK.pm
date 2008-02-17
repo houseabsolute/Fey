@@ -21,7 +21,7 @@ has 'id' =>
     ( is       => 'ro',
       lazy     => 1,
       default  => \&_make_id,
-      init_arg => "\0id",
+      init_arg => undef,
     );
 
 subtype 'ArrayOfColumns'
