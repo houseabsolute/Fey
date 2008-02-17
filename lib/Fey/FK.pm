@@ -11,6 +11,7 @@ use Fey::Validate
         TABLE_OR_NAME_TYPE );
 
 use List::MoreUtils qw( uniq all pairwise );
+use List::Util qw( max );
 use Scalar::Util qw( blessed );
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
@@ -172,6 +173,39 @@ sub is_self_referential
     my $self = shift;
 
     return $self->source_table()->name() eq $self->target_table()->name();
+}
+
+sub pretty_print
+{
+    my $self = shift;
+
+    my @source_columns = @{ $self->source_columns() };
+    my @target_columns = @{ $self->target_columns() };
+
+    my $longest =
+        max
+        map { length $_->name() }
+        $self->source_table(), $self->target_table(),
+        @source_columns, @target_columns;
+
+    $longest += 2;
+
+    my $string = sprintf( "\%-${longest}s  \%-${longest}s\n",
+                          $self->source_table()->name(),
+                          $self->target_table()->name(),
+                        );
+    $string .= ('-') x $longest;
+    $string .= q{  };
+    $string .= ('-') x $longest;
+    $string .= "\n";
+
+    $string .=
+        ( join '', pairwise { sprintf( "\%-${longest}s  \%-${longest}s\n",
+                                       $a->name(), $b->name() ) }
+          @source_columns, @target_columns
+        );
+
+    return $string;
 }
 
 no Moose;
