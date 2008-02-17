@@ -232,7 +232,7 @@ sub having
         my ($dbh) = validate_pos( @_, @spec );
 
         return
-            ( join ' ',
+            ( join q{ },
               $self->_select_clause($dbh),
               $self->_from_clause($dbh),
               $self->_where_clause($dbh),
