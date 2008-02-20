@@ -39,6 +39,14 @@ BEGIN
               { type => OBJECT,
                 can  => 'name',
               },
+
+          ARRAYREF_OR_SCALAR_TYPE =>
+              { type      => ARRAYREF | SCALAR,
+                callbacks =>
+                { 'is a scalar or arrayref with elements' =>
+                  sub { ! ref $_[0] || @{ $_[0] } }
+                },
+              },
         );
 
 
@@ -62,6 +70,11 @@ BEGIN
                 sub { ! blessed $_[0] || $_[0]->isa("Fey::$class") },
               },
             };
+    }
+
+    for my $class ( qw( Select Insert Update Delete ) )
+    {
+        $Types{ uc $class . '_TYPE' } = { isa => "Fey::SQL::${class}" };
     }
 
     for my $t ( keys %Types )
