@@ -282,10 +282,19 @@ C<Fey::Table> objects.
 Given a C<Fey::Column> object, this method returns true if the foreign
 key includes the specified column.
 
-=head2 $fk->is_self_referential
+=head2 $fk->is_self_referential()
 
 This returns true if the the source and target tables for the foreign
 key are the same table.
+
+=head2 $fk->pretty_print()
+
+Returns a stringified representation of the foreign key in a pretty
+layout something like this:
+
+  User      Message
+  -------   -------
+  user_id   user_id
 
 =head1 AUTHOR
 
