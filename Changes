@@ -1,3 +1,10 @@
+0.05    2008-02-20
+
+- Some small tweaks to take advantage of recent Moose changes.
+
+- Added Fey::FK->pretty_print().
+
+
 0.04    2008-02-13
 
 - Some SQL methods (order_by() and limit()) did not return the object
