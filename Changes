@@ -4,6 +4,8 @@
 
 - Added Fey::FK->pretty_print().
 
+- Some internal changes for the benefit of Fey::ORM.
+
 
 0.04    2008-02-13
 
