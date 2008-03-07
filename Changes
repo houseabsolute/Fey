@@ -1,3 +1,9 @@
+0.06
+
+- Allow a Fey::Column object to have a column without a length, since
+  Postgres allows this.
+
+
 0.05    2008-02-20
 
 - Some small tweaks to take advantage of recent Moose changes.

@@ -99,17 +99,6 @@ use Fey::Table;
 use Fey::Table::Alias;
 
 
-sub BUILD
-{
-    my $self = shift;
-    my $p    = shift;
-
-    param_error "Cannot set precision unless length is also set"
-        if defined $p->{precision} && ! $p->{length};
-
-    return;
-}
-
 {
     my @TypesRe =
         ( [ text     => qr/(?:text|char(?:acter)?)\b/xism ],

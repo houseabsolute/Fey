@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 29;
+use Test::More tests => 28;
 
 use Fey::Column;
 
@@ -46,19 +46,6 @@ use Fey::Column;
     ok( ! defined $clone->precision(), 'clone has no precision' );
     ok( ! $clone->is_auto_increment(), 'clone is not auto increment' );
     ok( ! $clone->is_nullable(), 'clone defaults to not nullable' );
-}
-
-{
-    eval
-    {
-        my $c = Fey::Column->new( name      => 'test',
-                                  type      => 'float',
-                                  precision => 5,
-                                );
-    };
-    like( $@, qr/Cannot set precision unless length is also set/,
-          'precision requires length'
-        );
 }
 
 {
