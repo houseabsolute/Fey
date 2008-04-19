@@ -1,4 +1,4 @@
-0.06    2008-04-18
+0.06    2008-03-06
 
 - Allow a Fey::Column object to have a column with precision but no
   length, since Postgres allows this.
