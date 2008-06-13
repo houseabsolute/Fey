@@ -111,7 +111,7 @@ the last week:
         USING (user_id)
   WHERE Message.creation_date >= ?
 
-The resultset for our query is still the smae (0+ users) but the
+The resultset for our query is still the same (0+ users) but the
 constraints of the query are more complex. Now imagine another dozen
 or so permutations on how we search for users. This is what I mean by
 "dynamically" generating queries.
