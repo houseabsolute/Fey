@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 25;
+use Test::More tests => 27;
 
 use Fey::SQL;
 
@@ -72,9 +72,35 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->from( $s->table('User'), $s->table('UserGroup') );
 
-    my $sql = q{FROM "User" JOIN "UserGroup" ON "UserGroup"."user_id" = "User"."user_id"};
+    my $sql = q{FROM "User" JOIN "UserGroup" ON ("UserGroup"."user_id" = "User"."user_id")};
     is( $q->_from_clause($dbh), $sql,
         '_from_clause() for two tables, fk not provided' );
+}
+
+{
+    my $q = Fey::SQL->new_select()->select();
+
+    $q->from( $s->table('User'), $s->table('UserGroup') );
+    $q->from( $s->table('UserGroup'), $s->table('Group') );
+
+    my $sql = q{FROM "User" JOIN "UserGroup" ON ("UserGroup"."user_id" = "User"."user_id")};
+    $sql .= q{ JOIN "Group" ON ("UserGroup"."group_id" = "Group"."group_id")};
+
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for two joins' );
+}
+
+{
+    my $q = Fey::SQL->new_select()->select();
+
+    $q->from( $s->table('User') );
+    $q->from( $s->table('UserGroup') );
+    $q->from( $s->table('Group') );
+
+    my $sql = q{FROM "Group", "User", "UserGroup"};
+
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for three tables with no joins' );
 }
 
 {
@@ -84,7 +110,7 @@ my $dbh = Fey::Test->mock_dbh();
     my ($fk) = $s->foreign_keys_between_tables(@t);
     $q->from( @t, $fk );
 
-    my $sql = q{FROM "User" JOIN "UserGroup" ON "UserGroup"."user_id" = "User"."user_id"};
+    my $sql = q{FROM "User" JOIN "UserGroup" ON ("UserGroup"."user_id" = "User"."user_id")};
     is( $q->_from_clause($dbh), $sql,
         '_from_clause() for two tables with fk provided' );
 }
@@ -110,7 +136,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->from( $s->table('User'), 'left', $s->table('UserGroup') );
 
     my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
+    $sql .= q{ ON ("UserGroup"."user_id" = "User"."user_id")};
     is( $q->_from_clause($dbh), $sql,
         '_from_clause() for two tables with left outer join' );
 }
@@ -124,7 +150,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->from( $t[0], 'left', $t[1], $fk );
 
     my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
+    $sql .= q{ ON ("UserGroup"."user_id" = "User"."user_id")};
     is( $q->_from_clause($dbh), $sql,
         '_from_clause() for two tables with left outer join with explicit fk' );
 }
@@ -135,7 +161,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->from( $s->table('User'), 'right', $s->table('UserGroup') );
 
     my $sql = q{FROM "User" RIGHT OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
+    $sql .= q{ ON ("UserGroup"."user_id" = "User"."user_id")};
     is( $q->_from_clause($dbh), $sql,
         '_from_clause() for two tables with right outer join' );
 }
@@ -146,7 +172,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->from( $s->table('User'), 'full', $s->table('UserGroup') );
 
     my $sql = q{FROM "User" FULL OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
+    $sql .= q{ ON ("UserGroup"."user_id" = "User"."user_id")};
     is( $q->_from_clause($dbh), $sql,
         '_from_clause() for two tables with full outer join' );
 }
@@ -157,7 +183,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->from( $s->table('User'), 'full', $s->table('UserGroup') );
 
     my $sql = q{FROM "User" FULL OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
+    $sql .= q{ ON ("UserGroup"."user_id" = "User"."user_id")};
     is( $q->_from_clause($dbh), $sql,
         '_from_clause() for two tables with full outer join' );
 }
@@ -171,8 +197,8 @@ my $dbh = Fey::Test->mock_dbh();
     $q->from( $s->table('User'), 'left', $s->table('UserGroup'), $q2 );
 
     my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
-    $sql .= q{ AND "User"."user_id" = 2};
+    $sql .= q{ ON ("UserGroup"."user_id" = "User"."user_id"};
+    $sql .= q{ AND "User"."user_id" = 2)};
 
     is( $q->_from_clause($dbh), $sql,
         '_from_clause() for outer join with where clause' );
@@ -190,8 +216,8 @@ my $dbh = Fey::Test->mock_dbh();
     $q->from( $t[0], 'left', $t[1], $fk, $q2 );
 
     my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
-    $sql .= q{ AND "User"."user_id" = 2};
+    $sql .= q{ ON ("UserGroup"."user_id" = "User"."user_id"};
+    $sql .= q{ AND "User"."user_id" = 2)};
 
     is( $q->_from_clause($dbh), $sql,
         '_from_clause() for outer join with where clause() and explicit fk' );

@@ -1,3 +1,9 @@
+0.07    2008-06-26
+
+- SELECT statements with multiple joins generated bogus SQL (a
+  spurious comma separating JOIN clauses).
+
+
 0.06    2008-03-06
 
 - Allow a Fey::Column object to have a column with precision but no

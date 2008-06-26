@@ -153,8 +153,8 @@ my $dbh = Fey::Test->mock_dbh();
     $q->where( $s->table('User')->column('user_id'), '=', 3 );
 
     my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup"};
-    $sql .= q{ ON "UserGroup"."user_id" = "User"."user_id"};
-    $sql .= q{ AND "User"."user_id" = ?};
+    $sql .= q{ ON ("UserGroup"."user_id" = "User"."user_id"};
+    $sql .= q{ AND "User"."user_id" = ?)};
 
     is( $q->_from_clause($dbh), $sql,
         '_from_clause() SQL uses placeholders' );

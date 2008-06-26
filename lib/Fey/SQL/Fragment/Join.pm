@@ -62,14 +62,20 @@ sub sql_with_alias
     return $_[0][TABLE1]->sql_with_alias( $_[1] )
         unless $_[0]->[TABLE2];
 
-    my $join = $_[0][TABLE1]->sql_with_alias( $_[1] );
+    my $join = '';
+
+    $join .= $_[0][TABLE1]->sql_with_alias( $_[1] )
+        unless $_[2]->{ $_[0][TABLE1]->id() };
+
     if ( $_[0]->[OUTER] )
     {
         $join .= ' ' . uc $_[0]->[OUTER] . ' OUTER';
     }
-    $join .= ' JOIN ';
+
+    $join .= q{ } if length $join;
+    $join .= 'JOIN ';
     $join .= $_[0][TABLE2]->sql_with_alias( $_[1] );
-    $join .= ' ON ';
+    $join .= ' ON (';
 
     my @s = @{ $_[0]->[FK]->source_columns() };
     my @t = @{ $_[0]->[FK]->target_columns() };
@@ -86,7 +92,14 @@ sub sql_with_alias
         $join .= ' AND ' . $_[0]->[WHERE]->_where_clause( $_[1], 'no WHERE' );
     }
 
+    $join .= ')';
+
     return $join;
+}
+
+sub tables
+{
+    return grep { defined } @{ $_[0] }[ TABLE1, TABLE2 ];
 }
 
 sub bind_params

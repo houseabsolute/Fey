@@ -266,16 +266,42 @@ sub _from_clause
     my $self = shift;
     my $dbh  = shift;
 
-    return ( 'FROM '
-             .
-             ( join ', ',
-               map { $self->{from}{$_}->sql_with_alias($dbh) }
-               # The sort means that the order that things appear in
-               # will be repeatable, if not obvious.
-               sort
-               keys %{ $self->{from} }
-             )
-           )
+    my @from;
+
+    my %seen;
+    for my $frag ( map { $self->{from}{$_} }
+                   sort keys %{ $self->{from} } )
+    {
+        my $join = $frag->sql_with_alias( $dbh, \%seen );
+
+        # the fragment could be a subselect
+        my @tables = $frag->can('tables') ? $frag->tables() : ();
+
+        $seen{ $_->id() } = 1
+            for @tables;
+
+        push @from, [ $join, \@tables ];
+    }
+
+    my $sql = 'FROM ';
+
+    # This is a sort of manual join special-cased to add a comma as
+    # needed.
+    for my $from (@from)
+    {
+        $sql .= $from->[0];
+
+        # A single table is a special case, since in most types of
+        # JOIN clauses, a comma is not needed. However, it is needed
+        # in a list of tables like "FROM Foo, Bar, Baz".
+        $sql .= ','
+            if @{ $from->[1] } <= 1 && $from->[0] ne $from[-1][0];
+
+        $sql .= ' '
+            unless $from->[0] eq $from[-1][0];
+    }
+
+    return $sql;
 }
 
 sub _group_by_clause
