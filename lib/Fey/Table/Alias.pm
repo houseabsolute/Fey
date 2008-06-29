@@ -23,21 +23,21 @@ has 'table' =>
     );
 
 has 'alias_name' =>
-    ( is      => 'ro',
-      isa     => 'Str',
-      lazy    => 1,
-      default => \&_default_alias_name,
+    ( is         => 'ro',
+      isa        => 'Str',
+      lazy_build => 1,
     );
 
 
 {
     my %Numbers;
-    sub _default_alias_name
+    sub _build_alias_name
     {
         my $self = shift;
 
         my $name = $self->name();
         $Numbers{$name} ||= 0;
+
         return $name . ++$Numbers{$name};
     }
 }

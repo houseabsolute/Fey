@@ -29,10 +29,9 @@ subtype 'GenericTypeName'
     => as 'Str'
     => where { /^(?:text|blob|integer|float|date|datetime|time|boolean|other)$/xism };
 has 'generic_type' =>
-    ( is      => 'ro',
-      isa     => 'GenericTypeName',
-      lazy    => 1,
-      default => \&_guess_generic_type,
+    ( is         => 'ro',
+      isa        => 'GenericTypeName',
+      lazy_build => 1,
     );
 
 has type =>
@@ -114,7 +113,7 @@ use Fey::Table::Alias;
           [ boolean  => qr/\bbool/xism ],
         );
 
-    sub _guess_generic_type
+    sub _build_generic_type
     {
         my $self = shift;
         my $type = $self->type();

@@ -41,8 +41,8 @@ use Fey::Column;
         my $c = Fey::Column->new( name => 'test',
                                   type => $type,
                                 );
-        is( $c->_guess_generic_type( $type ), $generic,
-            "guessed $generic for generic type of $type" );
+        is( $c->_build_generic_type( $type ), $generic,
+            "builded $generic for generic type of $type" );
     }
 }
 
@@ -91,7 +91,7 @@ use Fey::Column;
         my $c = Fey::Column->new( name => 'test',
                                   type => $type,
                                 );
-        is( $c->_guess_generic_type( $type ), $generic,
-            "guessed $generic for generic type of $type" );
+        is( $c->_build_generic_type( $type ), $generic,
+            "builded $generic for generic type of $type" );
     }
 }

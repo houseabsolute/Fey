@@ -19,10 +19,9 @@ use MooseX::StrictConstructor;
 use Moose::Util::TypeConstraints;
 
 has 'id' =>
-    ( is       => 'ro',
-      lazy     => 1,
-      default  => \&_make_id,
-      init_arg => undef,
+    ( is         => 'ro',
+      lazy_build => 1,
+      init_arg   => undef,
     );
 
 subtype 'ArrayOfColumns'
@@ -84,7 +83,7 @@ sub BUILD
     return
 }
 
-sub _make_id
+sub _build_id
 {
     my $self = shift;
 
