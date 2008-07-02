@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 27;
+use Test::More tests => 28;
 
 use Fey::SQL;
 
@@ -88,6 +88,19 @@ my $dbh = Fey::Test->mock_dbh();
 
     is( $q->_from_clause($dbh), $sql,
         '_from_clause() for two joins' );
+}
+
+{
+    my $q = Fey::SQL->new_select()->select();
+
+    $q->from( $s->table('User'), $s->table('UserGroup') );
+    $q->from( $s->table('Group'), $s->table('UserGroup') );
+
+    my $sql = q{FROM "Group" JOIN "UserGroup" ON ("UserGroup"."group_id" = "Group"."group_id")};
+    $sql .= q{ JOIN "User" ON ("UserGroup"."user_id" = "User"."user_id")};
+
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for two joins, seen table comes second in second clause' );
 }
 
 {

@@ -1,3 +1,10 @@
+0.07    2008-07-02
+
+- The fix for "SELECT statements with multiple joins generated bogus
+  SQL (a spurious comma separating JOIN clauses)" still generated
+  bogus SQL in some cases.
+
+
 0.07    2008-06-26
 
 - SELECT statements with multiple joins generated bogus SQL (a

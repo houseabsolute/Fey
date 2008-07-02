@@ -62,10 +62,27 @@ sub sql_with_alias
     return $_[0][TABLE1]->sql_with_alias( $_[1] )
         unless $_[0]->[TABLE2];
 
-    my $join = '';
+    my @unseen_tables =
+        grep { ! $_[2]->{ $_->id() } } @{ $_[0] }[ TABLE1, TABLE2 ];
 
-    $join .= $_[0][TABLE1]->sql_with_alias( $_[1] )
-        unless $_[2]->{ $_[0][TABLE1]->id() };
+    return unless @unseen_tables;
+
+    if ( @unseen_tables == 1 )
+    {
+        return $_[0]->_join_one_table( $_[1], @unseen_tables );
+    }
+    else
+    {
+        return $_[0]->_join_both_tables( $_[1] );
+    }
+}
+
+# This could produce gibberish for an OUTER JOIN, but that would mean
+# that the query is fundamentally wrong anyway (since you can't OUTER
+# JOIN a table you've already joined with a normal join previously).
+sub _join_one_table
+{
+    my $join = '';
 
     if ( $_[0]->[OUTER] )
     {
@@ -74,27 +91,56 @@ sub sql_with_alias
 
     $join .= q{ } if length $join;
     $join .= 'JOIN ';
-    $join .= $_[0][TABLE2]->sql_with_alias( $_[1] );
-    $join .= ' ON (';
+    $join .= $_[2]->sql_with_alias( $_[1] );
+
+    $join .= $_[0]->_on_clause( $_[1] );
+    $join .= $_[0]->_where_clause( $_[1] );
+    $join .= ')';
+
+    return $join;
+}
+
+sub _join_both_tables
+{
+    my $join = $_[0]->[TABLE1]->sql_with_alias( $_[1] );
+
+    if ( $_[0]->[OUTER] )
+    {
+        $join .= ' ' . uc $_[0]->[OUTER] . ' OUTER';
+    }
+
+    $join .= ' JOIN ';
+    $join .= $_[0]->[TABLE2]->sql_with_alias( $_[1] );
+
+    $join .= $_[0]->_on_clause( $_[1] );
+    $join .= $_[0]->_where_clause( $_[1] );
+    $join .= ')';
+
+    return $join;
+}
+
+sub _on_clause
+{
+    my $on .= ' ON (';
 
     my @s = @{ $_[0]->[FK]->source_columns() };
     my @t = @{ $_[0]->[FK]->target_columns() };
 
     for my $p ( pairwise { [ $a, $b ] } @s, @t )
     {
-        $join .= $p->[0]->sql_or_alias( $_[1] );
-        $join .= ' = ';
-        $join .= $p->[1]->sql_or_alias( $_[1] );
+        $on .= $p->[0]->sql_or_alias( $_[1] );
+        $on .= ' = ';
+        $on .= $p->[1]->sql_or_alias( $_[1] );
     }
 
-    if ( $_[0]->[WHERE] )
-    {
-        $join .= ' AND ' . $_[0]->[WHERE]->_where_clause( $_[1], 'no WHERE' );
-    }
+    return $on;
+}
 
-    $join .= ')';
+sub _where_clause
+{
+    return '' unless $_[0]->[WHERE];
 
-    return $join;
+    return ' AND ' . $_[0]->[WHERE]->_where_clause( $_[1], 'no WHERE' );
 }
 
 sub tables
