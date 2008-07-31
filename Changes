@@ -1,3 +1,9 @@
+0.09    2008-07-31
+
+- If a where clause had a subgroup after a comparison (like "WHERE x =
+  1 AND ( y = 2 )", it didn't properly add the needed "AND".
+
+
 0.08    2008-07-02
 
 - The fix for "SELECT statements with multiple joins generated bogus

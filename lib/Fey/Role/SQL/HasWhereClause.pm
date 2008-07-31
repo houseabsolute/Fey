@@ -58,19 +58,24 @@ sub and
             }
         }
 
-        if ( @{ $self->{$key} || [] }
-             && ! (    $self->{$key}[-1]->isa('Fey::SQL::Fragment::Where::Boolean')
-                    || $self->{$key}[-1]
-                            ->isa('Fey::SQL::Fragment::Where::SubgroupStart')
-                  )
-           )
-        {
-            $self->_and($key);
-        }
+        $self->_add_and_if_needed($key);
 
         push @{ $self->{$key} },
             Fey::SQL::Fragment::Where::Comparison->new( $self->auto_placeholders(), @_ );
     }
+}
+
+sub _add_and_if_needed
+{
+    my $self = shift;
+    my $key  = shift;
+
+    return unless @{ $self->{$key} || [] };
+
+    return if $self->{$key}[-1]->isa('Fey::SQL::Fragment::Where::Boolean');
+    return if $self->{$key}[-1]->isa('Fey::SQL::Fragment::Where::SubgroupStart');
+
+    $self->_and($key);
 }
 
 sub _and
@@ -99,6 +104,8 @@ sub _subgroup_start
 {
     my $self = shift;
     my $key  = shift;
+
+    $self->_add_and_if_needed($key);
 
     push @{ $self->{$key} },
         Fey::SQL::Fragment::Where::SubgroupStart->new();

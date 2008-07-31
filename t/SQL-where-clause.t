@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 22;
+use Test::More tests => 25;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -168,6 +168,43 @@ my $dbh = Fey::Test->mock_dbh();
 
     is( $q->_where_clause($dbh), q{WHERE ( "User"."user_id" = 2 )},
         'subgroup in where clause' );
+}
+
+{
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
+
+    $q->where( $s->table('User')->column('username'), '=', 'Bob' );
+    $q->where( '(' );
+    $q->where( $s->table('User')->column('username'), '=', 'Jill' );
+    $q->where( ')' );
+
+    is( $q->_where_clause($dbh), q{WHERE "User"."username" = 'Bob' AND ( "User"."username" = 'Jill' )},
+        'comparison followed directly by a subgroup' );
+}
+
+{
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
+
+    $q->where( '(' );
+    $q->where( $s->table('User')->column('username'), '=', 'Jill' );
+    $q->where( ')' );
+    $q->where( $s->table('User')->column('username'), '=', 'Bob' );
+
+    is( $q->_where_clause($dbh), q{WHERE ( "User"."username" = 'Jill' ) AND "User"."username" = 'Bob'},
+        'subgroup followed directly by a comparison' );
+}
+
+{
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
+
+    $q->where( $s->table('User')->column('username'), '=', 'Bob' );
+    $q->where( 'or' );
+    $q->where( '(' );
+    $q->where( $s->table('User')->column('username'), '=', 'Jill' );
+    $q->where( ')' );
+
+    is( $q->_where_clause($dbh), q{WHERE "User"."username" = 'Bob' OR ( "User"."username" = 'Jill' )},
+        'where clause joined to a subgroup with OR' );
 }
 
 {
