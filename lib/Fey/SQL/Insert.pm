@@ -191,8 +191,13 @@ Fey::SQL::Insert - Represents a INSERT query
   #      VALUES
   #             (?, ?, ?)
   $sql->insert()->into($Part);
+
   my $ph = Fey::Placeholder->new();
-  $sql->values( $ph, $ph, $ph );
+
+  $sql->values( part_id  => $ph,
+                name     => $ph,
+                quantity => $ph,
+              );
 
   print $sql->sql($dbh);
 
@@ -228,8 +233,9 @@ some (like MySQL) do allow for multi-table inserts.
 
 =head2 $insert->values(...)
 
-This method takes a list of values. Each value can be of the
-following:
+This method takes a hash reference where the keys are column names,
+and values are the value to be inserted for that column. Each value
+can be of the following:
 
 =over 4
 
