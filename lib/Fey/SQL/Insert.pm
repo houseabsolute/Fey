@@ -220,7 +220,7 @@ This method specifies the C<INTO> clause of the query. It expects a
 list of L<Fey::Column> and/or L<Fey::Table> objects, but not aliases.
 
 If you pass a table object, then the C<INTO> will include all of that
-table's column, in the order returned by the C<< $table->columns() >>
+table's columns, in the order returned by the C<< $table->columns() >>
 method.
 
 Most RDBMS implementations only allow for a single table here, but
