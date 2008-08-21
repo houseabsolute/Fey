@@ -24,24 +24,24 @@ has 'id' =>
       init_arg   => undef,
     );
 
-subtype 'ArrayOfColumns'
+subtype 'Fey.Type.ArrayRefOfColumns'
     => as 'ArrayRef'
     => where { @{ $_ } >= 1 && all { $_ && $_->isa('Fey::Column') } @{$_} };
 
-coerce 'ArrayOfColumns'
+coerce 'Fey.Type.ArrayRefOfColumns'
     => from 'Fey::Column'
     => via { [ $_ ] };
 
 has 'source_columns' =>
     ( is       => 'ro',
-      isa      => 'ArrayOfColumns',
+      isa      => 'Fey.Type.ArrayRefOfColumns',
       required => 1,
       coerce   => 1,
     );
 
 has 'target_columns' =>
     ( is       => 'ro',
-      isa      => 'ArrayOfColumns',
+      isa      => 'Fey.Type.ArrayRefOfColumns',
       required => 1,
       coerce   => 1,
     );

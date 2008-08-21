@@ -32,7 +32,7 @@ has 'is_view' =>
       default => 0,
     );
 
-subtype 'ArrayOfNamedObjectSets'
+subtype 'Fey.Type.ArrayRefOfNamedObjectSets'
     => as 'ArrayRef'
     => where { for my $arg ( @{ $_ } )
                {
@@ -43,7 +43,7 @@ subtype 'ArrayOfNamedObjectSets'
 
 has '_keys' =>
     ( is         => 'rw',
-      isa        => 'ArrayOfNamedObjectSets',
+      isa        => 'Fey.Type.ArrayRefOfNamedObjectSets',
       default    => sub { [] },
     );
 

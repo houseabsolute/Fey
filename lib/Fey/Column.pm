@@ -25,12 +25,12 @@ has 'name' =>
       required => 1,
     );
 
-subtype 'GenericTypeName'
+subtype 'Fey.Type.GenericTypeName'
     => as 'Str'
     => where { /^(?:text|blob|integer|float|date|datetime|time|boolean|other)$/xism };
 has 'generic_type' =>
     ( is         => 'ro',
-      isa        => 'GenericTypeName',
+      isa        => 'Fey.Type.GenericTypeName',
       lazy_build => 1,
     );
 
@@ -40,22 +40,22 @@ has type =>
       required => 1,
     );
 
-subtype 'PosInteger'
+subtype 'Fey.Type.PosInteger'
     => as 'Int'
     => where { $_ > 0 };
 has length =>
     ( is       => 'ro',
-      isa      => 'PosInteger',
+      isa      => 'Fey.Type.PosInteger',
       required => 0
     );
 
-subtype 'PosOrZeroInteger'
+subtype 'Fey.Type.PosOrZeroInteger'
     => as 'Int'
     => where { $_ >= 0 };
 # How to say that precision requires length as well?
 has precision =>
     ( is       => 'ro',
-      isa      => 'PosOrZeroInteger',
+      isa      => 'Fey.Type.PosOrZeroInteger',
       required => 0
     );
 
@@ -71,9 +71,9 @@ has is_nullable =>
       default => 0,
     );
 
-subtype 'DefaultValue'
+subtype 'Fey.Type.DefaultValue'
     => as 'Fey::Literal';
-coerce 'DefaultValue'
+coerce 'Fey.Type.DefaultValue'
     => from 'Undef'
     => via { Fey::Literal::Null->new() }
     => from 'Value'
@@ -81,7 +81,7 @@ coerce 'DefaultValue'
 
 has default =>
     ( is     => 'ro',
-      isa    => 'DefaultValue',
+      isa    => 'Fey.Type.DefaultValue',
       coerce => 1,
     );
 

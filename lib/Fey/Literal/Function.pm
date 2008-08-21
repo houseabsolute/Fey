@@ -20,30 +20,30 @@ has 'function' =>
       required => 1,
     );
 
-subtype 'FunctionArg'
+subtype 'Fey.Type.FunctionArg'
     => as 'Object'
     => where { $_->does('Fey::Role::Selectable') };
 
-coerce 'FunctionArg'
+coerce 'Fey.Type.FunctionArg'
     => from 'Undef'
     => via { Fey::Literal::Null->new() }
     => from 'Value'
     => via { Fey::Literal->new_from_scalar($_) };
 
 {
-    my $constraint = find_type_constraint('FunctionArg');
-    subtype 'FunctionArgs'
+    my $constraint = find_type_constraint('Fey.Type.FunctionArg');
+    subtype 'Fey.Type.ArrayRefOfFunctionArgs'
         => as 'ArrayRef'
         => where { for my $arg ( @{$_} ) { $constraint->check($arg) || return; } 1; };
 
-    coerce 'FunctionArgs'
+    coerce 'Fey.Type.ArrayRefOfFunctionArgs'
         => from 'ArrayRef'
         => via { [ map { $constraint->coerce($_) } @{ $_ } ] };
 }
 
 has 'args' =>
     ( is         => 'ro',
-      isa        => 'FunctionArgs',
+      isa        => 'Fey.Type.ArrayRefOfFunctionArgs',
       default    => sub { [] },
       coerce     => 1,
       auto_deref => 1,
