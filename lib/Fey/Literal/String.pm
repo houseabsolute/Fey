@@ -17,11 +17,11 @@ has 'string' =>
     );
 
 
-sub new
+sub BUILDARGS
 {
     my $class = shift;
 
-    return $class->SUPER::new( string => shift );
+    return { string => shift };
 }
 
 sub sql { $_[1]->quote( $_[0]->string() ) }

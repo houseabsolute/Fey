@@ -55,13 +55,13 @@ has 'alias_name' =>
     );
 
 
-sub new
+sub BUILDARGS
 {
     my $class = shift;
 
-    return $class->SUPER::new( function => shift,
-                               args     => [ @_ ],
-                             );
+    return { function => shift,
+             args     => [ @_ ],
+           };
 }
 
 sub sql

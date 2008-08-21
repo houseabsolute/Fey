@@ -17,11 +17,11 @@ has 'number' =>
     );
 
 
-sub new
+sub BUILDARGS
 {
     my $class = shift;
 
-    return $class->SUPER::new( number => shift );
+    return { number => shift };
 }
 
 sub sql { $_[0]->number() }

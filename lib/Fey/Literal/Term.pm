@@ -19,11 +19,11 @@ has 'term' =>
 
 
 
-sub new
+sub BUILDARGS
 {
     my $class = shift;
 
-    return $class->SUPER::new( term => shift );
+    return { term => shift };
 }
 
 sub sql { $_[0]->term() }
