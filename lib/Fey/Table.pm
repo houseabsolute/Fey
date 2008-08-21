@@ -14,12 +14,23 @@ use Fey::Validate
         COLUMN_TYPE COLUMN_OR_NAME_TYPE
         SCHEMA_TYPE );
 
+use Fey::Column;
+use Fey::NamedObjectSet;
+use Fey::Schema;
+use Fey::Table::Alias;
+
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use MooseX::AttributeHelpers;
 use MooseX::StrictConstructor;
 use Moose::Util::TypeConstraints;
 
 with 'Fey::Role::Joinable';
+
+has 'id' =>
+    ( is         => 'ro',
+      lazy_build => 1,
+      init_arg   => undef,
+    );
 
 has 'name' =>
     ( is       => 'ro',
@@ -65,14 +76,9 @@ has 'schema' =>
       isa       => 'Undef | Fey::Schema',
       weak_ref  => 1,
       writer    => '_set_schema',
+      clearer   => '_clear_schema',
       predicate => 'has_schema',
     );
-
-use Fey::Column;
-use Fey::NamedObjectSet;
-use Fey::Schema;
-use Fey::Table::Alias;
-use Scalar::Util qw( blessed );
 
 
 {
@@ -123,7 +129,7 @@ use Scalar::Util qw( blessed );
 
         $self->_columns()->delete($col);
 
-        $col->_set_table(undef);
+        $col->_clear_table();
 
         return $self;
     }
@@ -236,7 +242,7 @@ sub sql
 
 sub sql_with_alias { goto &sql }
 
-sub id { $_[0]->name() }
+sub _build_id { $_[0]->name() }
 
 no Moose;
 no Moose::Util::TypeConstraints;

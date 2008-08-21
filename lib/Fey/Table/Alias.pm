@@ -16,6 +16,13 @@ use MooseX::StrictConstructor;
 
 with 'Fey::Role::Joinable';
 
+
+has 'id' =>
+    ( is         => 'ro',
+      lazy_build => 1,
+      init_arg   => undef,
+    );
+
 has 'table' =>
     ( is      => 'ro',
       isa     => 'Fey::Table',
@@ -84,7 +91,7 @@ sub sql_with_alias
         );
 }
 
-sub id { $_[0]->alias_name() }
+sub _build_id { $_[0]->alias_name() }
 
 no Moose;
 __PACKAGE__->meta()->make_immutable();

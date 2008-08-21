@@ -13,11 +13,23 @@ use Fey::Validate
         POS_INTEGER_TYPE POS_OR_ZERO_INTEGER_TYPE
         TABLE_TYPE );
 
+use Fey::Column::Alias;
+use Fey::Literal;
+use Fey::Table;
+use Fey::Table::Alias;
+
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use MooseX::StrictConstructor;
-use Moose::Util::TypeConstraints qw( subtype as where coerce from via );
+use Moose::Util::TypeConstraints qw( subtype as where coerce from via class_type find_type_constraint );
 
 with 'Fey::Role::ColumnLike';
+
+has 'id' =>
+    ( is         => 'ro',
+      lazy_build => 1,
+      init_arg   => undef,
+      clearer    => '_clear_id',
+    );
 
 has 'name' =>
     ( is       => 'ro',
@@ -85,17 +97,25 @@ has default =>
       coerce => 1,
     );
 
-has 'table' =>
-    ( is       => 'rw',
-      isa      => 'Undef | Fey::Table | Fey::Table::Alias',
-      weak_ref => 1,
-      writer   => '_set_table',
-    );
+{
+    for my $class ( qw( Fey::Table Fey::Table::Alias ) )
+    {
+        class_type($class)
+            unless find_type_constraint($class);
+    }
 
-use Fey::Column::Alias;
-use Fey::Literal;
-use Fey::Table;
-use Fey::Table::Alias;
+    has 'table' =>
+        ( is       => 'rw',
+          isa      =>  'Fey::Table | Fey::Table::Alias',
+          weak_ref => 1,
+          writer   => '_set_table',
+          clearer  => '_clear_table',
+        );
+}
+
+after '_set_table', '_clear_table' =>
+    sub { $_[0]->_clear_id() };
+
 
 
 {
@@ -161,14 +181,14 @@ sub sql_with_alias { goto &sql }
 
 sub sql_or_alias { goto &sql }
 
-sub id
+sub _build_id
 {
     my $self = shift;
 
     my $table = $self->table();
 
     object_state_error
-        'The id() method cannot be called on a column object which has no table.'
+        'The id attribute cannot be determined for a column object which has no table.'
             unless $table;
 
     return $table->id() . q{.} . $self->name();

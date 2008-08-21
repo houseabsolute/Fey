@@ -14,7 +14,7 @@ with ( 'Fey::Role::Selectable' => { excludes => 'is_selectable' },
        'Fey::Role::Orderable'  => { excludes => 'is_orderable' },
      );
 
-requires 'id', 'is_alias';
+requires '_build_id', 'is_alias';
 
 
 sub _containing_table_name_or_alias

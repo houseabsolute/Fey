@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 28;
+use Test::More tests => 29;
 
 use Fey::Column;
 
@@ -101,4 +101,10 @@ use Fey::Column;
 
     undef $t;
     ok( ! $c1->table(), q{column's reference to table is weak} );
+
+    $c1->_clear_table();
+
+    my $id = eval { $c1->id() };
+    like( $@, qr/cannot be determined/,
+          'cannot get an id for a column without a table' );
 }

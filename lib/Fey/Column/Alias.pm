@@ -5,10 +5,21 @@ use warnings;
 
 use Fey::Exceptions qw( object_state_error );
 
+use Fey::Column;
+use Fey::Table;
+use Fey::Table::Alias;
+
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
 use MooseX::StrictConstructor;
 
 with 'Fey::Role::ColumnLike';
+
+has 'id' =>
+    ( is         => 'ro',
+      lazy_build => 1,
+      init_arg   => undef,
+      clearer    => '_clear_id',
+    );
 
 has 'column' =>
     ( is      => 'ro',
@@ -22,8 +33,6 @@ has 'alias_name' =>
       isa        => 'Str',
       lazy_build => 1,
     );
-
-use Fey::Column;
 
 
 {
@@ -59,14 +68,14 @@ sub sql_with_alias
 
 sub sql_or_alias { goto &sql }
 
-sub id
+sub _build_id
 {
     my $self = shift;
 
     my $table = $self->table();
 
     object_state_error
-        'The id() method cannot be called on a column alias object which has no table.'
+        'The id attribute cannot be determined for a column object which has no table.'
             unless $table;
 
     return $table->id() . '.' . $self->alias_name();
