@@ -58,7 +58,8 @@ has '_keys' =>
       is        => 'rw',
       isa       => 'Fey.Type.ArrayRefOfNamedObjectSets',
       default   => sub { [] },
-      provides  => { push => '_add_key',
+      provides  => { push   => '_add_key',
+                     delete => '_delete_key',
                    },
     );
 
@@ -79,6 +80,30 @@ has 'schema' =>
       clearer   => '_clear_schema',
       predicate => 'has_schema',
     );
+
+has 'candidate_keys' =>
+    ( is         => 'ro',
+      isa        => 'ArrayRef[ArrayRef[Fey::Column]]',
+      clearer    => '_clear_candidate_keys',
+      lazy_build => 1,
+      auto_deref => 1,
+      init_arg   => undef,
+    );
+
+after '_add_key', '_delete_key' =>
+    sub { $_[0]->_clear_candidate_keys() };
+
+has 'primary_key' =>
+    ( is         => 'ro',
+      isa        => 'ArrayRef[Fey::Column]',
+      clearer    => '_clear_primary_key',
+      lazy_build => 1,
+      auto_deref => 1,
+      init_arg   => undef,
+    );
+
+after '_clear_candidate_keys' =>
+    sub { $_[0]->_clear_primary_key() };
 
 
 {
@@ -135,20 +160,20 @@ has 'schema' =>
     }
 }
 
-sub candidate_keys
+sub _build_candidate_keys
 {
     my $self = shift;
 
-    return map { [ $_->objects() ] } @{ $self->_keys() };
+    return [ map { [ $_->objects() ] } @{ $self->_keys() } ];
 }
 
-sub primary_key
+sub _build_primary_key
 {
     my $self = shift;
 
     my @keys = $self->candidate_keys();
 
-    return  @{ $keys[0] || [] };
+    return $keys[0] || [];
 }
 
 {
@@ -168,7 +193,7 @@ sub primary_key
 
         return if $self->has_candidate_key(@cols);
 
-        my $keys = $self->_add_key( Fey::NamedObjectSet->new(@cols) );
+        $self->_add_key( Fey::NamedObjectSet->new(@cols) );
 
         return;
     }
@@ -189,12 +214,11 @@ sub primary_key
 
         $_ = $self->column($_) for grep { ! blessed $_ } @cols;
 
-        my $keys = $self->_keys();
-
         my $set = Fey::NamedObjectSet->new(@cols);
 
-        my $idx = first_index { $_->is_same_as($set) } @{ $keys };
-        splice @{ $keys }, $idx, 1
+        my $idx = first_index { $_->is_same_as($set) } @{ $self->_keys() };
+
+        $self->_delete_key( $idx, 1 )
             if $idx >= 0;
 
         return;

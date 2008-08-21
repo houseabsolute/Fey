@@ -78,6 +78,8 @@ sub columns
     return map { $self->column($_) } @cols;
 }
 
+# Making this an attribute would be a hassle since we'd need to reset
+# it whenever the associated table's keys changed.
 sub primary_key { return $_[0]->columns( map { $_->name() } $_[0]->table()->primary_key ) }
 
 sub is_alias { 1 }
