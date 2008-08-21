@@ -60,7 +60,6 @@ has column_pairs =>
       isa        => 'ArrayRef[ArrayRef[Fey::Column]]',
       lazy_build => 1,
       init_arg   => undef,
-      auto_deref => 1,
     );
 
 has is_self_referential =>
@@ -290,9 +289,9 @@ reference.
 
 =head2 $fk->column_pairs()
 
-Returns a list of array references. Each reference contains two
-C<Fey::Column> objects, one from the source table and one from the
-target.
+Returns an array reference. Each element of this reference is in turn
+a two-element array reference of C<Fey::Column> objects, one from the
+source table and one from the target.
 
 =head2 $fk->has_tables( $table1, $table2 )
 

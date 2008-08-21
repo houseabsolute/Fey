@@ -68,7 +68,7 @@ use Fey::Schema;
     is( scalar @target, 1, 'one target column' );
     is( $target[0]->name(), 'user_id', 'target column is user_id' );
 
-    is_deeply( [ sort map { $_->[0]->name(), $_->[1]->name() } $fk->column_pairs() ],
+    is_deeply( [ sort map { $_->[0]->name(), $_->[1]->name() } @{ $fk->column_pairs() } ],
                [ 'user_id', 'user_id' ],
                'column_pairs() returns expected pairs of columns' );
 
