@@ -15,6 +15,7 @@ use Fey::Validate
         SCHEMA_TYPE );
 
 use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
+use MooseX::AttributeHelpers;
 use MooseX::StrictConstructor;
 use Moose::Util::TypeConstraints;
 
@@ -42,9 +43,12 @@ subtype 'Fey.Type.ArrayRefOfNamedObjectSets'
              };
 
 has '_keys' =>
-    ( is         => 'rw',
-      isa        => 'Fey.Type.ArrayRefOfNamedObjectSets',
-      default    => sub { [] },
+    ( metaclass => 'MooseX::AttributeHelpers::Collection::Array',
+      is        => 'rw',
+      isa       => 'Fey.Type.ArrayRefOfNamedObjectSets',
+      default   => sub { [] },
+      provides  => { push => '_add_key',
+                   },
     );
 
 has '_columns' =>
@@ -158,11 +162,7 @@ sub primary_key
 
         return if $self->has_candidate_key(@cols);
 
-        my $keys = $self->_keys();
-
-        my $set = Fey::NamedObjectSet->new(@cols);
-
-        push @{ $keys }, $set;
+        my $keys = $self->_add_key( Fey::NamedObjectSet->new(@cols) );
 
         return;
     }
@@ -239,6 +239,8 @@ sub sql_with_alias { goto &sql }
 sub id { $_[0]->name() }
 
 no Moose;
+no Moose::Util::TypeConstraints;
+
 __PACKAGE__->meta()->make_immutable();
 
 1;

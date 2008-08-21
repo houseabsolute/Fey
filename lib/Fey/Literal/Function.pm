@@ -112,6 +112,8 @@ sub sql_or_alias
 sub is_groupable { $_[0]->alias_name() ? 1 : 0 }
 
 no Moose;
+no Moose::Util::TypeConstraints;
+
 __PACKAGE__->meta()->make_immutable();
 
 1;
