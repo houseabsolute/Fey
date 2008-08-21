@@ -21,7 +21,7 @@ my $builder =
           },
           build_requires =>
           { 'DBI'                   => 0,
-            'Fey::Test'             => 0.01,
+            'Fey::Test'             => 0.05,
             'File::Temp'            => 0,
             'Test::MockObject'      => 0,
             'Test::More'            => 0,

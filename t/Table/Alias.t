@@ -67,10 +67,10 @@ $t->add_column($_) for $c1, $c2;
     my $alias = $s->table('User')->alias();
     is( $alias->schema(), $s, 'schema method returns correct schema' );
 
-    my @pk = $alias->primary_key();
-    is( scalar @pk, 1, 'one column in primary key' );
-    is( $pk[0]->name(), $s->table('User')->column('user_id')->name(),
+    my $pk = $alias->primary_key();
+    is( scalar @{ $pk }, 1, 'one column in primary key' );
+    is( $pk->[0]->name(), $s->table('User')->column('user_id')->name(),
         'primary_key() returns same columns as non-alias' );
-    is( $pk[0]->table(), $alias, 'table() for pk col is alias' );
+    is( $pk->[0]->table(), $alias, 'table() for pk col is alias' );
 }
 

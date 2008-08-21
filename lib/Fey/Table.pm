@@ -86,7 +86,6 @@ has 'candidate_keys' =>
       isa        => 'ArrayRef[ArrayRef[Fey::Column]]',
       clearer    => '_clear_candidate_keys',
       lazy_build => 1,
-      auto_deref => 1,
       init_arg   => undef,
     );
 
@@ -98,7 +97,6 @@ has 'primary_key' =>
       isa        => 'ArrayRef[Fey::Column]',
       clearer    => '_clear_primary_key',
       lazy_build => 1,
-      auto_deref => 1,
       init_arg   => undef,
     );
 
@@ -171,9 +169,9 @@ sub _build_primary_key
 {
     my $self = shift;
 
-    my @keys = $self->candidate_keys();
+    my $keys = $self->candidate_keys();
 
-    return $keys[0] || [];
+    return $keys->[0] || [];
 }
 
 {
@@ -368,9 +366,9 @@ the table, then it is ignored.
 
 =head2 $table->candidate_keys()
 
-Returns all of the candidate keys for the table as a list. Each
-element of the list is an array reference containing one or more
-columns.
+Returns all of the candidate keys for the table as an array
+reference. Each element of the reference is in turn an array reference
+containing one or more columns.
 
 =head2 $table->has_candidate_key(@columns)
 
@@ -396,16 +394,11 @@ can contain either names or C<Fey::Column> objects.
 If a name or column is specified which doesn't belong to the table, an
 exception will be thrown.
 
-=head2 $table->keys()
-
-Returns a list of all the candidate keys. Each items in the list is an
-array reference containing one or more column objects.
-
 =head2 $table->primary_key()
 
 This is a convenience method that simply returns the first candidate
-key added to the table. The key is returned as a list of column
-objects.
+key added to the table. The key is returned as an array reference of
+column objects.
 
 =head2 $table->alias(%p)
 

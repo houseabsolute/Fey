@@ -98,13 +98,13 @@ use Fey::Table;
                'one key set and it contains only test_id (after adding same key twice)'
              );
 
-    my @pk = $t->primary_key();
-    is( scalar @pk, 1, 'table has a one column pk' );
-    is( $pk[0]->name(), 'test_id', 'pk column is test_id' );
+    my $pk = $t->primary_key();
+    is( scalar @{ $pk }, 1, 'table has a one column pk' );
+    is( $pk->[0]->name(), 'test_id', 'pk column is test_id' );
 
     $t->remove_column('test_id');
-    @pk = $t->primary_key();
-    is( scalar @pk, 0, 'table has no pk' );
+    $pk = $t->primary_key();
+    is( scalar @{ $pk }, 0, 'table has no pk' );
 }
 
 {
@@ -125,7 +125,7 @@ use Fey::Table;
     my $s = Fey::Test->mock_test_schema();
     my $t = $s->table('User');
 
-    $t->remove_candidate_key( @{$_} ) for $t->candidate_keys();
+    $t->remove_candidate_key( @{$_} ) for @{ $t->candidate_keys() };
 
     $t->add_candidate_key('user_id');
     $t->add_candidate_key( 'username', 'email' );
@@ -135,9 +135,9 @@ use Fey::Table;
                'two keys, one for user_id and one for email + username'
              );
 
-    my @pk = $t->primary_key();
-    is( scalar @pk, 1, 'table has one pk column' );
-    is( $pk[0]->name(), 'user_id', 'pk is user_id' );
+    my $pk = $t->primary_key();
+    is( scalar @{ $pk }, 1, 'table has one pk column' );
+    is( $pk->[0]->name(), 'user_id', 'pk is user_id' );
 
     ok( $t->has_candidate_key( 'user_id' ),
         'table has key for (user_Id)' );
@@ -179,10 +179,8 @@ use Fey::Table;
 
 sub _keys_to_names
 {
-    my @k = @_;
-
     my @n;
-    for my $k (@k)
+    for my $k ( @{ $_[0] } )
     {
         push @n, [ sort map { $_->name() } @{ $k } ];
     }
