@@ -1,3 +1,14 @@
+0.10
+
+- Optimizations to cache frequently used (and rarely changing) bits as
+  attributes.
+
+- As a result of the above, several methods that used to return arrays
+  now return array references. These are Fey::FK->column_pairs(),
+  Fey::Table->candidate_keys(), and Fey::Table->primary_key(), and
+  Fey::Literal::Function->args().
+
+
 0.09    2008-07-31
 
 - If a where clause had a subgroup after a comparison (like "WHERE x =
