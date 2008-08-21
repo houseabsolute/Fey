@@ -46,7 +46,6 @@ has 'args' =>
       isa        => 'Fey.Type.ArrayRefOfFunctionArgs',
       default    => sub { [] },
       coerce     => 1,
-      auto_deref => 1,
     );
 
 has 'alias_name' =>
@@ -73,7 +72,7 @@ sub sql
     $sql .=
         ( join ', ',
           map { $_->sql( $_[1] ) }
-          $_[0]->args()
+          @{ $_[0]->args() }
         );
     $sql .= ')';
 }
@@ -164,7 +163,8 @@ The function's name, as passed to the constructor.
 
 =head2 $function->args()
 
-Returns the function's arguments, as passed to the constructor.
+Returns an array reference of the function's arguments, as passed to
+the constructor.
 
 =head2 $function->sql()
 
