@@ -280,6 +280,8 @@ sub _from_clause
         $seen{ $_->id() } = 1
             for @tables;
 
+        next unless length $join;
+
         push @from, [ $join, \@tables ];
     }
 
