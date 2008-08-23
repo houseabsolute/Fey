@@ -89,7 +89,7 @@ sub _join_one_table
 
     if ( $_[0]->[OUTER] )
     {
-        $join .= ' ' . uc $_[0]->[OUTER] . ' OUTER';
+        $join .= uc $_[0]->[OUTER] . ' OUTER';
     }
 
     $join .= q{ } if length $join;
