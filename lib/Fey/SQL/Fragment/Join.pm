@@ -155,7 +155,7 @@ sub bind_params
 {
     return unless $_[0]->[WHERE];
 
-    return $_[0]->[WHERE]->_where_clause_bind_params();
+    return $_[0]->[WHERE]->bind_params();
 }
 
 1;
