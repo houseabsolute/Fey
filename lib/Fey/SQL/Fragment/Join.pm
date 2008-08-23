@@ -65,7 +65,10 @@ sub sql_with_alias
     my @unseen_tables =
         grep { ! $_[2]->{ $_->id() } } @{ $_[0] }[ TABLE1, TABLE2 ];
 
-    return unless @unseen_tables;
+    # This is a pathological case, since it means _both_ tables have
+    # already been joined as part of the query. Why would you then
+    # join them again?
+    return '' unless @unseen_tables;
 
     if ( @unseen_tables == 1 )
     {

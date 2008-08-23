@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 28;
+use Test::More tests => 29;
 
 use Fey::SQL;
 
@@ -85,6 +85,26 @@ my $dbh = Fey::Test->mock_dbh();
 
     my $sql = q{FROM "User" JOIN "UserGroup" ON ("UserGroup"."user_id" = "User"."user_id")};
     $sql .= q{ JOIN "Group" ON ("UserGroup"."group_id" = "Group"."group_id")};
+
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for two joins' );
+}
+
+{
+    my $q = Fey::SQL->new_select()->select();
+
+    $q->from( $s->table('User'), $s->table('UserGroup') );
+    $q->from( $s->table('UserGroup'), $s->table('Group') );
+
+    # This is totally bogus, but we want to test a call to from() that
+    # involves two tables we've already seen.
+    my $fake_fk = Fey::FK->new( source_columns => $s->table('User')->column('user_id'),
+                                target_columns => $s->table('Group')->column('group_id'),
+                              );
+    $q->from( $s->table('User'), $s->table('Group'), $fake_fk );
+
+    my $sql = q{FROM "User" JOIN "Group" ON ("User"."user_id" = "Group"."group_id")};
+    $sql .= q{ JOIN "UserGroup" ON ("UserGroup"."user_id" = "User"."user_id")};
 
     is( $q->_from_clause($dbh), $sql,
         '_from_clause() for two joins' );
