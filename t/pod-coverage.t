@@ -17,7 +17,7 @@ plan tests => scalar @mods;
 
 for my $mod (@mods)
 {
-    my @trustme = qr/^BUILD$/;
+    my @trustme = qr/^BUILD(?:ARGS)?$/;
 
     pod_coverage_ok( $mod, { coverage_class => 'Pod::Coverage::Moose',
                              trustme => \@trustme,
