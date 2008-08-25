@@ -1,7 +1,7 @@
 0.10
 
-- Optimizations to cache frequently used (and rarely changing) bits as
-  attributes.
+- Optimizations to cache frequently used (and rarely changing) method
+  return values as attributes.
 
 - As a result of the above, several methods that used to return arrays
   now return array references. These are Fey::FK->column_pairs(),
