@@ -67,11 +67,22 @@ our $in_comp_re = qr/^(?:not\s+)?in$/i;
                 next;
             }
 
-            # This "de-references" the value, which will make things
-            # simpler when we pass it to DBI, test code, etc. It works
-            # fine with numbers, more or less (see Fey::Literal).
-            $_ .= ''
-                if blessed $_ && overload::Overloaded($_);
+            if ( blessed $_ )
+            {
+                if ( overload::Overloaded($_) )
+                {
+                    # This "de-references" the value, which will make
+                    # things simpler when we pass it to DBI, test
+                    # code, etc. It works fine with numbers, more or
+                    # less (see Fey::Literal).
+                    $_ .= '';
+                }
+                else
+                {
+                    param_error "Cannot pass an object as part of a where clause comparison"
+                                . " unless that object does Fey::Role::Comparable or is overloaded.";
+                }
+            }
 
             if ( defined $_ && $auto_placeholders )
             {
