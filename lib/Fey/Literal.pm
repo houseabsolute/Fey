@@ -13,17 +13,34 @@ use Fey::Literal::Number;
 use Fey::Literal::String;
 use Fey::Literal::Term;
 use Scalar::Util qw( looks_like_number );
+use overload ();
 
 
 sub new_from_scalar
 {
-    return
-        (   ! defined $_[1]
-          ? Fey::Literal::Null->new()
-          : looks_like_number( $_[1] )
-          ? Fey::Literal::Number->new( $_[1] )
-          : Fey::Literal::String->new( $_[1] )
-        );
+    shift;
+    my $val = shift;
+
+    return Fey::Literal::Null->new()
+        unless defined $val;
+
+    # Freaking Perl overloading is so broken! An overloaded reference
+    # will not pass the type constraints, so we need to manually
+    # convert it to a non-ref.
+    if ( ref $val && overload::Overloaded( $val ) )
+    {
+        # The stringification method will be derived from the
+        # numification method if needed. This might produce strange
+        # results in the case of something that overloads both
+        # operations, like a number class that returns either 2 or
+        # "two", but in that case the author of the class made our
+        # life impossible anyway ;)
+        $val = $val . '';
+    }
+
+    return looks_like_number($val)
+           ? Fey::Literal::Number->new($val)
+           : Fey::Literal::String->new($val);
 }
 
 sub id

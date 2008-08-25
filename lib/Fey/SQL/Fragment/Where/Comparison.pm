@@ -59,6 +59,11 @@ our $in_comp_re = qr/^(?:not\s+)?in$/i;
             {
                 if ( defined $_ && $auto_placeholders )
                 {
+                    # This "de-references" the value, which will make
+                    # things simpler when we pass it to DBI, test
+                    # code, etc. It works fine with numbers, more or
+                    # less (see Fey::Literal).
+                    $_ .= '' if overload::Overloaded($_);
                     push @bind, $_;
 
                     $_ = Fey::Placeholder->new();
