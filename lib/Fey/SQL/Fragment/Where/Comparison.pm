@@ -55,37 +55,41 @@ our $in_comp_re = qr/^(?:not\s+)?in$/i;
         my @bind;
         for ( $lhs, @rhs )
         {
-            unless ( blessed $_ && $_->can('is_comparable') )
+            if ( blessed $_ && $_->can('is_comparable') )
             {
-                if ( defined $_ && $auto_placeholders )
+                if ( $_->isa('Fey::SQL::Select') )
                 {
-                    # This "de-references" the value, which will make
-                    # things simpler when we pass it to DBI, test
-                    # code, etc. It works fine with numbers, more or
-                    # less (see Fey::Literal).
-                    $_ .= '' if overload::Overloaded($_);
-                    push @bind, $_;
+                    push @bind, $_->bind_params();
 
-                    $_ = Fey::Placeholder->new();
+                    $_ = Fey::SQL::Fragment::SubSelect->new($_);
                 }
-                else
-                {
-                    $_ = Fey::Literal->new_from_scalar($_);
-                }
+
+                next;
             }
 
-            if ( $_->isa('Fey::SQL::Select') )
-            {
-                push @bind, $_->bind_params();
+            # This "de-references" the value, which will make things
+            # simpler when we pass it to DBI, test code, etc. It works
+            # fine with numbers, more or less (see Fey::Literal).
+            $_ .= ''
+                if blessed $_ && overload::Overloaded($_);
 
-                $_ = Fey::SQL::Fragment::SubSelect->new($_);
+            if ( defined $_ && $auto_placeholders )
+            {
+                push @bind, $_;
+
+                $_ = Fey::Placeholder->new();
             }
+            else
+            {
+                $_ = Fey::Literal->new_from_scalar($_);
+            }
+
         }
 
         if ( grep { $_->isa('Fey::SQL::Fragment::SubSelect') } @rhs )
         {
             param_error "Cannot use a subselect on the right-hand side with $comp"
-                unless $comp =~ $in_comp_re;
+                unless $comp =~ /$in_comp_re/;
         }
 
         if ( lc $comp eq 'between' )

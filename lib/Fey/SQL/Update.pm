@@ -21,6 +21,7 @@ use Fey::Validate
       );
 
 use Fey::Literal;
+use overload ();
 use Scalar::Util qw( blessed );
 
 
@@ -64,7 +65,7 @@ use Scalar::Util qw( blessed );
                   || ( $_[0]->isa('Fey::Column') && ! $_[0]->is_alias() )
                   || $_[0]->isa('Fey::Literal')
                   || $_[0]->isa('Fey::Placeholder')
-                  || overload::Overloaded( $_[0] ) },
+                  || defined $_[0] && overload::Overloaded( $_[0] ) },
           },
         };
 
@@ -107,13 +108,13 @@ use Scalar::Util qw( blessed );
         {
             my $val = $_[ $x + 1 ];
 
-            if ( ( blessed $val && overload::Overloaded($val) )
-                 || ! blessed $val )
-            {
-                if ( $self->auto_placeholders() )
-                {
-                    $val .= '' if overload::Overloaded($val);
+            $val .= ''
+                if blessed $val && overload::Overloaded($val);
 
+            if ( ! blessed $val )
+            {
+                if ( defined $val && $self->auto_placeholders() )
+                {
                     push @{ $self->{bind_params} }, $val;
 
                     $val = Fey::Placeholder->new();

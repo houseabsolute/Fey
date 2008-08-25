@@ -17,6 +17,7 @@ use Fey::Validate
         DBI_TYPE
       );
 
+use overload ();
 use Scalar::Util qw( blessed );
 
 
@@ -36,20 +37,22 @@ sub insert { return $_[0] }
     my $nullable_col_value_type =
     { type      => SCALAR|UNDEF|OBJECT,
       callbacks =>
-      { 'literal, placeholder, scalar, or undef' =>
+      { 'literal, placeholder, scalar, overloaded object, or undef' =>
         sub {    ! blessed $_[0]
               || $_[0]->isa('Fey::Literal')
-              || $_[0]->isa('Fey::Placeholder') }
+              || $_[0]->isa('Fey::Placeholder')
+              || overload::Overloaded( $_[0] ) }
       },
     };
 
     my $non_nullable_col_value_type =
         { type      => SCALAR|OBJECT,
           callbacks =>
-          { 'literal, placeholder, or scalar' =>
+          { 'literal, placeholder,, scalar, or overloaded object' =>
             sub {    ! blessed $_[0]
                   || ( $_[0]->isa('Fey::Literal') && ! $_[0]->isa('Fey::Literal::Null') )
-                  || $_[0]->isa('Fey::Placeholder') }
+                  || $_[0]->isa('Fey::Placeholder')
+                  || overload::Overloaded( $_[0] ) }
           },
         };
 
@@ -83,7 +86,10 @@ sub insert { return $_[0] }
 
         for ( values %vals )
         {
-            unless ( blessed $_ )
+            $_ .= ''
+                if blessed $_ && overload::Overloaded($_);
+
+            if ( ! blessed $_ )
             {
                 if ( defined $_ && $self->auto_placeholders() )
                 {

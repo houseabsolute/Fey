@@ -8,6 +8,11 @@
   Fey::Table->candidate_keys(), and Fey::Table->primary_key(), and
   Fey::Literal::Function->args().
 
+- Overloaded objects are now handled (mostly) correctly when used as
+  parameters in SQL statements. I say mostly because overloading in
+  Perl is so broken that it's not possible to deal with them 100%
+  correctly.
+
 
 0.09    2008-07-31
 

@@ -12,7 +12,7 @@ use Fey::Literal::Null;
 use Fey::Literal::Number;
 use Fey::Literal::String;
 use Fey::Literal::Term;
-use Scalar::Util qw( looks_like_number );
+use Scalar::Util qw( blessed looks_like_number );
 use overload ();
 
 
@@ -27,7 +27,7 @@ sub new_from_scalar
     # Freaking Perl overloading is so broken! An overloaded reference
     # will not pass the type constraints, so we need to manually
     # convert it to a non-ref.
-    if ( ref $val && overload::Overloaded( $val ) )
+    if ( blessed $val && overload::Overloaded( $val ) )
     {
         # The stringification method will be derived from the
         # numification method if needed. This might produce strange
