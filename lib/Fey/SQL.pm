@@ -275,6 +275,13 @@ value when creating the object:
 In this case, values will be quoted as needed and inserted directly
 into the generated SQL.
 
+=head2 Overloaded Objects as Parameters
+
+In any place where you can pass a plain scalar, you can also pass an
+overloaded object that overloads stringification or numification. This
+includes C<WHERE> clause comparisons, C<VALUES> in an C<INSERT>, and
+C<SET> clauses in an C<UPDATE>.
+
 =head1 AUTHOR
 
 Dave Rolsky, <autarch@urth.org>
