@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 30;
+use Test::More tests => 31;
 
 use Fey::SQL;
 
@@ -328,6 +328,15 @@ my $dbh = Fey::Test->mock_dbh();
     eval { $q->from($table) };
     like( $@, qr/\Qfrom() called with invalid parameters/,
           'cannot pass a table without a schema to from()' );
+}
+
+{
+    my $q = Fey::SQL->new_select()->select();
+    my $table = Fey::Table->new( name => 'NewTable' );
+
+    eval { $q->from( $table, $s->table('User') ) };
+    like( $@, qr/\Qthe first two arguments to from() were not valid (not tables or something else joinable)/,
+          'cannot pass a table without a schema to from() as part of a join' );
 }
 
 {
