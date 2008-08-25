@@ -105,6 +105,15 @@ use Fey::Table;
     $t->remove_column('test_id');
     $pk = $t->primary_key();
     is( scalar @{ $pk }, 0, 'table has no pk' );
+
+    $t->add_column($c1);
+    $t->add_candidate_key('test_id');
+    $t->remove_column($c2);
+
+    $pk = $t->primary_key();
+    is( scalar @{ $pk }, 1,
+        'table has a one column pk (removing a non-key column does not affect keys)' );
+    is( $pk->[0]->name(), 'test_id', 'pk column is test_id' );
 }
 
 {
