@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 38;
+use Test::More tests => 40;
 
 use Fey::Table;
 
