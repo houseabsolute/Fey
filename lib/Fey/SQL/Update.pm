@@ -63,7 +63,8 @@ use Scalar::Util qw( blessed );
             sub {    ! blessed $_[0]
                   || ( $_[0]->isa('Fey::Column') && ! $_[0]->is_alias() )
                   || $_[0]->isa('Fey::Literal')
-                  || $_[0]->isa('Fey::Placeholder') },
+                  || $_[0]->isa('Fey::Placeholder')
+                  || overload::Overloaded( $_[0] ) },
           },
         };
 
@@ -74,7 +75,8 @@ use Scalar::Util qw( blessed );
             sub {    ! blessed $_[0]
                   || ( $_[0]->isa('Fey::Column') && ! $_[0]->is_alias() )
                   || ( $_[0]->isa('Fey::Literal') && ! $_[0]->isa('Fey::Literal::Null') )
-                  || $_[0]->isa('Fey::Placeholder') },
+                  || $_[0]->isa('Fey::Placeholder')
+                  || overload::Overloaded( $_[0] ) },
           },
         };
 
@@ -105,10 +107,13 @@ use Scalar::Util qw( blessed );
         {
             my $val = $_[ $x + 1 ];
 
-            unless ( blessed $val )
+            if ( ( blessed $val && overload::Overloaded($val) )
+                 || ! blessed $val )
             {
                 if ( $self->auto_placeholders() )
                 {
+                    $val .= '' if overload::Overloaded($val);
+
                     push @{ $self->{bind_params} }, $val;
 
                     $val = Fey::Placeholder->new();

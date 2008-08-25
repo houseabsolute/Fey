@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 16;
+use Test::More tests => 22;
 
 use Fey::SQL;
 
@@ -186,4 +186,70 @@ $s->table('User')->add_column($size);
 
     like( $@, qr/list of paired/,
           'set() called with one parameter' );
+}
+
+{
+    package Num;
+
+    use overload '0+' => sub { ${ $_[0] } };
+
+    sub new
+    {
+        my $num = $_[1];
+        return bless \$num, __PACKAGE__;
+    }
+}
+
+{
+    my $q = Fey::SQL->new_update( auto_placeholders => 1 );
+    $q->update( $s->table('User') );
+    $q->set( $s->table('User')->column('user_id'), Num->new(42) );
+
+    is( $q->_set_clause($dbh), q{SET "user_id" = ?},
+        '_set_clause() for one column with overloaded object and auto placeholders' );
+    is_deeply( [ $q->bind_params() ], [ 42 ],
+               'bind params with overloaded object' );
+}
+
+
+{
+    my $q = Fey::SQL->new_update( auto_placeholders => 0 );
+    $q->update( $s->table('User') );
+    $q->set( $s->table('User')->column('user_id'), Num->new(42) );
+
+    is( $q->_set_clause($dbh), q{SET "user_id" = 42},
+        '_set_clause() for one column with overloaded object, no placeholders' );
+}
+
+{
+    package Str;
+
+    use overload q{""} => sub { ${ $_[0] } };
+
+    sub new
+    {
+        my $str = $_[1];
+        return bless \$str, __PACKAGE__;
+    }
+}
+
+{
+    my $q = Fey::SQL->new_update( auto_placeholders => 1 );
+    $q->update( $s->table('User') );
+    $q->set( $s->table('User')->column('username'), Str->new('Bubba') );
+
+    is( $q->_set_clause($dbh), q{SET "username" = ?},
+        '_set_clause() for one column with overloaded object and auto placeholders' );
+    is_deeply( [ $q->bind_params() ], [ 'Bubba' ],
+               'bind params with overloaded object' );
+}
+
+
+{
+    my $q = Fey::SQL->new_update( auto_placeholders => 0 );
+    $q->update( $s->table('User') );
+    $q->set( $s->table('User')->column('username'), Str->new('Bubba') );
+
+    is( $q->_set_clause($dbh), q{SET "username" = 'Bubba'},
+        '_set_clause() for one column with overloaded object, no placeholders' );
 }
