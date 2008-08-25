@@ -35,8 +35,8 @@ use Fey::Table;
 {
     my $t = Fey::Table->new( name => 'Test' );
     my $c1 = Fey::Column->new( name => 'test_id',
-                             type => 'text',
-                           );
+                               type => 'text',
+                             );
 
     ok( ! $c1->table(), 'column has no table' );
 
@@ -67,12 +67,12 @@ use Fey::Table;
 {
     my $t = Fey::Table->new( name => 'Test' );
     my $c1 = Fey::Column->new( name => 'test_id',
-                             type => 'text',
-                           );
+                               type => 'text',
+                             );
 
     my $c2 = Fey::Column->new( name => 'size',
-                             type => 'integer',
-                           );
+                               type => 'integer',
+                             );
 
     $t->add_column($_) for $c1, $c2;
 
