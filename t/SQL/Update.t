@@ -35,7 +35,7 @@ $s->table('User')->add_column($size);
 
 {
     my $q = Fey::SQL->new_update()
-                            ->update( $s->table('User'), $s->table('UserGroup') );
+                    ->update( $s->table('User'), $s->table('UserGroup') );
 
     is( $q->_update_clause($dbh), q{UPDATE "User", "UserGroup"},
         'update clause for two tables' );
