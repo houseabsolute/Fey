@@ -1,4 +1,4 @@
-0.10
+0.10    2008-08-25
 
 - Optimizations to cache frequently used (and rarely changing) method
   return values as attributes.
