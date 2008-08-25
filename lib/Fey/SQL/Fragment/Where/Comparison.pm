@@ -17,6 +17,7 @@ use Scalar::Util qw( blessed );
 use Fey::SQL::Fragment::SubSelect;
 use Fey::Literal;
 use Fey::Placeholder;
+use overload ();
 
 use constant LHS         => 0;
 use constant COMP        => 1;
@@ -29,13 +30,13 @@ our $in_comp_re = qr/^(?:not\s+)?in$/i;
 {
     my $comparable = 
         { type      => UNDEF|SCALAR|OBJECT,
-          callbacks =>
-          { 'is comparable' =>
+          'is comparable' =>
             sub {    ! blessed $_[0]
                   || (    $_[0]->can('is_comparable')
                        && $_[0]->is_comparable()
-                     ) },
-          },
+                     )
+                  || overload::Overloaded( $_[0] )
+                },
         };
 
     my $operator = SCALAR_TYPE;
