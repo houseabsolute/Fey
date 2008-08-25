@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 34;
+use Test::More tests => 35;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -260,6 +260,15 @@ my $dbh = Fey::Test->mock_dbh();
 
     is( $q->_where_clause($dbh), q{WHERE "User"."user_id" IS NULL},
         'undef in comparison (=) with auto placeholders' );
+}
+
+{
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
+
+    $q->where( $s->table('User')->column('user_id'), '=', Fey::Placeholder->new() );
+
+    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = ?},
+        'explicit placeholder object in comparison (=)' );
 }
 
 {
