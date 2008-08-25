@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 6;
+use Test::More tests => 10;
 use Fey::Literal;
 
 
@@ -38,7 +38,7 @@ use Fey::Literal;
 }
 
 {
-    $lit = Fey::Literal->new_from_scalar( Num->new(42) );
+    my $lit = Fey::Literal->new_from_scalar( Num->new(42) );
     isa_ok( $lit, 'Fey::Literal::Number' );
     is( $lit->number(), 42, 'value is 42' );
 }
@@ -56,7 +56,7 @@ use Fey::Literal;
 }
 
 {
-    $lit = Fey::Literal->new_from_scalar( Str->new('test') );
+    my $lit = Fey::Literal->new_from_scalar( Str->new('test') );
     isa_ok( $lit, 'Fey::Literal::String' );
     is( $lit->string(), 'test', 'value is test' );
 }
