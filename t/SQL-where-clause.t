@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 35;
+use Test::More tests => 36;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -334,6 +334,14 @@ my $dbh = Fey::Test->mock_dbh();
 
     is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = 'two'},
         'overloaded object in comparison (=) without auto placeholders' );
+}
+
+{
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
+
+    eval { $q->where( $s->table('User')->column('user_id'), '=', bless {}, 'Foo' ) };
+    like( $@, qr/\QCannot pass an object as part of a where clause comparison unless that object does Fey::Role::Comparable or is overloaded/,
+          'get expected error when passing an unacceptable object as part of a comparison' );
 }
 
 SKIP:
