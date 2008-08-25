@@ -350,7 +350,7 @@ SKIP:
     is_deeply( [ $q->bind_params() ], [ '2008-02-24 12:30:47' ],
                q{bind_params() contains overloaded object's value} );
 
-    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
+    $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
     $q->where( $s->table('User')->column('username'), '=', $dt );
 
     is( $q->_where_clause($dbh), q{WHERE "User"."username" = '2008-02-24 12:30:47'},
