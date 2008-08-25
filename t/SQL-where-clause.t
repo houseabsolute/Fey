@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 31;
+use Test::More tests => 34;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -325,4 +325,34 @@ my $dbh = Fey::Test->mock_dbh();
 
     is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = 'two'},
         'overloaded object in comparison (=) without auto placeholders' );
+}
+
+SKIP:
+{
+    skip 'These tests require DateTime.pm and DateTime::Format::MySQL', 3
+        unless eval { require DateTime; require DateTime::Format::MySQL; 1 };
+
+    my $dt = DateTime->new( year      => 2008,
+                            month     => 2,
+                            day       => 24,
+                            hour      => 12,
+                            minute    => 30,
+                            second    => 47,
+                            time_zone => 'UTC',
+                            formatter => DateTime::Format::MySQL->new(),
+                          );
+
+    my $q = Fey::SQL->new_select( auto_placeholders => 1 )->select();
+    $q->where( $s->table('User')->column('username'), '=', $dt );
+
+    is( $q->_where_clause($dbh), q{WHERE "User"."username" = ?},
+        'overloaded DateTime object in comparison (=) with auto placeholders' );
+    is_deeply( [ $q->bind_params() ], [ '2008-02-24 12:30:47' ],
+               q{bind_params() contains overloaded object's value} );
+
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
+    $q->where( $s->table('User')->column('username'), '=', $dt );
+
+    is( $q->_where_clause($dbh), q{WHERE "User"."username" = '2008-02-24 12:30:47'},
+        'overloaded DateTime object in comparison (=) without auto placeholders' );
 }
