@@ -10,7 +10,13 @@ use Fey::Validate
         TABLE_TYPE TABLE_OR_NAME_TYPE
         FK_TYPE DBI_TYPE );
 
-use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
+use Fey::NamedObjectSet;
+use Fey::SQL;
+use Fey::Table;
+use Scalar::Util qw( blessed );
+
+use Moose;
+use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
 has 'name' =>
@@ -27,11 +33,6 @@ has '_tables' =>
                    table  => 'object',
                  },
     );
-
-use Fey::NamedObjectSet;
-use Fey::SQL;
-use Fey::Table;
-use Scalar::Util qw( blessed );
 
 
 {
@@ -168,6 +169,7 @@ use Scalar::Util qw( blessed );
 }
 
 no Moose;
+
 __PACKAGE__->meta()->make_immutable();
 
 1;

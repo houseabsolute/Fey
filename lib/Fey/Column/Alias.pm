@@ -9,7 +9,8 @@ use Fey::Column;
 use Fey::Table;
 use Fey::Table::Alias;
 
-use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
+use Moose;
+use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
 with 'Fey::Role::ColumnLike';

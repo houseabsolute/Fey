@@ -8,6 +8,7 @@ use Moose::Role;
 
 sub is_groupable { 1 }
 
+no Moose::Role;
 
 1;
 

@@ -3,18 +3,12 @@ package Fey::Placeholder;
 use strict;
 use warnings;
 
-use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
+use Moose;
+use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
 with 'Fey::Role::Comparable';
 
-
-sub new
-{
-    my $str = '?';
-
-    return bless \$str, $_[0];
-}
 
 sub sql
 {
@@ -24,6 +18,7 @@ sub sql
 sub sql_or_alias { goto &sql; }
 
 no Moose;
+
 __PACKAGE__->meta()->make_immutable();
 
 1;

@@ -3,8 +3,6 @@ package Fey::Role::SQL::HasOrderByClause;
 use strict;
 use warnings;
 
-use Moose::Role;
-
 use Fey::Validate
     qw( validate_pos
         SCALAR
@@ -12,6 +10,8 @@ use Fey::Validate
       );
 
 use Scalar::Util qw( blessed );
+
+use Moose::Role;
 
 
 {
@@ -65,6 +65,7 @@ sub _order_by_clause
     return $sql;
 }
 
+no Moose::Role;
 
 1;
 

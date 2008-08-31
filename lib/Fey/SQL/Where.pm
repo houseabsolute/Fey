@@ -3,14 +3,12 @@ package Fey::SQL::Where;
 use strict;
 use warnings;
 
-use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
+use Moose;
+use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
 with 'Fey::Role::SQL::HasBindParams',
      'Fey::Role::SQL::HasWhereClause';
-
-no Moose;
-__PACKAGE__->meta()->make_immutable();
 
 sub bind_params
 {
@@ -19,6 +17,9 @@ sub bind_params
     return $self->_where_clause_bind_params();
 }
 
+no Moose;
+
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

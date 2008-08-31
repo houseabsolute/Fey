@@ -32,6 +32,8 @@ sub is_groupable  { return $_[0]->table() ? 1 : 0 }
 
 sub is_orderable  { return $_[0]->table() ? 1 : 0 }
 
+no Moose::Role;
+
 1;
 
 __END__

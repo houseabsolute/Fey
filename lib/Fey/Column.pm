@@ -18,7 +18,8 @@ use Fey::Literal;
 use Fey::Table;
 use Fey::Table::Alias;
 
-use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
+use Moose;
+use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 use Moose::Util::TypeConstraints qw( subtype as where coerce from via class_type find_type_constraint );
 

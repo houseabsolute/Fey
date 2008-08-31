@@ -3,17 +3,17 @@ package Fey::Role::SQL::HasWhereClause;
 use strict;
 use warnings;
 
-use Moose::Role;
-
-# doesn't work with attributes
-#requires 'use_placeholders';
-
 use Fey::Exceptions qw( param_error );
 
 use Fey::SQL::Fragment::Where::Boolean;
 use Fey::SQL::Fragment::Where::Comparison;
 use Fey::SQL::Fragment::Where::SubgroupStart;
 use Fey::SQL::Fragment::Where::SubgroupEnd;
+
+use Moose::Role;
+
+# doesn't work with attributes
+#requires 'use_placeholders';
 
 
 sub where
@@ -148,6 +148,8 @@ sub _where_clause_bind_params
           @{ $_[0]->{where} }
         );
 }
+
+no Moose::Role;
 
 1;
 

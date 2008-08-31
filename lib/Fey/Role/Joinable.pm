@@ -8,6 +8,7 @@ use Moose::Role;
 
 sub is_joinable { $_[0]->schema() ? 1 : 0 }
 
+no Moose::Role;
 
 1;
 

@@ -3,17 +3,22 @@ package Fey::Literal;
 use strict;
 use warnings;
 
-use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
+use Fey::FakeDBI;
+use Scalar::Util qw( blessed looks_like_number );
+use overload ();
+
+# This needs to come before we load subclasses or shit blows up
+# because we end up with a metaclass object that is a
+# Class::MOP::Class, not Moose::Meta::Class.
+use Moose;
+use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-use Fey::FakeDBI;
 use Fey::Literal::Function;
 use Fey::Literal::Null;
 use Fey::Literal::Number;
 use Fey::Literal::String;
 use Fey::Literal::Term;
-use Scalar::Util qw( blessed looks_like_number );
-use overload ();
 
 
 sub new_from_scalar
@@ -49,6 +54,7 @@ sub id
 }
 
 no Moose;
+
 __PACKAGE__->meta()->make_immutable();
 
 1;

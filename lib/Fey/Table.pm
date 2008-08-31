@@ -19,7 +19,8 @@ use Fey::NamedObjectSet;
 use Fey::Schema;
 use Fey::Table::Alias;
 
-use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
+use Moose;
+use MooseX::SemiAffordanceAccessor;
 use MooseX::AttributeHelpers;
 use MooseX::StrictConstructor;
 use Moose::Util::TypeConstraints;

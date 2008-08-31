@@ -11,7 +11,8 @@ use Fey::Validate
 
 use Fey::Table;
 
-use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
+use Moose;
+use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
 with 'Fey::Role::Joinable';
@@ -99,6 +100,7 @@ sub sql_with_alias
 sub _build_id { $_[0]->alias_name() }
 
 no Moose;
+
 __PACKAGE__->meta()->make_immutable();
 
 1;

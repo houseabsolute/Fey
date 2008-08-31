@@ -13,6 +13,7 @@ has 'auto_placeholders' =>
       default => 1,
     );
 
+no Moose::Role;
 
 1;
 

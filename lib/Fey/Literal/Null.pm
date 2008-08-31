@@ -3,7 +3,8 @@ package Fey::Literal::Null;
 use strict;
 use warnings;
 
-use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
+use Moose;
+use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
 extends 'Fey::Literal';
@@ -18,6 +19,7 @@ sub sql_with_alias { goto &sql }
 sub sql_or_alias { goto &sql }
 
 no Moose;
+
 __PACKAGE__->meta()->make_immutable();
 
 1;

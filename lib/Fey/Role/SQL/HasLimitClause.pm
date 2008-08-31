@@ -3,8 +3,6 @@ package Fey::Role::SQL::HasLimitClause;
 use strict;
 use warnings;
 
-use Moose::Role;
-
 use Fey::Validate
     qw( validate_pos
         POS_INTEGER_TYPE
@@ -12,6 +10,8 @@ use Fey::Validate
       );
 
 use Scalar::Util qw( blessed );
+
+use Moose::Role;
 
 
 {
@@ -41,6 +41,7 @@ sub _limit_clause
     return $sql;
 }
 
+no Moose::Role;
 
 1;
 

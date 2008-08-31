@@ -3,14 +3,6 @@ package Fey::SQL::Delete;
 use strict;
 use warnings;
 
-use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
-use MooseX::StrictConstructor;
-
-with 'Fey::Role::SQL::HasBindParams',
-     'Fey::Role::SQL::HasWhereClause',
-     'Fey::Role::SQL::HasOrderByClause',
-     'Fey::Role::SQL::HasLimitClause';
-
 use Fey::Validate
     qw( validate
         validate_pos
@@ -21,6 +13,15 @@ use Fey::Validate
       );
 
 use Scalar::Util qw( blessed );
+
+use Moose;
+use MooseX::SemiAffordanceAccessor;
+use MooseX::StrictConstructor;
+
+with 'Fey::Role::SQL::HasBindParams',
+     'Fey::Role::SQL::HasWhereClause',
+     'Fey::Role::SQL::HasOrderByClause',
+     'Fey::Role::SQL::HasLimitClause';
 
 
 sub delete { return $_[0] }
@@ -85,6 +86,7 @@ sub bind_params
 }
 
 no Moose;
+
 __PACKAGE__->meta()->make_immutable();
 
 1;

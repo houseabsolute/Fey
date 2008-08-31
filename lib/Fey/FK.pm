@@ -15,7 +15,8 @@ use List::MoreUtils qw( uniq all pairwise );
 use List::Util qw( max );
 use Scalar::Util qw( blessed );
 
-use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
+use Moose;
+use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 use Moose::Util::TypeConstraints;
 

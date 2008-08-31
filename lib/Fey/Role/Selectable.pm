@@ -8,6 +8,7 @@ use Moose::Role;
 
 sub is_selectable { 1 }
 
+no Moose::Role;
 
 1;
 

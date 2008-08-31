@@ -3,15 +3,6 @@ package Fey::SQL::Select;
 use strict;
 use warnings;
 
-use Moose::Policy 'MooseX::Policy::SemiAffordanceAccessor';
-use MooseX::StrictConstructor;
-
-with 'Fey::Role::Comparable',
-     'Fey::Role::SQL::HasBindParams',
-     'Fey::Role::SQL::HasWhereClause',
-     'Fey::Role::SQL::HasOrderByClause',
-     'Fey::Role::SQL::HasLimitClause';
-
 use Fey::Exceptions qw( param_error );
 use Fey::Validate
     qw( validate_pos
@@ -27,6 +18,16 @@ use Fey::SQL::Fragment::Join;
 use Fey::SQL::Fragment::SubSelect;
 use List::MoreUtils qw( all );
 use Scalar::Util qw( blessed );
+
+use Moose;
+use MooseX::SemiAffordanceAccessor;
+use MooseX::StrictConstructor;
+
+with 'Fey::Role::Comparable',
+     'Fey::Role::SQL::HasBindParams',
+     'Fey::Role::SQL::HasWhereClause',
+     'Fey::Role::SQL::HasOrderByClause',
+     'Fey::Role::SQL::HasLimitClause';
 
 
 {
@@ -358,6 +359,7 @@ sub bind_params
 }
 
 no Moose;
+
 __PACKAGE__->meta()->make_immutable();
 
 1;
