@@ -1,3 +1,8 @@
+0.12    2008-08-
+
+- Changes to work with the latest versions of Moose.
+
+
 0.11    2008-08-26
 
 - 0.10 was missing a dependency - MooseX::AttributeHelpers.
