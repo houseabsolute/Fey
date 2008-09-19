@@ -1,3 +1,20 @@
+0.14    2008-09-19
+
+- Fey did not handle this join correctly:
+
+    $q->from( $s->table('User') );
+    $q->from( $s->table('User'), $s->table('UserGroup') );
+
+  It added a spurious comma so you got
+
+    FROM "User", JOIN ...
+
+  Reported by Aristotle Pagaltzis.
+
+- The Fey::FK docs for the constructor did not name the parameters it
+  expects correctly. Reported by Aristotle Pagaltzis.
+
+
 0.13    2008-09-19
 
 - Including a table in a from clause failed. Now the Fey::Schema
