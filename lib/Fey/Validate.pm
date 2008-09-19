@@ -72,6 +72,14 @@ BEGIN
             };
     }
 
+    $Types{TABLE_OR_NAME_OR_ALIAS_TYPE} =
+    { type      => SCALAR|OBJECT,
+      callbacks =>
+      { "is a Fey::Table, Fey::Table::Alias, or name" =>
+        sub { ! blessed $_[0] || $_[0]->isa("Fey::Table") || $_[0]->isa("Fey::Table::Alias") },
+      },
+    };
+
     for my $class ( qw( Select Insert Update Delete ) )
     {
         $Types{ uc $class . '_TYPE' } = { isa => "Fey::SQL::${class}" };

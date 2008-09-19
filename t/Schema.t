@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 37;
+use Test::More tests => 39;
 
 use Fey::Schema;
 
@@ -85,6 +85,12 @@ use Fey::Schema;
     is( scalar @fk, 1, 'one fk for UserGroup table' );
     is( $fk[0]->id(), $fk->id(),
         'one foreign key between User and UserGroup is same as original' );
+
+    my $alias = $s->table('User')->alias( alias_name => 'UserA' );
+    @fk = $s->foreign_keys_between_tables( $alias, 'UserGroup' );
+    is( scalar @fk, 1, 'one fk between alias of User table and UserGroup table' );
+    is( $fk[0]->source_columns()->[0]->table(), $alias,
+        'source column points to alias' );
 
     @fk = $s->foreign_keys_between_tables( 'UserGroup', 'User' );
     is( scalar @fk, 1, 'one fk for UserGroup table' );

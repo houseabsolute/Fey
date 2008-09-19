@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 31;
+use Test::More tests => 32;
 
 use Fey::SQL;
 
@@ -267,6 +267,23 @@ my $dbh = Fey::Test->mock_dbh();
 
     is( $q->_from_clause($dbh), $sql,
         '_from_clause() for outer join with where clause() and explicit fk' );
+}
+
+{
+    my $q = Fey::SQL->new_select()->select();
+
+    my $alias = $s->table('User')->alias( alias_name => 'UserA' );
+    $q->from( $s->table('User'), $s->table('UserGroup') );
+    $q->from( $alias, $s->table('UserGroup') );
+
+    my $sql = q{FROM "User" JOIN "UserGroup"};
+    $sql .= q{ ON ("UserGroup"."user_id" = "User"."user_id")};
+    $sql .= q{ JOIN "User" AS "UserA"};
+    $sql .= q{ ON ("UserGroup"."user_id" = "UserA"."user_id")};
+
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for one table alias' );
+
 }
 
 {

@@ -1,3 +1,13 @@
+0.13    2008-09-19
+
+- Including a table in a from clause failed. Now the Fey::Schema
+  object will accept a table alias as a parameter for the
+  foreign_keys_between_tables() method. When given an alias, it
+  returns a Fey::FK object which contains columns from that
+  alias. This faciliates creating SQL that joins on an alias. Reported
+  by Aristotle Pagaltzis.
+
+
 0.12    2008-09-01
 
 - Changes to work with the latest versions of Moose.

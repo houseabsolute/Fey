@@ -8,6 +8,7 @@ use Fey::Validate
     qw( validate validate_pos
         SCALAR_TYPE ARRAYREF_TYPE
         TABLE_TYPE TABLE_OR_NAME_TYPE
+        TABLE_OR_NAME_OR_ALIAS_TYPE
         FK_TYPE DBI_TYPE );
 
 use Fey::NamedObjectSet;
@@ -149,14 +150,25 @@ has '_tables' =>
 }
 
 {
-    my $spec = (TABLE_OR_NAME_TYPE);
+    my $spec = (TABLE_OR_NAME_OR_ALIAS_TYPE);
     sub foreign_keys_between_tables
     {
         my $self    = shift;
         my ( $table1, $table2 ) = validate_pos( @_, $spec, $spec );
 
-        my $name1 = blessed $table1 ? $table1->name() : $table1;
-        my $name2 = blessed $table2 ? $table2->name() : $table2;
+        my $name1 =
+            ! blessed $table1
+            ? $table1
+            : $table1->isa('Fey::Table')
+            ? $table1->name()
+            : $table1->table()->name();
+
+        my $name2 =
+            ! blessed $table2
+            ? $table2
+            : $table2->isa('Fey::Table')
+            ? $table2->name()
+            : $table2->table()->name();
 
         my %fks =
             map { $_->id() => $_ }
@@ -164,7 +176,33 @@ has '_tables' =>
             map { values %{ $self->{fk}{$name1}{$_} } }
             keys %{ $self->{fk}{$name1} || {} };
 
-        return values %fks;
+        return values %fks
+            unless grep { blessed $_ && $_->is_alias() } $table1, $table2;
+
+        $table1 = $self->table($name1)
+            unless blessed $table1;
+
+        $table2 = $self->table($name2)
+            unless blessed $table2;
+
+        my @fks;
+
+        for my $fk ( values %fks )
+        {
+            my %p =
+                ( $table1->name() eq $fk->source_table()->name()
+                  ? ( source_columns => [ $table1->columns( map { $_->name() } @{ $fk->source_columns() } ) ],
+                      target_columns => [ $table2->columns( map { $_->name() } @{ $fk->target_columns() } ) ],
+                    )
+                  : ( source_columns => [ $table2->columns( map { $_->name() } @{ $fk->source_columns() } ) ],
+                      target_columns => [ $table1->columns( map { $_->name() } @{ $fk->target_columns() } ) ],
+                    )
+                );
+
+            push @fks, Fey::FK->new(%p);
+        }
+
+        return @fks;
     }
 }
 
@@ -278,7 +316,10 @@ table can be specified as a name or a C<Fey::Table> object.
 =head2 $schema->foreign_keys_between_tables( $source_table, $target_table )
 
 Returns all the foreign keys which reference both tables. The tables
-can be specified as names or C<Fey::Table> objects.
+can be specified as names, C<Fey::Table> objects, or
+C<Fey::Table::Alias> objects. If you provide any aliases, the foreign
+keys returned will contain columns from those aliases, not the real
+tables. This provides support for joining an alias in a SQL statement.
 
 =head1 AUTHOR
 
