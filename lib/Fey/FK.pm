@@ -264,9 +264,9 @@ parameters:
 
 =over 4
 
-=item * source - required
+=item * source_columns - required
 
-=item * target - required
+=item * target_columns - required
 
 These parameters must be either a single C<Fey::Column> object or an
 array reference containing one or more column objects.
