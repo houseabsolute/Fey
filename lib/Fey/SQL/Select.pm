@@ -273,7 +273,7 @@ sub _from_clause
     for my $frag ( map { $self->{from}{$_} }
                    sort keys %{ $self->{from} } )
     {
-        my $join = $frag->sql_with_alias( $dbh, \%seen );
+        my $join_sql = $frag->sql_with_alias( $dbh, \%seen );
 
         # the fragment could be a subselect
         my @tables = $frag->can('tables') ? $frag->tables() : ();
@@ -281,27 +281,31 @@ sub _from_clause
         $seen{ $_->id() } = 1
             for @tables;
 
-        next unless length $join;
+        next unless length $join_sql;
 
-        push @from, [ $join, \@tables ];
+        push @from, $join_sql;
     }
 
     my $sql = 'FROM ';
 
-    # This is a sort of manual join special-cased to add a comma as
-    # needed.
-    for my $from (@from)
+    # This is a sort of manual join() call special-cased to add a
+    # comma as needed.
+    for ( my $i = 0; $i < @from; $i++ )
     {
-        $sql .= $from->[0];
+        $sql .= $from[$i];
 
-        # A single table is a special case, since in most types of
-        # JOIN clauses, a comma is not needed. However, it is needed
-        # in a list of tables like "FROM Foo, Bar, Baz".
-        $sql .= ','
-            if @{ $from->[1] } <= 1 && $from->[0] ne $from[-1][0];
-
-        $sql .= ' '
-            unless $from->[0] eq $from[-1][0];
+        if ( $sql =~ /\)^/ )
+        {
+            $sql .= q{ };
+        }
+        elsif ( ( $from[ $i + 1 ] || '' ) =~ /^[\w\s]*JOIN/ )
+        {
+            $sql .= q{ };
+        }
+        elsif ( $from[ $i + 1 ] )
+        {
+            $sql .= q{, };
+        }
     }
 
     return $sql;
