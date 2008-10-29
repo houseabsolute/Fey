@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 13;
+use Test::More tests => 15;
 
 use Fey::SQL;
 
@@ -23,6 +23,10 @@ my $dbh = Fey::Test->mock_dbh();
     is( $q->_select_clause($dbh), $sql,
         '_select_clause with one table'
       );
+
+    is_deeply( [ map { $_->name() } $q->select_clause_elements() ],
+               [ qw( email user_id username ) ],
+               'select_clause_elements with one table' );
 
     $q->select( $s->table('User') );
     is( $q->_select_clause($dbh), $sql,
@@ -84,7 +88,13 @@ my $dbh = Fey::Test->mock_dbh();
     is( $q->_select_clause($dbh), $sql,
         '_select_clause with column and alias for that column'
       );
+
+    is_deeply( [ map { $_->can('alias_name') ? $_->alias_name() : $_->name() }
+                 $q->select_clause_elements() ],
+               [ qw( new_user_id user_id ) ],
+               'select_clause_elements with column and alias for that column' );
 }
+
 
 {
     my $q = Fey::SQL->new_select();

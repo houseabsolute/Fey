@@ -245,6 +245,17 @@ sub having
     }
 }
 
+sub select_clause_elements
+{
+    my $self = shift;
+
+    return
+        ( map { $self->{select}{$_} }
+          sort
+          keys %{ $self->{select} }
+        );
+}
+
 sub _select_clause
 {
     my $self = shift;
@@ -254,9 +265,8 @@ sub _select_clause
     $sql .= 'DISTINCT ' if $self->{is_distinct};
     $sql .=
         ( join ', ',
-          map { $self->{select}{$_}->sql_with_alias($dbh) }
-          sort
-          keys %{ $self->{select} }
+          map { $_->sql_with_alias($dbh) }
+          $self->select_clause_elements()
         );
 
     return $sql;
@@ -578,6 +588,15 @@ handle must be passed so that identifiers can be properly quoted.
 
 See the L<Fey::SQL section on Bind Parameters|Fey::SQL/Bind
 Parameters> for more details.
+
+=head2 $select->select_clause_elements
+
+Returns a list of objects, one for each element in the C<SELECT>
+clause. These can be C<Fey::Column>s, C<Fey::Column::Alias>es, or any
+type of C<Fey::Literal>.
+
+These items are returned in the order in which they will be included
+in the C<SELECT> clause.
 
 =head1 ROLES
 
