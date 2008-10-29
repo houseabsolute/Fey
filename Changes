@@ -1,3 +1,9 @@
+0.15    2008-10-28
+
+- Added Fey::SQL::Select->select_clause_elements(), most for the
+  benefit of Fey::ORM.
+
+
 0.14    2008-09-19
 
 - Fey did not handle this join correctly:
