@@ -27,13 +27,13 @@ Fey - Better SQL Generation Through Perl
   my $user  = $schema->table('User');
   my $group = $schema->table('Group')
 
-  my $select = Fey::SQL->new_insert();
+  my $select = Fey::SQL->new_select();
 
   my $func = Fey::Literal::Function->new( 'LCASE', $user->column('username') );
 
   $select->select( $user->columns( 'user_id', 'username' ) )
          ->from( $user, $group )
-         ->where( $group->group_id, 'IN', 1, 2, 3, )
+         ->where( $group->group_id, 'IN', 1, 2, 3 )
          ->and  ( $func, 'LIKE', 'smith%' );
 
   print $select->sql($dbh);
@@ -54,6 +54,9 @@ releases without notice. You have been warned.>
 Loading this module does nothing. It's just here to provide docs and a
 version number for the distro.
 
+You'll want to take a look at L<Fey::Schema>, L<Fey::Table>, and other
+modules in the distro for more details.
+
 =head1 WHAT IS Fey?
 
 The goal of the core C<Fey> distro is to provide a simple, flexible
@@ -63,8 +66,7 @@ packages build on top of this functionality to create a complete ORM
 
 =head1 GETTING STARTED
 
-If you're interested in an ORM, you should probably start by looking
-at the C<Fey::ORM> distro.
+If you're interested in an ORM, take a look at the C<Fey::ORM> distro.
 
 To generate SQL with Fey, you first need to create a set of objects
 representing the tables and foreign keys in your schema. The simplest
@@ -80,13 +82,13 @@ L<Fey::FK> APIs. You'll also want to use the L<Fey::Column> API.
 Once you have a schema, you can generate SQL using L<Fey::SQL>, or a
 DBMS-specific subclass of L<Fey::SQL>.
 
-=head1 THE CORE FEY DISTRO
+=head1 THE CORE Fey DISTRO
 
-The emphasis in the core Fey distro is on dynamic, particularly on the
-tables/columns/etc involved in the query, not just the bound
-parameters.
+The emphasis in the core Fey distro is on dynamic queries,
+particularly on the tables/columns/etc involved in the query, not just
+the bound parameters.
 
-In other words, this is I<not> what I mean by a dynamic query ...
+This is I<not> what I mean by a dynamic query ...
 
  SELECT user_id FROM User where username = ?
 
@@ -154,17 +156,15 @@ me, it's madness.
 
 =head2 The Solution
 
-Hopefully, C<Fey-Core> provides a solution to the dynamic SQL
-problem. It allows you to specify queries in the form of I<Perl
-methods and data structures>. It provides a set of objects to
-represent the parts of a schema, specifically tables, columns, and
-foreign keys. Using these objects you can easily generate very complex
-queries by combining them with strings and passing them to the
-appropriate query-generating method.
+The core Fey modules provide a solution to the dynamic SQL
+problem. Using Fey, you can specify queries in the form of I<Perl
+methods and objects>. Fey provides a set of objects to represent the
+parts of a schema, specifically tables, columns, and foreign
+keys. Using these objects along with L<Fey::SQL, you can easily
+generate very complex queries.
 
-C<Fey-Core> is also intended to be the foundation for building
-higher-level tools like an ORM. See C<Fey::ORM> for just such a
-thing.
+This core distro is also intended to be the foundation for building
+higher-level tools like an ORM. See C<Fey::ORM> for just such a thing.
 
 =head1 HISTORY AND GOALS
 
@@ -226,7 +226,7 @@ Provide the core for an RDBMS-OO mapper similar to a combination of
 C<Alzabo::Runtime::Row> and C<Class::AlzaboWrapper>.
 
 At the same time, query generation and the ORM are de-coupled. You can
-use C<Fey-Core> to generate queries without having to every use the
+use L<Fey::SQL> to generate queries without having to every use the
 C<Fey::ORM> ORM.
 
 =item *
@@ -387,16 +387,18 @@ crazy". This project is certainly that.
 
 =back
 
+Yes, I'm a nerd, I know.
+
 =head1 AUTHOR
 
 Dave Rolsky, <autarch@urth.org>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to
-C<bug-fey-core@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+Please report any bugs or feature requests to C<bug-fey@rt.cpan.org>,
+or through the web interface at L<http://rt.cpan.org>.  I will be
+notified, and then you'll automatically be notified of progress on
+your bug as I make changes.
 
 =head1 COPYRIGHT & LICENSE
 
