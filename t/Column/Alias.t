@@ -11,8 +11,8 @@ use Fey::Column::Alias;
 
 my $t = Fey::Table->new( name => 'Test' );
 my $c = Fey::Column->new( name => 'test_id',
-                        type => 'text',
-                      );
+                          type => 'text',
+                        );
 $t->add_column($c);
 
 {
@@ -52,8 +52,8 @@ $t->add_column($c);
 
 {
     my $c = Fey::Column->new( name => 'testy',
-                            type => 'text',
-                          );
+                              type => 'text',
+                            );
     my $alias = $c->alias();
     eval { $alias->id() };
     isa_ok( $@, 'Fey::Exception::ObjectState' );
