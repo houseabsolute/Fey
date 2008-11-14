@@ -7,9 +7,9 @@
   allowing subselects in the SELECT clause. Requested by Aristotle
   Pagaltzis. RT #40858.
 
-- Fey::Table->alias() now allows a single argument as a shortcut to
-  provide an alias name $table->alias('AliasName'). Requested by
-  Aristotle Pagaltzis.
+- Fey::Table->alias() and Fey::Column->alias() now allow a single
+  argument, an alias name. This is a shortcut for the most common use
+  case. Requested by Aristotle Pagaltzis.
 
 
 0.15    2008-10-28

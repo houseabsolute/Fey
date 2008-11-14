@@ -163,7 +163,9 @@ sub alias
 {
     my $self = shift;
 
-    return Fey::Column::Alias->new( column => $self, @_ );
+    my %p = @_ == 1 ? ( alias_name => $_[0] ) : @_;
+
+    return Fey::Column::Alias->new( column => $self, %p );
 }
 
 sub sql
@@ -322,9 +324,15 @@ Returns the C<Fey::Table> object to which the column belongs, if any.
 
 =head2 $column->alias(%p)
 
+=head2 $column->alias($alias_name)
+
 This method returns a new C<Fey::Column::Alias> object based on the
 column. Any parameters passed to this method will be passed through to
 C<< Fey::Column::Alias->new() >>.
+
+As a shortcut, if you pass a single argument to this method, it will
+be passed as the "alias_name" parameter to C<<
+Fey::Table::Column->new() >>.
 
 =head2 $column->is_alias()
 
