@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 21;
+use Test::More tests => 23;
 
 use Fey::Table::Alias;
 
@@ -72,5 +72,11 @@ $t->add_column($_) for $c1, $c2;
     is( $pk->[0]->name(), $s->table('User')->column('user_id')->name(),
         'primary_key() returns same columns as non-alias' );
     is( $pk->[0]->table(), $alias, 'table() for pk col is alias' );
+}
+
+{
+    my $alias = $t->alias('renamed');
+    is( $alias->name(), 'Test', 'name is Test' );
+    is( $alias->alias_name(), 'renamed', 'alias_name is renamed' );
 }
 

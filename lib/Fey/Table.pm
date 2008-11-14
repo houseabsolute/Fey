@@ -253,7 +253,9 @@ sub alias
 {
     my $self = shift;
 
-    return Fey::Table::Alias->new( table => $self, @_ );
+    my %p = @_ == 1 ? ( alias_name => $_[0] ) : @_;
+
+    return Fey::Table::Alias->new( table => $self, %p );
 }
 
 sub is_alias { 0 }
@@ -403,9 +405,15 @@ column objects.
 
 =head2 $table->alias(%p)
 
+=head2 $table->alias($alias_name)
+
 This method returns a new C<Fey::Table::Alias> object based on the
 table. Any parameters passed to this method will be passed through to
 C<< Fey::Table::Alias->new() >>.
+
+As a shortcut, if you pass a single argument to this method, it will
+be passed as the "alias_name" parameter to C<<
+Fey::Table::Alias->new() >>.
 
 =head2 $table->is_alias()
 
