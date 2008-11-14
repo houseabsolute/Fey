@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 33;
+use Test::More tests => 34;
 
 use Fey::SQL;
 
@@ -183,6 +183,20 @@ my $dbh = Fey::Test->mock_dbh();
     $sql .= q{ ON ("UserGroup"."user_id" = "User"."user_id")};
     is( $q->_from_clause($dbh), $sql,
         '_from_clause() for two tables with left outer join' );
+}
+
+{
+    my $q = Fey::SQL->new_select()->select();
+
+    my $user_alias = $s->table('User')->alias( alias_name => 'U' );
+    my $user_group_alias = $s->table('UserGroup')->alias( alias_name => 'UG' );
+
+    $q->from( $user_alias, 'left', $user_group_alias );
+
+    my $sql = q{FROM "User" AS "U" LEFT OUTER JOIN "UserGroup" AS "UG"};
+    $sql .= q{ ON ("UG"."user_id" = "U"."user_id")};
+    is( $q->_from_clause($dbh), $sql,
+        '_from_clause() for two table aliases with left outer join' );
 }
 
 {
