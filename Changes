@@ -3,6 +3,10 @@
 - Fey::SQL::Select did not allow outer joins using table
   aliases. Reported by Aristotle Pagaltzis. RT #40856.
 
+- Fey::SQL::Select->select will now accept another Fey::SQL::Select,
+  allowing sub-selects in the SELECT clause. Requested by Aristotle
+  Pagaltzis. RT #40858.
+
 
 0.15    2008-10-28
 

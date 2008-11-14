@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 15;
+use Test::More tests => 16;
 
 use Fey::SQL;
 
@@ -137,4 +137,19 @@ my $dbh = Fey::Test->mock_dbh();
     my $sql = 'SELECT '. $lit_with_alias;
     is( $q->_select_clause($dbh), $sql,
         '_select_clause after passing function to select()' );
+}
+
+{
+    my $q = Fey::SQL->new_select();
+
+    my $subselect = Fey::SQL->new_select();
+    $subselect->select( $s->table('User')->column('email') )
+              ->from( $s->table('User') );
+
+    $q->select( $s->table('User')->column('user_id'), $subselect );
+
+    my $sql = q{SELECT ( SELECT "User"."email" FROM "User" ) AS SUBSELECT0, "User"."user_id"};
+    is( $q->_select_clause($dbh), $sql,
+        '_select_clause with subselect in SELECT clause'
+      );
 }

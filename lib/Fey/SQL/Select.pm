@@ -24,6 +24,7 @@ use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
 with 'Fey::Role::Comparable',
+     'Fey::Role::Selectable',
      'Fey::Role::SQL::HasBindParams',
      'Fey::Role::SQL::HasWhereClause',
      'Fey::Role::SQL::HasOrderByClause',
@@ -53,6 +54,11 @@ with 'Fey::Role::Comparable',
                       map { blessed $_ ? $_ : Fey::Literal->new_from_scalar($_) }
                       @s )
         {
+            if ( $elt->isa('Fey::SQL::Select' ) )
+            {
+                $elt = Fey::SQL::Fragment::SubSelect->new($elt);
+            }
+
             $self->{select}{ $elt->id() } = $elt;
         }
 
