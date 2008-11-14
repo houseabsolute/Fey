@@ -4,7 +4,7 @@
   aliases. Reported by Aristotle Pagaltzis. RT #40856.
 
 - Fey::SQL::Select->select will now accept another Fey::SQL::Select,
-  allowing sub-selects in the SELECT clause. Requested by Aristotle
+  allowing subselects in the SELECT clause. Requested by Aristotle
   Pagaltzis. RT #40858.
 
 
