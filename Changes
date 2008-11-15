@@ -1,4 +1,4 @@
-0.16
+0.16    2008-11-14
 
 - Fey::SQL::Select did not allow outer joins using table
   aliases. Reported by Aristotle Pagaltzis. RT #40856.
