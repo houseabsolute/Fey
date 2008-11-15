@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 40;
+use Test::More tests => 43;
 
 use Fey::Table;
 
@@ -184,6 +184,21 @@ use Fey::Table;
     eval { $t->remove_candidate_key() };
     like( $@, qr/\Q0 parameters/,
           'remove_candidate_key() called with no parameters' );
+}
+
+{
+    my $s = Fey::Test->mock_test_schema();
+    my $t = $s->table('User');
+
+    my $a1 = $t->aliased_column( 'foo_', 'user_id' );
+    is( $a1->alias_name(), 'foo_user_id',
+        'aliased_column return column alias with expected alias_name' );
+
+    my ($a2, $a3) = $t->aliased_columns( 'foo_', 'user_id', 'username' );
+    is( $a2->alias_name(), 'foo_user_id',
+        'aliased_columns return column aliases with expected alias_names' );
+    is( $a3->alias_name(), 'foo_username',
+        'aliased_columns return column aliases with expected alias_names' );
 }
 
 sub _keys_to_names

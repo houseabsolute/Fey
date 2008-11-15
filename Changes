@@ -11,6 +11,9 @@
   argument, an alias name. This is a shortcut for the most common use
   case. Requested by Aristotle Pagaltzis.
 
+- Added Fey::Table->aliased_column() and Fey::Table->aliased_columns()
+  methods. Requested by Aristotle Pagaltzis. RT #40857.
+
 
 0.15    2008-10-28
 
