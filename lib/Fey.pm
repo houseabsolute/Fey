@@ -160,7 +160,7 @@ The core Fey modules provide a solution to the dynamic SQL
 problem. Using Fey, you can specify queries in the form of I<Perl
 methods and objects>. Fey provides a set of objects to represent the
 parts of a schema, specifically tables, columns, and foreign
-keys. Using these objects along with L<Fey::SQL, you can easily
+keys. Using these objects along with L<Fey::SQL>, you can easily
 generate very complex queries.
 
 This core distro is also intended to be the foundation for building
