@@ -219,6 +219,8 @@ sub _check_outer_join_arguments
         my (@by) = validate_pos( @_, ($spec) x $count );
 
         push @{ $self->{group_by} }, @by;
+
+        return $self;
     }
 }
 
