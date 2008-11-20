@@ -1,3 +1,10 @@
+0.17
+
+- Fey::SQL::Select->group_by() was not returning $self, so it could be
+  in the middle of a chain. Reported by Aristotle Pagaltzis. RT
+  #41062.
+
+
 0.16    2008-11-14
 
 - Fey::SQL::Select did not allow outer joins using table
