@@ -1,4 +1,4 @@
-0.17
+0.17    2008-11-21
 
 - Fey::SQL::Select->group_by() was not returning $self, so it could be
   in the middle of a chain. Reported by Aristotle Pagaltzis. RT
