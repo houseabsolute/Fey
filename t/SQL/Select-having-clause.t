@@ -26,7 +26,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->having( $s->table('User')->column('user_id'), '=', 1 );
 
-    is( $q->_having_clause($dbh), q{HAVING "User"."user_id" = 1},
+    is( $q->having_clause($dbh), q{HAVING "User"."user_id" = 1},
         'simple comparison - col = literal' );
 }
 
@@ -37,7 +37,7 @@ my $dbh = Fey::Test->mock_dbh();
         ( $s->table('User')->column('user_id')->alias( alias_name => 'alias' ),
           '=', 1 );
 
-    is( $q->_having_clause($dbh), q{HAVING "alias" = 1},
+    is( $q->having_clause($dbh), q{HAVING "alias" = 1},
         'simple comparison - col alias = literal' );
 }
 
@@ -47,7 +47,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->having( $s->table('User')->column('username'), 'LIKE',
                '%foo%' );
 
-    is( $q->_having_clause($dbh), q{HAVING "User"."username" LIKE '%foo%'},
+    is( $q->having_clause($dbh), q{HAVING "User"."username" LIKE '%foo%'},
         'simple comparison - col LIKE literal' );
 }
 
@@ -56,7 +56,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->having( 1, '=', $s->table('User')->column('user_id') );
 
-    is( $q->_having_clause($dbh), q{HAVING 1 = "User"."user_id"},
+    is( $q->having_clause($dbh), q{HAVING 1 = "User"."user_id"},
         'simple comparison - literal = col' );
 }
 
@@ -65,7 +65,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->having( $s->table('User')->column('user_id'), '=', $s->table('User')->column('user_id') );
 
-    is( $q->_having_clause($dbh), q{HAVING "User"."user_id" = "User"."user_id"},
+    is( $q->having_clause($dbh), q{HAVING "User"."user_id" = "User"."user_id"},
         'simple comparison - col = col' );
 }
 
@@ -74,7 +74,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->having( $s->table('User')->column('user_id'), 'IN', 1, 2, 3 );
 
-    is( $q->_having_clause($dbh), q{HAVING "User"."user_id" IN (1, 2, 3)},
+    is( $q->having_clause($dbh), q{HAVING "User"."user_id" IN (1, 2, 3)},
         'simple comparison - IN' );
 }
 
@@ -83,7 +83,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->having( $s->table('User')->column('user_id'), 'NOT IN', 1, 2, 3 );
 
-    is( $q->_having_clause($dbh), q{HAVING "User"."user_id" NOT IN (1, 2, 3)},
+    is( $q->having_clause($dbh), q{HAVING "User"."user_id" NOT IN (1, 2, 3)},
         'simple comparison - IN' );
 }
 
@@ -93,7 +93,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->having( $s->table('User')->column('user_id'), '=',
                 Fey::Placeholder->new() );
 
-    is( $q->_having_clause($dbh), q{HAVING "User"."user_id" = ?},
+    is( $q->having_clause($dbh), q{HAVING "User"."user_id" = ?},
         'simple comparison - col = placeholder' );
 }
 
@@ -106,7 +106,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->having( $s->table('User')->column('user_id'), 'IN', $sub );
 
-    is( $q->_having_clause($dbh), q{HAVING "User"."user_id" IN (( SELECT "User"."user_id" FROM "User" ))},
+    is( $q->having_clause($dbh), q{HAVING "User"."user_id" IN (( SELECT "User"."user_id" FROM "User" ))},
         'comparison with subselect' );
 }
 
@@ -115,7 +115,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->having( $s->table('User')->column('user_id'), '=', undef );
 
-    is( $q->_having_clause($dbh), q{HAVING "User"."user_id" IS NULL},
+    is( $q->having_clause($dbh), q{HAVING "User"."user_id" IS NULL},
         'undef in comparison (=)' );
 }
 
@@ -124,7 +124,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->having( $s->table('User')->column('user_id'), '!=', undef );
 
-    is( $q->_having_clause($dbh), q{HAVING "User"."user_id" IS NOT NULL},
+    is( $q->having_clause($dbh), q{HAVING "User"."user_id" IS NOT NULL},
         'undef in comparison (!=)' );
 }
 
@@ -133,7 +133,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->having( $s->table('User')->column('user_id'), 'BETWEEN', 1, 5 );
 
-    is( $q->_having_clause($dbh), q{HAVING "User"."user_id" BETWEEN 1 AND 5},
+    is( $q->having_clause($dbh), q{HAVING "User"."user_id" BETWEEN 1 AND 5},
         'simple comparison - BETWEEN' );
 }
 
@@ -143,7 +143,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->having( $s->table('User')->column('user_id'), '=', 1 );
     $q->having( $s->table('User')->column('user_id'), '=', 2 );
 
-    is( $q->_having_clause($dbh), q{HAVING "User"."user_id" = 1 AND "User"."user_id" = 2},
+    is( $q->having_clause($dbh), q{HAVING "User"."user_id" = 1 AND "User"."user_id" = 2},
         'multiple clauses with implicit AN' );
 }
 
@@ -154,7 +154,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->having( 'or' );
     $q->having( $s->table('User')->column('user_id'), '=', 2 );
 
-    is( $q->_having_clause($dbh), q{HAVING "User"."user_id" = 1 OR "User"."user_id" = 2},
+    is( $q->having_clause($dbh), q{HAVING "User"."user_id" = 1 OR "User"."user_id" = 2},
         'multiple clauses with OR' );
 }
 
@@ -166,7 +166,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->having( $s->table('User')->column('user_id'), '=', 2 );
     $q->having( ')' );
 
-    is( $q->_having_clause($dbh), q{HAVING ( "User"."user_id" = 2 )},
+    is( $q->having_clause($dbh), q{HAVING ( "User"."user_id" = 2 )},
         'subgroup in having clause' );
 }
 

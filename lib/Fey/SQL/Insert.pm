@@ -120,14 +120,14 @@ sub insert { return $_[0] }
         my ($dbh) = validate_pos( @_, @spec );
 
         return ( join ' ',
-                 $self->_insert_clause($dbh),
-                 $self->_into_clause($dbh),
-                 $self->_values_clause($dbh),
+                 $self->insert_clause($dbh),
+                 $self->columns_clause($dbh),
+                 $self->values_clause($dbh),
                );
     }
 }
 
-sub _insert_clause
+sub insert_clause
 {
     return
         ( 'INSERT INTO '
@@ -135,7 +135,7 @@ sub _insert_clause
         );
 }
 
-sub _into_clause
+sub columns_clause
 {
     return
         ( '('
@@ -147,7 +147,7 @@ sub _into_clause
         );
 }
 
-sub _values_clause
+sub values_clause
 {
     my $self = shift;
     my $dbh  = shift;
@@ -266,6 +266,24 @@ handle must be passed so that identifiers can be properly quoted.
 
 See the L<Fey::SQL section on Bind Parameters|Fey::SQL/Bind
 Parameters> for more details.
+
+=head2 $insert->insert_clause()
+
+Returns the C<INSERT INTO> clause portion of the SQL statement as a
+string (just the tables).
+
+=head2 $insert->columns_clause()
+
+Returns the portion of the SQL statement containing the columns for
+which values are being inserted as a string.
+
+=head2 $insert->values_clause()
+
+Returns the C<VALUES> clause portion of the SQL statement as a string.
+
+=head1 ROLES
+
+This class does C<Fey::Role::SQL::HasBindParams> role.
 
 =head1 AUTHOR
 

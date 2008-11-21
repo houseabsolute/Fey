@@ -243,13 +243,13 @@ sub having
 
         return
             ( join q{ },
-              $self->_select_clause($dbh),
-              $self->_from_clause($dbh),
-              $self->_where_clause($dbh),
-              $self->_group_by_clause($dbh),
-              $self->_having_clause($dbh),
-              $self->_order_by_clause($dbh),
-              $self->_limit_clause($dbh),
+              $self->select_clause($dbh),
+              $self->from_clause($dbh),
+              $self->where_clause($dbh),
+              $self->group_by_clause($dbh),
+              $self->having_clause($dbh),
+              $self->order_by_clause($dbh),
+              $self->limit_clause($dbh),
             );
     }
 }
@@ -265,7 +265,7 @@ sub select_clause_elements
         );
 }
 
-sub _select_clause
+sub select_clause
 {
     my $self = shift;
     my $dbh  = shift;
@@ -281,7 +281,7 @@ sub _select_clause
     return $sql;
 }
 
-sub _from_clause
+sub from_clause
 {
     my $self = shift;
     my $dbh  = shift;
@@ -330,7 +330,7 @@ sub _from_clause
     return $sql;
 }
 
-sub _group_by_clause
+sub group_by_clause
 {
     my $self = shift;
     my $dbh  = shift;
@@ -346,7 +346,7 @@ sub _group_by_clause
            );
 }
 
-sub _having_clause
+sub having_clause
 {
     my $self = shift;
     my $dbh  = shift;
@@ -607,9 +607,39 @@ type of C<Fey::Literal>.
 These items are returned in the order in which they will be included
 in the C<SELECT> clause.
 
+=head2 $select->select_clause()
+
+Returns the C<SELECT> clause portion of the SQL statement as a string.
+
+=head2 $select->from_clause()
+
+Returns the C<FROM> clause portion of the SQL statement as a string.
+
+=head2 $select->where_clause()
+
+Returns the C<WHERE> clause portion of the SQL statement as a string.
+
+=head2 $select->order_by_clause()
+
+Returns the C<ORDER BY> clause portion of the SQL statement as a
+string.
+
+=head2 $select->group_by_clause()
+
+Returns the C<GROUP BY> clause portion of the SQL statement as a
+string.
+
+=head2 $select->having_clause()
+
+Returns the C<HAVING> clause portion of the SQL statement as a string.
+
+=head2 $select->limit_clause()
+
+Returns the C<LIMIT> clause portion of the SQL statement as a string.
+
 =head1 ROLES
 
-This class does
+This class does C<Fey::Role::SQL::HasBindParams>,
 C<Fey::Role::SQL::HasWhereClause>,
 C<Fey::Role::SQL::HasOrderByClause>, and
 C<Fey::Role::SQL::HasLimitClause> roles.

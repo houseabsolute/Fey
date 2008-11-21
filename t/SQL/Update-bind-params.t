@@ -17,8 +17,8 @@ my $dbh = Fey::Test->mock_dbh();
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'), 'bubba' );
 
-    is( $q->_set_clause($dbh), q{SET "username" = ?},
-        '_set_clause() for one column' );
+    is( $q->set_clause($dbh), q{SET "username" = ?},
+        'set_clause() for one column' );
     is_deeply( [ $q->bind_params() ], [ 'bubba' ],
                q{bind_params() is [ 'bubba' ]} );
 }
@@ -30,9 +30,9 @@ my $dbh = Fey::Test->mock_dbh();
              $s->table('User')->column('email'), 'bubba@bubba.com',
            );
 
-    is( $q->_set_clause($dbh),
+    is( $q->set_clause($dbh),
         q{SET "username" = ?, "email" = ?},
-        '_set_clause() for two columns' );
+        'set_clause() for two columns' );
 
     is_deeply( [ $q->bind_params() ], [ 'bubba', 'bubba@bubba.com' ],
                q{bind_params() is [ 'bubba', 'bubba@bubba.com' ]} );

@@ -57,15 +57,15 @@ sub delete { return $_[0] }
         my ($dbh) = validate_pos( @_, @spec );
 
         return ( join ' ',
-                 $self->_delete_clause($dbh),
-                 $self->_where_clause($dbh),
-                 $self->_order_by_clause($dbh),
-                 $self->_limit_clause($dbh),
+                 $self->delete_clause($dbh),
+                 $self->where_clause($dbh),
+                 $self->order_by_clause($dbh),
+                 $self->limit_clause($dbh),
                );
     }
 }
 
-sub _delete_clause
+sub delete_clause
 {
     return 'DELETE FROM ' . $_[0]->_tables_subclause( $_[1] );
 }
@@ -159,9 +159,26 @@ handle must be passed so that identifiers can be properly quoted.
 See the L<Fey::SQL section on Bind Parameters|Fey::SQL/Bind
 Parameters> for more details.
 
+=head2 $delete->delete_clause()
+
+Returns the C<DELETE> clause portion of the SQL statement as a string.
+
+=head2 $delete->where_clause()
+
+Returns the C<WHERE> clause portion of the SQL statement as a string.
+
+=head2 $delete->order_by_clause()
+
+Returns the C<ORDER BY> clause portion of the SQL statement as a
+string.
+
+=head2 $delete->limit_clause()
+
+Returns the C<LIMIT> clause portion of the SQL statement as a string.
+
 =head1 ROLES
 
-This class does
+This class does C<Fey::Role::SQL::HasBindParams>,
 C<Fey::Role::SQL::HasWhereClause>,
 C<Fey::Role::SQL::HasOrderByClause>, and
 C<Fey::Role::SQL::HasLimitClause> roles.

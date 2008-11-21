@@ -40,7 +40,7 @@ use Moose::Role;
     }
 }
 
-sub _order_by_clause
+sub order_by_clause
 {
     my $self = shift;
     my $dbh  = shift;
@@ -94,6 +94,11 @@ This role provides the following methods:
 
 See the L<Fey::SQL section on ORDER BY Clauses|Fey::SQL/ORDER BY
 Clauses> for more details.
+
+=head2 $query->order_by_clause()
+
+Returns the C<ORDER BY> clause portion of the SQL statement as a
+string.
 
 =head1 AUTHOR
 

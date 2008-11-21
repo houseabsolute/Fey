@@ -20,8 +20,8 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->values( user_id => 1, username => 'bob' );
 
-    is( $q->_values_clause($dbh), q{VALUES (?, ?)},
-        '_values_clause() for normal insert' );
+    is( $q->values_clause($dbh), q{VALUES (?, ?)},
+        'values_clause() for normal insert' );
     is_deeply( [ $q->bind_params() ], [ 1, 'bob' ],
                q{bind_params() is [ 1, 'bob' ]} );
 }
@@ -34,8 +34,8 @@ my $dbh = Fey::Test->mock_dbh();
     $q->values( user_id => 1, username => 'bob' );
     $q->values( user_id => 2, username => 'faye' );
 
-    is( $q->_values_clause($dbh), q{VALUES (?, ?),(?, ?)},
-        '_values_clause() for extended insert' );
+    is( $q->values_clause($dbh), q{VALUES (?, ?),(?, ?)},
+        'values_clause() for extended insert' );
     is_deeply( [ $q->bind_params() ], [ 1, 'bob', 2, 'faye' ],
                q{bind_params() is [ 1, 'bob', 2, 'faye' ]} );
 }

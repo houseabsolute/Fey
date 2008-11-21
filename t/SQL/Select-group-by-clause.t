@@ -25,7 +25,7 @@ my $dbh = Fey::Test->mock_dbh();
     my $q = Fey::SQL->new_select()->select();
 
     $q->group_by( $s->table('User')->column('user_id') );
-    is( $q->_group_by_clause($dbh), q{GROUP BY "User"."user_id"},
+    is( $q->group_by_clause($dbh), q{GROUP BY "User"."user_id"},
         'group_by() one column' );
 }
 
@@ -35,7 +35,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->group_by( $s->table('User')->column('user_id'),
                   $s->table('User')->column('username')
                 );
-    is( $q->_group_by_clause($dbh), q{GROUP BY "User"."user_id", "User"."username"},
+    is( $q->group_by_clause($dbh), q{GROUP BY "User"."user_id", "User"."username"},
         'group_by() two columns' );
 }
 
@@ -45,7 +45,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->group_by( $s->table('User')->column('user_id')
                   ->alias( alias_name => 'alias_test' ) );
 
-    is( $q->_group_by_clause($dbh), q{GROUP BY "alias_test"},
+    is( $q->group_by_clause($dbh), q{GROUP BY "alias_test"},
         'group_by() column alias' );
 }
 
@@ -57,7 +57,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->group_by($now);
 
-    like( $q->_group_by_clause($dbh), qr/GROUP BY "FUNCTION\d+"/,
+    like( $q->group_by_clause($dbh), qr/GROUP BY "FUNCTION\d+"/,
           'group_by() function' );
 }
 
@@ -77,6 +77,6 @@ my $dbh = Fey::Test->mock_dbh();
     my $term = Fey::Literal::Term->new( q{"Foo"::text} );
     $q->group_by($term);
 
-    is( $q->_group_by_clause($dbh), q{GROUP BY "Foo"::text},
+    is( $q->group_by_clause($dbh), q{GROUP BY "Foo"::text},
         'group_by() term' );
 }

@@ -29,7 +29,7 @@ $s->table('User')->add_column($size);
 {
     my $q = Fey::SQL->new_update()->update( $s->table('User') );
 
-    is( $q->_update_clause($dbh), q{UPDATE "User"},
+    is( $q->update_clause($dbh), q{UPDATE "User"},
         'update clause for one table' );
 }
 
@@ -37,7 +37,7 @@ $s->table('User')->add_column($size);
     my $q = Fey::SQL->new_update()
                     ->update( $s->table('User'), $s->table('UserGroup') );
 
-    is( $q->_update_clause($dbh), q{UPDATE "User", "UserGroup"},
+    is( $q->update_clause($dbh), q{UPDATE "User", "UserGroup"},
         'update clause for two tables' );
 }
 
@@ -46,8 +46,8 @@ $s->table('User')->add_column($size);
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'), 'bubba' );
 
-    is( $q->_set_clause($dbh), q{SET "username" = 'bubba'},
-        '_set_clause() for one column' );
+    is( $q->set_clause($dbh), q{SET "username" = 'bubba'},
+        'set_clause() for one column' );
 }
 
 {
@@ -57,9 +57,9 @@ $s->table('User')->add_column($size);
              $s->table('User')->column('email'), 'bubba@bubba.com',
            );
 
-    is( $q->_set_clause($dbh),
+    is( $q->set_clause($dbh),
         q{SET "username" = 'bubba', "email" = 'bubba@bubba.com'},
-        '_set_clause() for two columns' );
+        'set_clause() for two columns' );
 }
 
 {
@@ -69,9 +69,9 @@ $s->table('User')->add_column($size);
              $s->table('User')->column('email'),
            );
 
-    is( $q->_set_clause($dbh),
+    is( $q->set_clause($dbh),
         q{SET "username" = "User"."email"},
-        '_set_clause() for column = columns' );
+        'set_clause() for column = columns' );
 }
 
 {
@@ -81,9 +81,9 @@ $s->table('User')->add_column($size);
              Fey::Literal->new_from_scalar(undef),
            );
 
-    is( $q->_set_clause($dbh),
+    is( $q->set_clause($dbh),
         q{SET "size" = NULL},
-        '_set_clause() for column = NULL (literal)' );
+        'set_clause() for column = NULL (literal)' );
 }
 
 {
@@ -93,9 +93,9 @@ $s->table('User')->add_column($size);
              Fey::Literal->new_from_scalar('string'),
            );
 
-    is( $q->_set_clause($dbh),
+    is( $q->set_clause($dbh),
         q{SET "username" = 'string'},
-        '_set_clause() for column = string (literal)' );
+        'set_clause() for column = string (literal)' );
 }
 
 {
@@ -105,9 +105,9 @@ $s->table('User')->add_column($size);
              Fey::Literal->new_from_scalar(42),
            );
 
-    is( $q->_set_clause($dbh),
+    is( $q->set_clause($dbh),
         q{SET "username" = 42},
-        '_set_clause() for column = number (literal)' );
+        'set_clause() for column = number (literal)' );
 }
 
 {
@@ -117,9 +117,9 @@ $s->table('User')->add_column($size);
              Fey::Literal::Function->new( 'NOW' ),
            );
 
-    is( $q->_set_clause($dbh),
+    is( $q->set_clause($dbh),
         q{SET "username" = NOW()},
-        '_set_clause() for column = function (literal)' );
+        'set_clause() for column = function (literal)' );
 }
 
 {
@@ -129,9 +129,9 @@ $s->table('User')->add_column($size);
              Fey::Literal::Term->new( 'thingy' ),
            );
 
-    is( $q->_set_clause($dbh),
+    is( $q->set_clause($dbh),
         q{SET "username" = thingy},
-        '_set_clause() for column = term (literal)' );
+        'set_clause() for column = term (literal)' );
 }
 
 {
@@ -141,9 +141,9 @@ $s->table('User')->add_column($size);
              Fey::Literal::Term->new( 'thingy' ),
            );
 
-    is( $q->_set_clause($dbh),
+    is( $q->set_clause($dbh),
         q{SET "username" = thingy},
-        '_set_clause() for column = term (literal)' );
+        'set_clause() for column = term (literal)' );
 }
 
 {
@@ -164,7 +164,7 @@ $s->table('User')->add_column($size);
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('email'), undef );
 
-    is( $q->_set_clause($dbh),
+    is( $q->set_clause($dbh),
         q{SET "email" = NULL},
         'set a column to NULL with placeholders off' );
 }
@@ -175,8 +175,8 @@ $s->table('User')->add_column($size);
     $q->update( $s->table('User'), $s->table('Group') );
     $q->set( $s->table('User')->column('username'), $s->table('Group')->column('name') );
 
-    is( $q->_set_clause($dbh), q{SET "User"."username" = "Group"."name"},
-        '_set_clause() for multi-table update' );
+    is( $q->set_clause($dbh), q{SET "User"."username" = "Group"."name"},
+        'set_clause() for multi-table update' );
 }
 
 {
@@ -214,8 +214,8 @@ $s->table('User')->add_column($size);
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('user_id'), Num->new(42) );
 
-    is( $q->_set_clause($dbh), q{SET "user_id" = ?},
-        '_set_clause() for one column with overloaded object and auto placeholders' );
+    is( $q->set_clause($dbh), q{SET "user_id" = ?},
+        'set_clause() for one column with overloaded object and auto placeholders' );
     is_deeply( [ $q->bind_params() ], [ 42 ],
                'bind params with overloaded object' );
 }
@@ -226,8 +226,8 @@ $s->table('User')->add_column($size);
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('user_id'), Num->new(42) );
 
-    is( $q->_set_clause($dbh), q{SET "user_id" = 42},
-        '_set_clause() for one column with overloaded object, no placeholders' );
+    is( $q->set_clause($dbh), q{SET "user_id" = 42},
+        'set_clause() for one column with overloaded object, no placeholders' );
 }
 
 {
@@ -247,8 +247,8 @@ $s->table('User')->add_column($size);
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'), Str->new('Bubba') );
 
-    is( $q->_set_clause($dbh), q{SET "username" = ?},
-        '_set_clause() for one column with overloaded object and auto placeholders' );
+    is( $q->set_clause($dbh), q{SET "username" = ?},
+        'set_clause() for one column with overloaded object and auto placeholders' );
     is_deeply( [ $q->bind_params() ], [ 'Bubba' ],
                'bind params with overloaded object' );
 }
@@ -259,6 +259,6 @@ $s->table('User')->add_column($size);
     $q->update( $s->table('User') );
     $q->set( $s->table('User')->column('username'), Str->new('Bubba') );
 
-    is( $q->_set_clause($dbh), q{SET "username" = 'Bubba'},
-        '_set_clause() for one column with overloaded object, no placeholders' );
+    is( $q->set_clause($dbh), q{SET "username" = 'Bubba'},
+        'set_clause() for one column with overloaded object, no placeholders' );
 }

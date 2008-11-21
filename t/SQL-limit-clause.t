@@ -26,7 +26,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->limit(10);
 
-    is( $q->_limit_clause($dbh), 'LIMIT 10',
+    is( $q->limit_clause($dbh), 'LIMIT 10',
         'simple limit clause' );
 }
 
@@ -35,6 +35,6 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->limit( 10, 20 );
 
-    is( $q->_limit_clause($dbh), 'LIMIT 10 OFFSET 20',
+    is( $q->limit_clause($dbh), 'LIMIT 10 OFFSET 20',
         'limit clause with offset' );
 }

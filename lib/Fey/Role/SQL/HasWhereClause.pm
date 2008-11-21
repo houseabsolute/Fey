@@ -124,7 +124,7 @@ sub _subgroup_end
     return $self;
 }
 
-sub _where_clause
+sub where_clause
 {
     return unless @{ $_[0]->{where} || [] };
 
@@ -183,6 +183,10 @@ for more details.
 
 See the L<Fey::SQL section on WHERE Clauses|Fey::SQL/WHERE Clauses>
 for more details.
+
+=head2 $query->where_clause()
+
+Returns the C<WHERE> clause portion of the SQL statement as a string.
 
 =head1 AUTHOR
 

@@ -35,10 +35,10 @@ $s->table('User')->add_column($size);
 
     $q->into( $s->table('User')->column('username') );
 
-    is( $q->_insert_clause($dbh), q{INSERT INTO "User"},
-        '_insert_clause() for User table' );
-    is( $q->_into_clause($dbh), q{("username")},
-        '_into_clause with one column' );
+    is( $q->insert_clause($dbh), q{INSERT INTO "User"},
+        'insert_clause() for User table' );
+    is( $q->columns_clause($dbh), q{("username")},
+        'columns_clause with one column' );
 }
 
 {
@@ -47,10 +47,10 @@ $s->table('User')->add_column($size);
     $q->into( $s->table('User')->column('user_id'),
               $s->table('User')->column('username') );
 
-    is( $q->_insert_clause($dbh), q{INSERT INTO "User"},
-        '_insert_clause() for User table' );
-    is( $q->_into_clause($dbh), q{("user_id", "username")},
-        '_into_clause with two columns' );
+    is( $q->insert_clause($dbh), q{INSERT INTO "User"},
+        'insert_clause() for User table' );
+    is( $q->columns_clause($dbh), q{("user_id", "username")},
+        'columns_clause with two columns' );
 }
 
 {
@@ -94,8 +94,8 @@ $s->table('User')->add_column($size);
     $q->into( $s->table('User')->column('size') );
 
     $q->values( size => 'big' );
-    is( $q->_values_clause($dbh), q{VALUES ('big')},
-        '_values_clause() for string as value' );
+    is( $q->values_clause($dbh), q{VALUES ('big')},
+        'values_clause() for string as value' );
 }
 
 {
@@ -104,8 +104,8 @@ $s->table('User')->add_column($size);
     $q->into( $s->table('User')->column('size') );
 
     $q->values( size => undef );
-    is( $q->_values_clause($dbh), q{VALUES (NULL)},
-        '_values_clause() for null as value' );
+    is( $q->values_clause($dbh), q{VALUES (NULL)},
+        'values_clause() for null as value' );
 }
 
 {
@@ -114,8 +114,8 @@ $s->table('User')->add_column($size);
     $q->into( $s->table('User')->column('size') );
 
     $q->values( size => undef );
-    is( $q->_values_clause($dbh), q{VALUES (NULL)},
-        '_values_clause() for null as value with auto placeholders' );
+    is( $q->values_clause($dbh), q{VALUES (NULL)},
+        'values_clause() for null as value with auto placeholders' );
 }
 
 {
@@ -125,8 +125,8 @@ $s->table('User')->add_column($size);
 
     my $func = Fey::Literal::Function->new('NOW');
     $q->values( size => $func );
-    is( $q->_values_clause($dbh), q{VALUES (NOW())},
-        '_values_clause() for function as value' );
+    is( $q->values_clause($dbh), q{VALUES (NOW())},
+        'values_clause() for function as value' );
 }
 
 {
@@ -136,8 +136,8 @@ $s->table('User')->add_column($size);
 
     my $term = Fey::Literal::Term->new('term test');
     $q->values( size => $term );
-    is( $q->_values_clause($dbh), q{VALUES (term test)},
-        '_values_clause() for term as value' );
+    is( $q->values_clause($dbh), q{VALUES (term test)},
+        'values_clause() for term as value' );
 }
 
 {
@@ -146,8 +146,8 @@ $s->table('User')->add_column($size);
     $q->into( $s->table('User')->column('size') );
 
     $q->values( size => Fey::Placeholder->new() );
-    is( $q->_values_clause($dbh), q{VALUES (?)},
-        '_values_clause() for placeholder as value' );
+    is( $q->values_clause($dbh), q{VALUES (?)},
+        'values_clause() for placeholder as value' );
 }
 
 {
@@ -156,8 +156,8 @@ $s->table('User')->add_column($size);
     $q->into( $s->table('User')->column('size') );
 
     $q->values( size => Fey::Placeholder->new() );
-    is( $q->_values_clause($dbh), q{VALUES (?)},
-        '_values_clause() for placeholder as value' );
+    is( $q->values_clause($dbh), q{VALUES (?)},
+        'values_clause() for placeholder as value' );
 }
 
 {
@@ -167,8 +167,8 @@ $s->table('User')->add_column($size);
 
     $q->values( size => 1 );
     $q->values( size => 2 );
-    is( $q->_values_clause($dbh), q{VALUES (1),(2)},
-        '_values_clause() for extended insert (multiple sets of values)' );
+    is( $q->values_clause($dbh), q{VALUES (1),(2)},
+        'values_clause() for extended insert (multiple sets of values)' );
 }
 
 {
@@ -213,8 +213,8 @@ $s->table('User')->add_column($size);
 
     $q->values( user_id => Num->new(42), username => Str->new('Bubba') );
 
-    is( $q->_values_clause($dbh), q{VALUES (?, ?)},
-        '_values_clause() for two columns column with overloaded objects and auto placeholders' );
+    is( $q->values_clause($dbh), q{VALUES (?, ?)},
+        'values_clause() for two columns column with overloaded objects and auto placeholders' );
     is_deeply( [ $q->bind_params() ], [ 42, 'Bubba' ],
                'bind params with overloaded object' );
 }
@@ -227,6 +227,6 @@ $s->table('User')->add_column($size);
 
     $q->values( user_id => Num->new(42), username => Str->new('Bubba') );
 
-    is( $q->_values_clause($dbh), q{VALUES (42, 'Bubba')},
-        '_values_clause() for two columns column with overloaded object, no placeholders' );
+    is( $q->values_clause($dbh), q{VALUES (42, 'Bubba')},
+        'values_clause() for two columns column with overloaded object, no placeholders' );
 }

@@ -17,7 +17,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), '=', 5 );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = ?},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" = ?},
         'simple comparison with placeholders - col = literal' );
     is_deeply( [ $q->bind_params() ], [ 5 ],
                'bind_params is [ 5 ]' );
@@ -28,7 +28,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('username'), '=', 'bob' );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."username" = ?},
+    is( $q->where_clause($dbh), q{WHERE "User"."username" = ?},
         'simple comparison with placeholders - col = overloaded object' );
     is_deeply( [ $q->bind_params() ], [ 'bob' ],
                q{bind_params is [ 'bob' ]} );
@@ -41,7 +41,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->where( 'or' );
     $q->where( $s->table('User')->column('user_id'), '=', 7 );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = ? OR "User"."user_id" = ?},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" = ? OR "User"."user_id" = ?},
         'multi-clause comparison with placeholders' );
     is_deeply( [ $q->bind_params() ], [ 5, 7 ],
                'bind_params is [ 5, 7 ]' );
@@ -57,7 +57,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->from($subselect);
 
-    is( $q->_from_clause($dbh),
+    is( $q->from_clause($dbh),
         q{FROM ( SELECT "User"."user_id" FROM "User" WHERE "User"."user_id" IN (?, ?, ?, ?) ) AS SUBSELECT0},
         'subselect in FROM with placeholders' );
     is_deeply( [ $q->bind_params() ], [ 5, 6, 7, 9 ],
@@ -74,7 +74,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), 'IN', $subselect );
 
-    is( $q->_where_clause($dbh),
+    is( $q->where_clause($dbh),
         q{WHERE "User"."user_id" IN (( SELECT "User"."user_id" FROM "User" WHERE "User"."user_id" IN (?, ?, ?, ?) ))},
         'subselect in WHERE with placeholders' );
     is_deeply( [ $q->bind_params() ], [ 5, 6, 7, 9 ],
@@ -86,7 +86,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->having( $s->table('User')->column('user_id'), '=', 5 );
 
-    is( $q->_having_clause($dbh), q{HAVING "User"."user_id" = ?},
+    is( $q->having_clause($dbh), q{HAVING "User"."user_id" = ?},
         'HAVING with placeholders - col = literal' );
     is_deeply( [ $q->bind_params() ], [ 5 ],
                'bind_params is [ 5 ]' );
@@ -102,7 +102,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->having( $s->table('User')->column('user_id'), 'IN', $subselect );
 
-    is( $q->_having_clause($dbh),
+    is( $q->having_clause($dbh),
         q{HAVING "User"."user_id" IN (( SELECT "User"."user_id" FROM "User" WHERE "User"."user_id" IN (?, ?, ?, ?) ))},
         'subselect in HAVING with placeholders' );
     is_deeply( [ $q->bind_params() ], [ 5, 6, 7, 9 ],
@@ -156,8 +156,8 @@ my $dbh = Fey::Test->mock_dbh();
     $sql .= q{ ON ("UserGroup"."user_id" = "User"."user_id"};
     $sql .= q{ AND "User"."user_id" = ?)};
 
-    is( $q->_from_clause($dbh), $sql,
-        '_from_clause() SQL uses placeholders' );
+    is( $q->from_clause($dbh), $sql,
+        'from_clause() SQL uses placeholders' );
 
     is_deeply( [ $q->bind_params() ], [ 2, 3 ],
                'bind_params is [ 2, 3 ]' );

@@ -29,7 +29,7 @@ $s->table('User')->add_column($size);
 {
     my $q = Fey::SQL->new_delete()->delete()->from( $s->table('User') );
 
-    is( $q->_delete_clause($dbh), q{DELETE FROM "User"},
+    is( $q->delete_clause($dbh), q{DELETE FROM "User"},
         'delete clause for one table' );
 }
 
@@ -37,7 +37,7 @@ $s->table('User')->add_column($size);
     my $q = Fey::SQL->new_delete()
                             ->delete()->from( $s->table('User'), $s->table('UserGroup') );
 
-    is( $q->_delete_clause($dbh), q{DELETE FROM "User", "UserGroup"},
+    is( $q->delete_clause($dbh), q{DELETE FROM "User", "UserGroup"},
         'delete clause for two tables' );
 }
 

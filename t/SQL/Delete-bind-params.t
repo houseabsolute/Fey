@@ -20,7 +20,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->where( 'OR' );
     $q->where( $s->table('User')->column('username'), '=', 'Bob' );
 
-    is( $q->_where_clause('Fey::FakeDBI'),
+    is( $q->where_clause('Fey::FakeDBI'),
         q{WHERE "User"."user_id" = ? OR "User"."username" = ?},
         'where_clause for delete with bind params' );
     is_deeply( [ $q->bind_params() ], [ 10, 'Bob' ],

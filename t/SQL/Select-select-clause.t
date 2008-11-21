@@ -20,8 +20,8 @@ my $dbh = Fey::Test->mock_dbh();
     isa_ok( $q, 'Fey::SQL::Select' );
 
     my $sql = q{SELECT "User"."email", "User"."user_id", "User"."username"};
-    is( $q->_select_clause($dbh), $sql,
-        '_select_clause with one table'
+    is( $q->select_clause($dbh), $sql,
+        'select_clause with one table'
       );
 
     is_deeply( [ map { $_->name() } $q->select_clause_elements() ],
@@ -29,13 +29,13 @@ my $dbh = Fey::Test->mock_dbh();
                'select_clause_elements with one table' );
 
     $q->select( $s->table('User') );
-    is( $q->_select_clause($dbh), $sql,
-        '_select_clause even when same table is added twice'
+    is( $q->select_clause($dbh), $sql,
+        'select_clause even when same table is added twice'
       );
 
     $q->select( $s->table('User')->column('user_id') );
-    is( $q->_select_clause($dbh), $sql,
-        '_select_clause even when table and column from that table are both added'
+    is( $q->select_clause($dbh), $sql,
+        'select_clause even when table and column from that table are both added'
       );
 }
 
@@ -50,18 +50,18 @@ my $dbh = Fey::Test->mock_dbh();
     my $sql = q{SELECT "User"."email", "User"."user_id", "User"."username"};
     $sql .= q{, "UserA"."email", "UserA"."user_id", "UserA"."username"};
 
-    is( $q->_select_clause($dbh), $sql,
-        '_select_clause with table alias'
+    is( $q->select_clause($dbh), $sql,
+        'select_clause with table alias'
       );
 
     $q->select($user_alias);
-    is( $q->_select_clause($dbh), $sql,
-        '_select_clause with table alias even when same alias is added twice'
+    is( $q->select_clause($dbh), $sql,
+        'select_clause with table alias even when same alias is added twice'
       );
 
     $q->select( $user_alias->column('user_id') );
-    is( $q->_select_clause($dbh), $sql,
-        '_select_clause even when alias and column from that alias are both added'
+    is( $q->select_clause($dbh), $sql,
+        'select_clause even when alias and column from that alias are both added'
       );
 }
 
@@ -72,8 +72,8 @@ my $dbh = Fey::Test->mock_dbh();
     $q->select( $s->table('User') );
 
     my $sql = q{SELECT "User"."email", "User"."user_id", "User"."username"};
-    is( $q->_select_clause($dbh), $sql,
-        '_select_clause when first adding column and then table for that column'
+    is( $q->select_clause($dbh), $sql,
+        'select_clause when first adding column and then table for that column'
       );
 }
 
@@ -85,8 +85,8 @@ my $dbh = Fey::Test->mock_dbh();
                                  ->alias( alias_name => 'new_user_id' ) );
 
     my $sql = q{SELECT "User"."user_id" AS "new_user_id", "User"."user_id"};
-    is( $q->_select_clause($dbh), $sql,
-        '_select_clause with column and alias for that column'
+    is( $q->select_clause($dbh), $sql,
+        'select_clause with column and alias for that column'
       );
 
     is_deeply( [ map { $_->can('alias_name') ? $_->alias_name() : $_->name() }
@@ -101,7 +101,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->select( $s->table('User')->column('user_id') )->distinct();
 
     my $sql = q{SELECT DISTINCT "User"."user_id"};
-    is( $q->_select_clause($dbh), $sql, '_select_clause with distinct' );
+    is( $q->select_clause($dbh), $sql, 'select_clause with distinct' );
 }
 
 {
@@ -109,8 +109,8 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->select( 'some literal thing' );
     my $sql = q{SELECT 'some literal thing'};
-    is( $q->_select_clause($dbh), $sql,
-        '_select_clause after passing string to select()' );
+    is( $q->select_clause($dbh), $sql,
+        'select_clause after passing string to select()' );
 }
 
 {
@@ -118,8 +118,8 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->select( 235.12 );
     my $sql = q{SELECT 235.12};
-    is( $q->_select_clause($dbh), $sql,
-        '_select_clause after passing number to select()' );
+    is( $q->select_clause($dbh), $sql,
+        'select_clause after passing number to select()' );
 }
 
 {
@@ -135,8 +135,8 @@ my $dbh = Fey::Test->mock_dbh();
 
     my $lit_with_alias = q{CONCAT("User"."user_id", ' ', "User"."username") AS "FUNCTION0"};
     my $sql = 'SELECT '. $lit_with_alias;
-    is( $q->_select_clause($dbh), $sql,
-        '_select_clause after passing function to select()' );
+    is( $q->select_clause($dbh), $sql,
+        'select_clause after passing function to select()' );
 }
 
 {
@@ -149,7 +149,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->select( $s->table('User')->column('user_id'), $subselect );
 
     my $sql = q{SELECT ( SELECT "User"."email" FROM "User" ) AS SUBSELECT0, "User"."user_id"};
-    is( $q->_select_clause($dbh), $sql,
-        '_select_clause with subselect in SELECT clause'
+    is( $q->select_clause($dbh), $sql,
+        'select_clause with subselect in SELECT clause'
       );
 }

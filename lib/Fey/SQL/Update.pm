@@ -142,16 +142,16 @@ with 'Fey::Role::SQL::HasBindParams',
         my ($dbh) = validate_pos( @_, @spec );
 
         return ( join ' ',
-                 $self->_update_clause($dbh),
-                 $self->_set_clause($dbh),
-                 $self->_where_clause($dbh),
-                 $self->_order_by_clause($dbh),
-                 $self->_limit_clause($dbh),
+                 $self->update_clause($dbh),
+                 $self->set_clause($dbh),
+                 $self->where_clause($dbh),
+                 $self->order_by_clause($dbh),
+                 $self->limit_clause($dbh),
                );
     }
 }
 
-sub _update_clause
+sub update_clause
 {
     return 'UPDATE ' . $_[0]->_tables_subclause( $_[1] );
 }
@@ -164,7 +164,7 @@ sub _tables_subclause
            );
 }
 
-sub _set_clause
+sub set_clause
 {
     my $self = shift;
     my $dbh  = shift;
@@ -294,9 +294,30 @@ handle must be passed so that identifiers can be properly quoted.
 See the L<Fey::SQL section on Bind Parameters|Fey::SQL/Bind
 Parameters> for more details.
 
+=head2 $update->update_clause()
+
+Returns the C<UPDATE> clause portion of the SQL statement as a string.
+
+=head2 $update->set_clause()
+
+Returns the C<SET> clause portion of the SQL statement as a string.
+
+=head2 $update->where_clause()
+
+Returns the C<WHERE> clause portion of the SQL statement as a string.
+
+=head2 $update->order_by_clause()
+
+Returns the C<ORDER BY> clause portion of the SQL statement as a
+string.
+
+=head2 $update->limit_clause()
+
+Returns the C<LIMIT> clause portion of the SQL statement as a string.
+
 =head1 ROLES
 
-This class does
+This class does C<Fey::Role::SQL::HasBindParams>,
 C<Fey::Role::SQL::HasWhereClause>,
 C<Fey::Role::SQL::HasOrderByClause>, and
 C<Fey::Role::SQL::HasLimitClause> roles.

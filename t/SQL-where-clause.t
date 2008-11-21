@@ -26,7 +26,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), '=', 1 );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = 1},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" = 1},
         'simple comparison - col = literal' );
 }
 
@@ -37,7 +37,7 @@ my $dbh = Fey::Test->mock_dbh();
         ( $s->table('User')->column('user_id')->alias( alias_name => 'alias' ),
           '=', 1 );
 
-    is( $q->_where_clause($dbh), q{WHERE "alias" = 1},
+    is( $q->where_clause($dbh), q{WHERE "alias" = 1},
         'simple comparison - col alias = literal' );
 }
 
@@ -47,7 +47,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->where( $s->table('User')->column('username'), 'LIKE',
                '%foo%' );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."username" LIKE '%foo%'},
+    is( $q->where_clause($dbh), q{WHERE "User"."username" LIKE '%foo%'},
         'simple comparison - col LIKE literal' );
 }
 
@@ -56,7 +56,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( 1, '=', $s->table('User')->column('user_id') );
 
-    is( $q->_where_clause($dbh), q{WHERE 1 = "User"."user_id"},
+    is( $q->where_clause($dbh), q{WHERE 1 = "User"."user_id"},
         'simple comparison - literal = col' );
 }
 
@@ -65,7 +65,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), '=', $s->table('User')->column('user_id') );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = "User"."user_id"},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" = "User"."user_id"},
         'simple comparison - col = col' );
 }
 
@@ -74,7 +74,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), 'IN', 1, 2, 3 );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" IN (1, 2, 3)},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" IN (1, 2, 3)},
         'simple comparison - IN' );
 }
 
@@ -83,7 +83,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), 'NOT IN', 1, 2, 3 );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" NOT IN (1, 2, 3)},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" NOT IN (1, 2, 3)},
         'simple comparison - IN' );
 }
 
@@ -93,7 +93,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->where( $s->table('User')->column('user_id'), '=',
                Fey::Placeholder->new() );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = ?},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" = ?},
         'simple comparison - col = placeholder' );
 }
 
@@ -106,7 +106,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), 'IN', $sub );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" IN (( SELECT "User"."user_id" FROM "User" ))},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" IN (( SELECT "User"."user_id" FROM "User" ))},
         'comparison with subselect' );
 }
 
@@ -115,7 +115,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), '=', undef );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" IS NULL},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" IS NULL},
         'undef in comparison (=)' );
 }
 
@@ -124,7 +124,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), '!=', undef );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" IS NOT NULL},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" IS NOT NULL},
         'undef in comparison (!=)' );
 }
 
@@ -133,7 +133,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), 'BETWEEN', 1, 5 );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" BETWEEN 1 AND 5},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" BETWEEN 1 AND 5},
         'simple comparison - BETWEEN' );
 }
 
@@ -143,7 +143,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->where( $s->table('User')->column('user_id'), '=', 1 );
     $q->where( $s->table('User')->column('user_id'), '=', 2 );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = 1 AND "User"."user_id" = 2},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" = 1 AND "User"."user_id" = 2},
         'multiple clauses with implicit AN' );
 }
 
@@ -154,7 +154,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->where( 'or' );
     $q->where( $s->table('User')->column('user_id'), '=', 2 );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = 1 OR "User"."user_id" = 2},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" = 1 OR "User"."user_id" = 2},
         'multiple clauses with OR' );
 }
 
@@ -166,7 +166,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->where( $s->table('User')->column('user_id'), '=', 2 );
     $q->where( ')' );
 
-    is( $q->_where_clause($dbh), q{WHERE ( "User"."user_id" = 2 )},
+    is( $q->where_clause($dbh), q{WHERE ( "User"."user_id" = 2 )},
         'subgroup in where clause' );
 }
 
@@ -178,7 +178,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->where( $s->table('User')->column('username'), '=', 'Jill' );
     $q->where( ')' );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."username" = 'Bob' AND ( "User"."username" = 'Jill' )},
+    is( $q->where_clause($dbh), q{WHERE "User"."username" = 'Bob' AND ( "User"."username" = 'Jill' )},
         'comparison followed directly by a subgroup' );
 }
 
@@ -190,7 +190,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->where( ')' );
     $q->where( $s->table('User')->column('username'), '=', 'Bob' );
 
-    is( $q->_where_clause($dbh), q{WHERE ( "User"."username" = 'Jill' ) AND "User"."username" = 'Bob'},
+    is( $q->where_clause($dbh), q{WHERE ( "User"."username" = 'Jill' ) AND "User"."username" = 'Bob'},
         'subgroup followed directly by a comparison' );
 }
 
@@ -203,7 +203,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->where( $s->table('User')->column('username'), '=', 'Jill' );
     $q->where( ')' );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."username" = 'Bob' OR ( "User"."username" = 'Jill' )},
+    is( $q->where_clause($dbh), q{WHERE "User"."username" = 'Bob' OR ( "User"."username" = 'Jill' )},
         'where clause joined to a subgroup with OR' );
 }
 
@@ -213,7 +213,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->where( $s->table('User')->column('user_id'), '=', 2 )
       ->and  ( $s->table('User')->column('username'), '=', 'bob' );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = 2 AND "User"."username" = 'bob'},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" = 2 AND "User"."username" = 'bob'},
         'where() and and() methods' );
 }
 
@@ -258,7 +258,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), '=', undef );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" IS NULL},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" IS NULL},
         'undef in comparison (=) with auto placeholders' );
 }
 
@@ -267,7 +267,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), '=', Fey::Placeholder->new() );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = ?},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" = ?},
         'explicit placeholder object in comparison (=)' );
 }
 
@@ -288,7 +288,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), '=', Num->new(2) );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = ?},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" = ?},
         'overloaded object in comparison (=) with auto placeholders' );
 
     is( ( $q->bind_params() )[0], 2,
@@ -300,7 +300,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), '=', Num->new(2) );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = 2},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" = 2},
         'overloaded object in comparison (=) without auto placeholders' );
 }
 
@@ -321,7 +321,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), '=', Str->new('two') );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = ?},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" = ?},
         'overloaded object in comparison (=) with auto placeholders' );
     is_deeply( [ $q->bind_params() ], [ 'two' ],
                q{bind_params() contains overloaded object's value} );
@@ -332,7 +332,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), '=', Str->new('two') );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."user_id" = 'two'},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" = 'two'},
         'overloaded object in comparison (=) without auto placeholders' );
 }
 
@@ -362,7 +362,7 @@ SKIP:
     my $q = Fey::SQL->new_select( auto_placeholders => 1 )->select();
     $q->where( $s->table('User')->column('username'), '=', $dt );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."username" = ?},
+    is( $q->where_clause($dbh), q{WHERE "User"."username" = ?},
         'overloaded DateTime object in comparison (=) with auto placeholders' );
     is_deeply( [ $q->bind_params() ], [ '2008-02-24 12:30:47' ],
                q{bind_params() contains overloaded object's value} );
@@ -370,6 +370,6 @@ SKIP:
     $q = Fey::SQL->new_select( auto_placeholders => 0 )->select();
     $q->where( $s->table('User')->column('username'), '=', $dt );
 
-    is( $q->_where_clause($dbh), q{WHERE "User"."username" = '2008-02-24 12:30:47'},
+    is( $q->where_clause($dbh), q{WHERE "User"."username" = '2008-02-24 12:30:47'},
         'overloaded DateTime object in comparison (=) without auto placeholders' );
 }

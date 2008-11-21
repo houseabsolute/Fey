@@ -28,7 +28,7 @@ use Moose::Role;
     }
 }
 
-sub _limit_clause
+sub limit_clause
 {
     my $self = shift;
 
@@ -70,6 +70,10 @@ This role provides the following methods:
 
 See the L<Fey::SQL section on LIMIT Clauses|Fey::SQL/LIMIT Clauses>
 for more details.
+
+=head2 $query->limit_clause()
+
+Returns the C<LIMIT> clause portion of the SQL statement as a string.
 
 =head1 AUTHOR
 

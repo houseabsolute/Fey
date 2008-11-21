@@ -25,7 +25,7 @@ my $dbh = Fey::Test->mock_dbh();
     my $q = Fey::SQL->new_select()->select( $s->table('User') );
 
     $q->order_by( $s->table('User')->column('user_id') );
-    is( $q->_order_by_clause($dbh), q{ORDER BY "User"."user_id"},
+    is( $q->order_by_clause($dbh), q{ORDER BY "User"."user_id"},
         'order_by() one column' );
 }
 
@@ -33,7 +33,7 @@ my $dbh = Fey::Test->mock_dbh();
     my $q = Fey::SQL->new_select()->select( $s->table('User') );
 
     $q->order_by( $s->table('User')->column('user_id'), 'ASC' );
-    is( $q->_order_by_clause($dbh), q{ORDER BY "User"."user_id" ASC},
+    is( $q->order_by_clause($dbh), q{ORDER BY "User"."user_id" ASC},
         'order_by() one column' );
 }
 
@@ -41,7 +41,7 @@ my $dbh = Fey::Test->mock_dbh();
     my $q = Fey::SQL->new_select()->select( $s->table('User') );
 
     $q->order_by( $s->table('User')->column('user_id'), 'DESC' );
-    is( $q->_order_by_clause($dbh), q{ORDER BY "User"."user_id" DESC},
+    is( $q->order_by_clause($dbh), q{ORDER BY "User"."user_id" DESC},
         'order_by() one column' );
 }
 
@@ -51,7 +51,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->order_by( $s->table('User')->column('user_id'),
                   $s->table('User')->column('username'), 'ASC'
                 );
-    is( $q->_order_by_clause($dbh), q{ORDER BY "User"."user_id", "User"."username" ASC},
+    is( $q->order_by_clause($dbh), q{ORDER BY "User"."user_id", "User"."username" ASC},
         'order_by() two columns' );
 }
 
@@ -61,7 +61,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->order_by( $s->table('User')->column('user_id'), 'DESC',
                   $s->table('User')->column('username'), 'ASC'
                 );
-    is( $q->_order_by_clause($dbh), q{ORDER BY "User"."user_id" DESC, "User"."username" ASC},
+    is( $q->order_by_clause($dbh), q{ORDER BY "User"."user_id" DESC, "User"."username" ASC},
         'order_by() two columns' );
 }
 
@@ -71,7 +71,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->order_by( $s->table('User')->column('user_id')
                   ->alias( alias_name => 'alias_test' ) );
 
-    is( $q->_order_by_clause($dbh), q{ORDER BY "alias_test"},
+    is( $q->order_by_clause($dbh), q{ORDER BY "alias_test"},
         'order_by() column alias' );
 }
 
@@ -83,7 +83,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->order_by($now);
 
-    like( $q->_order_by_clause($dbh), qr/ORDER BY "FUNCTION\d+"/,
+    like( $q->order_by_clause($dbh), qr/ORDER BY "FUNCTION\d+"/,
           'order_by() function' );
 }
 
@@ -93,7 +93,7 @@ my $dbh = Fey::Test->mock_dbh();
     my $now = Fey::Literal::Function->new( 'NOW' );
     $q->order_by($now);
 
-    like( $q->_order_by_clause($dbh), qr/ORDER BY NOW()/,
+    like( $q->order_by_clause($dbh), qr/ORDER BY NOW()/,
           'order_by() function without an alias' );
 }
 
@@ -103,6 +103,6 @@ my $dbh = Fey::Test->mock_dbh();
     my $term = Fey::Literal::Term->new( q{"Foo"::text} );
     $q->order_by($term);
 
-    is( $q->_order_by_clause($dbh), q{ORDER BY "Foo"::text},
+    is( $q->order_by_clause($dbh), q{ORDER BY "Foo"::text},
         'order_by() term' );
 }
