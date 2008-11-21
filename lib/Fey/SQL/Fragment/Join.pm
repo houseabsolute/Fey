@@ -95,7 +95,7 @@ sub _join_one_table
     $join .= $_[2]->sql_with_alias( $_[1] );
 
     $join .= $_[0]->_on_clause( $_[1] );
-    $join .= $_[0]->where_clause( $_[1] );
+    $join .= $_[0]->_where_clause( $_[1] );
     $join .= ')';
 
     return $join;
@@ -114,7 +114,7 @@ sub _join_both_tables
     $join .= $_[0]->[TABLE2]->sql_with_alias( $_[1] );
 
     $join .= $_[0]->_on_clause( $_[1] );
-    $join .= $_[0]->where_clause( $_[1] );
+    $join .= $_[0]->_where_clause( $_[1] );
     $join .= ')';
 
     return $join;
@@ -137,7 +137,7 @@ sub _on_clause
     return $on;
 }
 
-sub where_clause
+sub _where_clause
 {
     return '' unless $_[0]->[WHERE];
 
