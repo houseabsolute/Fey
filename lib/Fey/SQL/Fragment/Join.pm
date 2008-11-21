@@ -43,8 +43,6 @@ sub id
 
     my @outer = $_[0]->[OUTER] ? $_[0]->[OUTER] : ();
 
-    # REVIEW - this is a bit wack - maybe where_clause() should be
-    # public.
     my @where = $_[0]->[WHERE] ? $_[0]->[WHERE]->where_clause( 'Fey::FakeDBI', 'no WHERE' ) : ();
 
     return
