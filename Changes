@@ -1,4 +1,4 @@
-0.18
+0.18    2008-12-09
 
 - Fey::SQL::Insert->into claimed it took a table as an argument, but
   was only accepting a list of columns. Fixed by Dieter Pearcey.
