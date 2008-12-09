@@ -42,4 +42,4 @@
 
 \b\.shipit\b
 
-\b\.hg.*
+\.hg.*
