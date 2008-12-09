@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 20;
+use Test::More tests => 22;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -39,6 +39,17 @@ $s->table('User')->add_column($size);
         'insert_clause() for User table' );
     is( $q->columns_clause($dbh), q{("username")},
         'columns_clause with one column' );
+}
+
+{
+    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
+
+    $q->into( $s->table('User') );
+
+    is( $q->insert_clause($dbh), q{INSERT INTO "User"},
+        'insert_clause() for User table' );
+    is( $q->columns_clause($dbh), q{("email", "user_id", "size", "username")},
+        'columns_clause with one table' );
 }
 
 {
