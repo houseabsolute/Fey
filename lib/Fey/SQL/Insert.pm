@@ -28,12 +28,16 @@ sub insert { return $_[0] }
     my $spec = { type => OBJECT,
                  callbacks =>
                  { 'is a (non-alias) table or column with a table' =>
-                   sub {    $_[0]->isa('Fey::Table')
-                         && ! $_[0]->is_alias()
-                         or $_[0]->isa('Fey::Column')
-                         && $_[0]->table()
-                         && ! $_[0]->is_alias()
-                         && ! $_[0]->table()->is_alias() }
+                   sub { (    $_[0]->isa('Fey::Table')
+                           && ! $_[0]->is_alias()
+                         )
+                         ||
+                         ( $_[0]->isa('Fey::Column')
+                           && $_[0]->table()
+                           && ! $_[0]->is_alias()
+                           && ! $_[0]->table()->is_alias()
+                         )
+                       }
                  },
                };
 
@@ -62,10 +66,11 @@ sub insert { return $_[0] }
     sub into
     {
         my $self = shift;
-
         my $count = @_ ? scalar @_ : 1;
+
         my @cols;
-        for ( validate_pos( @_, ($spec) x $count ) ) {
+        for ( validate_pos( @_, ($spec) x $count ) )
+        {
             push @cols, $_->isa('Fey::Table')
                 ? $_->columns
                 : $_;

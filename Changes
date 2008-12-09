@@ -1,3 +1,9 @@
+0.18    2008-12-09
+
+- Fey::SQL::Insert->into claimed it took a table as an argument, but
+  was only accepting a list of columns. Fixed by Dieter Pearcey.
+
+
 0.17    2008-11-21
 
 - Fey::SQL::Select->group_by() was not returning $self, so it could be
