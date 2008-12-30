@@ -239,9 +239,6 @@ This class provides the following methods:
 
   my $schema = Fey::Schema->new( name => 'MySchema' );
 
-  my $schema = Fey::Schema->new( name        => 'MySchema',
-                                 sql_class => 'My::SQL' );
-
 This method constructs a new C<Fey::Schema> object. It takes the
 following parameters:
 
@@ -250,11 +247,6 @@ following parameters:
 =item * name - required
 
 The name of the schema.
-
-=item * sql_class - defaults to C<Fey::SQL>
-
-The name of the base class for sql object. See the C<$schema->sql()>
-method for details.
 
 =back
 
