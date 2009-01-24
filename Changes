@@ -1,3 +1,12 @@
+0.19    2008-01-23
+
+* BACKWARDS INCOMPATIBILITY - Fey::SQL::Select->select() no longer
+  makes each element unique. Instead, it simply accepts what it's
+  given and reproduces it in the original order. Sadly, this is
+  necessary because sometimes you are stuck relying on the order of
+  the columns being returned (because SQL is broken).
+
+
 0.18    2008-12-09
 
 - Fey::SQL::Insert->into claimed it took a table as an argument, but

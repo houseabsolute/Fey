@@ -29,7 +29,7 @@ my $builder =
           recommends =>
           { 'Test::Memory::Cycle'   => '0',
           },
-          create_makefile_pl   => 'passthrough',
+          create_makefile_pl   => 'traditional',
           create_readme        => 1,
           sign                 => 1,
           recursive_test_files => 1,

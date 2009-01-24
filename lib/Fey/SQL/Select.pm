@@ -59,7 +59,7 @@ with 'Fey::Role::Comparable',
                 $elt = Fey::SQL::Fragment::SubSelect->new($elt);
             }
 
-            $self->{select}{ $elt->id() } = $elt;
+            push @{ $self->{select} }, $elt;
         }
 
         return $self;
@@ -261,11 +261,7 @@ sub select_clause_elements
 {
     my $self = shift;
 
-    return
-        ( map { $self->{select}{$_} }
-          sort
-          keys %{ $self->{select} }
-        );
+    return @{ $self->{select} };
 }
 
 sub select_clause

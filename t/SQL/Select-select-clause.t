@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 16;
+use Test::More tests => 13;
 
 use Fey::SQL;
 
@@ -27,16 +27,6 @@ my $dbh = Fey::Test->mock_dbh();
     is_deeply( [ map { $_->name() } $q->select_clause_elements() ],
                [ qw( email user_id username ) ],
                'select_clause_elements with one table' );
-
-    $q->select( $s->table('User') );
-    is( $q->select_clause($dbh), $sql,
-        'select_clause even when same table is added twice'
-      );
-
-    $q->select( $s->table('User')->column('user_id') );
-    is( $q->select_clause($dbh), $sql,
-        'select_clause even when table and column from that table are both added'
-      );
 }
 
 {
@@ -53,16 +43,6 @@ my $dbh = Fey::Test->mock_dbh();
     is( $q->select_clause($dbh), $sql,
         'select_clause with table alias'
       );
-
-    $q->select($user_alias);
-    is( $q->select_clause($dbh), $sql,
-        'select_clause with table alias even when same alias is added twice'
-      );
-
-    $q->select( $user_alias->column('user_id') );
-    is( $q->select_clause($dbh), $sql,
-        'select_clause even when alias and column from that alias are both added'
-      );
 }
 
 {
@@ -71,7 +51,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->select( $s->table('User')->column('user_id') );
     $q->select( $s->table('User') );
 
-    my $sql = q{SELECT "User"."email", "User"."user_id", "User"."username"};
+    my $sql = q{SELECT "User"."user_id", "User"."email", "User"."user_id", "User"."username"};
     is( $q->select_clause($dbh), $sql,
         'select_clause when first adding column and then table for that column'
       );
@@ -84,17 +64,27 @@ my $dbh = Fey::Test->mock_dbh();
     $q->select( $s->table('User')->column('user_id')
                                  ->alias( alias_name => 'new_user_id' ) );
 
-    my $sql = q{SELECT "User"."user_id" AS "new_user_id", "User"."user_id"};
+    my $sql = q{SELECT "User"."user_id", "User"."user_id" AS "new_user_id"};
     is( $q->select_clause($dbh), $sql,
         'select_clause with column and alias for that column'
       );
 
     is_deeply( [ map { $_->can('alias_name') ? $_->alias_name() : $_->name() }
                  $q->select_clause_elements() ],
-               [ qw( new_user_id user_id ) ],
+               [ qw( user_id new_user_id ) ],
                'select_clause_elements with column and alias for that column' );
 }
 
+{
+    my $q = Fey::SQL->new_select();
+
+    $q->select( $s->table('User')->columns( 'user_id', 'email' ) );
+
+    my $sql = q{SELECT "User"."user_id", "User"."email"};
+    is( $q->select_clause($dbh), $sql,
+        'select_clause preserves order passed to select()'
+      );
+}
 
 {
     my $q = Fey::SQL->new_select();
@@ -148,7 +138,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->select( $s->table('User')->column('user_id'), $subselect );
 
-    my $sql = q{SELECT ( SELECT "User"."email" FROM "User" ) AS SUBSELECT0, "User"."user_id"};
+    my $sql = q{SELECT "User"."user_id", ( SELECT "User"."email" FROM "User" ) AS SUBSELECT0};
     is( $q->select_clause($dbh), $sql,
         'select_clause with subselect in SELECT clause'
       );
