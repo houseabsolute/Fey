@@ -36,4 +36,6 @@
 # No need to ship this
 \.shipit
 
+^Fey-\d
+
 ^Debian_CPANTS
