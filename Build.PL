@@ -33,6 +33,12 @@ my $builder =
           create_readme        => 1,
           sign                 => 1,
           recursive_test_files => 1,
+          meta_add             =>
+          { resources => { homepage   => 'http://www.fey-project.org/',
+                           bugtracker => 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Fey',
+                           repository => 'http://hg.urth.org/hg/Fey',
+                         },
+          },
         );
 
 $builder->create_build_script();
