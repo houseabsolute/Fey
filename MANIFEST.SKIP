@@ -1,45 +1,39 @@
 # Avoid version control files.
-\bRCS\b
-\bCVS\b
+^RCS
+^CVS
 ,v$
-\B\.svn\b
-\B\.cvsignore$
+^\.svn
+^\.hg
 
 # Avoid Makemaker generated and utility files.
-\bMakefile$
-\bblib
-\bMakeMaker-\d
-\bpm_to_blib$
-\bblibdirs$
+^Makefile$
+^blib
+^MakeMaker-\d
+^pm_to_blib$
+^blibdirs$
 ^MANIFEST\.SKIP$
 
 # Avoid Module::Build generated and utility files.
-\bBuild$
-\bBuild.bat$
-\b_build
-
-# Avoid Devel::Cover generated files
-\bcover_db
+^Build$
+^_build
+^Build.bat$
 
 # Avoid temp and backup files.
 ~$
-\.tmp$
 \.old$
 \.bak$
 \#$
-\.#
+^\.#
 \.rej$
+\.orig$
 
-# Avoid OS-specific files/dirs
-#   Mac OSX metadata
-\B\.DS_Store
-#   Mac OSX SMB mount metadata files
-\B\._
-# Avoid archives of this distribution
-\bFey-[\d\.\_]+
+# Avoid Devel::Cover generated files
+^cover_db
 
-\bGOALS\b
+# Avoid tarballs
+\.(?:tar|tgz|tar\.gz)$
 
-\b\.shipit\b
+# No need to ship this
+\.shipit
 
-\.hg.*
+^Debian_CPANTS
