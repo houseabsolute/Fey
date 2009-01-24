@@ -2,7 +2,7 @@
 ^RCS
 ^CVS
 ,v$
-^\.svn
+.*/\.svn.*
 ^\.hg
 
 # Avoid Makemaker generated and utility files.
@@ -30,12 +30,13 @@
 # Avoid Devel::Cover generated files
 ^cover_db
 
+# kwalitee.t junk
+^Debian_CPANTS\.txt
+
 # Avoid tarballs
 \.(?:tar|tgz|tar\.gz)$
 
+^Fey-
+
 # No need to ship this
 \.shipit
-
-^Fey-\d
-
-^Debian_CPANTS
