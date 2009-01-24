@@ -1,3 +1,9 @@
+0.1901  2008-01-24
+
+- No code changes, just re-releasing because the last tarball was full
+  of Mercurial repo junk.
+
+
 0.19    2008-01-23
 
 * BACKWARDS INCOMPATIBILITY - Fey::SQL::Select->select() no longer
