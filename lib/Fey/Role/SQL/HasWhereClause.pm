@@ -15,6 +15,14 @@ use Moose::Role;
 # doesn't work with attributes
 #requires 'use_placeholders';
 
+with 'Fey::Role::Cloneable';
+around CLONEARGS => sub {
+    my ($orig, $self) = @_;
+    return (
+        where => [ @{ $self->{where} || [] } ],
+        $orig->($self),
+    );
+};
 
 sub where
 {

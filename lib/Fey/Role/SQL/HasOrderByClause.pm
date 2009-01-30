@@ -13,6 +13,14 @@ use Scalar::Util qw( blessed );
 
 use Moose::Role;
 
+with 'Fey::Role::Cloneable';
+around CLONEARGS => sub { 
+    my ($orig, $self) = @_;
+    return (
+        order_by => [ @{ $self->{order_by} || [] } ],
+        $orig->($self),
+    );
+};
 
 {
     my $spec = { type      => SCALAR|OBJECT,

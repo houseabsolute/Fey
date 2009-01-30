@@ -25,11 +25,21 @@ use MooseX::StrictConstructor;
 
 with 'Fey::Role::Comparable',
      'Fey::Role::Selectable',
+     'Fey::Role::Cloneable',
      'Fey::Role::SQL::HasBindParams',
      'Fey::Role::SQL::HasWhereClause',
      'Fey::Role::SQL::HasOrderByClause',
      'Fey::Role::SQL::HasLimitClause';
 
+sub CLONEARGS {
+    my $self = shift;
+    return (
+        select   => [ @{ $self->{select} } ],
+        from     => { %{ $self->{from} } },
+        group_by => [ @{ $self->{group_by} } ],
+        having   => [ @{ $self->{having} } ],
+    );
+}
 
 {
     my $spec = { type      => SCALAR|OBJECT,
@@ -646,6 +656,8 @@ C<Fey::Role::SQL::HasLimitClause> roles.
 It also does the C<Fey::Role::SQL::Comparable> role. This allows a
 C<Fey::SQL::Select> object to be used as a subselect in C<WHERE>
 clauses.
+
+It also does the C<Fey::Role::Cloneable> role.
 
 =head1 AUTHOR
 

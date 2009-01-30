@@ -13,6 +13,14 @@ use Scalar::Util qw( blessed );
 
 use Moose::Role;
 
+with 'Fey::Role::Cloneable';
+around CLONEARGS => sub {
+    my ($orig, $self) = @_;
+    return (
+        limit => { %{ $self->{limit} || {} } },
+        $orig->($self),
+    );
+};
 
 {
     my @spec = ( POS_INTEGER_TYPE, POS_OR_ZERO_INTEGER_TYPE( optional => 1 ) );
