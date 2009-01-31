@@ -3,6 +3,8 @@ package Fey::Literal::Term;
 use strict;
 use warnings;
 
+use Fey::Types;
+
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;

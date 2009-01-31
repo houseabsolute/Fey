@@ -11,8 +11,8 @@ use Fey::Validate
         TABLE_OR_NAME_TYPE );
 
 use Fey::Column;
-use List::MoreUtils qw( uniq all pairwise );
-use List::Util qw( max );
+use Fey::Types;
+use List::AllUtils qw( max uniq all pairwise );
 use Scalar::Util qw( blessed );
 
 use Moose;
@@ -26,33 +26,19 @@ has 'id' =>
       init_arg   => undef,
     );
 
-subtype 'Fey.Type.ArrayRefOfColumns'
-    => as 'ArrayRef'
-    => where { @{ $_ } >= 1 && all { $_ && $_->isa('Fey::Column') } @{$_} };
+has [ qw( source_columns target_columns ) ] =>
+    ( is       => 'ro',
+      isa      => 'Fey.Type.ArrayRefOfColumns',
+      required => 1,
+      coerce   => 1,
+    );
 
-coerce 'Fey.Type.ArrayRefOfColumns'
-    => from 'Fey::Column'
-    => via { [ $_ ] };
-
-for my $attr ( qw( source_columns target_columns ) )
-{
-    has $attr =>
-        ( is       => 'ro',
-          isa      => 'Fey.Type.ArrayRefOfColumns',
-          required => 1,
-          coerce   => 1,
-        );
-}
-
-for my $attr ( qw( source_table target_table ) )
-{
-    has $attr =>
-        ( is         => 'ro',
-          isa        => 'Fey::Table | Fey::Table::Alias',
-          lazy_build => 1,
-          init_arg   => undef,
-        );
-}
+has [ qw( source_table target_table ) ] =>
+    ( is         => 'ro',
+      does       => 'Fey::Role::TableLike',
+      lazy_build => 1,
+      init_arg   => undef,
+    );
 
 has column_pairs =>
     ( is         => 'ro',

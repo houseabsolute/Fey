@@ -8,6 +8,7 @@ use Fey::SQL::Insert;
 use Fey::SQL::Select;
 use Fey::SQL::Update;
 use Fey::SQL::Where;
+use Fey::Types;
 
 
 sub new_delete

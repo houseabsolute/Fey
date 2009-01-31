@@ -3,9 +3,6 @@ package Fey::Table;
 use strict;
 use warnings;
 
-use List::MoreUtils qw( any all first_index );
-use Scalar::Util qw( blessed weaken );
-
 use Fey::Exceptions qw( param_error );
 use Fey::Validate
     qw( validate validate_pos
@@ -18,6 +15,9 @@ use Fey::Column;
 use Fey::NamedObjectSet;
 use Fey::Schema;
 use Fey::Table::Alias;
+use Fey::Types;
+use List::AllUtils qw( any all first_index );
+use Scalar::Util qw( blessed weaken );
 
 use Moose;
 use MooseX::SemiAffordanceAccessor;
@@ -25,7 +25,7 @@ use MooseX::AttributeHelpers;
 use MooseX::StrictConstructor;
 use Moose::Util::TypeConstraints;
 
-with 'Fey::Role::Joinable';
+with 'Fey::Role::TableLike';
 
 has 'id' =>
     ( is         => 'ro',
@@ -44,15 +44,6 @@ has 'is_view' =>
       isa     => 'Bool',
       default => 0,
     );
-
-subtype 'Fey.Type.ArrayRefOfNamedObjectSets'
-    => as 'ArrayRef'
-    => where { for my $arg ( @{ $_ } )
-               {
-                   return unless blessed $arg && $arg->isa('Fey::NamedObjectSet');
-               }
-               return 1;
-             };
 
 has '_keys' =>
     ( metaclass => 'MooseX::AttributeHelpers::Collection::Array',

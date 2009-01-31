@@ -10,13 +10,13 @@ use Fey::Validate
         TABLE_TYPE );
 
 use Fey::Table;
+use Fey::Types;
 
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-with 'Fey::Role::Joinable';
-
+with 'Fey::Role::TableLike';
 
 has 'id' =>
     ( is         => 'ro',

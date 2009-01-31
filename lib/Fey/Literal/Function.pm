@@ -3,12 +3,12 @@ package Fey::Literal::Function;
 use strict;
 use warnings;
 
+use Fey::Types;
 use Scalar::Util qw( blessed );
 
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use Moose::Util::TypeConstraints;
 
 extends 'Fey::Literal';
 
@@ -20,27 +20,6 @@ has 'function' =>
       isa      => 'Str',
       required => 1,
     );
-
-subtype 'Fey.Type.FunctionArg'
-    => as 'Object'
-    => where { $_->does('Fey::Role::Selectable') };
-
-coerce 'Fey.Type.FunctionArg'
-    => from 'Undef'
-    => via { Fey::Literal::Null->new() }
-    => from 'Value'
-    => via { Fey::Literal->new_from_scalar($_) };
-
-{
-    my $constraint = find_type_constraint('Fey.Type.FunctionArg');
-    subtype 'Fey.Type.ArrayRefOfFunctionArgs'
-        => as 'ArrayRef'
-        => where { for my $arg ( @{$_} ) { $constraint->check($arg) || return; } 1; };
-
-    coerce 'Fey.Type.ArrayRefOfFunctionArgs'
-        => from 'ArrayRef'
-        => via { [ map { $constraint->coerce($_) } @{ $_ } ] };
-}
 
 has 'args' =>
     ( is         => 'ro',

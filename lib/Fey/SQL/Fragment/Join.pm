@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Fey::FakeDBI;
-use List::MoreUtils qw( pairwise );
+use List::AllUtils qw( pairwise );
 
 use constant TABLE1 => 0;
 use constant TABLE2 => 1;

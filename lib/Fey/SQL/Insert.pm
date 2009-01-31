@@ -11,6 +11,7 @@ use Fey::Validate
         OBJECT
         DBI_TYPE
       );
+use Fey::Types;
 
 use overload ();
 use Scalar::Util qw( blessed );

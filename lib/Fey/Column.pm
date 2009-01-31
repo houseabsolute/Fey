@@ -17,11 +17,11 @@ use Fey::Column::Alias;
 use Fey::Literal;
 use Fey::Table;
 use Fey::Table::Alias;
+use Fey::Types;
 
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use Moose::Util::TypeConstraints qw( subtype as where coerce from via class_type find_type_constraint );
 
 with 'Fey::Role::ColumnLike';
 
@@ -38,9 +38,6 @@ has 'name' =>
       required => 1,
     );
 
-subtype 'Fey.Type.GenericTypeName'
-    => as 'Str'
-    => where { /^(?:text|blob|integer|float|date|datetime|time|boolean|other)$/xism };
 has 'generic_type' =>
     ( is         => 'ro',
       isa        => 'Fey.Type.GenericTypeName',
@@ -53,18 +50,12 @@ has type =>
       required => 1,
     );
 
-subtype 'Fey.Type.PosInteger'
-    => as 'Int'
-    => where { $_ > 0 };
 has length =>
     ( is       => 'ro',
       isa      => 'Fey.Type.PosInteger',
       required => 0
     );
 
-subtype 'Fey.Type.PosOrZeroInteger'
-    => as 'Int'
-    => where { $_ >= 0 };
 # How to say that precision requires length as well?
 has precision =>
     ( is       => 'ro',
@@ -84,35 +75,19 @@ has is_nullable =>
       default => 0,
     );
 
-subtype 'Fey.Type.DefaultValue'
-    => as 'Fey::Literal';
-coerce 'Fey.Type.DefaultValue'
-    => from 'Undef'
-    => via { Fey::Literal::Null->new() }
-    => from 'Value'
-    => via { Fey::Literal->new_from_scalar($_) };
-
 has default =>
     ( is     => 'ro',
       isa    => 'Fey.Type.DefaultValue',
       coerce => 1,
     );
 
-{
-    for my $class ( qw( Fey::Table Fey::Table::Alias ) )
-    {
-        class_type($class)
-            unless find_type_constraint($class);
-    }
-
-    has 'table' =>
-        ( is       => 'rw',
-          isa      =>  'Fey::Table | Fey::Table::Alias',
-          weak_ref => 1,
-          writer   => '_set_table',
-          clearer  => '_clear_table',
-        );
-}
+has 'table' =>
+    ( is       => 'rw',
+      does     =>  'Fey::Role::TableLike',
+      weak_ref => 1,
+      writer   => '_set_table',
+      clearer  => '_clear_table',
+    );
 
 after '_set_table', '_clear_table' =>
     sub { $_[0]->_clear_id() };

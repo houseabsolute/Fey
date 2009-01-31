@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Fey::FakeDBI;
+use Fey::Types;
 use Scalar::Util qw( blessed looks_like_number );
 use overload ();
 

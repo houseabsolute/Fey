@@ -13,6 +13,7 @@ use Fey::Validate
       );
 
 use Fey::Literal;
+use Fey::Types;
 use overload ();
 use Scalar::Util qw( blessed );
 

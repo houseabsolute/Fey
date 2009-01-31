@@ -8,6 +8,7 @@ use Fey::Exceptions qw( object_state_error );
 use Fey::Column;
 use Fey::Table;
 use Fey::Table::Alias;
+use Fey::Types;
 
 use Moose;
 use MooseX::SemiAffordanceAccessor;

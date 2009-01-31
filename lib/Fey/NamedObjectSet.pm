@@ -3,7 +3,7 @@ package Fey::NamedObjectSet;
 use strict;
 use warnings;
 
-use List::MoreUtils qw( all pairwise );
+use List::AllUtils qw( all pairwise );
 
 use Fey::Validate
     qw( validate_pos SCALAR_TYPE NAMED_OBJECT_TYPE );

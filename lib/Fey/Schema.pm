@@ -14,6 +14,7 @@ use Fey::Validate
 use Fey::NamedObjectSet;
 use Fey::SQL;
 use Fey::Table;
+use Fey::Types;
 use Scalar::Util qw( blessed );
 
 use Moose;

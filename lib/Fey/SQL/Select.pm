@@ -16,7 +16,8 @@ use Fey::Validate
 use Fey::Literal;
 use Fey::SQL::Fragment::Join;
 use Fey::SQL::Fragment::SubSelect;
-use List::MoreUtils qw( all );
+use Fey::Types;
+use List::AllUtils qw( all );
 use Scalar::Util qw( blessed );
 
 use Moose;
