@@ -19,17 +19,8 @@ use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-with 'Fey::Role::Cloneable',
-     'Fey::Role::SQL::HasBindParams';
+with 'Fey::Role::SQL::HasBindParams';
 
-sub CLONEARGS {
-    my ($self) = @_;
-    return (
-        columns     => [ @{ $self->{columns} } ],
-        values_spec => { %{ $self->{values_spec} } },
-        bind_params => [ @{ $self->{bind_params} } ],
-    );
-}
 
 sub insert { return $_[0] }
 
@@ -305,8 +296,6 @@ Returns the C<VALUES> clause portion of the SQL statement as a string.
 =head1 ROLES
 
 This class does C<Fey::Role::SQL::HasBindParams> role.
-
-It also does the C<Fey::Role::Cloneable> role.
 
 =head1 AUTHOR
 

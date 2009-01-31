@@ -20,20 +20,11 @@ use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-with 'Fey::Role::Cloneable',
-     'Fey::Role::SQL::HasBindParams',
+with 'Fey::Role::SQL::HasBindParams',
      'Fey::Role::SQL::HasWhereClause',
      'Fey::Role::SQL::HasOrderByClause',
      'Fey::Role::SQL::HasLimitClause';
 
-sub CLONEARGS {
-    my ($self) = @_;
-    return (
-        tables      => [ @{ $self->{tables} } ],
-        set         => [ @{ $self->{set} } ],
-        bind_params => [ @{ $self->{bind_params} } ],
-    );
-}
 
 {
     my $spec = { type => OBJECT,
@@ -330,8 +321,6 @@ This class does C<Fey::Role::SQL::HasBindParams>,
 C<Fey::Role::SQL::HasWhereClause>,
 C<Fey::Role::SQL::HasOrderByClause>, and
 C<Fey::Role::SQL::HasLimitClause> roles.
-
-It also does the C<Fey::Role::Cloneable> role.
 
 =head1 AUTHOR
 
