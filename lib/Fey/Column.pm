@@ -5,15 +5,8 @@ use warnings;
 
 use Scalar::Util qw( blessed weaken );
 
-use Fey::Exceptions qw( param_error object_state_error );
-use Fey::Validate
-    qw( validate validate_pos
-        SCALAR UNDEF OBJECT
-        SCALAR_TYPE BOOLEAN_TYPE
-        POS_INTEGER_TYPE POS_OR_ZERO_INTEGER_TYPE
-        TABLE_TYPE );
-
 use Fey::Column::Alias;
+use Fey::Exceptions qw( param_error object_state_error );
 use Fey::Literal;
 use Fey::Table;
 use Fey::Table::Alias;
@@ -92,6 +85,7 @@ has 'table' =>
 after '_set_table', '_clear_table' =>
     sub { $_[0]->_clear_id() };
 
+with 'Fey::Role::Named';
 
 
 {

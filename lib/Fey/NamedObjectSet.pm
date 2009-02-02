@@ -5,8 +5,8 @@ use warnings;
 
 use List::AllUtils qw( all pairwise );
 
-use Fey::Validate
-    qw( validate_pos SCALAR_TYPE NAMED_OBJECT_TYPE );
+use Fey::Types;
+use MooseX::Params::Validate qw( pos_validated_list );
 
 
 sub new
@@ -25,9 +25,12 @@ sub add
     my $self    = shift;
 
     my $count = @_ ? @_ : 1;
-    validate_pos( @_, ( NAMED_OBJECT_TYPE ) x $count );
 
-    $self->{ $_->name() } = $_ for @_;
+    $self->{ $_->name() } = $_
+        for pos_validated_list( \@_,
+                                ( ( { does => 'Fey::Role::Named' } ) x $count ),
+                                MX_PARAMS_VALIDATE_NO_CACHE => 1,
+                              );
 
     return;
 }
@@ -37,9 +40,12 @@ sub delete
     my $self = shift;
 
     my $count = @_ ? @_ : 1;
-    validate_pos( @_, ( NAMED_OBJECT_TYPE ) x $count );
 
-    delete $self->{ $_->name() } for @_;
+    delete $self->{ $_->name() }
+        for pos_validated_list( \@_,
+                                ( ( { does => 'Fey::Role::Named' } ) x $count ),
+                                MX_PARAMS_VALIDATE_NO_CACHE => 1,
+                              );
 
     return;
 }
@@ -47,7 +53,7 @@ sub delete
 sub object
 {
     my $self   = shift;
-    my ($name) = validate_pos( @_, SCALAR_TYPE );
+    my ($name) = pos_validated_list( \@_, { isa => 'Str' } );
 
     return $self->{$name};
 }
@@ -56,9 +62,13 @@ sub objects
 {
     my $self = shift;
 
-    validate_pos( @_, ( SCALAR_TYPE ) x @_ );
+    my @names =
+        pos_validated_list( \@_,
+                            ( ( { isa => 'Str' } ) x scalar @_ ),
+                            MX_PARAMS_VALIDATE_NO_CACHE => 1,
+                          );
 
-    return @_ ? @{ $self }{ grep { exists $self->{$_} } @_ } : values %{ $self };
+    return @names ? @{ $self }{ grep { exists $self->{$_} } @names } : values %{ $self };
 }
 
 sub is_same_as

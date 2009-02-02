@@ -3,15 +3,8 @@ package Fey::Table;
 use strict;
 use warnings;
 
-use Fey::Exceptions qw( param_error );
-use Fey::Validate
-    qw( validate validate_pos
-        UNDEF OBJECT
-        SCALAR_TYPE BOOLEAN_TYPE
-        COLUMN_TYPE COLUMN_OR_NAME_TYPE
-        SCHEMA_TYPE );
-
 use Fey::Column;
+use Fey::Exceptions qw( param_error );
 use Fey::NamedObjectSet;
 use Fey::Schema;
 use Fey::Table::Alias;
@@ -20,6 +13,7 @@ use List::AllUtils qw( any all first_index );
 use Scalar::Util qw( blessed weaken );
 
 use Moose;
+use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::AttributeHelpers;
 use MooseX::StrictConstructor;
@@ -95,59 +89,55 @@ has 'primary_key' =>
 after '_clear_candidate_keys' =>
     sub { $_[0]->_clear_primary_key() };
 
+with 'Fey::Role::Named';
 
+
+sub add_column
 {
-    my $spec = (COLUMN_TYPE);
-    sub add_column
-    {
-        my $self = shift;
-        my ($col) = validate_pos( @_, $spec );
+    my $self = shift;
+    my ($col) = pos_validated_list( \@_, { isa => 'Fey::Column' } );
 
-        my $name = $col->name();
-        param_error "The table already has a column named $name."
-            if $self->column($name);
+    my $name = $col->name();
+    param_error "The table already has a column named $name."
+        if $self->column($name);
 
-        $self->_columns()->add($col);
+    $self->_columns()->add($col);
 
-        $col->_set_table($self);
+    $col->_set_table($self);
 
-        return $self;
-    }
+    return $self;
 }
 
+sub remove_column
 {
-    my $spec = (COLUMN_OR_NAME_TYPE);
-    sub remove_column
+    my $self = shift;
+    my ($col) = pos_validated_list( \@_, { isa => 'Fey.Type.ColumnOrName' } );
+
+    $col = $self->column($col)
+        unless blessed $col;
+
+    if ( my $schema = $self->schema() )
     {
-        my $self = shift;
-        my ($col) = validate_pos( @_, $spec );
-
-        $col = $self->column($col)
-            unless blessed $col;
-
-        if ( my $schema = $self->schema() )
+        for my $fk ( grep { $_->has_column($col) }
+                     $schema->foreign_keys_for_table($self) )
         {
-            for my $fk ( grep { $_->has_column($col) }
-                         $schema->foreign_keys_for_table($self) )
-            {
-                $schema->remove_foreign_key($fk);
-            }
+            $schema->remove_foreign_key($fk);
         }
-
-        my $name = $col->name();
-
-        for my $k ( @{ $self->_keys() } )
-        {
-            $self->remove_candidate_key( $k->objects() )
-                if $k->object($name);
-        }
-
-        $self->_columns()->delete($col);
-
-        $col->_clear_table();
-
-        return $self;
     }
+
+    my $name = $col->name();
+
+    for my $k ( @{ $self->_keys() } )
+    {
+        $self->remove_candidate_key( $k->objects() )
+            if $k->object($name);
+    }
+
+    $self->_columns()->delete($col);
+
+    $col->_clear_table();
+
+    return $self;
 }
 
 sub _build_candidate_keys
@@ -166,78 +156,87 @@ sub _build_primary_key
     return $keys->[0] || [];
 }
 
+sub add_candidate_key
 {
-    my $spec = (COLUMN_OR_NAME_TYPE);
-    sub add_candidate_key
+    my $self = shift;
+
+    my $count = @_ ? @_ : 1;
+    my (@cols) =
+        pos_validated_list( \@_,
+                            ( ( { isa => 'Fey.Type.ColumnOrName' } ) x $count ),
+                            MX_PARAMS_VALIDATE_NO_CACHE => 1,
+                          );
+
+    for my $name ( map { blessed $_ ? $_->name() : $_ } @cols )
     {
-        my $self = shift;
-        my (@cols) = validate_pos( @_, ( $spec ) x ( @_ ? @_ : 1 ) );
-
-        for my $name ( map { blessed $_ ? $_->name() : $_ } @cols )
-        {
-            param_error "The column $name is not part of the " . $self->name() . ' table.'
-                unless $self->column($name);
-        }
-
-        $_ = $self->column($_) for grep { ! blessed $_ } @cols;
-
-        return if $self->has_candidate_key(@cols);
-
-        $self->_add_key( Fey::NamedObjectSet->new(@cols) );
-
-        return;
+        param_error "The column $name is not part of the " . $self->name() . ' table.'
+            unless $self->column($name);
     }
+
+    $_ = $self->column($_) for grep { ! blessed $_ } @cols;
+
+    return if $self->has_candidate_key(@cols);
+
+    $self->_add_key( Fey::NamedObjectSet->new(@cols) );
+
+    return;
 }
 
+sub remove_candidate_key
 {
-    my $spec = (COLUMN_OR_NAME_TYPE);
-    sub remove_candidate_key
+    my $self = shift;
+
+    my $count = @_ ? @_ : 1;
+    my (@cols) =
+        pos_validated_list( \@_,
+                            ( ( { isa => 'Fey.Type.ColumnOrName' } ) x $count ),
+                            MX_PARAMS_VALIDATE_NO_CACHE => 1,
+                          );
+
+    for my $name ( map { blessed $_ ? $_->name() : $_ } @cols )
     {
-        my $self = shift;
-        my (@cols) = validate_pos( @_, ( $spec ) x ( @_ ? @_ : 1 ) );
-
-        for my $name ( map { blessed $_ ? $_->name() : $_ } @cols )
-        {
-            param_error "The column $name is not part of the " . $self->name() . ' table.'
-                unless $self->column($name);
-        }
-
-        $_ = $self->column($_) for grep { ! blessed $_ } @cols;
-
-        my $set = Fey::NamedObjectSet->new(@cols);
-
-        my $idx = first_index { $_->is_same_as($set) } @{ $self->_keys() };
-
-        $self->_delete_key( $idx, 1 )
-            if $idx >= 0;
-
-        return;
+        param_error "The column $name is not part of the " . $self->name() . ' table.'
+            unless $self->column($name);
     }
+
+    $_ = $self->column($_) for grep { ! blessed $_ } @cols;
+
+    my $set = Fey::NamedObjectSet->new(@cols);
+
+    my $idx = first_index { $_->is_same_as($set) } @{ $self->_keys() };
+
+    $self->_delete_key( $idx, 1 )
+        if $idx >= 0;
+
+    return;
 }
 
+sub has_candidate_key
 {
-    my $spec = (COLUMN_OR_NAME_TYPE);
-    sub has_candidate_key
+    my $self = shift;
+
+    my $count = @_ ? @_ : 1;
+    my (@cols) =
+        pos_validated_list( \@_,
+                            ( ( { isa => 'Fey.Type.ColumnOrName' } ) x $count ),
+                            MX_PARAMS_VALIDATE_NO_CACHE => 1,
+                          );
+
+    for my $name ( map { blessed $_ ? $_->name() : $_ } @cols )
     {
-        my $self = shift;
-        my (@cols) = validate_pos( @_, ( $spec ) x ( @_ ? @_ : 1 ) );
-
-        for my $name ( map { blessed $_ ? $_->name() : $_ } @cols )
-        {
-            param_error "The column $name is not part of the " . $self->name() . ' table.'
-                unless $self->column($name);
-        }
-
-        $_ = $self->column($_) for grep { ! blessed $_ } @cols;
-
-        my $set = Fey::NamedObjectSet->new(@cols);
-
-        return 1 if
-            any { $_->is_same_as($set) }
-            @{ $self->_keys() };
-
-        return 0;
+        param_error "The column $name is not part of the " . $self->name() . ' table.'
+            unless $self->column($name);
     }
+
+    $_ = $self->column($_) for grep { ! blessed $_ } @cols;
+
+    my $set = Fey::NamedObjectSet->new(@cols);
+
+    return 1 if
+        any { $_->is_same_as($set) }
+        @{ $self->_keys() };
+
+    return 0;
 }
 
 sub alias

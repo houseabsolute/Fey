@@ -3,9 +3,8 @@ package Fey::Column::Alias;
 use strict;
 use warnings;
 
-use Fey::Exceptions qw( object_state_error );
-
 use Fey::Column;
+use Fey::Exceptions qw( object_state_error );
 use Fey::Table;
 use Fey::Table::Alias;
 use Fey::Types;
@@ -35,6 +34,8 @@ has 'alias_name' =>
       isa        => 'Str',
       lazy_build => 1,
     );
+
+with 'Fey::Role::Named';
 
 
 {

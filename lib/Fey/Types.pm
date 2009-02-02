@@ -4,6 +4,8 @@ use strict;
 use warnings;
 
 use List::AllUtils qw( all );
+use Scalar::Util qw( blessed );
+
 use Moose::Util::TypeConstraints;
 
 
@@ -66,4 +68,24 @@ coerce 'Fey.Type.FunctionArg'
         => via { [ map { $constraint->coerce($_) } @{$_} ] };
 }
 
+for my $thing ( qw( Table Column ) )
+{
+    my $class = 'Fey::' . $thing;
+
+    subtype 'Fey.Type.' . $thing . 'OrName'
+        => as 'Item'
+        => where { return unless defined $_;
+                   return 1 unless blessed $_;
+                   return $_->isa($class) };
+
+    subtype 'Fey.Type.' . $thing . 'LikeOrName'
+        => as 'Item'
+        => where { return unless defined $_;
+                   return 1 unless blessed $_;
+                   return unless $_->can('does');
+                   return $_->does( 'Fey::Role::' . $thing . 'Like' )  };
+}
+
 no Moose::Util::TypeConstraints;
+
+1;

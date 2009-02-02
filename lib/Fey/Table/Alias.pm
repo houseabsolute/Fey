@@ -4,15 +4,11 @@ use strict;
 use warnings;
 
 use Fey::Exceptions qw(param_error);
-use Fey::Validate
-    qw( validate validate_pos
-        SCALAR_TYPE
-        TABLE_TYPE );
-
 use Fey::Table;
 use Fey::Types;
 
 use Moose;
+use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
@@ -36,6 +32,8 @@ has 'alias_name' =>
       lazy_build => 1,
     );
 
+with 'Fey::Role::Named';
+
 
 {
     my %Numbers;
@@ -50,24 +48,21 @@ has 'alias_name' =>
     }
 }
 
+sub column
 {
-    my $spec = (SCALAR_TYPE);
-    sub column
-    {
-        my $self = shift;
-        my ($name) = validate_pos( @_, $spec );
+    my $self = shift;
+    my ($name) = pos_validated_list( \@_, { isa => 'Str' } );
 
-        return $self->{columns}{$name}
-            if $self->{columns}{$name};
+    return $self->{columns}{$name}
+        if $self->{columns}{$name};
 
-        my $col = $self->table()->column($name)
-            or return;
+    my $col = $self->table()->column($name)
+        or return;
 
-        my $clone = $col->_clone();
-        $clone->_set_table($self);
+    my $clone = $col->_clone();
+    $clone->_set_table($self);
 
-        return $self->{columns}{$name} = $clone;
-    }
+    return $self->{columns}{$name} = $clone;
 }
 
 sub columns

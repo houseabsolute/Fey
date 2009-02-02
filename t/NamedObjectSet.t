@@ -11,19 +11,19 @@ use Fey::NamedObjectSet;
     ok( $set, 'made a named object set object' );
 
     eval { $set->add(1) };
-    like( $@, qr/was a 'scalar'/,
+    like( $@, qr/\QParameter #1 ("1")/,
           'cannot add an integer to a NamedObjectSet' );
 
     eval { $set->add( NoName->new() ) };
-    like( $@, qr/does not have the method: 'name'/,
+    like( $@, qr/\QParameter #1/,
           'cannot add a NoName object to a NamedObjectSet');
 }
 
 {
     my $set = Fey::NamedObjectSet->new();
 
-    my $bob  = Name->new('bob');
-    my $faye = Name->new('faye');
+    my $bob  = Name->new( name => 'bob' );
+    my $faye = Name->new( name => 'faye' );
 
     eval { $set->add() };
     like( $@, qr/0 parameters were passed/,
@@ -75,8 +75,8 @@ use Fey::NamedObjectSet;
 }
 
 {
-    my $bob  = Name->new('bob');
-    my $faye = Name->new('faye');
+    my $bob  = Name->new( name => 'bob' );
+    my $faye = Name->new( name => 'faye' );
 
     my $set1 = Fey::NamedObjectSet->new( $bob, $faye );
 
@@ -94,11 +94,14 @@ sub new { return bless {}, shift }
 
 package Name;
 
-sub new 
+use Moose;
+
+BEGIN
 {
-    my $class = shift;
+    has 'name' =>
+        ( is  => 'ro',
+          isa => 'Str',
+        );
 
-    return bless { name => shift }, $class;
+    with 'Fey::Role::Named';
 }
-
-sub name { $_[0]->{name} }
