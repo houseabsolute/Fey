@@ -22,12 +22,13 @@ has 'name' =>
     );
 
 has '_tables' =>
-    ( is      => 'ro',
-      isa     => 'Fey::NamedObjectSet',
-      default => sub { return Fey::NamedObjectSet->new() },
-      handles => { tables => 'objects',
-                   table  => 'object',
-                 },
+    ( is       => 'ro',
+      isa      => 'Fey::NamedObjectSet',
+      default  => sub { return Fey::NamedObjectSet->new() },
+      handles  => { tables => 'objects',
+                    table  => 'object',
+                  },
+      init_arg => undef,
     );
 
 
