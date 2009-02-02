@@ -31,6 +31,13 @@ has '_tables' =>
       init_arg => undef,
     );
 
+has '_fks' =>
+    ( is       => 'ro',
+      isa      => 'HashRef',
+      default  => sub { {} },
+      init_arg => undef,
+    );
+
 
 sub add_table
 {
@@ -79,14 +86,14 @@ sub add_foreign_key
 
     for my $col_name ( map { $_->name() } @{ $fk->source_columns() } )
     {
-        $self->{fk}{$source_table_name}{$col_name}{$fk_id} = $fk;
+        $self->_fks()->{$source_table_name}{$col_name}{$fk_id} = $fk;
     }
 
     my $target_table_name = $fk->target_table()->name();
 
     for my $col_name ( map { $_->name() } @{ $fk->target_columns() } )
     {
-        $self->{fk}{$target_table_name}{$col_name}{$fk_id} = $fk;
+        $self->_fks()->{$target_table_name}{$col_name}{$fk_id} = $fk;
     }
 
     return $self;
@@ -102,13 +109,13 @@ sub remove_foreign_key
     my $source_table_name = $fk->source_table()->name();
     for my $col_name ( map { $_->name() } @{ $fk->source_columns() } )
     {
-        delete $self->{fk}{$source_table_name}{$col_name}{$fk_id};
+        delete $self->_fks()->{$source_table_name}{$col_name}{$fk_id};
     }
 
     my $target_table_name = $fk->target_table()->name();
     for my $col_name ( map { $_->name() } @{ $fk->target_columns() } )
     {
-        delete $self->{fk}{$target_table_name}{$col_name}{$fk_id};
+        delete $self->_fks()->{$target_table_name}{$col_name}{$fk_id};
     }
 
     return $self;
@@ -123,8 +130,8 @@ sub foreign_keys_for_table
 
     my %fks =
         ( map { $_->id() => $_ }
-          map { values %{ $self->{fk}{$name}{$_} } }
-          keys %{ $self->{fk}{$name} || {} }
+          map { values %{ $self->_fks()->{$name}{$_} } }
+          keys %{ $self->_fks()->{$name} || {} }
         );
 
     return values %fks;
@@ -156,8 +163,8 @@ sub foreign_keys_between_tables
     my %fks =
         ( map { $_->id() => $_ }
           grep { $_->has_tables( $name1, $name2 ) }
-          map { values %{ $self->{fk}{$name1}{$_} } }
-          keys %{ $self->{fk}{$name1} || {} }
+          map { values %{ $self->_fks()->{$name1}{$_} } }
+          keys %{ $self->_fks()->{$name1} || {} }
         );
 
     return values %fks
