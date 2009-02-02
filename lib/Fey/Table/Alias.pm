@@ -8,6 +8,7 @@ use Fey::Table;
 use Fey::Types;
 
 use Moose;
+use MooseX::AttributeHelpers;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
@@ -32,6 +33,18 @@ has 'alias_name' =>
       lazy_build => 1,
     );
 
+has '_columns' =>
+    ( metaclass => 'Collection::Hash',
+      is        => 'ro',
+      isa       => 'HashRef[Fey::Column]',
+      default   => sub { {} },
+      provides  => { 'get'    => '_get_column',
+                     'set'    => '_set_column',
+                     'exists' => '_has_column',
+                   },
+      init_arg  => undef,
+    );
+
 with 'Fey::Role::Named';
 
 
@@ -53,8 +66,8 @@ sub column
     my $self = shift;
     my ($name) = pos_validated_list( \@_, { isa => 'Str' } );
 
-    return $self->{columns}{$name}
-        if $self->{columns}{$name};
+    return $self->_get_column($name)
+        if $self->_has_column($name);
 
     my $col = $self->table()->column($name)
         or return;
@@ -62,7 +75,9 @@ sub column
     my $clone = $col->_clone();
     $clone->_set_table($self);
 
-    return $self->{columns}{$name} = $clone;
+    $self->_set_column( $name => $clone );
+
+    return $clone;
 }
 
 sub columns
