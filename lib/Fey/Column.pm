@@ -75,11 +75,12 @@ has default =>
     );
 
 has 'table' =>
-    ( is       => 'rw',
-      does     =>  'Fey::Role::TableLike',
-      weak_ref => 1,
-      writer   => '_set_table',
-      clearer  => '_clear_table',
+    ( is        => 'rw',
+      does      =>  'Fey::Role::TableLike',
+      weak_ref  => 1,
+      predicate => 'has_table',
+      writer    => '_set_table',
+      clearer   => '_clear_table',
     );
 
 after '_set_table', '_clear_table' =>
