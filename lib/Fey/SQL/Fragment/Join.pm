@@ -4,64 +4,100 @@ use strict;
 use warnings;
 
 use Fey::FakeDBI;
+use Fey::Types;
 use List::AllUtils qw( pairwise );
 
-use constant TABLE1 => 0;
-use constant TABLE2 => 1;
-use constant FK     => 2;
-use constant OUTER  => 3;
-use constant WHERE  => 4;
+use Moose;
 
-sub new
-{
-    my $class = shift;
+has '_table1' =>
+    ( is       => 'ro',
+      does     => 'Fey::Role::TableLike',
+      required => 1,
+      init_arg => 'table1',
+    );
 
-    # REVIEW - should we do some parameter validation here?
+has '_table2' =>
+    ( is        => 'ro',
+      does      => 'Fey::Role::TableLike',
+      predicate => '_has_table2',
+      init_arg  => 'table2',
+    );
 
-    my $self = bless \@_, $class;
+has '_fk' =>
+    ( is       => 'ro',
+      isa      => 'Fey::FK',
+      init_arg => 'fk',
+    );
 
-    # Make it '' to avoid undef comparison later in id().
-    $self->[OUTER] = ''
-        unless $self->[OUTER];
+has '_outer_type' =>
+    ( is        => 'ro',
+      isa       => 'Fey.Type.OuterJoinType',
+      predicate => '_has_outer_type',
+      init_arg  => 'outer_type',
+    );
 
-    return $self;
-}
+has '_where' =>
+    ( is        => 'ro',
+      isa       => 'Fey::SQL::Where',
+      predicate => '_has_where',
+      init_arg  => 'where',
+    );
+
 
 sub id
 {
+    my $self = shift;
+
     # This is a rather special case, and handling it separately makes
     # the rest of this method simpler.
-    return $_[0]->[TABLE1]->id()
-        unless $_[0]->[TABLE2];
+    return $self->_table1()->id()
+        unless $self->_has_table2();
 
-    my ( $t1, $t2 ) =
-        ( $_[0]->[OUTER] ne 'full'
-          ? @{ $_[0] }[ TABLE1, TABLE2 ]
-          : ( sort { $a->name() cmp $b->name() }
-              @{ $_[0] }[ TABLE1, TABLE2 ] )
-        );
+    my @tables = $self->tables();
+    @tables = sort { $a->name() cmp $b->name() } @tables
+        unless $self->_is_left_or_right_outer_join();
 
-    my @outer = $_[0]->[OUTER] ? $_[0]->[OUTER] : ();
+    my @outer;
+    @outer = $self->_outer_type() if $self->_has_outer_type();
 
-    my @where = $_[0]->[WHERE] ? $_[0]->[WHERE]->where_clause( 'Fey::FakeDBI', 'no WHERE' ) : ();
+    my @where;
+    @where = $self->_where()->where_clause( 'Fey::FakeDBI', 'no WHERE' )
+        if $self->_has_where();
 
     return
         ( join "\0",
           @outer,
-          $t1->id(),
-          $t2->id(),
-          $_[0]->[FK]->id(),
+          ( map { $_->id() } @tables ),
+          $self->_fk()->id(),
           @where,
         );
 }
 
+sub _is_left_or_right_outer_join
+{
+    my $self = shift;
+
+    return $self->_has_outer_type() && $self->_outer_type() =~ /^(?:right|left)$/;
+}
+
+sub tables
+{
+    my $self = shift;
+
+    return grep { defined } ( $self->_table1(), $self->_table2() );
+}
+
 sub sql_with_alias
 {
-    return $_[0][TABLE1]->sql_with_alias( $_[1] )
-        unless $_[0]->[TABLE2];
+    my $self       = shift;
+    my $dbh        = shift;
+    my $joined_ids = shift;
+
+    return $self->_table1()->sql_with_alias( $dbh )
+        unless $self->_has_table2();
 
     my @unseen_tables =
-        grep { ! $_[2]->{ $_->id() } } @{ $_[0] }[ TABLE1, TABLE2 ];
+        grep { ! $joined_ids->{ $_->id() } } $self->tables();
 
     # This is a pathological case, since it means _both_ tables have
     # already been joined as part of the query. Why would you then
@@ -70,11 +106,11 @@ sub sql_with_alias
 
     if ( @unseen_tables == 1 )
     {
-        return $_[0]->_join_one_table( $_[1], @unseen_tables );
+        return $self->_join_one_table( $dbh, @unseen_tables );
     }
     else
     {
-        return $_[0]->_join_both_tables( $_[1] );
+        return $self->_join_both_tables( $dbh );
     }
 }
 
@@ -83,19 +119,21 @@ sub sql_with_alias
 # JOIN a table you've already joined with a normal join previously).
 sub _join_one_table
 {
+    my $self         = shift;
+    my $dbh          = shift;
+    my $unseen_table = shift;
+
     my $join = '';
 
-    if ( $_[0]->[OUTER] )
-    {
-        $join .= uc $_[0]->[OUTER] . ' OUTER';
-    }
+    $join .= uc $self->_outer_type() . ' OUTER'
+        if $self->_has_outer_type();
 
     $join .= q{ } if length $join;
     $join .= 'JOIN ';
-    $join .= $_[2]->sql_with_alias( $_[1] );
+    $join .= $unseen_table->sql_with_alias( $dbh );
 
-    $join .= $_[0]->_on_clause( $_[1] );
-    $join .= $_[0]->_where_clause( $_[1] );
+    $join .= $self->_on_clause( $dbh );
+    $join .= $self->_where_clause( $dbh );
     $join .= ')';
 
     return $join;
@@ -103,18 +141,19 @@ sub _join_one_table
 
 sub _join_both_tables
 {
-    my $join = $_[0]->[TABLE1]->sql_with_alias( $_[1] );
+    my $self = shift;
+    my $dbh  = shift;
 
-    if ( $_[0]->[OUTER] )
-    {
-        $join .= ' ' . uc $_[0]->[OUTER] . ' OUTER';
-    }
+    my $join = $self->_table1()->sql_with_alias( $dbh );
+
+    $join .= q{ } . uc $self->_outer_type() . ' OUTER'
+        if $self->_has_outer_type();
 
     $join .= ' JOIN ';
-    $join .= $_[0]->[TABLE2]->sql_with_alias( $_[1] );
+    $join .= $self->_table2()->sql_with_alias( $dbh );
 
-    $join .= $_[0]->_on_clause( $_[1] );
-    $join .= $_[0]->_where_clause( $_[1] );
+    $join .= $self->_on_clause( $dbh );
+    $join .= $self->_where_clause( $dbh );
     $join .= ')';
 
     return $join;
@@ -122,16 +161,19 @@ sub _join_both_tables
 
 sub _on_clause
 {
+    my $self = shift;
+    my $dbh  = shift;
+
     my $on .= ' ON (';
 
-    my @s = @{ $_[0]->[FK]->source_columns() };
-    my @t = @{ $_[0]->[FK]->target_columns() };
+    my @s = @{ $self->_fk()->source_columns() };
+    my @t = @{ $self->_fk()->target_columns() };
 
     for my $p ( pairwise { [ $a, $b ] } @s, @t )
     {
-        $on .= $p->[0]->sql_or_alias( $_[1] );
+        $on .= $p->[0]->sql_or_alias( $dbh );
         $on .= ' = ';
-        $on .= $p->[1]->sql_or_alias( $_[1] );
+        $on .= $p->[1]->sql_or_alias( $dbh );
     }
 
     return $on;
@@ -139,22 +181,26 @@ sub _on_clause
 
 sub _where_clause
 {
-    return '' unless $_[0]->[WHERE];
+    my $self = shift;
+    my $dbh  = shift;
 
-    return ' AND ' . $_[0]->[WHERE]->where_clause( $_[1], 'no WHERE' );
-}
+    return '' unless $self->_has_where();
 
-sub tables
-{
-    return grep { defined } @{ $_[0] }[ TABLE1, TABLE2 ];
+    return ' AND ' . $self->_where()->where_clause( $dbh, 'no WHERE' );
 }
 
 sub bind_params
 {
-    return unless $_[0]->[WHERE];
+    my $self = shift;
 
-    return $_[0]->[WHERE]->bind_params();
+    return unless $self->_has_where();
+
+    return $self->_where()->bind_params();
 }
+
+no Moose;
+
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

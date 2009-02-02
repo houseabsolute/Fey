@@ -5,13 +5,28 @@ use warnings;
 
 use Moose::Role;
 
-requires 'bind_params';
+has '_bind_params' =>
+    ( metaclass => 'Collection::Array',
+      is        => 'ro',
+      isa       => 'ArrayRef',
+      default   => sub { [] },
+      provides  => { push => '_add_bind_param',
+                   },
+      init_arg  => undef,
+    );
 
 has 'auto_placeholders' =>
     ( is      => 'ro',
       isa     => 'Bool',
       default => 1,
     );
+
+# This needs to be a method and not a provides accessor so it can be
+# excluded by classes which need to exclude it.
+sub bind_params
+{
+    return @{ $_[0]->_bind_params() };
+}
 
 no Moose::Role;
 
@@ -37,6 +52,10 @@ parameters.
 =head1 METHODS
 
 This role provides the following methods:
+
+=head2 $query->bind_params()
+
+Returns the bind params associated with the query.
 
 =head2 $query->auto_placeholders()
 

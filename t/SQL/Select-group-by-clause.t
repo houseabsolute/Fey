@@ -14,7 +14,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 my $dbh = Fey::Test->mock_dbh();
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     eval { $q->group_by() };
     like( $@, qr/0 parameters/,
@@ -22,7 +22,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     $q->group_by( $s->table('User')->column('user_id') );
     is( $q->group_by_clause($dbh), q{GROUP BY "User"."user_id"},
@@ -30,7 +30,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     $q->group_by( $s->table('User')->column('user_id'),
                   $s->table('User')->column('username')
@@ -40,7 +40,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     $q->group_by( $s->table('User')->column('user_id')
                   ->alias( alias_name => 'alias_test' ) );
@@ -50,7 +50,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     my $now = Fey::Literal::Function->new( 'NOW' );
     $now->_make_alias();
@@ -62,17 +62,17 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     my $now = Fey::Literal::Function->new( 'NOW' );
 
     eval { $q->group_by($now) };
-    like( $@, qr/is groupable/,
+    like( $@, qr/\QParameter #1/,
           'cannot group by function with no alias' );
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     my $term = Fey::Literal::Term->new( q{"Foo"::text} );
     $q->group_by($term);

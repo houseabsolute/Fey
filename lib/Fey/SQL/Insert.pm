@@ -3,148 +3,126 @@ package Fey::SQL::Insert;
 use strict;
 use warnings;
 
-use Fey::Validate
-    qw( validate
-        validate_pos
-        SCALAR
-        UNDEF
-        OBJECT
-        DBI_TYPE
-      );
 use Fey::Types;
-
 use overload ();
 use Scalar::Util qw( blessed );
 
 use Moose;
+use MooseX::Params::Validate qw( validated_hash pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
 with 'Fey::Role::SQL::HasBindParams';
 
+has '_into' =>
+    ( is        => 'rw',
+      isa       => 'ArrayRef',
+      init_arg => undef,
+    );
+
+has '_values_spec' =>
+    ( is       => 'rw',
+      isa      => 'HashRef',
+      init_arg => undef,
+    );
+
+has '_values' =>
+    ( metaclass => 'Collection::Array',
+      is        => 'ro',
+      isa       => 'ArrayRef[HashRef]',
+      default   => sub { [] },
+      provides  => { push => '_add_values' },
+      init_arg  => undef,
+    );
 
 sub insert { return $_[0] }
 
+sub into
 {
-    my $spec = { type => OBJECT,
-                 callbacks =>
-                 { 'is a (non-alias) table or column with a table' =>
-                   sub { (    $_[0]->isa('Fey::Table')
-                           && ! $_[0]->is_alias()
-                         )
-                         ||
-                         ( $_[0]->isa('Fey::Column')
-                           && $_[0]->table()
-                           && ! $_[0]->is_alias()
-                           && ! $_[0]->table()->is_alias()
-                         )
-                       }
-                 },
-               };
+    my $self = shift;
 
-    my $nullable_col_value_type =
-    { type      => SCALAR|UNDEF|OBJECT,
-      callbacks =>
-      { 'literal, placeholder, scalar, overloaded object, or undef' =>
-        sub {    ! blessed $_[0]
-              || $_[0]->isa('Fey::Literal')
-              || $_[0]->isa('Fey::Placeholder')
-              || overload::Overloaded( $_[0] ) }
-      },
-    };
+    my $count = @_ ? scalar @_ : 1;
+    my @into = pos_validated_list( \@_,
+                                   ( ( { isa => 'Fey.Type.IntoElement' } ) x $count ),
+                                   MX_PARAMS_VALIDATE_NO_CACHE => 1,
+                                 );
 
-    my $non_nullable_col_value_type =
-        { type      => SCALAR|OBJECT,
-          callbacks =>
-          { 'literal, placeholder,, scalar, or overloaded object' =>
-            sub {    ! blessed $_[0]
-                  || ( $_[0]->isa('Fey::Literal') && ! $_[0]->isa('Fey::Literal::Null') )
-                  || $_[0]->isa('Fey::Placeholder')
-                  || overload::Overloaded( $_[0] ) }
-          },
-        };
-
-    sub into
+    my @cols;
+    for my $elt (@into)
     {
-        my $self = shift;
-        my $count = @_ ? scalar @_ : 1;
-
-        my @cols;
-        for ( validate_pos( @_, ($spec) x $count ) )
-        {
-            push @cols, $_->isa('Fey::Table')
-                ? $_->columns
-                : $_;
-        }
-
-        $self->{columns} = \@cols;
-
-        for my $col ( @{ $self->{columns} } )
-        {
-            $self->{values_spec}{ $col->name() } =
-                $col->is_nullable()
-                ? $nullable_col_value_type
-                : $non_nullable_col_value_type;
-        }
-
-        return $self;
+        push @cols, $elt->isa('Fey::Table')
+            ? $elt->columns
+                : $elt;
     }
+
+    $self->_set_into(\@cols);
+
+    my %spec;
+    for my $col ( @{ $self->_into() } )
+    {
+        $spec{ $col->name() } =
+            $col->is_nullable()
+            ? { isa      => 'Fey.Type.NullableInsertValue' }
+            : { isa      => 'Fey.Type.NonNullableInsertValue' };
+    }
+
+    $self->_set_values_spec(\%spec);
+
+    return $self;
 }
 
+sub values
 {
-    sub values
+    my $self = shift;
+
+    my %vals =
+        validated_hash( \@_,
+                        %{ $self->_values_spec() },
+                        MX_PARAMS_VALIDATE_NO_CACHE => 1
+                      );
+
+    for ( values %vals )
     {
-        my $self = shift;
+        $_ .= ''
+            if blessed $_ && overload::Overloaded($_);
 
-        my %vals = validate( @_, $self->{values_spec} );
-
-        for ( values %vals )
+        if ( ! blessed $_ )
         {
-            $_ .= ''
-                if blessed $_ && overload::Overloaded($_);
-
-            if ( ! blessed $_ )
+            if ( defined $_ && $self->auto_placeholders() )
             {
-                if ( defined $_ && $self->auto_placeholders() )
-                {
-                    push @{ $self->{bind_params} }, $_;
+                $self->_add_bind_param($_);
 
-                    $_ = Fey::Placeholder->new();
-                }
-                else
-                {
-                    $_ = Fey::Literal->new_from_scalar($_);
-                }
+                $_ = Fey::Placeholder->new();
+            }
+            else
+            {
+                $_ = Fey::Literal->new_from_scalar($_);
             }
         }
-
-        push @{ $self->{values} }, \%vals;
-
-        return $self;
     }
+
+    $self->_add_values(\%vals);
+
+    return $self;
 }
 
+sub sql
 {
-    my @spec = ( DBI_TYPE );
+    my $self  = shift;
+    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey.Type.CanQuote' } );
 
-    sub sql
-    {
-        my $self  = shift;
-        my ($dbh) = validate_pos( @_, @spec );
-
-        return ( join ' ',
-                 $self->insert_clause($dbh),
-                 $self->columns_clause($dbh),
-                 $self->values_clause($dbh),
-               );
-    }
+    return ( join ' ',
+             $self->insert_clause($dbh),
+             $self->columns_clause($dbh),
+             $self->values_clause($dbh),
+           );
 }
 
 sub insert_clause
 {
     return
         ( 'INSERT INTO '
-          . $_[1]->quote_identifier( $_[0]->{columns}[0]->table()->name() )
+          . $_[1]->quote_identifier( $_[0]->_into()->[0]->table()->name() )
         );
 }
 
@@ -154,7 +132,7 @@ sub columns_clause
         ( '('
           . ( join ', ',
               map { $_[1]->quote_identifier( $_->name() ) }
-              @{ $_[0]->{columns} }
+              @{ $_[0]->_into() }
             )
           . ')'
         );
@@ -165,15 +143,17 @@ sub values_clause
     my $self = shift;
     my $dbh  = shift;
 
+    my @cols = @{ $self->_into() };
+
     my @v;
-    for my $vals ( @{ $self->{values} } )
+    for my $vals ( @{ $self->_values() } )
     {
         my $v = '(';
 
         $v .=
             ( join ', ',
               map { $vals->{ $_->name() }->sql($dbh) }
-              @{ $self->{columns} }
+              @cols
            );
 
         $v .= ')';
@@ -182,13 +162,6 @@ sub values_clause
     }
 
     return 'VALUES ' . join ',', @v;
-}
-
-sub bind_params
-{
-    my $self = shift;
-
-    return @{ $self->{bind_params} || [] };
 }
 
 no Moose;

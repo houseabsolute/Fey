@@ -5,56 +5,84 @@ use warnings;
 
 use Fey::FakeDBI;
 
-use constant SELECT     => 0;
-use constant ALIAS_NAME => 1;
+use Moose;
 
-sub new
-{
-    my $class  = shift;
-    my $select = shift;
+with 'Fey::Role::Comparable';
 
-    return bless [ $select ], $class;
-}
+has '_select' =>
+    ( is       => 'ro',
+      isa      => 'Fey::SQL::Select',
+      required => 1,
+      init_arg => 'select',
+    );
+
+has 'alias' =>
+    ( is        => 'ro',
+      isa       => 'Str',
+      lazy      => 1,
+      builder   => '_build_alias',
+      predicate => '_has_alias',
+    );
 
 sub id
 {
-    return $_[0]->sql( 'Fey::FakeDBI' );
+    my $self = shift;
+
+    return $self->sql( 'Fey::FakeDBI' );
 }
 
 sub sql_with_alias
 {
+    my $self = shift;
+    my $dbh  = shift;
+
     return
-        (   $_[0]->sql( $_[1] )
+        (   $self->sql( $dbh )
           . ' AS '
-          . $_[0]->_make_alias()
+          . $self->alias()
         );
 }
 
 {
     my $Number = 0;
-    sub _make_alias
+    sub _build_alias
     {
-        $_[0]->[ALIAS_NAME] = 'SUBSELECT' . $Number++;
+        return 'SUBSELECT' . $Number++;
     }
 }
 
-sub sql { '( ' . $_[0][SELECT]->sql( $_[1] ) . ' )' }
+sub sql
+{
+    my $self = shift;
+    my $dbh  = shift;
+
+    return '( ' . $self->_select()->sql( $dbh ) . ' )';
+}
 
 sub sql_or_alias
 {
+    my $self = shift;
+    my $dbh  = shift;
+
     # XXX - I'm not sure that this case is actually possible. A
     # subselect only gets an alias if it's used in the FROM clause. If
     # that's the case, then it should not be re-used elsewhere.
-    return $_[1]->quote_identifier( $_[0]->[ALIAS_NAME] )
-        if $_[0]->[ALIAS_NAME];
+    return $dbh->quote_identifier( $self->alias() )
+        if $self->_has_alias();
 
-    return $_[0]->sql( $_[1] );
+    return $self->sql( $dbh );
 }
 
 sub bind_params
 {
-    return $_[0][SELECT]->bind_params();
+    my $self = shift;
+
+    return $self->_select()->bind_params();
 }
+
+no Moose;
+
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

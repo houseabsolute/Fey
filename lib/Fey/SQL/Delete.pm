@@ -3,67 +3,56 @@ package Fey::SQL::Delete;
 use strict;
 use warnings;
 
-use Fey::Validate
-    qw( validate
-        validate_pos
-        SCALAR
-        UNDEF
-        OBJECT
-        DBI_TYPE
-      );
 use Fey::Types;
-
 use Scalar::Util qw( blessed );
 
 use Moose;
+use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-with 'Fey::Role::SQL::HasBindParams',
-     'Fey::Role::SQL::HasWhereClause',
+with 'Fey::Role::SQL::HasWhereClause',
      'Fey::Role::SQL::HasOrderByClause',
      'Fey::Role::SQL::HasLimitClause';
+
+with 'Fey::Role::SQL::HasBindParams' => { excludes => 'bind_params' };
+
+has '_from' =>
+    ( is       => 'rw',
+      isa      => 'ArrayRef',
+      default  => sub { [] },
+      init_arg => undef,
+    );
 
 
 sub delete { return $_[0] }
 
+sub from
 {
-    my $spec = { type => OBJECT,
-                 callbacks =>
-                 { 'is a (non-alias) table' =>
-                   sub {    $_[0]->isa('Fey::Table')
-                         && ! $_[0]->is_alias() },
-                 },
-               };
+    my $self     = shift;
 
-    sub from
-    {
-        my $self     = shift;
+    my $count = @_ ? @_ : 1;
+    my (@tables) = pos_validated_list( \@_, 
+                                       ( ( { isa => 'Fey::Table' } ) x $count ),
+                                       MX_PARAMS_VALIDATE_NO_CACHE => 1,
+                                     );
 
-        my $count = @_ ? @_ : 1;
-        my (@tables) = validate_pos( @_, ($spec) x $count );
+    $self->_set_from(\@tables);
 
-        $self->{tables} = \@tables;
-
-        return $self;
-    }
+    return $self;
 }
 
+sub sql
 {
-    my @spec = ( DBI_TYPE );
+    my $self  = shift;
+    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey.Type.CanQuote' } );
 
-    sub sql
-    {
-        my $self  = shift;
-        my ($dbh) = validate_pos( @_, @spec );
-
-        return ( join ' ',
-                 $self->delete_clause($dbh),
-                 $self->where_clause($dbh),
-                 $self->order_by_clause($dbh),
-                 $self->limit_clause($dbh),
-               );
-    }
+    return ( join ' ',
+             $self->delete_clause($dbh),
+             $self->where_clause($dbh),
+             $self->order_by_clause($dbh),
+             $self->limit_clause($dbh),
+           );
 }
 
 sub delete_clause
@@ -75,15 +64,8 @@ sub _tables_subclause
 {
     return ( join ', ',
              map { $_[1]->quote_identifier( $_->name() ) }
-             @{ $_[0]->{tables} }
+             @{ $_[0]->_from() }
            );
-}
-
-sub bind_params
-{
-    my $self = shift;
-
-    return $self->_where_clause_bind_params();
 }
 
 no Moose;

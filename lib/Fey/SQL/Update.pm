@@ -4,152 +4,124 @@ use strict;
 use warnings;
 
 use Fey::Exceptions qw( param_error );
-use Fey::Validate
-    qw( validate_pos
-        SCALAR
-        UNDEF
-        OBJECT
-        DBI_TYPE
-      );
-
 use Fey::Literal;
 use Fey::Types;
 use overload ();
 use Scalar::Util qw( blessed );
 
 use Moose;
+use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-with 'Fey::Role::SQL::HasBindParams',
-     'Fey::Role::SQL::HasWhereClause',
-     'Fey::Role::SQL::HasOrderByClause',
+with 'Fey::Role::SQL::HasOrderByClause',
      'Fey::Role::SQL::HasLimitClause';
 
+with 'Fey::Role::SQL::HasWhereClause'
+          => { excludes => 'bind_params',
+               alias    => { bind_params => '_where_clause_bind_params' },
+             };
 
+with 'Fey::Role::SQL::HasBindParams'
+          => { excludes => 'bind_params',
+               alias    => { bind_params => '_update_bind_params' },
+             };
+
+has '_update' =>
+    ( is       => 'rw',
+      isa      => 'ArrayRef',
+      default  => sub { [] },
+      init_arg => undef,
+    );
+
+has '_set_pairs' =>
+    ( metaclass => 'Collection::Array',
+      is        => 'ro',
+      isa       => 'ArrayRef[ArrayRef]',
+      default   => sub { [] },
+      provides  => { push => '_add_set_pair',
+                   },
+      init_arg  => undef,
+    );
+
+
+sub update
 {
-    my $spec = { type => OBJECT,
-                 callbacks =>
-                 { 'is a (non-alias) table' =>
-                   sub {    $_[0]->isa('Fey::Table')
-                         && ! $_[0]->is_alias() },
-                 },
-               };
+    my $self = shift;
 
-    sub update
-    {
-        my $self = shift;
+    my $count = @_ ? @_ : 1;
+    my (@tables) = pos_validated_list( \@_,
+                                       ( ( { isa => 'Fey::Table' } ) x $count ),
+                                       MX_PARAMS_VALIDATE_NO_CACHE => 1,
+                                     );
 
-        my $count = @_ ? @_ : 1;
-        my (@tables) = validate_pos( @_, ($spec) x $count );
+    $self->_set_update(\@tables);
 
-        $self->{tables} = \@tables;
-
-        return $self;
-    }
+    return $self;
 }
 
+sub set
 {
-    my $column_spec = { type => OBJECT,
-                        callbacks =>
-                        { 'is a (non-alias) column' =>
-                          sub {    $_[0]->isa('Fey::Column')
-                                && $_[0]->table()
-                                && ! $_[0]->is_alias() },
-                        },
-                      };
+    my $self = shift;
 
-    my $nullable_col_value_type =
-        { type      => SCALAR|UNDEF|OBJECT,
-          callbacks =>
-          { 'literal, placeholder, column, overloaded object, scalar, or undef' =>
-            sub {    ! blessed $_[0]
-                  || ( $_[0]->isa('Fey::Column') && ! $_[0]->is_alias() )
-                  || $_[0]->isa('Fey::Literal')
-                  || $_[0]->isa('Fey::Placeholder')
-                  || defined $_[0] && overload::Overloaded( $_[0] ) },
-          },
-        };
-
-    my $non_nullable_col_value_type =
-        { type      => SCALAR|OBJECT,
-          callbacks =>
-          { 'literal, placeholder, column, overloaded object, or scalar' =>
-            sub {    ! blessed $_[0]
-                  || ( $_[0]->isa('Fey::Column') && ! $_[0]->is_alias() )
-                  || ( $_[0]->isa('Fey::Literal') && ! $_[0]->isa('Fey::Literal::Null') )
-                  || $_[0]->isa('Fey::Placeholder')
-                  || overload::Overloaded( $_[0] ) },
-          },
-        };
-
-    sub set
+    if ( ! @_ || @_ % 2 )
     {
-        my $self = shift;
+        my $count = @_;
+        param_error
+            "The set method expects a list of paired column objects and values but you passed $count parameters";
+    }
 
-        if ( ! @_ || @_ % 2 )
+    my @spec;
+    for ( my $x = 0; $x < @_; $x += 2 )
+    {
+        push @spec, { isa => 'Fey.Type.ColumnWithTable' };
+        push @spec,
+                blessed $_[$x] && $_[$x]->is_nullable()
+                ? { isa => 'Fey.Type.NullableUpdateValue' }
+                : { isa => 'Fey.Type.NonNullableUpdateValue' };
+    }
+
+    my @set = pos_validated_list( \@_, @spec, MX_PARAMS_VALIDATE_NO_CACHE => 1 );
+
+    for ( my $x = 0; $x < @_; $x += 2 )
+    {
+        my $val = $_[ $x + 1 ];
+
+        $val .= ''
+            if blessed $val && overload::Overloaded($val);
+
+        if ( ! blessed $val )
         {
-            my $count = @_;
-            param_error
-                "The set method expects a list of paired column objects and values but you passed $count parameters";
-        }
-
-        my @spec;
-        for ( my $x = 0; $x < @_; $x += 2 )
-        {
-            push @spec, $column_spec;
-            push @spec,
-                ref $_[$x] && $_[$x]->is_nullable()
-                ? $nullable_col_value_type
-                : $non_nullable_col_value_type;
-        }
-
-        validate_pos( @_, @spec );
-
-        for ( my $x = 0; $x < @_; $x += 2 )
-        {
-            my $val = $_[ $x + 1 ];
-
-            $val .= ''
-                if blessed $val && overload::Overloaded($val);
-
-            if ( ! blessed $val )
+            if ( defined $val && $self->auto_placeholders() )
             {
-                if ( defined $val && $self->auto_placeholders() )
-                {
-                    push @{ $self->{bind_params} }, $val;
+                $self->_add_bind_param($val);
 
-                    $val = Fey::Placeholder->new();
-                }
-                else
-                {
-                    $val = Fey::Literal->new_from_scalar($val );
-                }
+                $val = Fey::Placeholder->new();
             }
-
-            push @{ $self->{set} }, [ $_[$x], $val ];
+            else
+            {
+                $val = Fey::Literal->new_from_scalar($val );
+            }
         }
 
-        return $self;
+        $self->_add_set_pair( [ $_[$x], $val ] );
     }
+
+    return $self;
 }
 
+sub sql
 {
-    my @spec = ( DBI_TYPE );
+    my $self  = shift;
+    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey.Type.CanQuote' } );
 
-    sub sql
-    {
-        my $self  = shift;
-        my ($dbh) = validate_pos( @_, @spec );
-
-        return ( join ' ',
-                 $self->update_clause($dbh),
-                 $self->set_clause($dbh),
-                 $self->where_clause($dbh),
-                 $self->order_by_clause($dbh),
-                 $self->limit_clause($dbh),
-               );
-    }
+    return ( join ' ',
+             $self->update_clause($dbh),
+             $self->set_clause($dbh),
+             $self->where_clause($dbh),
+             $self->order_by_clause($dbh),
+             $self->limit_clause($dbh),
+           );
 }
 
 sub update_clause
@@ -161,7 +133,7 @@ sub _tables_subclause
 {
     return ( join ', ',
              map { $_[1]->quote_identifier( $_->name() ) }
-             @{ $_[0]->{tables} }
+             @{ $_[0]->_update() }
            );
 }
 
@@ -173,14 +145,14 @@ sub set_clause
     # SQLite objects when the table name is provided ("User"."email")
     # on the LHS of the set. I'm hoping that a DBMS which allows a
     # multi-table update also allows the table name in the LHS.
-    my $col_quote = @{ $self->{tables} } > 1 ? '_name_and_table' : '_name';
+    my $col_quote = @{ $self->_update() } > 1 ? '_name_and_table' : '_name';
 
     return ( 'SET '
              . ( join ', ',
                  map {   $self->$col_quote( $_->[0], $dbh )
                        . ' = '
                        . $_->[1]->sql( $dbh ) }
-                 @{ $self->{set} }
+                 @{ $self->_set_pairs() }
                )
            );
 }
@@ -199,7 +171,7 @@ sub bind_params
 {
     my $self = shift;
 
-    return ( @{ $self->{bind_params} || [] },
+    return ( $self->_update_bind_params(),
              $self->_where_clause_bind_params(),
            );
 }

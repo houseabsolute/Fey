@@ -3,40 +3,51 @@ package Fey::Role::SQL::HasLimitClause;
 use strict;
 use warnings;
 
-use Fey::Validate
-    qw( validate_pos
-        POS_INTEGER_TYPE
-        POS_OR_ZERO_INTEGER_TYPE
-      );
-
 use Scalar::Util qw( blessed );
 
 use Moose::Role;
+use MooseX::Params::Validate qw( pos_validated_list );
+
+has '_limit' =>
+    ( is        => 'rw',
+      writer    => '_set_limit',
+      predicate => '_has_limit',
+    );
+
+has '_offset' =>
+    ( is        => 'rw',
+      writer    => '_set_offset',
+      predicate => '_has_offset',
+    );
 
 
+sub limit
 {
-    my @spec = ( POS_INTEGER_TYPE, POS_OR_ZERO_INTEGER_TYPE( optional => 1 ) );
-    sub limit
-    {
-        my $self = shift;
-        my @limit = validate_pos( @_, @spec );
+    my $self = shift;
+    my ( $limit, $offset ) =
+        pos_validated_list( \@_,
+                            { isa      => 'Fey.Type.PosInteger' },
+                            { isa      => 'Fey.Type.PosOrZeroInteger',
+                              optional => 1,
+                            },
+                          );
 
-        $self->{limit}{number} = $limit[0];
-        $self->{limit}{offset} = $limit[1];
+    $self->_set_limit($limit);
+    $self->_set_offset($offset)
+        if defined $offset;
 
-        return $self;
-    }
+    return $self;
 }
 
 sub limit_clause
 {
     my $self = shift;
 
-    return unless $self->{limit}{number};
+    return unless $self->_has_limit();
 
-    my $sql = 'LIMIT ' . $self->{limit}{number};
-    $sql .= ' OFFSET ' . $self->{limit}{offset}
-        if $self->{limit}{offset};
+    my $sql = 'LIMIT ' . $self->_limit();
+    $sql .= ' OFFSET ' . $self->_offset()
+        if $self->_has_offset();
 
     return $sql;
 }

@@ -12,8 +12,17 @@ use Fey::SQL::Fragment::Where::SubgroupEnd;
 
 use Moose::Role;
 
-# doesn't work with attributes
-#requires 'use_placeholders';
+has '_where' =>
+    ( metaclass => 'Collection::Array',
+      is        => 'ro',
+      isa       => 'ArrayRef',
+      default   => sub { [] },
+      provides  => { push  => '_add_where_element',
+                     empty => '_has_where_elements',
+                     last  => '_last_where_element',
+                   },
+      init_arg  => undef,
+    );
 
 
 sub where
@@ -60,8 +69,9 @@ sub and
 
         $self->_add_and_if_needed($key);
 
-        push @{ $self->{$key} },
-            Fey::SQL::Fragment::Where::Comparison->new( $self->auto_placeholders(), @_ );
+        my $add_method = '_add_' . $key . '_element';
+        $self->$add_method
+            ( Fey::SQL::Fragment::Where::Comparison->new( $self->auto_placeholders(), @_ ) );
     }
 }
 
@@ -70,10 +80,15 @@ sub _add_and_if_needed
     my $self = shift;
     my $key  = shift;
 
-    return unless @{ $self->{$key} || [] };
+    my $has_method = '_has_' . $key . '_elements';
 
-    return if $self->{$key}[-1]->isa('Fey::SQL::Fragment::Where::Boolean');
-    return if $self->{$key}[-1]->isa('Fey::SQL::Fragment::Where::SubgroupStart');
+    return unless $self->$has_method();
+
+    my $last_method = '_last_' . $key . '_element';
+    my $last = $self->$last_method();
+
+    return if $last->isa('Fey::SQL::Fragment::Where::Boolean');
+    return if $last->isa('Fey::SQL::Fragment::Where::SubgroupStart');
 
     $self->_and($key);
 }
@@ -83,8 +98,9 @@ sub _and
     my $self = shift;
     my $key  = shift;
 
-    push @{ $self->{$key} },
-        Fey::SQL::Fragment::Where::Boolean->new( 'AND' );
+    my $add_method = '_add_' . $key . '_element';
+    $self->$add_method
+        ( Fey::SQL::Fragment::Where::Boolean->new( comparison => 'AND' ) );
 
     return $self;
 }
@@ -94,8 +110,9 @@ sub _or
     my $self = shift;
     my $key  = shift;
 
-    push @{ $self->{$key} },
-        Fey::SQL::Fragment::Where::Boolean->new( 'OR' );
+    my $add_method = '_add_' . $key . '_element';
+    $self->$add_method
+        ( Fey::SQL::Fragment::Where::Boolean->new( comparison => 'OR' ) );
 
     return $self;
 }
@@ -107,8 +124,9 @@ sub _subgroup_start
 
     $self->_add_and_if_needed($key);
 
-    push @{ $self->{$key} },
-        Fey::SQL::Fragment::Where::SubgroupStart->new();
+    my $add_method = '_add_' . $key . '_element';
+    $self->$add_method
+        ( Fey::SQL::Fragment::Where::SubgroupStart->new() );
 
     return $self;
 }
@@ -118,34 +136,41 @@ sub _subgroup_end
     my $self = shift;
     my $key  = shift;
 
-    push @{ $self->{$key} },
-        Fey::SQL::Fragment::Where::SubgroupEnd->new();
+    my $add_method = '_add_' . $key . '_element';
+    $self->$add_method
+        ( Fey::SQL::Fragment::Where::SubgroupEnd->new() );
 
     return $self;
 }
 
 sub where_clause
 {
-    return unless @{ $_[0]->{where} || [] };
+    my $self       = shift;
+    my $dbh        = shift;
+    my $skip_where = shift;
+
+    return unless $self->_has_where_elements();
 
     my $sql = '';
     $sql = 'WHERE '
-        unless $_[2];
+        unless $skip_where;
 
     return ( $sql
              . ( join ' ',
-                 map { $_->sql( $_[1] ) }
-                 @{ $_[0]->{where} }
+                 map { $_->sql($dbh) }
+                 @{ $self->_where() }
                )
            );
 }
 
-sub _where_clause_bind_params
+sub bind_params
 {
+    my $self = shift;
+
     return
         ( map { $_->bind_params() }
           grep { $_->can('bind_params') }
-          @{ $_[0]->{where} }
+          @{ $self->_where() }
         );
 }
 

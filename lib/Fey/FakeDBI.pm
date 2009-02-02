@@ -7,11 +7,6 @@ use warnings;
 # may not be quoting properly for a given DBMS, we will still generate
 # unique ids, and that's all that matters.
 
-sub isa
-{
-    return 1 if $_[1] eq 'DBI::db';
-}
-
 sub quote_identifier
 {
     shift;

@@ -9,15 +9,9 @@ use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-with 'Fey::Role::SQL::HasBindParams',
-     'Fey::Role::SQL::HasWhereClause';
+with 'Fey::Role::SQL::HasWhereClause';
 
-sub bind_params
-{
-    my $self = shift;
-
-    return $self->_where_clause_bind_params();
-}
+with 'Fey::Role::SQL::HasBindParams' => { excludes => 'bind_params' };
 
 no Moose;
 

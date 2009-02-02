@@ -95,7 +95,7 @@ $s->table('User')->add_column($size);
               $s->table('User')->column('username') );
 
     eval { $q->values( user_id => 1, username => undef ) };
-    like( $@, qr/was an 'undef'/,
+    like( $@, qr/\QThe 'username' parameter (undef)/,
           'cannot pass undef for non-nullable column' );
 }
 

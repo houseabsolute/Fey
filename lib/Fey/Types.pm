@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use List::AllUtils qw( all );
+use overload ();
 use Scalar::Util qw( blessed );
 
 use Moose::Util::TypeConstraints;
@@ -85,6 +86,107 @@ for my $thing ( qw( Table Column ) )
                    return unless $_->can('does');
                    return $_->does( 'Fey::Role::' . $thing . 'Like' )  };
 }
+
+subtype 'Fey.Type.SelectElement'
+    => as 'Item'
+    => where {    ! blessed $_[0]
+               || $_[0]->isa('Fey::Table')
+               || $_[0]->isa('Fey::Table::Alias')
+               || (    $_[0]->can('is_selectable')
+                    && $_[0]->is_selectable() );
+             };
+
+subtype 'Fey.Type.ColumnWithTable'
+    => as 'Object'
+    => where {    $_[0]->isa('Fey::Column')
+               && $_[0]->has_table() };
+
+subtype 'Fey.Type.IntoElement'
+    => as 'Object',
+    => where { return
+                   $_->isa('Fey::Table')
+                   ||
+                   (    $_->isa('Fey::Column')
+                     && $_->table()
+                     && ! $_->table()->is_alias()
+                   );
+             };
+
+subtype 'Fey.Type.NullableInsertValue'
+    => as 'Item'
+    => where {    ! blessed $_
+               || $_->isa('Fey::Literal')
+               || $_->isa('Fey::Placeholder')
+               || overload::Overloaded( $_ )
+             };
+
+subtype 'Fey.Type.NonNullableInsertValue'
+    => as 'Defined'
+    => where {    ! blessed $_
+               || ( $_->isa('Fey::Literal') && ! $_->isa('Fey::Literal::Null') )
+               || $_->isa('Fey::Placeholder')
+               || overload::Overloaded( $_ )
+             };
+
+subtype 'Fey.Type.NullableUpdateValue'
+    => as 'Item'
+    => where {    ! blessed $_
+               || $_->isa('Fey::Column')
+               || $_->isa('Fey::Literal')
+               || $_->isa('Fey::Placeholder')
+               || overload::Overloaded( $_ )
+             };
+
+subtype 'Fey.Type.NonNullableUpdateValue'
+    => as 'Defined'
+    => where {    ! blessed $_
+               || $_->isa('Fey::Column')
+               || ( $_->isa('Fey::Literal') && ! $_->isa('Fey::Literal::Null') )
+               || $_->isa('Fey::Placeholder')
+               || overload::Overloaded( $_ )
+             };
+
+subtype 'Fey.Type.OrderByElement'
+    => as 'Item'
+    => where { if ( ! blessed $_ )
+               {
+                   return $_ =~ /^(?:asc|desc)$/i;
+               }
+
+               return 1
+                   if    $_->can('is_orderable')
+                      && $_->is_orderable();
+             };
+
+subtype 'Fey.Type.GroupByElement'
+    => as 'Object'
+    => where { return 1
+                   if    $_->can('is_groupable')
+                      && $_->is_groupable();
+             };
+
+subtype 'Fey.Type.OuterJoinType'
+    => as 'Str',
+    => where { return $_ =~ /^(?:full|left|right)$/ };
+
+subtype 'Fey.Type.CanQuote'
+    => as 'Item'
+    => where { return $_->isa('DBI::db') || $_->can('quote') };
+
+subtype 'Fey.Type.WhereBoolean'
+    => as 'Str'
+    => where { return $_ =~ /^(?:AND|OR)$/ };
+
+subtype 'Fey.Type.WhereClauseSide'
+    => as 'Item'
+    => where { return 1 if ! defined $_;
+               return 1 unless blessed $_;
+               return 1 if overload::Overloaded($_);
+
+               return 1
+                   if    $_->can('is_comparable')
+                      && $_->is_comparable();
+             };
 
 no Moose::Util::TypeConstraints;
 

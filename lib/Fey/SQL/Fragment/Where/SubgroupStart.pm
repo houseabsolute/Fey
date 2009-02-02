@@ -3,19 +3,18 @@ package Fey::SQL::Fragment::Where::SubgroupStart;
 use strict;
 use warnings;
 
+use Moose;
 
 my $Paren = '(';
-sub new
-{
-    my $class = shift;
-
-    return bless \$Paren, $class;
-}
 
 sub sql
 {
     return $Paren;
 }
+
+no Moose;
+
+__PACKAGE__->meta()->make_immutable();
 
 
 1;

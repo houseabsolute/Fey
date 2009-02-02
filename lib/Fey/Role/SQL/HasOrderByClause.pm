@@ -3,41 +3,39 @@ package Fey::Role::SQL::HasOrderByClause;
 use strict;
 use warnings;
 
-use Fey::Validate
-    qw( validate_pos
-        SCALAR
-        OBJECT
-      );
-
+use Fey::Types;
 use Scalar::Util qw( blessed );
 
 use Moose::Role;
+use MooseX::AttributeHelpers;
+use MooseX::Params::Validate qw( pos_validated_list );
+
+has '_order_by' =>
+    ( metaclass => 'Collection::Array',
+      is        => 'ro',
+      isa       => 'ArrayRef',
+      default   => sub { [] },
+      provides  => { push  => '_add_order_by_elements',
+                     empty => '_has_order_by_elements',
+                   },
+      init_arg  => undef,
+    );
 
 
+sub order_by
 {
-    my $spec = { type      => SCALAR|OBJECT,
-                 callbacks =>
-                 { 'is orderable or sort direction' =>
-                   sub { return 1
-                             if ! blessed $_[0] && $_[0] =~ /^(?:asc|desc)$/i;
-                         return 1 if
-                             (    blessed $_[0]
-                               && $_[0]->can('is_orderable')
-                               && $_[0]->is_orderable() ); },
-                 },
-               };
+    my $self = shift;
 
-    sub order_by
-    {
-        my $self = shift;
+    my $count = @_ ? @_ : 1;
+    my (@by) =
+        pos_validated_list( \@_,
+                            ( ( { isa => 'Fey.Type.OrderByElement' } ) x $count ),
+                            MX_PARAMS_VALIDATE_NO_CACHE => 1,
+                          );
 
-        my $count = @_ ? @_ : 1;
-        my (@by) = validate_pos( @_, ($spec) x $count );
+    $self->_add_order_by_elements(@by);
 
-        push @{ $self->{order_by} }, @by;
-
-        return $self;
-    }
+    return $self;
 }
 
 sub order_by_clause
@@ -45,11 +43,13 @@ sub order_by_clause
     my $self = shift;
     my $dbh  = shift;
 
-    return unless $self->{order_by};
+    return unless $self->_has_order_by_elements();
 
     my $sql = 'ORDER BY ';
 
-    for my $elt ( @{ $self->{order_by} } )
+    my @elt = @{ $self->_order_by() };
+
+    for my $elt (@elt)
     {
         if ( ! blessed $elt )
         {
@@ -57,7 +57,7 @@ sub order_by_clause
         }
         else
         {
-            $sql .= ', ' if $elt != $self->{order_by}[0];
+            $sql .= ', ' if $elt != $elt[0];
             $sql .= $elt->sql_or_alias($dbh);
         }
     }

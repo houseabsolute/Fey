@@ -13,7 +13,7 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 my $dbh = Fey::Test->mock_dbh();
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     $q->where( $s->table('User')->column('user_id'), '=', 5 );
 
@@ -24,7 +24,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     $q->where( $s->table('User')->column('username'), '=', 'bob' );
 
@@ -35,7 +35,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     $q->where( $s->table('User')->column('user_id'), '=', 5 );
     $q->where( 'or' );
@@ -48,7 +48,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     my $subselect = Fey::SQL->new_select();
     $subselect->select( $s->table('User')->column('user_id') );
@@ -65,7 +65,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     my $subselect = Fey::SQL->new_select();
     $subselect->select( $s->table('User')->column('user_id') );
@@ -82,7 +82,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     $q->having( $s->table('User')->column('user_id'), '=', 5 );
 
@@ -93,7 +93,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     my $subselect = Fey::SQL->new_select();
     $subselect->select( $s->table('User')->column('user_id') );
@@ -110,7 +110,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     my $subselect = Fey::SQL->new_select();
     $subselect->select( $s->table('User')->column('user_id') );
@@ -127,7 +127,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     my $subselect = Fey::SQL->new_select();
     $subselect->select( $s->table('User')->column('user_id') );
@@ -144,7 +144,7 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select()->select();
+    my $q = Fey::SQL->new_select();
 
     my $q2 = Fey::SQL->new_where();
     $q2->where( $s->table('User')->column('user_id'), '=', 2 );

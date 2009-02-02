@@ -3,159 +3,161 @@ package Fey::SQL::Fragment::Where::Comparison;
 use strict;
 use warnings;
 
-
 use Fey::Exceptions qw( param_error );
-use Fey::Validate
-    qw( validate_pos
-        SCALAR_TYPE
-        UNDEF
-        SCALAR
-        OBJECT
-      );
-use Scalar::Util qw( blessed );
-
 use Fey::SQL::Fragment::SubSelect;
 use Fey::Literal;
 use Fey::Placeholder;
-use overload ();
+use Fey::Types;
+use Scalar::Util qw( blessed );
 
-use constant LHS         => 0;
-use constant COMP        => 1;
-use constant RHS         => 2;
-use constant BIND_PARAMS => 3;
+use Moose;
+
+has '_lhs' =>
+    ( is       => 'ro',
+      isa      => 'Fey.Type.WhereClauseSide',
+      required => 1,
+    );
+
+has '_operator' =>
+    ( is       => 'ro',
+      isa      => 'Str',
+      required => 1,
+    );
+
+has '_rhs' =>
+    ( is       => 'ro',
+      isa      => 'ArrayRef[Fey.Type.WhereClauseSide]',
+      required => 1,
+    );
+
+has '_bind_params' =>
+    ( is        => 'ro',
+      isa       => 'ArrayRef',
+      default   => sub { [] },
+    );
 
 our $eq_comp_re = qr/^(?:=|!=|<>)$/;
 our $in_comp_re = qr/^(?:not\s+)?in$/i;
 
+
+sub BUILDARGS
 {
-    my $comparable = 
-        { type      => UNDEF|SCALAR|OBJECT,
-          'is comparable' =>
-            sub {    ! blessed $_[0]
-                  || (    $_[0]->can('is_comparable')
-                       && $_[0]->is_comparable()
-                     )
-                  || overload::Overloaded( $_[0] )
-                },
-        };
+    my $class             = shift;
+    my $auto_placeholders = shift;
+    my $lhs               = shift;
+    my $operator          = shift;
+    my @rhs               = @_;
 
-    my $operator = SCALAR_TYPE;
-
-    sub new
+    my @bind;
+    for ( $lhs, @rhs )
     {
-        my $class            = shift;
-        my $auto_placeholders = shift;
-
-        my $rhs_count = @_ - 2;
-        $rhs_count = 1 if $rhs_count < 1;
-
-        my ( $lhs, $comp, @rhs ) =
-            validate_pos( @_, $comparable, $operator, ($comparable) x $rhs_count );
-
-        my @bind;
-        for ( $lhs, @rhs )
+        if ( defined $_ && blessed $_ && $_->can('is_comparable') )
         {
-            if ( blessed $_ && $_->can('is_comparable') )
+            if ( $_->isa('Fey::SQL::Select') )
             {
-                if ( $_->isa('Fey::SQL::Select') )
-                {
-                    push @bind, $_->bind_params();
+                push @bind, $_->bind_params();
 
-                    $_ = Fey::SQL::Fragment::SubSelect->new($_);
-                }
-
-                next;
+                $_ = Fey::SQL::Fragment::SubSelect->new( select => $_ );
             }
 
-            if ( blessed $_ )
-            {
-                if ( overload::Overloaded($_) )
-                {
-                    # This "de-references" the value, which will make
-                    # things simpler when we pass it to DBI, test
-                    # code, etc. It works fine with numbers, more or
-                    # less (see Fey::Literal).
-                    $_ .= '';
-                }
-                else
-                {
-                    param_error "Cannot pass an object as part of a where clause comparison"
-                                . " unless that object does Fey::Role::Comparable or is overloaded.";
-                }
-            }
+            next;
+        }
 
-            if ( defined $_ && $auto_placeholders )
+        if ( defined $_ && blessed $_ )
+        {
+            if ( overload::Overloaded($_) )
             {
-                push @bind, $_;
-
-                $_ = Fey::Placeholder->new();
+                # This "de-references" the value, which will make
+                # things simpler when we pass it to DBI, test
+                # code, etc. It works fine with numbers, more or
+                # less (see Fey::Literal).
+                $_ .= '';
             }
             else
             {
-                $_ = Fey::Literal->new_from_scalar($_);
+                param_error "Cannot pass an object as part of a where clause comparison"
+                          . " unless that object does Fey::Role::Comparable or is overloaded.";
             }
-
         }
 
-        if ( grep { $_->isa('Fey::SQL::Fragment::SubSelect') } @rhs )
+        if ( defined $_ && $auto_placeholders )
         {
-            param_error "Cannot use a subselect on the right-hand side with $comp"
-                unless $comp =~ /$in_comp_re/;
-        }
+            push @bind, $_;
 
-        if ( lc $comp eq 'between' )
+            $_ = Fey::Placeholder->new();
+        }
+        else
         {
-            param_error "The BETWEEN operator requires two arguments"
-                unless @rhs == 2;
+            $_ = Fey::Literal->new_from_scalar($_);
         }
 
-        if ( @rhs > 1 )
-        {
-            param_error "Cannot pass more than one right-hand side argument with $comp"
-                unless $comp =~ /^(?:$in_comp_re|between)$/i;
-        }
-
-        return bless [ $lhs, $comp, \@rhs, \@bind ], $class;
     }
+
+    if ( grep { $_->isa('Fey::SQL::Fragment::SubSelect') } @rhs )
+    {
+        param_error "Cannot use a subselect on the right-hand side with $operator"
+            unless $operator =~ /$in_comp_re/;
+    }
+
+    if ( lc $operator eq 'between' )
+    {
+        param_error "The BETWEEN operator requires two arguments"
+            unless @rhs == 2;
+    }
+
+    if ( @rhs > 1 )
+    {
+        param_error "Cannot pass more than one right-hand side argument with $operator"
+            unless $operator =~ /^(?:$in_comp_re|between)$/i;
+    }
+
+    return { _lhs         => $lhs,
+             _operator    => $operator,
+             _rhs         => \@rhs,
+             _bind_params => \@bind,
+           };
 }
 
 sub sql
 {
-    my $sql = $_[0][LHS]->sql_or_alias( $_[1] );
+    my $self = shift;
+    my $dbh  = shift;
 
-    if (    $_[0][COMP] =~ $eq_comp_re
-         && $_[0][RHS][0]->isa('Fey::Literal::Null') )
+    my $sql = $self->_lhs()->sql_or_alias( $dbh );
+
+    if (    $self->_operator() =~ $eq_comp_re
+         && $self->_rhs()->[0]->isa('Fey::Literal::Null') )
     {
         return
             (   $sql
-              . (   $_[0][COMP] eq '='
+              . (   $self->_operator() eq '='
                   ? ' IS NULL'
                   : ' IS NOT NULL'
                 )
             );
     }
 
-    if ( lc $_[0][COMP] eq 'between' )
+    if ( lc $self->_operator() eq 'between' )
     {
         return
             (   $sql
               . ' BETWEEN '
-              . $_[0][RHS][0]->sql_or_alias( $_[1] )
+              . $self->_rhs()->[0]->sql_or_alias( $dbh )
               . ' AND '
-              . $_[0][RHS][1]->sql_or_alias( $_[1] )
+              . $self->_rhs()->[1]->sql_or_alias( $dbh )
             );
     }
 
-    if ( $_[0][COMP] =~ $in_comp_re )
+    if ( $self->_operator() =~ $in_comp_re )
     {
         return
             (   $sql
               . ' '
-              . ( uc $_[0][COMP] )
+              . ( uc $self->_operator() )
               . ' ('
               . ( join ', ',
-                  map { $_->sql_or_alias( $_[1] ) }
-                  @{ $_[0][RHS] }
+                  map { $_->sql_or_alias( $dbh ) }
+                  @{ $self->_rhs() }
                 )
               . ')'
             );
@@ -164,17 +166,20 @@ sub sql
     return
         (   $sql
           . ' '
-          . $_[0][COMP]
+          . $self->_operator()
           . ' '
-          . $_[0][RHS][0]->sql_or_alias( $_[1] )
+          . $self->_rhs()->[0]->sql_or_alias( $dbh )
         );
 }
 
 sub bind_params
 {
-    return @{ $_[0]->[BIND_PARAMS] };
+    return @{ $_[0]->_bind_params() };
 }
 
+no Moose;
+
+__PACKAGE__->meta()->make_immutable();
 
 1;
 
