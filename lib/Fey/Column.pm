@@ -322,7 +322,8 @@ Returns a unique identifier for the column.
 
 =head1 ROLES
 
-This class does the C<Fey::Role::ColumnLike> role.
+This class does the L<Fey::Role::ColumnLike> and L<Fey::Role::Named>
+roles.
 
 =head1 AUTHOR
 

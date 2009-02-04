@@ -174,7 +174,8 @@ exception if the alias does not belong to a table.
 
 =head1 ROLES
 
-This class does the C<Fey::Role::ColumnLike> role.
+This class does the L<Fey::Role::ColumnLike> and L<Fey::Role::Named>
+roles.
 
 =head1 AUTHOR
 

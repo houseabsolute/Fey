@@ -453,7 +453,8 @@ Returns a unique identifier for the table.
 
 =head1 ROLES
 
-This class does the C<Fey::Role::Joinable> role.
+This class does the L<Fey::Role::TableLike> and L<Fey::Role::Named>
+roles.
 
 =head1 AUTHOR
 
