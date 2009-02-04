@@ -6,31 +6,34 @@ use warnings;
 use List::AllUtils qw( all pairwise );
 
 use Fey::Types;
-use MooseX::Params::Validate qw( pos_validated_list );
 
+use Moose;
+use MooseX::AttributeHelpers;
 
-sub new
+has '_set' =>
+    ( metaclass => 'Collection::Hash',
+      is        => 'ro',
+      isa       => 'HashRef[Fey::Role::Named]',
+      provides  => { set    => '_add',
+                     delete => '_delete',
+                     get    => '_get',
+                     values => '_all',
+                   },
+      required  => 1,
+    );
+
+sub BUILDARGS
 {
     my $class = shift;
 
-    my $self = bless {}, $class;
-
-    $self->add(@_) if @_;
-
-    return $self;
+    return { _set => { map { $_->name() => $_ } @_ } };
 }
 
 sub add
 {
-    my $self    = shift;
+    my $self = shift;
 
-    my $count = @_ ? @_ : 1;
-
-    $self->{ $_->name() } = $_
-        for pos_validated_list( \@_,
-                                ( ( { does => 'Fey::Role::Named' } ) x $count ),
-                                MX_PARAMS_VALIDATE_NO_CACHE => 1,
-                              );
+    $self->_add( map { $_->name() => $_ } @_ );
 
     return;
 }
@@ -39,36 +42,25 @@ sub delete
 {
     my $self = shift;
 
-    my $count = @_ ? @_ : 1;
-
-    delete $self->{ $_->name() }
-        for pos_validated_list( \@_,
-                                ( ( { does => 'Fey::Role::Named' } ) x $count ),
-                                MX_PARAMS_VALIDATE_NO_CACHE => 1,
-                              );
+    $self->_delete( map { $_->name() } @_ );
 
     return;
 }
 
 sub object
 {
-    my $self   = shift;
-    my ($name) = pos_validated_list( \@_, { isa => 'Str' } );
+    my $self = shift;
 
-    return $self->{$name};
+    return $self->_get(shift);
 }
 
 sub objects
 {
     my $self = shift;
 
-    my @names =
-        pos_validated_list( \@_,
-                            ( ( { isa => 'Str' } ) x scalar @_ ),
-                            MX_PARAMS_VALIDATE_NO_CACHE => 1,
-                          );
+    return $self->_all() unless @_;
 
-    return @names ? @{ $self }{ grep { exists $self->{$_} } @names } : values %{ $self };
+    return grep { defined } $self->_get(@_);
 }
 
 sub is_same_as
@@ -76,13 +68,17 @@ sub is_same_as
     my $self  = shift;
     my $other = shift;
 
-    my @self_names  = sort keys %{ $self };
-    my @other_names = sort keys %{ $other };
+    my @self_names  = sort keys %{ $self->_set() };
+    my @other_names = sort keys %{ $other->_set() };
 
     return 0 unless @self_names == @other_names;
 
     return all { $_ } pairwise { $a eq $b } @self_names, @other_names;
 }
+
+no Moose;
+
+__PACKAGE__->meta()->make_immutable();
 
 1;
 

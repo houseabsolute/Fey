@@ -43,6 +43,9 @@ subtype 'Fey.Type.ArrayRefOfColumns'
 class_type('Fey::Column')
     unless find_type_constraint('Fey::Column');
 
+role_type('Fey::Role::Named')
+    unless find_type_constraint('Fey::Role::Named');
+
 coerce 'Fey.Type.ArrayRefOfColumns'
     => from 'Fey::Column'
     => via { [ $_ ] };

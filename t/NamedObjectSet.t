@@ -1,33 +1,16 @@
 use strict;
 use warnings;
 
-use Test::More tests => 19;
+use Test::More tests => 14;
 
 use Fey::NamedObjectSet;
 
 
 {
     my $set = Fey::NamedObjectSet->new();
-    ok( $set, 'made a named object set object' );
-
-    eval { $set->add(1) };
-    like( $@, qr/\QParameter #1 ("1")/,
-          'cannot add an integer to a NamedObjectSet' );
-
-    eval { $set->add( NoName->new() ) };
-    like( $@, qr/\QParameter #1/,
-          'cannot add a NoName object to a NamedObjectSet');
-}
-
-{
-    my $set = Fey::NamedObjectSet->new();
 
     my $bob  = Name->new( name => 'bob' );
     my $faye = Name->new( name => 'faye' );
-
-    eval { $set->add() };
-    like( $@, qr/0 parameters were passed/,
-          'add() requires at least one argument' );
 
     $set->add($bob);
     my @objects = $set->objects();
@@ -40,10 +23,6 @@ use Fey::NamedObjectSet;
     is_deeply( [ map { $_->name() } @objects ],
                [ 'bob', 'faye' ],
                'those objects are bob and faye' );
-
-    eval { $set->delete() };
-    like( $@, qr/0 parameters were passed/,
-          'delete() requires at least one argument' );
 
     $set->delete($bob);
     @objects = $set->objects();

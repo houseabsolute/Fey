@@ -1,3 +1,10 @@
+0.20    2008-02-04
+
+- No significant external changes, just lots of internal changes to
+  use Moose properly. Some of this code started life pre-Moose and
+  still showed signs of it.
+
+
 0.1901  2008-01-24
 
 - No code changes, just re-releasing because the last tarball was full
