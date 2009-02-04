@@ -3,7 +3,7 @@ package Fey;
 use strict;
 use warnings;
 
-our $VERSION = '0.1901';
+our $VERSION = '0.20';
 
 use Moose 0.66 ();
 
