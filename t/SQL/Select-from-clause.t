@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 34;
+use Test::More tests => 35;
 
 use Fey::SQL;
 
@@ -385,3 +385,15 @@ my $dbh = Fey::Test->mock_dbh();
     like( $@, qr/\Qthe first two arguments to from() were not valid (not tables or something else joinable)/,
           'cannot pass a table without a schema to from()' );
 }
+
+{
+    my $q = Fey::SQL->new_select->from( $s->table('User') );
+    for (0..1) {
+        my $table = $s->table('UserGroup')->alias('UserGroup1');
+        $q->from( $s->table('User'), $table );
+        $q->where( $table->column('group_id'), '=', $_ );
+    };
+    eval { $q->sql($dbh) };
+    is $@, '', 'join fragment retains alias that leaves scope (twice)';
+}
+
