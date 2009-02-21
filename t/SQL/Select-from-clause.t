@@ -388,12 +388,24 @@ my $dbh = Fey::Test->mock_dbh();
 
 {
     my $q = Fey::SQL->new_select->from( $s->table('User') );
-    for (0..1) {
+
+    # The bug this exercised was that two aliases were created, but
+    # since they had the same name, we only ended up with one join
+    # fragment. Then the column from the second table alias ended up
+    # going out of scope.
+    for (0..1)
+    {
         my $table = $s->table('UserGroup')->alias('UserGroup1');
         $q->from( $s->table('User'), $table );
-        $q->where( $table->column('group_id'), '=', $_ );
+        $q->where( $table->column('group_id'), '=', 1 );
     };
-    eval { $q->sql($dbh) };
-    is $@, '', 'join fragment retains alias that leaves scope (twice)';
+
+    $q->select(1);
+
+    my $sql = q{SELECT 1 FROM "User" JOIN "UserGroup" AS "UserGroup1" ON};
+    $sql .= q{ ("UserGroup1"."user_id" = "User"."user_id")};
+    $sql .= q{ WHERE "UserGroup1"."group_id" = ? AND "UserGroup1"."group_id" = ?};
+
+    is( $q->sql($dbh), $sql, 'alias shows up in join once and where twice' );
 }
 

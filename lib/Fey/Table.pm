@@ -89,6 +89,18 @@ has 'primary_key' =>
 after '_clear_candidate_keys' =>
     sub { $_[0]->_clear_primary_key() };
 
+has '_aliased_tables' =>
+    ( metaclass => 'Collection::Hash',
+      is        => 'ro',
+      isa       => 'HashRef',
+      lazy      => 1,
+      default   => sub { {} },
+      provides  => { exists => '_has_aliased_table',
+                     get    => '_aliased_table',
+                     set    => '_store_aliased_table',
+                   },
+    );
+
 with 'Fey::Role::Named';
 
 
@@ -239,13 +251,26 @@ sub has_candidate_key
     return 0;
 }
 
+# Caching the objects by name prevents a weird bug where we have two
+# aliases of the same name, and one disappears because of weak
+# references, causing weird errors.
 sub alias
 {
     my $self = shift;
 
     my %p = @_ == 1 ? ( alias_name => $_[0] ) : @_;
 
-    return Fey::Table::Alias->new( table => $self, %p );
+    if ( defined $p{alias_name} )
+    {
+        return $self->_aliased_table( $p{alias_name} )
+            if $self->_has_aliased_table( $p{alias_name} );
+    }
+
+    my $alias = Fey::Table::Alias->new( table => $self, %p );
+
+    $self->_store_aliased_table( $alias->alias_name() => $alias );
+
+    return $alias;
 }
 
 sub is_alias { 0 }

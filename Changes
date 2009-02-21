@@ -1,3 +1,12 @@
+0.21
+
+- If you created two Fey::Table::Alias objects with the same name
+  (from the same table) and joined each object in a query, one of the
+  aliases could go out of scope (because of weak refs and other
+  weirdness), causing a random "cannot call method ... on an undefined
+  value" error. Test by Dieter Pearcey.
+
+
 0.20    2008-02-04
 
 - No significant external changes, just lots of internal changes to
