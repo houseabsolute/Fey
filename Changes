@@ -1,3 +1,15 @@
+0.22    2008-02-24
+
+- A table that was passed to $sql->from($table) and also included in a
+  join could show up in the FROM clause twice. Based on a patch from
+  Dieter Pearcey.
+
+- Fey::Literal::Term now accepts a list of items which it joins
+  together. These items can be strings or Fey objects like columns or
+  tables. This makes generating arbitrary of SQL snippets
+  easier. Based on a patch from Dieter Pearcey.
+
+
 0.21    2008-02-24
 
 - If you created two Fey::Table::Alias objects with the same name
