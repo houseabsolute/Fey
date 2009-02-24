@@ -33,10 +33,10 @@ sub sql
 {
     my ($self, $dbh) = @_;
 
-    return join(
-        '',
-        map { blessed($_) ? $_->sql_or_alias($dbh) : $_ } @{ $self->term }
-    );
+    return
+        join( '',
+              map { blessed($_) ? $_->sql_or_alias($dbh) : $_ } @{ $self->term() }
+            );
 }
 
 sub sql_with_alias { goto &sql }
@@ -100,7 +100,7 @@ generated SQL.  For example:
 
 =head2 $term->term()
 
-Returns the term (arrayref of fragments) passed to the constructor.
+Returns the array reference of fragments passed to the constructor.
 
 =head2 $term->sql()
 
