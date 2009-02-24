@@ -72,6 +72,17 @@ coerce 'Fey.Type.FunctionArg'
         => via { [ map { $constraint->coerce($_) } @{$_} ] };
 }
 
+subtype 'Fey.Type.LiteralTermArg'
+    => as 'ArrayRef'
+    => where { return unless $_ and @{$_};
+               all { blessed($_)
+                     ? $_->can('sql_or_alias')
+                     : (defined($_) && !ref($_)) } @{$_} };
+
+coerce 'Fey.Type.LiteralTermArg'
+    => from 'Value'
+    => via { [ $_ ] };
+
 for my $thing ( qw( Table Column ) )
 {
     my $class = 'Fey::' . $thing;

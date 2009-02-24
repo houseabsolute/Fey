@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 35;
+use Test::More tests => 36;
 
 use Fey::SQL;
 
@@ -199,8 +199,9 @@ my $dbh = Fey::Test->mock_dbh();
     $q->from( $s->table('User'), $s->table('UserGroup') );
     $q->from( $s->table('UserGroup'), 'left', $s->table('Group') );
 
-    my $sql = q{FROM "User" JOIN "UserGroup" ON ("UserGroup"."user_id" = "User"."user_id")};
-    $sql .= q{ LEFT OUTER JOIN "Group" ON ("UserGroup"."group_id" = "Group"."group_id")};
+    my $sql = q{FROM "UserGroup" LEFT OUTER JOIN "Group" ON};
+    $sql .= q{ ("UserGroup"."group_id" = "Group"."group_id")};
+    $sql .= q{ JOIN "User" ON ("UserGroup"."user_id" = "User"."user_id")};
 
     is( $q->from_clause($dbh), $sql,
         'from_clause() for regular join + left outer join' );
@@ -407,5 +408,17 @@ my $dbh = Fey::Test->mock_dbh();
     $sql .= q{ WHERE "UserGroup1"."group_id" = ? AND "UserGroup1"."group_id" = ?};
 
     is( $q->sql($dbh), $sql, 'alias shows up in join once and where twice' );
+}
+
+{
+    my $q = Fey::SQL->new_select->from( $s->table('User') );
+
+    $q->from( $s->table('User'), 'left', $s->table('UserGroup') );
+    $q->select(1);
+
+    my $sql = q{SELECT 1 FROM "User" LEFT OUTER JOIN "UserGroup" ON};
+    $sql .= q{ ("UserGroup"."user_id" = "User"."user_id")};
+
+    is( $q->sql($dbh), $sql, 'table only shows up once in from, not twice' );
 }
 

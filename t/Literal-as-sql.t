@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 33;
+use Test::More tests => 36;
 
 use Fey::Literal;
 
@@ -37,6 +37,11 @@ use Fey::Literal;
     is( $string->sql_with_alias($dbh), q{'Foo'}, "string sql_with_alias is 'Foo'" );
     is( $string->sql_or_alias($dbh), q{'Foo'}, "string sql_or_alias is 'Foo'" );
     is( $string->sql($dbh), q{'Foo'}, "string sql is 'Foo'" );
+
+    $term = Fey::Literal::Term->new( $string, '::text' );
+    is( $term->sql_with_alias($dbh), q{'Foo'::text}, "complex term sql_with_alias" );
+    is( $term->sql_or_alias($dbh), q{'Foo'::text}, "complex term sql_or_alias" );
+    is( $term->sql($dbh), q{'Foo'::text}, "complex term sql" );
 
     $string = Fey::Literal::String->new("Weren't");
     is( $string->sql_or_alias($dbh),
