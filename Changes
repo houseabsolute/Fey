@@ -1,4 +1,4 @@
-0.21
+0.21    2008-02-24
 
 - If you created two Fey::Table::Alias objects with the same name
   (from the same table) and joined each object in a query, one of the
