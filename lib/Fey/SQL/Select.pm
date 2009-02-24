@@ -328,14 +328,10 @@ sub from_clause
     my @from;
 
     my %seen;
-    for my $frag (
-        # lowercasing is here to exercise the test for correctly skipping
-        # already-seen tables.
-        $self->_get_from( sort { lc($a) cmp lc($b) } $self->_from_ids() )
-    )
+    # We lower case  the test for correctly skipping
+    # already-seen tables.
+    for my $frag ( $self->_get_from( sort { lc($a) cmp lc($b) } $self->_from_ids() ) )
     {
-        next if $seen{ $frag->id() };
-
         my $join_sql = $frag->sql_with_alias( $dbh, \%seen );
 
         # the fragment could be a subselect

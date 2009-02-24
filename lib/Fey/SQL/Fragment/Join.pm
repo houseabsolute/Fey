@@ -93,16 +93,15 @@ sub sql_with_alias
     my $dbh        = shift;
     my $joined_ids = shift;
 
-    return $self->_table1()->sql_with_alias( $dbh )
-        unless $self->_has_table2();
-
     my @unseen_tables =
         grep { ! $joined_ids->{ $_->id() } } $self->tables();
 
-    # This is a pathological case, since it means _both_ tables have
-    # already been joined as part of the query. Why would you then
-    # join them again?
+    # This can happen in the case where we have just one table, and
+    # that table is participating in some other join.
     return '' unless @unseen_tables;
+
+    return $self->_table1()->sql_with_alias( $dbh )
+        unless $self->_has_table2();
 
     if ( @unseen_tables == 1 )
     {
