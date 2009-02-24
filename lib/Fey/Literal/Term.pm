@@ -16,20 +16,28 @@ with 'Fey::Role::Comparable', 'Fey::Role::Selectable',
 
 has 'term' =>
     ( is       => 'ro',
-      isa      => 'Value',
+      isa      => 'Fey.Type.LiteralTermArg',
       required => 1,
+      coerce   => 1,
     );
-
 
 
 sub BUILDARGS
 {
     my $class = shift;
 
-    return { term => shift };
+    return { term => [@_] };
 }
 
-sub sql { $_[0]->term() }
+sub sql
+{
+    my ($self, $dbh) = @_;
+
+    return join(
+        '',
+        map { blessed($_) ? $_->sql_or_alias($dbh) : $_ } @{ $self->term }
+    );
+}
 
 sub sql_with_alias { goto &sql }
 
@@ -49,7 +57,7 @@ Fey::Literal::Term - Represents a literal term in a SQL statement
 
 =head1 SYNOPSIS
 
-  my $term = Fey::Literal::Term->new($anything)
+  my $term = Fey::Literal::Term->new(@anything)
 
 =head1 DESCRIPTION
 
@@ -64,14 +72,13 @@ would be created like this:
 
   my $term =
       Fey::Literal::Term->new
-          ( 'DOY FROM TIMESTAMP '
-             . $column->sql_or_alias( $sql->dbh() ) );
+          ( 'DOY FROM TIMESTAMP ', $column );
 
   my $function = Fey::Literal::Function->new( 'EXTRACT', $term );
 
 This ability to insert arbitrary strings into a SQL statement is meant
 to be used as a back-door to support any sort of SQL snippet not
-otherwise supported by the core Fey classes in a more direct ma
+otherwise supported by the core Fey classes in a more direct manner.
 
 =head1 INHERITANCE
 
@@ -81,14 +88,19 @@ This module is a subclass of C<Fey::Literal>.
 
 This class provides the following methods:
 
-=head2 Fey::Literal::Term->new($term)
+=head2 Fey::Literal::Term->new(@fragments)
 
 This method creates a new C<Fey::Literal::Term> object representing
 the term passed to the constructor.
 
+More than one argument may be given; they will all be joined together in the
+generated SQL.  For example:
+
+  my $term = Fey::Literal::Term->new( $column, '::text' );
+
 =head2 $term->term()
 
-Returns the term as passed to the constructor.
+Returns the term (arrayref of fragments) passed to the constructor.
 
 =head2 $term->sql()
 
@@ -96,7 +108,8 @@ Returns the term as passed to the constructor.
 
 =head2 $term->sql_or_alias()
 
-Returns the appropriate SQL snippet.
+Returns the appropriate SQL snippet.  Any Fey objects in the C<term()> will
+have C<sql_or_alias()> called on them to generate their part of the term.
 
 =head1 ROLES
 
