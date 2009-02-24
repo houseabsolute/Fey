@@ -26,7 +26,7 @@ sub BUILDARGS
 {
     my $class = shift;
 
-    return { term => [@_] };
+    return { term => [ @_ ] };
 }
 
 sub sql
@@ -35,7 +35,10 @@ sub sql
 
     return
         join( '',
-              map { blessed($_) ? $_->sql_or_alias($dbh) : $_ } @{ $self->term() }
+              map { blessed($_) && $_->can('sql_or_alias')
+                    ? $_->sql_or_alias($dbh)
+                    : $_ }
+              @{ $self->term() }
             );
 }
 
@@ -93,10 +96,14 @@ This class provides the following methods:
 This method creates a new C<Fey::Literal::Term> object representing
 the term passed to the constructor.
 
-More than one argument may be given; they will all be joined together in the
-generated SQL.  For example:
+More than one argument may be given; they will all be joined together
+in the generated SQL.  For example:
 
   my $term = Fey::Literal::Term->new( $column, '::text' );
+
+The arguments can be plain scalars, objects with a C<sql_or_alias()>
+method (columns, tables, etc.) or any object which is overloaded (the
+assumption being it that it overloads stringification).
 
 =head2 $term->term()
 

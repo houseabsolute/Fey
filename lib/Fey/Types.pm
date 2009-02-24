@@ -76,8 +76,8 @@ subtype 'Fey.Type.LiteralTermArg'
     => as 'ArrayRef'
     => where { return unless $_ and @{$_};
                all { blessed($_)
-                     ? $_->can('sql_or_alias')
-                     : (defined($_) && !ref($_)) } @{$_} };
+                     ? $_->can('sql_or_alias') || overload::Overloaded( $_ )
+                     : defined && ! ref } @{$_} };
 
 coerce 'Fey.Type.LiteralTermArg'
     => from 'Value'

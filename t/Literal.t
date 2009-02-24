@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 12;
 use Fey::Literal;
 
 
@@ -59,4 +59,14 @@ use Fey::Literal;
     my $lit = Fey::Literal->new_from_scalar( Str->new('test') );
     isa_ok( $lit, 'Fey::Literal::String' );
     is( $lit->string(), 'test', 'value is test' );
+}
+
+{
+    eval { Fey::Literal::Term->new( [] ) };
+    like( $@, qr/Validation failed/,
+          'Term rejects an non-blessed ref' );
+
+    eval { Fey::Literal::Term->new( bless {}, 'Foo' ) };
+    like( $@, qr/Validation failed/,
+          'Term rejects an blessed ref that is not overloaded and does not have a sql_or_alias_method' );
 }
