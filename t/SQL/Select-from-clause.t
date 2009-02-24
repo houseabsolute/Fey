@@ -411,14 +411,14 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $q = Fey::SQL->new_select->from( $s->table('User') );
+    my $q = Fey::SQL->new_select();
 
+    $q->from( $s->table('User') );
     $q->from( $s->table('User'), 'left', $s->table('UserGroup') );
-    $q->select(1);
 
-    my $sql = q{SELECT 1 FROM "User" LEFT OUTER JOIN "UserGroup" ON};
+    my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup" ON};
     $sql .= q{ ("UserGroup"."user_id" = "User"."user_id")};
 
-    is( $q->sql($dbh), $sql, 'table only shows up once in from, not twice' );
+    is( $q->from_clause($dbh), $sql, 'table only shows up once in from, not twice' );
 }
 
