@@ -431,7 +431,7 @@ sub union_clause
 
     return
         ( join ' ',
-          map { 'UNION (' . $_->sql($dbh) . ')' }
+          map { 'UNION ' . $_->sql($dbh) }
           @{ $self->_union() }
         )
 }
