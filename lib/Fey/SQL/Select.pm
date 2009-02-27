@@ -82,16 +82,6 @@ has '_having' =>
       init_arg  => undef,
     );
 
-has '_union' =>
-    ( metaclass => 'Collection::Array',
-      is        => 'ro',
-      isa       => 'ArrayRef',
-      default   => sub { [] },
-      provides  => { push  => '_add_union_element',
-                     empty => '_has_union_elements',
-                   },
-      init_arg  => undef,
-    );
 
 sub select
 {
@@ -297,16 +287,6 @@ sub having
     return $self;
 }
 
-sub union
-{
-    my $self = shift;
-    my ($sel) = pos_validated_list( \@_, { isa => 'Fey::SQL::Select' } );
-
-    $self->_add_union_element( $sel );
-
-    return $self;
-}
-
 sub sql
 {
     my $self  = shift;
@@ -319,7 +299,6 @@ sub sql
           $self->where_clause($dbh),
           $self->group_by_clause($dbh),
           $self->having_clause($dbh),
-          $self->union_clause($dbh),
           $self->order_by_clause($dbh),
           $self->limit_clause($dbh),
         );
@@ -422,20 +401,6 @@ sub having_clause
            )
 }
 
-sub union_clause
-{
-    my $self = shift;
-    my $dbh  = shift;
-
-    return unless $self->_has_union_elements();
-
-    return
-        ( join ' ',
-          map { 'UNION ' . $_->sql($dbh) }
-          @{ $self->_union() }
-        )
-}
-
 sub bind_params
 {
     my $self = shift;
@@ -452,10 +417,6 @@ sub bind_params
           ( map { $_->bind_params() }
             grep { $_->can('bind_params') }
             @{ $self->_having() }
-          ),
-
-          ( map { $_->bind_params() }
-            @{ $self->_union() }
           ),
         );
 }
