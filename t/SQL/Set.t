@@ -44,6 +44,10 @@ my $dbh = Fey::Test->mock_dbh();
 
     my $sql = q{(SELECT 1 FROM "User") UNION (SELECT 2 FROM "User")};
     is( $q->sql($dbh), $sql, 'union() with two tables' );
+
+    my $sel3 = Fey::SQL->new_select->select(1)->from($q);
+    $sql = qq{SELECT 1 FROM ( $sql ) AS SUBSELECT0};
+    is( $sel3->sql($dbh), $sql, 'union() as subselect' );
 }
 
 {

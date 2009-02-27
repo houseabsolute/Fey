@@ -6,12 +6,13 @@ use warnings;
 use Fey::FakeDBI;
 
 use Moose;
+use Fey::Types;
 
 with 'Fey::Role::Comparable';
 
 has '_select' =>
     ( is       => 'ro',
-      isa      => 'Fey::SQL::Select',
+      isa      => 'Fey.Type.SubSelectArg',
       required => 1,
       init_arg => 'select',
     );

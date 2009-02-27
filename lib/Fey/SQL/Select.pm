@@ -82,6 +82,8 @@ has '_having' =>
       init_arg  => undef,
     );
 
+my $is_subselect_arg =
+  Moose::Util::TypeConstraints::find_type_constraint('Fey.Type.SubSelectArg');
 
 sub select
 {
@@ -100,7 +102,7 @@ sub select
                   map { blessed $_ ? $_ : Fey::Literal->new_from_scalar($_) }
                   @select )
     {
-        if ( $elt->isa('Fey::SQL::Select' ) )
+        if ( $is_subselect_arg->check($elt) )
         {
             $elt = Fey::SQL::Fragment::SubSelect->new( select => $elt );
         }
@@ -128,7 +130,7 @@ sub from
     my $meth =
         ( @_ == 1 && blessed $_[0] && $_[0]->can('is_joinable') && $_[0]->is_joinable()
           ? '_from_one_table'
-          : @_ == 1 && blessed $_[0] && $_[0]->isa('Fey::SQL::Select')
+          : @_ == 1 && blessed $_[0] && $is_subselect_arg->check($_[0])
           ? '_from_subselect'
           : @_ == 2
           ? '_join'
