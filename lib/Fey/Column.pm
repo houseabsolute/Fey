@@ -18,6 +18,11 @@ use MooseX::StrictConstructor;
 
 with 'Fey::Role::ColumnLike';
 
+with 'Fey::Role::Aliasable' => 
+    { self_param  => 'column',
+      alias_class => 'Fey::Column::Alias',
+    };
+
 has 'id' =>
     ( is         => 'ro',
       lazy_build => 1,
@@ -128,15 +133,6 @@ sub _clone
 }
 
 sub is_alias { return 0 }
-
-sub alias
-{
-    my $self = shift;
-
-    my %p = @_ == 1 ? ( alias_name => $_[0] ) : @_;
-
-    return Fey::Column::Alias->new( column => $self, %p );
-}
 
 sub sql
 {

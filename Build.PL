@@ -16,6 +16,7 @@ my $builder =
                 'MooseX::SemiAffordanceAccessor' => '0.03',
                 'MooseX::StrictConstructor'      => '0.07',
                 'MooseX::Params::Validate'       => '0.08',
+                'MooseX::Role::Parameterized'    => '0.04',
                 'Scalar::Util'                   => '0',
                 'Task::Weaken'                   => '0.99',
               },

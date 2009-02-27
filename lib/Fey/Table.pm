@@ -21,6 +21,11 @@ use Moose::Util::TypeConstraints;
 
 with 'Fey::Role::TableLike';
 
+with 'Fey::Role::Aliasable' =>
+    { self_param  => 'table',
+      alias_class => 'Fey::Table::Alias',
+    };
+
 has 'id' =>
     ( is         => 'ro',
       lazy_build => 1,
@@ -254,10 +259,12 @@ sub has_candidate_key
 # Caching the objects by name prevents a weird bug where we have two
 # aliases of the same name, and one disappears because of weak
 # references, causing weird errors.
-sub alias
+around 'alias' => sub
 {
+    my $orig = shift;
     my $self = shift;
 
+    # bleh, duplicating code from Aliasable
     my %p = @_ == 1 ? ( alias_name => $_[0] ) : @_;
 
     if ( defined $p{alias_name} )
@@ -266,12 +273,12 @@ sub alias
             if $self->_has_aliased_table( $p{alias_name} );
     }
 
-    my $alias = Fey::Table::Alias->new( table => $self, %p );
+    my $alias = $orig->( $self, %p );
 
     $self->_store_aliased_table( $alias->alias_name() => $alias );
 
     return $alias;
-}
+};
 
 sub is_alias { 0 }
 
