@@ -8,6 +8,7 @@ use Fey::SQL::Insert;
 use Fey::SQL::Select;
 use Fey::SQL::Update;
 use Fey::SQL::Where;
+use Fey::SQL::Union;
 use Fey::Types;
 
 
@@ -39,6 +40,12 @@ sub new_where
 {
     shift;
     return Fey::SQL::Where->new(@_);
+}
+
+sub new_union
+{
+    shift;
+    return Fey::SQL::Union->new(@_);
 }
 
 
@@ -90,6 +97,10 @@ Returns a new C<Fey::SQL::Delete> object.
 =head2 Fey::SQL->new_where()
 
 Returns a new C<Fey::SQL::Where> object.
+
+=head2 Fey::SQL->new_union()
+
+Returns a new C<Fey::SQL::Union> object.
 
 =head1 CREATING SQL
 
