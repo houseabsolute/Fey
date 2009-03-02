@@ -14,6 +14,9 @@ extends 'Fey::Literal';
 with 'Fey::Role::Comparable', 'Fey::Role::Selectable',
      'Fey::Role::Orderable', 'Fey::Role::Groupable';
 
+with 'Fey::Literal::Aliasable' =>
+    { generated_alias_prefix => 'TERM' };
+
 has 'term' =>
     ( is       => 'ro',
       isa      => 'Fey.Type.LiteralTermArg',
@@ -41,10 +44,6 @@ sub sql
               @{ $self->term() }
             );
 }
-
-sub sql_with_alias { goto &sql }
-
-sub sql_or_alias { goto &sql }
 
 no Moose;
 
@@ -116,7 +115,7 @@ Returns the array reference of fragments passed to the constructor.
 =head2 $term->sql_or_alias()
 
 Returns the appropriate SQL snippet.  Any Fey objects in the C<term()> will
-have C<sql_or_alias()> called on them to generate their part of the term.
+have C<sql()> called on them to generate their part of the term.
 
 =head1 ROLES
 

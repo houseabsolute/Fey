@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 37;
+use Test::More tests => 38;
 
 use Fey::Literal;
 
@@ -19,9 +19,12 @@ use Fey::Literal;
         'number sql is 1237' );
 
     my $term = Fey::Literal::Term->new('1237.0');
-    is( $term->sql_with_alias($dbh), '1237.0', 'term sql_with_alias is 1237.0' );
     is( $term->sql_or_alias($dbh), '1237.0',
         'term sql_or_alias is 1237.0' );
+    is( $term->sql_with_alias($dbh), '1237.0 AS "TERM0"',
+        'term sql_with_alias is 1237.0 AS TERM0' );
+    is( $term->sql_or_alias($dbh), '"TERM0"',
+        'term sql_or_alias (after _with_alias) is TERM0' );
     is( $term->sql($dbh), '1237.0',
         'term sql is 1237.0' );
 
@@ -34,13 +37,15 @@ use Fey::Literal;
         q{"Foo"::text}, 'term sql is "Foo"::text' );
 
     my $string = Fey::Literal::String->new('Foo');
-    is( $string->sql_with_alias($dbh), q{'Foo'}, "string sql_with_alias is 'Foo'" );
+    is( $string->sql_with_alias($dbh), q{'Foo'},
+        "string sql_with_alias is 'Foo'" );
     is( $string->sql_or_alias($dbh), q{'Foo'}, "string sql_or_alias is 'Foo'" );
     is( $string->sql($dbh), q{'Foo'}, "string sql is 'Foo'" );
 
     $term = Fey::Literal::Term->new( $string, '::text' );
-    is( $term->sql_with_alias($dbh), q{'Foo'::text}, "complex term sql_with_alias" );
     is( $term->sql_or_alias($dbh), q{'Foo'::text}, "complex term sql_or_alias" );
+    is( $term->sql_with_alias($dbh), q{'Foo'::text AS "TERM1"},
+        "complex term sql_with_alias" );
     is( $term->sql($dbh), q{'Foo'::text}, "complex term sql" );
 
     $string = Fey::Literal::String->new("Weren't");

@@ -15,6 +15,9 @@ extends 'Fey::Literal';
 with 'Fey::Role::Comparable', 'Fey::Role::Selectable',
      'Fey::Role::Orderable', 'Fey::Role::Groupable';
 
+with 'Fey::Literal::Aliasable' =>
+    { generated_alias_prefix => 'FUNCTION' };
+
 has 'function' =>
     ( is       => 'ro',
       isa      => 'Str',
@@ -27,13 +30,6 @@ has 'args' =>
       default    => sub { [] },
       coerce     => 1,
     );
-
-has 'alias_name' =>
-    ( is      => 'rw',
-      isa     => 'Str',
-      writer  => 'set_alias_name',
-    );
-
 
 sub BUILDARGS
 {
@@ -55,37 +51,6 @@ sub sql
           @{ $_[0]->args() }
         );
     $sql .= ')';
-}
-
-sub sql_with_alias
-{
-    $_[0]->_make_alias()
-        unless $_[0]->alias_name();
-
-    my $sql = $_[0]->sql( $_[1] );
-
-    $sql .= ' AS ';
-    $sql .= $_[1]->quote_identifier( $_[0]->alias_name() );
-
-    return $sql;
-}
-
-{
-    my $Number = 0;
-    sub _make_alias
-    {
-        my $self = shift;
-
-        $self->set_alias_name( 'FUNCTION' . $Number++ );
-    }
-}
-
-sub sql_or_alias
-{
-    return $_[1]->quote_identifier( $_[0]->alias_name() )
-        if $_[0]->alias_name();
-
-    return $_[0]->sql( $_[1] );
 }
 
 sub is_groupable { $_[0]->alias_name() ? 1 : 0 }
