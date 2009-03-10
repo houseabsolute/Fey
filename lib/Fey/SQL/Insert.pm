@@ -62,8 +62,8 @@ sub into
     {
         $spec{ $col->name() } =
             $col->is_nullable()
-            ? { isa      => 'Fey.Type.NullableInsertValue' }
-            : { isa      => 'Fey.Type.NonNullableInsertValue' };
+            ? { isa => 'Fey.Type.NullableInsertValue' }
+            : { isa => 'Fey.Type.NonNullableInsertValue' };
     }
 
     $self->_set_values_spec(\%spec);
