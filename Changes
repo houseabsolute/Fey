@@ -1,3 +1,13 @@
+0.23    2008-03-23
+
+- Fey::SQL::Insert did not make sure that the order of the
+  bind_params() it returned actually matched the order of the columns
+  in the "INSERT ... INTO" clause. It accidentally worked sometimes
+  but was fundamentally broken. This only mattered if you were using
+  the auto_placeholders feature, so it did not affect
+  Fey::ORM. Reported and diagnosed by Dieter Pearcey.
+
+
 0.22    2008-02-24
 
 - A table that was passed to $sql->from($table) and also included in a
