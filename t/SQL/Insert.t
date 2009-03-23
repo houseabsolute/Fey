@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 27;
+use Test::More tests => 19;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -190,84 +190,4 @@ $s->table('User')->add_column($size);
     $q->values( size => 1 );
     is( $q->sql($dbh), q{INSERT INTO "User" ("size") VALUES (1)},
         'sql() for full insert clause' );
-}
-
-{
-    my $q = Fey::SQL->new_insert( auto_placeholders => 1 )->insert();
-
-    $q->into( $s->table('User')->column('user_id'),
-              $s->table('User')->column('username') );
-
-    $q->values( user_id => 42, username => 'Bubba' );
-
-    is( $q->columns_clause($dbh), q{("user_id", "username")},
-        'insert clause has columns in expected order' );
-    is( $q->values_clause($dbh), q{VALUES (?, ?)},
-        'values_clause() for two columns column with auto placeholders' );
-    is_deeply( [ $q->bind_params() ], [ 42, 'Bubba' ],
-               'bind params are in the right order' );
-}
-
-{
-    my $q = Fey::SQL->new_insert( auto_placeholders => 1 )->insert();
-
-    $q->into( $s->table('User')->column('username'),
-              $s->table('User')->column('user_id') );
-
-    $q->values( user_id => 42, username => 'Bubba' );
-
-    is( $q->columns_clause($dbh), q{("username", "user_id")},
-        'columns clause has columns in expected order' );
-    is_deeply( [ $q->bind_params() ], [ 'Bubba', 42 ],
-               'bind params are in the right order' );
-}
-
-{
-    package Num;
-
-    use overload '0+' => sub { ${ $_[0] } };
-
-    sub new
-    {
-        my $num = $_[1];
-        return bless \$num, __PACKAGE__;
-    }
-}
-
-{
-    package Str;
-
-    use overload q{""} => sub { ${ $_[0] } };
-
-    sub new
-    {
-        my $str = $_[1];
-        return bless \$str, __PACKAGE__;
-    }
-}
-
-{
-    my $q = Fey::SQL->new_insert( auto_placeholders => 1 )->insert();
-
-    $q->into( $s->table('User')->column('user_id'),
-              $s->table('User')->column('username') );
-
-    $q->values( user_id => Num->new(42), username => Str->new('Bubba') );
-
-    is( $q->values_clause($dbh), q{VALUES (?, ?)},
-        'values_clause() for two columns column with overloaded objects and auto placeholders' );
-    is_deeply( [ $q->bind_params() ], [ 42, 'Bubba' ],
-               'bind params with overloaded object' );
-}
-
-{
-    my $q = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
-
-    $q->into( $s->table('User')->column('user_id'),
-              $s->table('User')->column('username') );
-
-    $q->values( user_id => Num->new(42), username => Str->new('Bubba') );
-
-    is( $q->values_clause($dbh), q{VALUES (42, 'Bubba')},
-        'values_clause() for two columns column with overloaded object, no placeholders' );
 }
