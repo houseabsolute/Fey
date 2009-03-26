@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 27;
+use Test::More tests => 30;
 
 use Fey::SQL;
 
@@ -40,7 +40,7 @@ for my $keyword ( qw(UNION INTERSECT EXCEPT) )
 
         eval { $q->$method( 1, 2 ) };
         like( $@,
-              qr/did not pass the 'checking type constraint for Fey::SQL::Select'/,
+              qr/did not pass the 'checking type constraint for Fey\.Type\.SetOperationArg'/,
               "$method() with a non-Select parameter is an error",
             );
     }
@@ -98,5 +98,20 @@ for my $keyword ( qw(UNION INTERSECT EXCEPT) )
         $sql .= q{ ORDER BY "User"."user_id"};
 
         is( $q->sql($dbh), $sql, "$method() with order by" );
+    }
+
+    {
+        my $q = Fey::SQL->$new_method();
+
+        my $sel1 = Fey::SQL->new_select->select(1)->from( $s->table('User') );
+        my $sel2 = Fey::SQL->new_select->select(2)->from( $s->table('User') );
+        my $sel3 = Fey::SQL->new_select->select(3)->from( $s->table('User') );
+
+        $q->$method( $sel1, Fey::SQL->$new_method->$method( $sel2, $sel3 ) );
+
+        my $from = qq{FROM "User"};
+        my $sql = qq{(SELECT 1 $from) $keyword };
+        $sql .=   qq{((SELECT 2 $from) $keyword (SELECT 3 $from))};
+        is( $q->sql($dbh), $sql, "$method() with sub-$method" );
     }
 }
