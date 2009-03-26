@@ -62,8 +62,8 @@ sub into
     {
         $spec{ $col->name() } =
             $col->is_nullable()
-            ? { isa      => 'Fey.Type.NullableInsertValue' }
-            : { isa      => 'Fey.Type.NonNullableInsertValue' };
+            ? { isa => 'Fey.Type.NullableInsertValue' }
+            : { isa => 'Fey.Type.NonNullableInsertValue' };
     }
 
     $self->_set_values_spec(\%spec);
@@ -81,24 +81,29 @@ sub values
                         MX_PARAMS_VALIDATE_NO_CACHE => 1
                       );
 
-    for ( values %vals )
+    for my $col_name ( grep { exists $vals{$_} }
+                       map { $_->name() } @{ $self->_into() } )
     {
-        $_ .= ''
-            if blessed $_ && overload::Overloaded($_);
+        my $val = $vals{$col_name};
 
-        if ( ! blessed $_ )
+        $val .= ''
+            if blessed $val && overload::Overloaded($val);
+
+        if ( ! blessed $val )
         {
-            if ( defined $_ && $self->auto_placeholders() )
+            if ( defined $val && $self->auto_placeholders() )
             {
-                $self->_add_bind_param($_);
+                $self->_add_bind_param($val);
 
-                $_ = Fey::Placeholder->new();
+                $val = Fey::Placeholder->new();
             }
             else
             {
-                $_ = Fey::Literal->new_from_scalar($_);
+                $val = Fey::Literal->new_from_scalar($val);
             }
         }
+
+        $vals{$col_name} = $val;
     }
 
     $self->_add_values(\%vals);
@@ -242,6 +247,9 @@ This will be passed to C<< Fey::Literal->new_from_scalar() >>.
 =item * C<Fey::Placeholder> object
 
 =back
+
+You can call this method multiple times in order to do a multi-row
+insert.
 
 =head2 $insert->sql()
 
