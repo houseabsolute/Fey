@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 24;
+use Test::More tests => 27;
 
 use Fey::SQL;
 
@@ -73,6 +73,11 @@ for my $keyword ( qw(UNION INTERSECT EXCEPT) )
         my $sql = qq{(SELECT 1 FROM "User") };
         $sql   .= qq{$keyword ALL (SELECT 2 FROM "User")};
         is( $q->sql($dbh), $sql, "$method()->all() with two tables" );
+
+        my $sel3 = Fey::SQL->new_select->select(3)->from( $s->table('User') );
+
+        eval { $q->$method($sel3) };
+        is $@, '', 'no error from adding a single select when 2 are present';
     }
 
     {

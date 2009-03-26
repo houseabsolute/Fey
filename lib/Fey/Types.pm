@@ -105,7 +105,7 @@ subtype 'Fey.Type.SubSelectArg'
     => as 'Item'
     => where { return unless blessed $_[0];
                    $_[0]->isa('Fey::SQL::Select')
-                || $_[0]->does('Fey::Role::SetLike')
+                || $_[0]->does('Fey::Role::SetOperation')
              };
 
 subtype 'Fey.Type.SelectElement'
