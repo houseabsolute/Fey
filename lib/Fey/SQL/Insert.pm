@@ -232,9 +232,8 @@ some (like MySQL) do allow for multi-table inserts.
 
 =head2 $insert->values(...)
 
-This method takes a hash reference where the keys are column names,
-and values are the value to be inserted for that column. Each value
-can be of the following:
+This method takes a hash where the keys are column names, and values are the
+value to be inserted for that column. Each value can be of the following:
 
 =over 4
 
