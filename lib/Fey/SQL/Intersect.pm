@@ -15,27 +15,26 @@ __END__
 
 =head1 NAME
 
-Fey::SQL::Intersect - Represents a INTERSECT operation
+Fey::SQL::Intersect - Represents an INTERSECT operation
 
 =head1 SYNOPSIS
 
-  my $sql = Fey::SQL->new_intersect;
+  my $intersect = Fey::SQL->new_intersect;
 
-  $sql->intersect(
-    Fey::SQL->new_select->select(...),
-    Fey::SQL->new_select->select(...),
-    Fey::SQL->new_select->select(...),
-    ...
-  );
+  $intersect->intersect( Fey::SQL->new_select->select(...),
+                         Fey::SQL->new_select->select(...),
+                         Fey::SQL->new_select->select(...),
+                         ...
+                       );
 
-  $sql->order_by( $part_name, 'DESC' );
-  $sql->limit(10);
+  $intersect->order_by( $part_name, 'DESC' );
+  $intersect->limit(10);
 
-  print $sql->sql($dbh);
+  print $intersect->sql($dbh);
 
 =head1 DESCRIPTION
 
-This class represents a INTERSECT set operator.
+This class represents an INTERSECT set operator.
 
 =head1 METHODS
 
@@ -57,7 +56,7 @@ See L<Fey> for details on how to report bugs.
 
 Copyright 2006-2009 Dave Rolsky, All Rights Reserved.
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut

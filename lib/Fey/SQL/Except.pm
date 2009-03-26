@@ -13,27 +13,27 @@ no Moose;
 
 =head1 NAME
 
-Fey::SQL::Except - Represents a EXCEPT operation
+Fey::SQL::Except - Represents an EXCEPT operation
 
 =head1 SYNOPSIS
 
-  my $sql = Fey::SQL->new_except;
+  my $except = Fey::SQL->new_except;
 
-  $sql->except(
+  $except->except(
     Fey::SQL->new_select->select(...),
     Fey::SQL->new_select->select(...),
     Fey::SQL->new_select->select(...),
     ...
   );
 
-  $sql->order_by( $part_name, 'DESC' );
-  $sql->limit(10);
+  $except->order_by( $part_name, 'DESC' );
+  $except->limit(10);
 
-  print $sql->sql($dbh);
+  print $except->sql($dbh);
 
 =head1 DESCRIPTION
 
-This class represents a EXCEPT set operator.
+This class represents an EXCEPT set operator.
 
 =head1 METHODS
 
@@ -55,7 +55,7 @@ See L<Fey> for details on how to report bugs.
 
 Copyright 2006-2009 Dave Rolsky, All Rights Reserved.
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut

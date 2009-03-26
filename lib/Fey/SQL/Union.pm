@@ -19,19 +19,18 @@ Fey::SQL::Union - Represents a UNION operation
 
 =head1 SYNOPSIS
 
-  my $sql = Fey::SQL->new_union;
+  my $union = Fey::SQL->new_union;
 
-  $sql->union(
-    Fey::SQL->new_select->select(...),
-    Fey::SQL->new_select->select(...),
-    Fey::SQL->new_select->select(...),
-    ...
-  );
+  $union->union( Fey::SQL->new_select->select(...),
+                 Fey::SQL->new_select->select(...),
+                 Fey::SQL->new_select->select(...),
+                 ...
+               );
 
-  $sql->order_by( $part_name, 'DESC' );
-  $sql->limit(10);
+  $union->order_by( $part_name, 'DESC' );
+  $union->limit(10);
 
-  print $sql->sql($dbh);
+  print $union->sql($dbh);
 
 =head1 DESCRIPTION
 
@@ -57,7 +56,7 @@ See L<Fey> for details on how to report bugs.
 
 Copyright 2006-2009 Dave Rolsky, All Rights Reserved.
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut

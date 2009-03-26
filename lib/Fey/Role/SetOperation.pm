@@ -22,14 +22,13 @@ has 'is_all' =>
       writer  => '_set_is_all',
     );
 
-has '_set_element' =>
+has '_set_elements' =>
     ( metaclass => 'Collection::Array',
       is        => 'ro',
-      isa       => 'ArrayRef',
+      isa       => 'ArrayRef[Fey::SQL::Select]',
       default   => sub { [] },
-      provides  => { push     => '_add_set_elements',
-                     elements => '_set_elements',
-                     count    => '_set_element_count',
+      provides  => { push  => '_add_set_elements',
+                     count => '_set_element_count',
                    },
       init_arg  => undef,
     );
@@ -38,31 +37,30 @@ sub all
 {
     $_[0]->_set_is_all(1);
     return $_[0];
-};
+}
 
 sub bind_params
 {
     my $self = shift;
-    return 
-        ( map { $_->bind_params } $self->_set_elements
-        );
-};
+    return map { $_->bind_params } @{ $self->_set_elements() };
+}
 
-role {
+role
+{
     my $p = shift;
 
-    my $name = lc($p->keyword);
-
-    my $clause_method = $name . '_clause';
+    my $name = lc $p->keyword();
 
     method 'keyword_clause' => sub
     {
         my $self = shift;
 
         my $sql = uc($name);
-        $sql .= ' ALL' if $self->is_all;
+        $sql .= ' ALL' if $self->is_all();
         return $sql;
     };
+
+    my $clause_method = $name . '_clause';
 
     method 'sql' => sub
     {
@@ -70,20 +68,20 @@ role {
         my $dbh  = shift;
 
         return
-            ( join ' ',
+            ( join q{ },
               $self->$clause_method($dbh),
               $self->order_by_clause($dbh),
               $self->limit_clause($dbh),
             );
     };
 
-
     method $name => sub
     {
         my $self = shift;
 
         my $count = @_;
-        $count = 2 if $count < 2 and $self->_set_element_count < 2;
+        $count = 2
+            if $count < 2 && $self->_set_element_count() < 2;
 
         my (@set) = 
             pos_validated_list( \@_,
@@ -102,9 +100,9 @@ role {
         my $dbh  = shift;
 
         return
-            ( join ' ' . $self->keyword_clause($dbh) . ' ',
+            ( join q{ } . $self->keyword_clause($dbh) . { },
               map { '(' . $_->sql($dbh) . ')' }
-              $self->_set_elements
+              @{ $self->_set_elements() }
             );
     };
 };
@@ -117,7 +115,7 @@ __END__
 
 =head1 NAME
 
-Fey::Role::SetOperation - A role for things that are like a set operation
+Fey::Role::SetOperation - A role for things that are a set operation
 
 =head1 SYNOPSIS
 
@@ -127,8 +125,8 @@ Fey::Role::SetOperation - A role for things that are like a set operation
 
 =head1 DESCRIPTION
 
-Classes which do this role represent a query which can include multiple
-C<SELECT> queries.
+Classes which do this role represent a query which can include
+multiple C<SELECT> queries.
 
 =head1 PARAMETERS
 
@@ -139,23 +137,24 @@ C<EXCEPT>).
 
 =head1 METHODS
 
-This role provides the following methods, where C<$keyword> is the C<keyword>
-parameter, above:
+This role provides the following methods, where C<$keyword> is the
+C<keyword> parameter, above:
 
 =head2 $query->$keyword()
 
   $union->union($select1, $select2, $select3);
 
-Adds to the C<SELECT> queries that this set operation includes.
+Adds C<SELECT> queries to the list of queries that this set operation
+includes.
 
-A set operation must include at least two queries, so the first time this is
-called, at least two selects must be provided; subsequent calls do not suffer
-this constraint.
+A set operation must include at least two queries, so the first time
+this is called, at least two selects must be provided; subsequent
+calls do not suffer this constraint.
 
 =head2 $query->all()
 
-Sets whether or not C<ALL> is included in the SQL for this set operation (e.g.
-C<UNION ALL>).
+Sets whether or not C<ALL> is included in the SQL for this set
+operation (e.g.  C<UNION ALL>).
 
 =head2 $query->is_all()
 
@@ -189,7 +188,7 @@ See L<Fey> for details on how to report bugs.
 
 Copyright 2006-2009 Dave Rolsky, All Rights Reserved.
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut

@@ -12,10 +12,11 @@ my $s = Fey::Test->mock_test_schema_with_fks();
 my $dbh = Fey::Test->mock_dbh();
 
 my $subselect_id = 0;
-for my $keyword ( qw(UNION INTERSECT EXCEPT) )
+
+for my $keyword ( qw( UNION INTERSECT EXCEPT ) )
 {
-    my $new_method = "new_" . lc($keyword);
-    my $method = lc($keyword);
+    my $new_method = "new_" . lc $keyword;
+    my $method = lc $keyword;
 
     {
         my $q = Fey::SQL->$new_method();
@@ -56,7 +57,6 @@ for my $keyword ( qw(UNION INTERSECT EXCEPT) )
         my $sql = qq{(SELECT 1 FROM "User") $keyword (SELECT 2 FROM "User")};
         is( $q->sql($dbh), $sql, "$method() with two tables" );
 
-        
         my $sel3 = Fey::SQL->new_select->select(1)->from($q);
         $sql = qq{SELECT 1 FROM ( $sql ) AS SUBSELECT} . $subselect_id++;
         is( $sel3->sql($dbh), $sql, "$method() as subselect" );
@@ -86,11 +86,11 @@ for my $keyword ( qw(UNION INTERSECT EXCEPT) )
         my $user = $s->table('User');
 
         my $sel1 = Fey::SQL->new_select();
-        $sel1->select( $user->column('user_id') )->from( $user );
+        $sel1->select( $user->column('user_id') )->from($user);
 
         my $sel2 = Fey::SQL->new_select();
-        $sel2->select( $user->column('user_id') )->from( $user );
-                    
+        $sel2->select( $user->column('user_id') )->from($user);
+
         $q->$method( $sel1, $sel2 )->order_by( $user->column('user_id') );
 
         my $sql = q{(SELECT "User"."user_id" FROM "User")};
