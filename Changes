@@ -1,6 +1,7 @@
 0.24    2008-03-26
 
-- Support for UNION, INTERSECT, and EXCEPT queries.
+- Support for UNION, INTERSECT, and EXCEPT queries. Implemented by
+  Dieter Pearcey.
 
 
 0.23    2008-03-23
