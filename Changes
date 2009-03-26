@@ -1,3 +1,9 @@
+0.24    2008-03-26
+
+- Support for UNION, INTERSECT, and EXCEPT queries. This support isn't
+  quite complete, because you can only feed Fey::SQL::Select objects
+
+
 0.23    2008-03-23
 
 - Fey::SQL::Insert did not make sure that the order of the
