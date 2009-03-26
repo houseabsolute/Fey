@@ -101,12 +101,18 @@ for my $thing ( qw( Table Column ) )
                    return $_->does( 'Fey::Role::' . $thing . 'Like' )  };
 }
 
-subtype 'Fey.Type.SubSelectArg'
+subtype 'Fey.Type.SelectOrSetOperation'
     => as 'Item'
     => where { return unless blessed $_[0];
                    $_[0]->isa('Fey::SQL::Select')
                 || $_[0]->does('Fey::Role::SetOperation')
              };
+
+subtype 'Fey.Type.SubSelectArg'
+    => as 'Fey.Type.SelectOrSetOperation';
+
+subtype 'Fey.Type.SetOperationArg'
+    => as 'Fey.Type.SelectOrSetOperation';
 
 subtype 'Fey.Type.SelectElement'
     => as 'Item'

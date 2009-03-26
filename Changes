@@ -1,7 +1,6 @@
 0.24    2008-03-26
 
-- Support for UNION, INTERSECT, and EXCEPT queries. This support isn't
-  quite complete, because you can only feed Fey::SQL::Select objects
+- Support for UNION, INTERSECT, and EXCEPT queries.
 
 
 0.23    2008-03-23

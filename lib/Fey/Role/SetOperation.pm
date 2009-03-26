@@ -5,6 +5,7 @@ use warnings;
 
 use MooseX::Role::Parameterized;
 use MooseX::Params::Validate qw( pos_validated_list );
+use Fey::Types;
 
 parameter keyword =>
 (
@@ -25,7 +26,7 @@ has 'is_all' =>
 has '_set_elements' =>
     ( metaclass => 'Collection::Array',
       is        => 'ro',
-      isa       => 'ArrayRef[Fey::SQL::Select]',
+      isa       => 'ArrayRef[Fey.Type.SetOperationArg]',
       default   => sub { [] },
       provides  => { push  => '_add_set_elements',
                      count => '_set_element_count',
@@ -85,7 +86,7 @@ role
 
         my (@set) = 
             pos_validated_list( \@_,
-                                ( ( { isa => 'Fey::SQL::Select' } ) x $count ),
+                                ( ( { isa => 'Fey.Type.SetOperationArg' } ) x $count ),
                                 MX_PARAMS_VALIDATE_NO_CACHE => 1,
                               );
 
@@ -100,7 +101,7 @@ role
         my $dbh  = shift;
 
         return
-            ( join q{ } . $self->keyword_clause($dbh) . { },
+            ( join q{ } . $self->keyword_clause($dbh) . q{ },
               map { '(' . $_->sql($dbh) . ')' }
               @{ $self->_set_elements() }
             );
@@ -126,7 +127,7 @@ Fey::Role::SetOperation - A role for things that are a set operation
 =head1 DESCRIPTION
 
 Classes which do this role represent a query which can include
-multiple C<SELECT> queries.
+multiple C<SELECT> queries or set operations.
 
 =head1 PARAMETERS
 
@@ -144,11 +145,13 @@ C<keyword> parameter, above:
 
   $union->union($select1, $select2, $select3);
 
-Adds C<SELECT> queries to the list of queries that this set operation
+  $union->union($select, $except->except($select2, $select3));
+
+Adds C<SELECT> queries or set operations to the list of queries that this set operation
 includes.
 
 A set operation must include at least two queries, so the first time
-this is called, at least two selects must be provided; subsequent
+this is called, at least two arguments must be provided; subsequent
 calls do not suffer this constraint.
 
 =head2 $query->all()
