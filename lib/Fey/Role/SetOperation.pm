@@ -34,6 +34,11 @@ has '_set_elements' =>
       init_arg  => undef,
     );
 
+sub id
+{
+    return $_[0]->sql( 'Fey::FakeDBI' );
+}
+
 sub all
 {
     $_[0]->_set_is_all(1);
@@ -106,6 +111,12 @@ role
               @{ $self->_set_elements() }
             );
     };
+
+    with 'Fey::Role::HasAliasName'
+          => { generated_alias_prefix => uc $name,
+               sql_needs_parens => 1,
+             };
+
 };
 
 no MooseX::Role::Parameterized;
@@ -176,8 +187,8 @@ C<keyword_clause>.
 
 =head1 ROLES
 
-This class includes C<Fey::Role::SQL::HasOrderByClause> and
-C<Fey::Role::SQL::HasLimitClause>.
+This class includes C<Fey::Role::SQL::HasOrderByClause>,
+C<Fey::Role::SQL::HasLimitClause>, and C<Fey::Role::SQL::HasAliasName>.
 
 =head1 AUTHOR
 

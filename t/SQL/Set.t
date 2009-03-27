@@ -11,8 +11,6 @@ use Fey::SQL;
 my $s = Fey::Test->mock_test_schema_with_fks();
 my $dbh = Fey::Test->mock_dbh();
 
-my $subselect_id = 0;
-
 for my $keyword ( qw( UNION INTERSECT EXCEPT ) )
 {
     my $new_method = "new_" . lc $keyword;
@@ -58,7 +56,7 @@ for my $keyword ( qw( UNION INTERSECT EXCEPT ) )
         is( $q->sql($dbh), $sql, "$method() with two tables" );
 
         my $sel3 = Fey::SQL->new_select->select(1)->from($q);
-        $sql = qq{SELECT 1 FROM ( $sql ) AS SUBSELECT} . $subselect_id++;
+        $sql = qq{SELECT 1 FROM ( $sql ) AS "${keyword}0"};
         is( $sel3->sql($dbh), $sql, "$method() as subselect" );
     }
 
