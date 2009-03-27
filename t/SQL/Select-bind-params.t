@@ -58,7 +58,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->from($subselect);
 
     is( $q->from_clause($dbh),
-        q{FROM ( SELECT "User"."user_id" FROM "User" WHERE "User"."user_id" IN (?, ?, ?, ?) ) AS SUBSELECT0},
+        q{FROM ( SELECT "User"."user_id" FROM "User" WHERE "User"."user_id" IN (?, ?, ?, ?) ) AS "SUBSELECT0"},
         'subselect in FROM with placeholders' );
     is_deeply( [ $q->bind_params() ], [ 5, 6, 7, 9 ],
                'bind_params is [ 5, 6, 7, 9 ]' );

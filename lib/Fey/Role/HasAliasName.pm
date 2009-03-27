@@ -2,9 +2,14 @@ package Fey::Role::HasAliasName;
 
 use MooseX::Role::Parameterized;
 
-parameter generated_alias_prefix =>
-    ( isa     => 'Str',
+parameter 'generated_alias_prefix' =>
+    ( isa      => 'Str',
       required => 1,
+    );
+
+parameter 'sql_needs_parens' =>
+    ( isa     => 'Bool',
+      default => 0,
     );
 
 has 'alias_name' =>
@@ -20,7 +25,7 @@ sub sql_with_alias
     $_[0]->_make_alias()
         unless $_[0]->alias_name();
 
-    my $sql = $_[0]->sql( $_[1] );
+    my $sql = $_[0]->_sql_for_alias( $_[1] );
 
     $sql .= ' AS ';
     $sql .= $_[1]->quote_identifier( $_[0]->alias_name() );
@@ -44,6 +49,14 @@ role
     my $Num = 0;
 
     my $prefix = $p->generated_alias_prefix;
+    my $parens = $p->sql_needs_parens;
+
+    method _sql_for_alias => sub
+    {
+        my $sql = $_[0]->sql( $_[1] );
+        $sql = "( $sql )" if $parens;
+        return $sql;
+    };
 
     method '_make_alias' => sub
     {
@@ -83,6 +96,11 @@ usually because they have no other name of their own.
 
 The prefix that generated aliases will have, e.g. C<LITERAL>, C<FUNCTION>, etc.
 Required.
+
+=head2 sql_needs_parens
+
+Boolean.  If true, C<sql_with_alias()> will wrap the output of C<sql()> when
+generating its own output.  Default is false.
 
 =head1 METHODS
 
