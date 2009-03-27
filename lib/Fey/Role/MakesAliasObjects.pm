@@ -1,4 +1,4 @@
-package Fey::Role::Aliasable;
+package Fey::Role::MakesAliasObjects;
 
 use strict;
 use warnings;
@@ -27,12 +27,16 @@ role
 {
     my $p = shift;
 
+    my $alias_class = $p->alias_class;
+    my $self_param  = $p->self_param;
+    my $name_param  = $p->name_param;
+
     method 'alias' => sub
     {
         my $self = shift;
-        my %p = @_ == 1 ? ( $p->name_param() => $_[0] ) : @_;
+        my %p = @_ == 1 ? ( $name_param => $_[0] ) : @_;
 
-        return $p->alias_class->new( $p->self_param() => $self, %p );
+        return $alias_class->new( $self_param => $self, %p );
     };
 };
 
