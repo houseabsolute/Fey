@@ -21,7 +21,7 @@ use Moose::Util::TypeConstraints;
 
 with 'Fey::Role::TableLike';
 
-with 'Fey::Role::Aliasable' =>
+with 'Fey::Role::MakesAliasObjects' =>
     { self_param  => 'table',
       alias_class => 'Fey::Table::Alias',
     };
@@ -485,8 +485,8 @@ Returns a unique identifier for the table.
 
 =head1 ROLES
 
-This class does the L<Fey::Role::TableLike> and L<Fey::Role::Named>
-roles.
+This class does the L<Fey::Role::TableLike>, L<Fey::Role::MakesAliasObjects>,
+and L<Fey::Role::Named> roles.
 
 =head1 AUTHOR
 
