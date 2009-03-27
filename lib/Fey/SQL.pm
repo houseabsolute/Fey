@@ -8,6 +8,9 @@ use Fey::SQL::Insert;
 use Fey::SQL::Select;
 use Fey::SQL::Update;
 use Fey::SQL::Where;
+use Fey::SQL::Union;
+use Fey::SQL::Intersect;
+use Fey::SQL::Except;
 use Fey::Types;
 
 
@@ -41,6 +44,23 @@ sub new_where
     return Fey::SQL::Where->new(@_);
 }
 
+sub new_union
+{
+    shift;
+    return Fey::SQL::Union->new(@_);
+}
+
+sub new_intersect
+{
+    shift;
+    return Fey::SQL::Intersect->new(@_);
+}
+
+sub new_except
+{
+    shift;
+    return Fey::SQL::Except->new(@_);
+}
 
 1;
 
@@ -90,6 +110,18 @@ Returns a new C<Fey::SQL::Delete> object.
 =head2 Fey::SQL->new_where()
 
 Returns a new C<Fey::SQL::Where> object.
+
+=head2 Fey::SQL->new_union()
+
+Returns a new C<Fey::SQL::Union> object.
+
+=head2 Fey::SQL->new_intersect()
+
+Returns a new C<Fey::SQL::Intersect> object.
+
+=head2 Fey::SQL->new_except()
+
+Returns a new C<Fey::SQL::Except> object.
 
 =head1 CREATING SQL
 
