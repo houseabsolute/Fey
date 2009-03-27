@@ -15,7 +15,7 @@ extends 'Fey::Literal';
 with 'Fey::Role::Comparable', 'Fey::Role::Selectable',
      'Fey::Role::Orderable', 'Fey::Role::Groupable';
 
-with 'Fey::Literal::Aliasable' =>
+with 'Fey::Role::HasAliasName' =>
     { generated_alias_prefix => 'FUNCTION' };
 
 has 'function' =>
@@ -124,9 +124,9 @@ the function to be created.
 
 =head1 ROLES
 
-This class does the C<Fey::Role::Selectable>,
-C<Fey::Role::Comparable>, C<Fey::Role::Groupable>, and
-C<Fey::Role::Orderable> roles.
+This class does the C<Fey::Role::Selectable>, C<Fey::Role::Comparable>,
+C<Fey::Role::Groupable>, C<Fey::Role::Orderable>, and
+C<Fey::Role::HasAliasName> roles.
 
 This class overrides the C<is_groupable()> and C<is_orderable()>
 methods so that they only return true if the C<<
