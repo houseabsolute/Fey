@@ -6,7 +6,6 @@ use warnings;
 use Fey::Exceptions qw( param_error );
 use Fey::Literal;
 use Fey::SQL::Fragment::Join;
-use Fey::SQL::Fragment::SubSelect;
 use Fey::Types;
 use List::AllUtils qw( all );
 use Scalar::Util qw( blessed );
@@ -28,6 +27,11 @@ with 'Fey::Role::SQL::HasWhereClause'
 
 with 'Fey::Role::SQL::HasBindParams'
           => { excludes => 'bind_params' };
+
+with 'Fey::Role::HasAliasName'
+          => { generated_alias_prefix => 'SUBSELECT',
+               sql_needs_parens => 1,
+             };
 
 has '_select' =>
     ( metaclass => 'Collection::Array',
@@ -102,11 +106,6 @@ sub select
                   map { blessed $_ ? $_ : Fey::Literal->new_from_scalar($_) }
                   @select )
     {
-        if ( $is_subselect_arg->check($elt) )
-        {
-            $elt = Fey::SQL::Fragment::SubSelect->new( select => $elt );
-        }
-
         $self->_add_select_element($elt);
     }
 
@@ -167,7 +166,7 @@ sub _from_subselect
 {
     my $self = shift;
 
-    my $subsel = Fey::SQL::Fragment::SubSelect->new( select => $_[0] );
+    my $subsel = $_[0];
     $self->_set_from( $subsel->id() => $subsel );
 }
 
@@ -287,6 +286,11 @@ sub having
     $self->_condition( 'having', @_ );
 
     return $self;
+}
+
+sub id
+{
+    return $_[0]->sql( 'Fey::FakeDBI' );
 }
 
 sub sql
@@ -679,12 +683,17 @@ Returns the C<HAVING> clause portion of the SQL statement as a string.
 
 Returns the C<LIMIT> clause portion of the SQL statement as a string.
 
+=head2 $select->sql_or_alias()
+
+=head2 $select->sql_with_alias()
+
+Returns the appropriate SQL snippet.  See L<Fey::Role::HasAliasName>.
+
 =head1 ROLES
 
 This class does C<Fey::Role::SQL::HasBindParams>,
-C<Fey::Role::SQL::HasWhereClause>,
-C<Fey::Role::SQL::HasOrderByClause>, and
-C<Fey::Role::SQL::HasLimitClause> roles.
+C<Fey::Role::SQL::HasWhereClause>, C<Fey::Role::SQL::HasOrderByClause>,
+C<Fey::Role::SQL::HasLimitClause>, and C<Fey::Role::HasAliasName> roles.
 
 It also does the C<Fey::Role::SQL::Comparable> role. This allows a
 C<Fey::SQL::Select> object to be used as a subselect in C<WHERE>

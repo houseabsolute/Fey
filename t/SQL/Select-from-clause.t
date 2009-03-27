@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 36;
+use Test::More tests => 37;
 
 use Fey::SQL;
 
@@ -353,9 +353,13 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->from($subselect);
 
-    my $sql = q{FROM ( SELECT "User"."user_id" FROM "User" ) AS SUBSELECT0};
+    my $sql = q{FROM ( SELECT "User"."user_id" FROM "User" ) AS "SUBSELECT0"};
     is( $q->from_clause($dbh), $sql,
         'from_clause() for subselect' );
+    is( $subselect->alias_name, 'SUBSELECT0',
+        'subselect alias_name is set after use in from()'
+      );
+
 }
 
 {

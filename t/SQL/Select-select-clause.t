@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 13;
+use Test::More tests => 14;
 
 use Fey::SQL;
 
@@ -138,8 +138,11 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->select( $s->table('User')->column('user_id'), $subselect );
 
-    my $sql = q{SELECT "User"."user_id", ( SELECT "User"."email" FROM "User" ) AS SUBSELECT0};
+    my $sql = q{SELECT "User"."user_id", ( SELECT "User"."email" FROM "User" ) AS "SUBSELECT0"};
     is( $q->select_clause($dbh), $sql,
         'select_clause with subselect in SELECT clause'
+      );
+    is( $subselect->alias_name, 'SUBSELECT0', 
+        'subselect alias_name is available'
       );
 }
