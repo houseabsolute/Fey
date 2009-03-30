@@ -34,7 +34,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->order_by( $s->table('User')->column('user_id'), 'ASC' );
     is( $q->order_by_clause($dbh), q{ORDER BY "User"."user_id" ASC},
-        'order_by() one column' );
+        'order_by() one column explicit ASC' );
 }
 
 {
@@ -42,7 +42,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->order_by( $s->table('User')->column('user_id'), 'DESC' );
     is( $q->order_by_clause($dbh), q{ORDER BY "User"."user_id" DESC},
-        'order_by() one column' );
+        'order_by() one column explicit DESC' );
 }
 
 {
