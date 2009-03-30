@@ -1,3 +1,13 @@
+0.25
+
+- Major internals changes to how aliasable things are created and
+  used. Added two new roles, Fey::Role::MakesAliasObjects, and
+  Fey::Role::HasAliasName. All literals can now be aliased (including
+  Terms). A subselect is now just a Fey::SQL::Select object
+  internally, which makes the internals much cleaner. Implemented by
+  Dieter Pearcey.
+
+
 0.24    2008-03-26
 
 - Support for UNION, INTERSECT, and EXCEPT queries. Implemented by
