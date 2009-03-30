@@ -27,9 +27,9 @@ role
 {
     my $p = shift;
 
-    my $alias_class = $p->alias_class;
-    my $self_param  = $p->self_param;
-    my $name_param  = $p->name_param;
+    my $alias_class = $p->alias_class();
+    my $self_param  = $p->self_param();
+    my $name_param  = $p->name_param();
 
     method 'alias' => sub
     {
@@ -55,34 +55,34 @@ Fey::Role::MakesAliasObjects - A role for objects with separate alias objects
   package My::Thing;
 
   use Moose;
-  
-  with 'Fey::Role::MakesAliasObjects' => {
-    alias_class => 'My::Alias',
-    self_param  => 'thing',
-    name_param  => 'alias_name',
-  };
+
+  with 'Fey::Role::MakesAliasObjects'
+      => { alias_class => 'My::Alias',
+           self_param  => 'thing',
+           name_param  => 'alias_name',
+         };
 
 =head1 DESCRIPTION
 
-This role is for objects that generate separate alias objects, usually because
-they already have a name of their own.
+This role adds a "make an alias object" method to a class. This is for
+things like tables and columns, which can have aliases.
 
 =head1 PARAMETERS
 
 =head2 alias_class
 
-The name of the class whose C<new()> is called by the C<alias()> method (see
-below).  Required.
+The name of the class whose C<new()> is called by the C<alias()>
+method (see below). Required.
 
 =head2 self_param
 
-The name of the parameter to pass C<$self> to the C<alias_class>' C<new()>
-method as.  Required.
+The name of the parameter to pass C<$self> to the C<alias_class>'
+C<new()> method as. Required.
 
 =head2 name_param
 
-The name of the parameter to C<alias()> that passing a single string is assumed
-to be.  Defaults to C<alias_name>.
+The name of the parameter to C<alias()> that passing a single string
+is assumed to be. Defaults to C<alias_name>.
 
 =head1 METHODS
 
@@ -92,8 +92,9 @@ to be.  Defaults to C<alias_name>.
 
   my $alias = $obj->alias('an_alias');
 
-Create a new alias for this object.  If a single parameter is provided, it is
-assumed to be whatever the C<name_param> parameter specifies (see above).
+Create a new alias for this object.  If a single parameter is
+provided, it is assumed to be whatever the C<name_param> parameter
+specifies (see above).
 
 =head1 AUTHOR
 
@@ -107,7 +108,7 @@ See L<Fey> for details on how to report bugs.
 
 Copyright 2006-2009 Dave Rolsky, All Rights Reserved.
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut

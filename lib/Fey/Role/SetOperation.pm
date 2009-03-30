@@ -114,9 +114,8 @@ role
 
     with 'Fey::Role::HasAliasName'
           => { generated_alias_prefix => uc $name,
-               sql_needs_parens => 1,
+               sql_needs_parens       => 1,
              };
-
 };
 
 no MooseX::Role::Parameterized;
