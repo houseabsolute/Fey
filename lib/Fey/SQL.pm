@@ -243,7 +243,9 @@ to create subgroups.
 
 Many types of queries allow C<ORDER BY> clauses via the C<order_by()>
 method. This method accepts a list of items. The items in the list may
-be columns, functions, terms, or sort directions ("ASC" or "DESC").
+be columns, functions, terms, or sort directions ("ASC" or
+"DESC"). The sort direction can also specify "NULLS FIRST" or "NULLS
+LAST".
 
   # ORDER BY Part.size
   $sql->order_by( $size );
@@ -253,6 +255,9 @@ be columns, functions, terms, or sort directions ("ASC" or "DESC").
 
   # ORDER BY Part.size DESC, Part.name ASC
   $sql->order_by( $size, 'DESC', $name, 'ASC' );
+
+  # ORDER BY Part.size ASC NULLS FIRST
+  $sql->order_by( $size, 'ASC NULLS FIRST' );
 
   my $length = Fey::Literal::Function->new( 'LENGTH', $name );
   # ORDER BY LENGTH( Part.name ) ASC

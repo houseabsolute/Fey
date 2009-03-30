@@ -177,7 +177,7 @@ subtype 'Fey.Type.OrderByElement'
     => as 'Item'
     => where { if ( ! blessed $_ )
                {
-                   return $_ =~ /^(?:asc|desc)$/i;
+                   return $_ =~ /^(?:asc|desc)(?: nulls (?:last|first))?$/i;
                }
 
                return 1
