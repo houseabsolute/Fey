@@ -7,6 +7,9 @@
   internally, which makes the internals much cleaner. Implemented by
   Dieter Pearcey.
 
+- Added support for "NULLS FIRST/LAST" in ORDER BY
+  clauses. Implemented by Erik Rijkers. RT #44656.
+
 
 0.24    2008-03-26
 
