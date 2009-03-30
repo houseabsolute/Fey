@@ -18,7 +18,7 @@ use MooseX::StrictConstructor;
 
 with 'Fey::Role::ColumnLike';
 
-with 'Fey::Role::MakesAliasObjects' => 
+with 'Fey::Role::MakesAliasObjects' =>
     { self_param  => 'column',
       alias_class => 'Fey::Column::Alias',
     };

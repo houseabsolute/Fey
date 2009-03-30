@@ -340,7 +340,7 @@ sub from_clause
     {
         my $join_sql = $frag->sql_with_alias( $dbh, \%seen );
 
-        # the fragment could be a subselect
+        # the fragment could be a Fey::SQL::Select itself
         my @tables = $frag->can('tables') ? $frag->tables() : ();
 
         $seen{ $_->id() } = 1
@@ -688,6 +688,10 @@ Returns the C<LIMIT> clause portion of the SQL statement as a string.
 =head2 $select->sql_with_alias()
 
 Returns the appropriate SQL snippet.  See L<Fey::Role::HasAliasName>.
+
+=head2 $select->id()
+
+Returns a unique identifier for the select.
 
 =head1 ROLES
 
