@@ -1,4 +1,4 @@
-0.25
+0.25    2008-04-01
 
 - Major internals changes to how aliasable things are created and
   used. Added two new roles, Fey::Role::MakesAliasObjects, and
