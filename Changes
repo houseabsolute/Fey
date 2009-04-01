@@ -4,8 +4,9 @@
   used. Added two new roles, Fey::Role::MakesAliasObjects, and
   Fey::Role::HasAliasName. All literals can now be aliased (including
   Terms). A subselect is now just a Fey::SQL::Select object
-  internally, which makes the internals much cleaner. Implemented by
-  Dieter Pearcey.
+  internally, which makes the internals much cleaner. This also means
+  that a Fey::SQL::Select has an ->alias_name. Implemented by Dieter
+  Pearcey.
 
 - Added support for "NULLS FIRST/LAST" in ORDER BY
   clauses. Implemented by Erik Rijkers. RT #44656.
