@@ -1,3 +1,9 @@
+0.26    2008-04-04
+
+- Some uses of Fey::SQL::Fragment::SubSelect were still lingering in
+  the code, so a fresh install failed. Reported by Chad Granum.
+
+
 0.25    2008-04-01
 
 - Major internals changes to how aliasable things are created and
