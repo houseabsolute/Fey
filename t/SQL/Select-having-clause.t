@@ -106,7 +106,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->having( $s->table('User')->column('user_id'), 'IN', $sub );
 
-    is( $q->having_clause($dbh), q{HAVING "User"."user_id" IN (( SELECT "User"."user_id" FROM "User" ))},
+    is( $q->having_clause($dbh), q{HAVING "User"."user_id" IN (SELECT "User"."user_id" FROM "User")},
         'comparison with subselect' );
 }
 

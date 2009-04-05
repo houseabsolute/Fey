@@ -75,7 +75,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->where( $s->table('User')->column('user_id'), 'IN', $subselect );
 
     is( $q->where_clause($dbh),
-        q{WHERE "User"."user_id" IN (( SELECT "User"."user_id" FROM "User" WHERE "User"."user_id" IN (?, ?, ?, ?) ))},
+        q{WHERE "User"."user_id" IN (SELECT "User"."user_id" FROM "User" WHERE "User"."user_id" IN (?, ?, ?, ?))},
         'subselect in WHERE with placeholders' );
     is_deeply( [ $q->bind_params() ], [ 5, 6, 7, 9 ],
                'bind_params is [ 5, 6, 7, 9 ]' );
@@ -103,7 +103,7 @@ my $dbh = Fey::Test->mock_dbh();
     $q->having( $s->table('User')->column('user_id'), 'IN', $subselect );
 
     is( $q->having_clause($dbh),
-        q{HAVING "User"."user_id" IN (( SELECT "User"."user_id" FROM "User" WHERE "User"."user_id" IN (?, ?, ?, ?) ))},
+        q{HAVING "User"."user_id" IN (SELECT "User"."user_id" FROM "User" WHERE "User"."user_id" IN (?, ?, ?, ?))},
         'subselect in HAVING with placeholders' );
     is_deeply( [ $q->bind_params() ], [ 5, 6, 7, 9 ],
                'bind_params is [ 5, 6, 7, 9 ]' );

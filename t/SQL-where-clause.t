@@ -106,7 +106,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->where( $s->table('User')->column('user_id'), 'IN', $sub );
 
-    is( $q->where_clause($dbh), q{WHERE "User"."user_id" IN (( SELECT "User"."user_id" FROM "User" ))},
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" IN (SELECT "User"."user_id" FROM "User")},
         'comparison with subselect' );
 }
 

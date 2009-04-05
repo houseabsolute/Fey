@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 use Fey::Exceptions qw( param_error );
-use Fey::SQL::Fragment::SubSelect;
 use Fey::Literal;
 use Fey::Placeholder;
 use Fey::Types;
@@ -56,8 +55,6 @@ sub BUILDARGS
             if ( $_->isa('Fey::SQL::Select') )
             {
                 push @bind, $_->bind_params();
-
-                $_ = Fey::SQL::Fragment::SubSelect->new( select => $_ );
             }
 
             next;
@@ -93,7 +90,7 @@ sub BUILDARGS
 
     }
 
-    if ( grep { $_->isa('Fey::SQL::Fragment::SubSelect') } @rhs )
+    if ( grep { $_->isa('Fey::SQL::Select') } @rhs )
     {
         param_error "Cannot use a subselect on the right-hand side with $operator"
             unless $operator =~ /$in_comp_re/;
