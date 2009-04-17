@@ -27,171 +27,171 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_update()->update( $s->table('User') );
+    my $update = Fey::SQL->new_update()->update( $s->table('User') );
 
-    is( $q->update_clause($dbh), q{UPDATE "User"},
+    is( $update->update_clause($dbh), q{UPDATE "User"},
         'update clause for one table' );
 }
 
 {
-    my $q = Fey::SQL->new_update()
+    my $update = Fey::SQL->new_update()
                     ->update( $s->table('User'), $s->table('UserGroup') );
 
-    is( $q->update_clause($dbh), q{UPDATE "User", "UserGroup"},
+    is( $update->update_clause($dbh), q{UPDATE "User", "UserGroup"},
         'update clause for two tables' );
 }
 
 {
-    my $q = Fey::SQL->new_update( auto_placeholders => 0 );
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('username'), 'bubba' );
+    my $update = Fey::SQL->new_update( auto_placeholders => 0 );
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('username'), 'bubba' );
 
-    is( $q->set_clause($dbh), q{SET "username" = 'bubba'},
+    is( $update->set_clause($dbh), q{SET "username" = 'bubba'},
         'set_clause() for one column' );
 }
 
 {
-    my $q = Fey::SQL->new_update( auto_placeholders => 0 );
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('username'), 'bubba',
-             $s->table('User')->column('email'), 'bubba@bubba.com',
-           );
+    my $update = Fey::SQL->new_update( auto_placeholders => 0 );
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('username'), 'bubba',
+                  $s->table('User')->column('email'), 'bubba@bubba.com',
+                );
 
-    is( $q->set_clause($dbh),
+    is( $update->set_clause($dbh),
         q{SET "username" = 'bubba', "email" = 'bubba@bubba.com'},
         'set_clause() for two columns' );
 }
 
 {
-    my $q = Fey::SQL->new_update();
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('username'),
-             $s->table('User')->column('email'),
-           );
+    my $update = Fey::SQL->new_update();
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('username'),
+                  $s->table('User')->column('email'),
+                );
 
-    is( $q->set_clause($dbh),
+    is( $update->set_clause($dbh),
         q{SET "username" = "User"."email"},
         'set_clause() for column = columns' );
 }
 
 {
-    my $q = Fey::SQL->new_update();
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('size'),
-             Fey::Literal->new_from_scalar(undef),
-           );
+    my $update = Fey::SQL->new_update();
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('size'),
+                  Fey::Literal->new_from_scalar(undef),
+                );
 
-    is( $q->set_clause($dbh),
+    is( $update->set_clause($dbh),
         q{SET "size" = NULL},
         'set_clause() for column = NULL (literal)' );
 }
 
 {
-    my $q = Fey::SQL->new_update();
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('username'),
-             Fey::Literal->new_from_scalar('string'),
-           );
+    my $update = Fey::SQL->new_update();
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('username'),
+                  Fey::Literal->new_from_scalar('string'),
+                );
 
-    is( $q->set_clause($dbh),
+    is( $update->set_clause($dbh),
         q{SET "username" = 'string'},
         'set_clause() for column = string (literal)' );
 }
 
 {
-    my $q = Fey::SQL->new_update();
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('username'),
-             Fey::Literal->new_from_scalar(42),
-           );
+    my $update = Fey::SQL->new_update();
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('username'),
+                  Fey::Literal->new_from_scalar(42),
+                );
 
-    is( $q->set_clause($dbh),
+    is( $update->set_clause($dbh),
         q{SET "username" = 42},
         'set_clause() for column = number (literal)' );
 }
 
 {
-    my $q = Fey::SQL->new_update();
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('username'),
-             Fey::Literal::Function->new( 'NOW' ),
-           );
+    my $update = Fey::SQL->new_update();
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('username'),
+                  Fey::Literal::Function->new( 'NOW' ),
+                );
 
-    is( $q->set_clause($dbh),
+    is( $update->set_clause($dbh),
         q{SET "username" = NOW()},
         'set_clause() for column = function (literal)' );
 }
 
 {
-    my $q = Fey::SQL->new_update();
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('username'),
-             Fey::Literal::Term->new( 'thingy' ),
-           );
+    my $update = Fey::SQL->new_update();
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('username'),
+                  Fey::Literal::Term->new( 'thingy' ),
+                );
 
-    is( $q->set_clause($dbh),
+    is( $update->set_clause($dbh),
         q{SET "username" = thingy},
         'set_clause() for column = term (literal)' );
 }
 
 {
-    my $q = Fey::SQL->new_update();
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('username'),
-             Fey::Literal::Term->new( 'thingy' ),
-           );
+    my $update = Fey::SQL->new_update();
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('username'),
+                  Fey::Literal::Term->new( 'thingy' ),
+                );
 
-    is( $q->set_clause($dbh),
+    is( $update->set_clause($dbh),
         q{SET "username" = thingy},
         'set_clause() for column = term (literal)' );
 }
 
 {
-    my $q = Fey::SQL->new_update( auto_placeholders => 0 );
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('username'), 'hello' );
-    $q->where( $s->table('User')->column('user_id'), '=', 10 );
-    $q->order_by( $s->table('User')->column('user_id') );
-    $q->limit(10);
+    my $update = Fey::SQL->new_update( auto_placeholders => 0 );
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('username'), 'hello' );
+    $update->where( $s->table('User')->column('user_id'), '=', 10 );
+    $update->order_by( $s->table('User')->column('user_id') );
+    $update->limit(10);
 
-    is( $q->sql($dbh),
+    is( $update->sql($dbh),
         q{UPDATE "User" SET "username" = 'hello' WHERE "User"."user_id" = 10 ORDER BY "User"."user_id" LIMIT 10},
         'update sql with where clause, order by, and limit' );
 }
 
 {
-    my $q = Fey::SQL->new_update( auto_placeholders => 0 );
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('email'), undef );
+    my $update = Fey::SQL->new_update( auto_placeholders => 0 );
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('email'), undef );
 
-    is( $q->set_clause($dbh),
+    is( $update->set_clause($dbh),
         q{SET "email" = NULL},
         'set a column to NULL with placeholders off' );
 }
 
 
 {
-    my $q = Fey::SQL->new_update();
-    $q->update( $s->table('User'), $s->table('Group') );
-    $q->set( $s->table('User')->column('username'), $s->table('Group')->column('name') );
+    my $update = Fey::SQL->new_update();
+    $update->update( $s->table('User'), $s->table('Group') );
+    $update->set( $s->table('User')->column('username'), $s->table('Group')->column('name') );
 
-    is( $q->set_clause($dbh), q{SET "User"."username" = "Group"."name"},
+    is( $update->set_clause($dbh), q{SET "User"."username" = "Group"."name"},
         'set_clause() for multi-table update' );
 }
 
 {
-    my $q = Fey::SQL->new_update();
-    $q->update( $s->table('User') );
-    eval { $q->set() };
+    my $update = Fey::SQL->new_update();
+    $update->update( $s->table('User') );
+    eval { $update->set() };
 
     like( $@, qr/list of paired/,
           'set() called with no parameters' );
 }
 
 {
-    my $q = Fey::SQL->new_update();
-    $q->update( $s->table('User') );
-    eval { $q->set( $s->table('User')->column('username') ) };
+    my $update = Fey::SQL->new_update();
+    $update->update( $s->table('User') );
+    eval { $update->set( $s->table('User')->column('username') ) };
 
     like( $@, qr/list of paired/,
           'set() called with one parameter' );
@@ -210,23 +210,23 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_update( auto_placeholders => 1 );
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('user_id'), Num->new(42) );
+    my $update = Fey::SQL->new_update( auto_placeholders => 1 );
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('user_id'), Num->new(42) );
 
-    is( $q->set_clause($dbh), q{SET "user_id" = ?},
+    is( $update->set_clause($dbh), q{SET "user_id" = ?},
         'set_clause() for one column with overloaded object and auto placeholders' );
-    is_deeply( [ $q->bind_params() ], [ 42 ],
+    is_deeply( [ $update->bind_params() ], [ 42 ],
                'bind params with overloaded object' );
 }
 
 
 {
-    my $q = Fey::SQL->new_update( auto_placeholders => 0 );
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('user_id'), Num->new(42) );
+    my $update = Fey::SQL->new_update( auto_placeholders => 0 );
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('user_id'), Num->new(42) );
 
-    is( $q->set_clause($dbh), q{SET "user_id" = 42},
+    is( $update->set_clause($dbh), q{SET "user_id" = 42},
         'set_clause() for one column with overloaded object, no placeholders' );
 }
 
@@ -243,22 +243,22 @@ $s->table('User')->add_column($size);
 }
 
 {
-    my $q = Fey::SQL->new_update( auto_placeholders => 1 );
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('username'), Str->new('Bubba') );
+    my $update = Fey::SQL->new_update( auto_placeholders => 1 );
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('username'), Str->new('Bubba') );
 
-    is( $q->set_clause($dbh), q{SET "username" = ?},
+    is( $update->set_clause($dbh), q{SET "username" = ?},
         'set_clause() for one column with overloaded object and auto placeholders' );
-    is_deeply( [ $q->bind_params() ], [ 'Bubba' ],
+    is_deeply( [ $update->bind_params() ], [ 'Bubba' ],
                'bind params with overloaded object' );
 }
 
 
 {
-    my $q = Fey::SQL->new_update( auto_placeholders => 0 );
-    $q->update( $s->table('User') );
-    $q->set( $s->table('User')->column('username'), Str->new('Bubba') );
+    my $update = Fey::SQL->new_update( auto_placeholders => 0 );
+    $update->update( $s->table('User') );
+    $update->set( $s->table('User')->column('username'), Str->new('Bubba') );
 
-    is( $q->set_clause($dbh), q{SET "username" = 'Bubba'},
+    is( $update->set_clause($dbh), q{SET "username" = 'Bubba'},
         'set_clause() for one column with overloaded object, no placeholders' );
 }
