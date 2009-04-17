@@ -87,7 +87,7 @@ has '_having' =>
     );
 
 my $is_subselect_arg =
-  Moose::Util::TypeConstraints::find_type_constraint('Fey.Type.SubSelectArg');
+    Moose::Util::TypeConstraints::find_type_constraint('Fey.Type.SubSelectArg');
 
 sub select
 {
