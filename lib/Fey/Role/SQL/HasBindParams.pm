@@ -40,7 +40,7 @@ Fey::Role::SQL::HasBindParams - A role for queries which can have bind parameter
 
 =head1 SYNOPSIS
 
-  use MooseX::StrictConstructor;
+  use Moose;
 
   with 'Fey::Role::SQL::HasBindParams';
 

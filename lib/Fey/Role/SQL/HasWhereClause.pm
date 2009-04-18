@@ -186,7 +186,7 @@ Fey::Role::SQL::HasWhereClause - A role for queries which can include a WHERE cl
 
 =head1 SYNOPSIS
 
-  use MooseX::StrictConstructor;
+  use Moose;
 
   with 'Fey::Role::SQL::HasWhereClause';
 

@@ -20,7 +20,7 @@ Fey::Role::Orderable - A role for things that can be part of a ORDER BY clause
 
 =head1 SYNOPSIS
 
-  use MooseX::StrictConstructor;
+  use Moose;
 
   with 'Fey::Role::Orderable';
 

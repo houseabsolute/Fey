@@ -61,3 +61,45 @@ role
 no MooseX::Role::Parameterized;
 
 1;
+
+__END__
+
+=head1 NAME
+
+Fey::Role::SQL::Cloneable - Adds a just-deep-enough clone() method to SQL objects
+
+=head1 SYNOPSIS
+
+  use Moose;
+
+  with 'Fey::Role::SQL::Cloneable';
+
+=head1 DESCRIPTION
+
+Classes which do this role have a C<clone()> method which does a
+just-deep-enough clone of the object.
+
+=head1 METHODS
+
+This role provides the following methods:
+
+=head2 $query->clone()
+
+Returns a new object which is a clone of the original.
+
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 BUGS
+
+See L<Fey> for details on how to report bugs.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2009 Dave Rolsky, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut

@@ -20,7 +20,7 @@ Fey::Role::Selectable - A role for things that can go in a SELECT clause
 
 =head1 SYNOPSIS
 
-  use MooseX::StrictConstructor;
+  use Moose;
 
   with 'Fey::Role::Selectable';
 
