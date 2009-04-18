@@ -1,3 +1,8 @@
+0.27    2008-04-18
+
+- All SQL objects now implement a clone() method.
+
+
 0.26    2008-04-04
 
 - Some uses of Fey::SQL::Fragment::SubSelect were still lingering in
