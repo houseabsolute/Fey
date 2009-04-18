@@ -313,12 +313,28 @@ value when creating the object:
 In this case, values will be quoted as needed and inserted directly
 into the generated SQL.
 
+=head2 Cloning
+
+Every SQL object has a C<clone()> method. This is useful if you want
+to have an object that you use as the base for multiple queries.
+
+  my $user_select = Fey::SQL->new_select( $user_table )
+                            ->from( $user_table);
+
+  my $select_new =
+      $user_select->clone()
+                  ->where( $creation_column, '>=', $six_months_ago );
+
+  my $select_old
+      $user_select->clone()
+                  ->where( $creation_column, '<', $six_months_ago );
+
 =head2 Overloaded Objects as Parameters
 
-In any place where you can pass a plain scalar, you can also pass an
-overloaded object that overloads stringification or numification. This
-includes C<WHERE> clause comparisons, C<VALUES> in an C<INSERT>, and
-C<SET> clauses in an C<UPDATE>.
+Any method which accepts a plain scalar can also take an overloaded
+object that overloads stringification or numification. This includes
+C<WHERE> clause comparisons, C<VALUES> in an C<INSERT>, and C<SET>
+clauses in an C<UPDATE>.
 
 =head1 AUTHOR
 
