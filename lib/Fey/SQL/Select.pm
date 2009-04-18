@@ -17,8 +17,9 @@ use MooseX::StrictConstructor;
 
 with 'Fey::Role::Comparable',
      'Fey::Role::Selectable',
-     'Fey::Role::SQL::HasOrderByClause',
-     'Fey::Role::SQL::HasLimitClause';
+     'Fey::Role::SQL::HasOrderByClause';
+
+with 'Fey::Role::SQL::HasLimitClause';
 
 with 'Fey::Role::SQL::HasWhereClause'
           => { excludes => 'bind_params',
@@ -85,6 +86,8 @@ has '_having' =>
                    },
       init_arg  => undef,
     );
+
+with 'Fey::Role::SQL::Cloneable';
 
 my $is_subselect_arg =
     Moose::Util::TypeConstraints::find_type_constraint('Fey.Type.SubSelectArg');

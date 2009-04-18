@@ -53,7 +53,8 @@ sub bind_params
 
 role
 {
-    my $p = shift;
+    my $p     = shift;
+    my %extra = @_;
 
     my $name = lc $p->keyword();
 
@@ -111,6 +112,8 @@ role
               @{ $self->_set_elements() }
             );
     };
+
+    with 'Fey::Role::SQL::Cloneable' => { real_class => $extra{consumer} };
 
     with 'Fey::Role::HasAliasName'
           => { generated_alias_prefix => uc $name,

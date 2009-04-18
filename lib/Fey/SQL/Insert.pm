@@ -35,6 +35,8 @@ has '_values' =>
       init_arg  => undef,
     );
 
+with 'Fey::Role::SQL::Cloneable';
+
 sub insert { return $_[0] }
 
 sub into

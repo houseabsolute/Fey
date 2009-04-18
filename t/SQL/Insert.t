@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 19;
+use Test::More tests => 21;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -190,4 +190,22 @@ $s->table('User')->add_column($size);
     $insert->values( size => 1 );
     is( $insert->sql($dbh), q{INSERT INTO "User" ("size") VALUES (1)},
         'sql() for full insert clause' );
+}
+
+{
+    my $insert1 = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
+
+    $insert1->into( $s->table('User')->column('size') );
+
+    my $insert2 = $insert1->clone();
+
+    $insert1->values( size => 1 );
+
+    $insert2->values( size => 42 );
+
+    is( $insert1->sql($dbh), q{INSERT INTO "User" ("size") VALUES (1)},
+        'sql() for full insert clause is unaffected by cloning' );
+
+    is( $insert2->sql($dbh), q{INSERT INTO "User" ("size") VALUES (42)},
+        'sql() for cloned insert clause has different value' );
 }

@@ -44,6 +44,7 @@ has '_set_pairs' =>
       init_arg  => undef,
     );
 
+with 'Fey::Role::SQL::Cloneable';
 
 sub update
 {

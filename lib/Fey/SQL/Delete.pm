@@ -24,6 +24,7 @@ has '_from' =>
       init_arg => undef,
     );
 
+with 'Fey::Role::SQL::Cloneable';
 
 sub delete { return $_[0] }
 

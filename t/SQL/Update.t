@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 23;
+use Test::More tests => 25;
 
 use Fey::SQL;
 
@@ -253,7 +253,6 @@ $s->table('User')->add_column($size);
                'bind params with overloaded object' );
 }
 
-
 {
     my $update = Fey::SQL->new_update( auto_placeholders => 0 );
     $update->update( $s->table('User') );
@@ -261,4 +260,24 @@ $s->table('User')->add_column($size);
 
     is( $update->set_clause($dbh), q{SET "username" = 'Bubba'},
         'set_clause() for one column with overloaded object, no placeholders' );
+}
+
+{
+    my $update1 = Fey::SQL->new_update( auto_placeholders => 0 );
+    $update1->update( $s->table('User') );
+    $update1->set( $s->table('User')->column('username'), 'hello' );
+
+    my $update2 = $update1->clone();
+
+    $update2->where( $s->table('User')->column('user_id'), '=', 10 );
+    $update2->order_by( $s->table('User')->column('user_id') );
+    $update2->limit(10);
+
+    is( $update1->sql($dbh),
+        q{UPDATE "User" SET "username" = 'hello'},
+        'original update sql does not have where clause, order by, or limit' );
+
+    is( $update2->sql($dbh),
+        q{UPDATE "User" SET "username" = 'hello' WHERE "User"."user_id" = 10 ORDER BY "User"."user_id" LIMIT 10},
+        'cloned update sql has where clause, order by, and limit' );
 }

@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 4;
+use Test::More tests => 6;
 
 use Fey::SQL;
 
@@ -51,4 +51,23 @@ $s->table('User')->add_column($size);
     is( $delete->sql($dbh),
         q{DELETE FROM "User" WHERE "User"."user_id" = 10 ORDER BY "User"."user_id" LIMIT 10},
         'delete sql with where clause, order by, and limit' );
+}
+
+{
+    my $delete1 = Fey::SQL->new_delete();
+    $delete1->delete()->from( $s->table('User') );
+
+    my $delete2 = $delete1->clone();
+
+    $delete2->where( $s->table('User')->column('user_id'), '=', 10 );
+    $delete2->order_by( $s->table('User')->column('user_id') );
+    $delete2->limit(10);
+
+    is( $delete1->sql($dbh),
+        q{DELETE FROM "User"},
+        'original delete sql' );
+
+    is( $delete2->sql($dbh),
+        q{DELETE FROM "User" WHERE "User"."user_id" = ? ORDER BY "User"."user_id" LIMIT 10},
+        'cloned delete sql adds where clause, order by, and limit' );
 }
