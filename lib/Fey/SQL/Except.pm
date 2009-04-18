@@ -7,6 +7,8 @@ use Moose;
 
 with 'Fey::Role::SetOperation' => { keyword => 'EXCEPT' };
 
+with 'Fey::Role::SQL::Cloneable';
+
 no Moose;
 
 1;

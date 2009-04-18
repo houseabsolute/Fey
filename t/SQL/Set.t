@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 30;
+use Test::More tests => 36;
 
 use Fey::SQL;
 
@@ -111,5 +111,25 @@ for my $keyword ( qw( UNION INTERSECT EXCEPT ) )
         my $sql = qq{(SELECT 1 $from) $keyword };
         $sql .=   qq{((SELECT 2 $from) $keyword (SELECT 3 $from))};
         is( $set_op->sql($dbh), $sql, "$method() with sub-$method" );
+    }
+
+    {
+        my $set_op1 = Fey::SQL->$new_method();
+
+        my $sel1 = Fey::SQL->new_select->select(1)->from( $s->table('User') );
+        my $sel2 = Fey::SQL->new_select->select(2)->from( $s->table('User') );
+        my $sel3 = Fey::SQL->new_select->select(3)->from( $s->table('User') );
+
+        $set_op1->$method( $sel1, $sel2 );
+
+        my $set_op2 = $set_op1->clone();
+        $set_op2->$method( $sel3 );
+
+        is( $set_op1->sql($dbh), qq{(SELECT 1 FROM "User") $keyword (SELECT 2 FROM "User")},
+            "original $method has two selects" );
+
+        is( $set_op2->sql($dbh),
+            qq{(SELECT 1 FROM "User") $keyword (SELECT 2 FROM "User") $keyword (SELECT 3 FROM "User")},
+            "cloned $method has three selects" );
     }
 }

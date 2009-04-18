@@ -113,8 +113,6 @@ role
             );
     };
 
-    with 'Fey::Role::SQL::Cloneable' => { real_class => $extra{consumer} };
-
     with 'Fey::Role::HasAliasName'
           => { generated_alias_prefix => uc $name,
                sql_needs_parens       => 1,

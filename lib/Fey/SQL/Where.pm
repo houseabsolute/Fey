@@ -9,10 +9,11 @@ use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-with 'Fey::Role::SQL::HasWhereClause',
-     'Fey::Role::SQL::Cloneable';
+with 'Fey::Role::SQL::HasWhereClause';
 
 with 'Fey::Role::SQL::HasBindParams' => { excludes => 'bind_params' };
+
+with 'Fey::Role::SQL::Cloneable';
 
 no Moose;
 

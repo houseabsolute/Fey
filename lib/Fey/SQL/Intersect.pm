@@ -7,6 +7,8 @@ use Moose;
 
 with 'Fey::Role::SetOperation' => { keyword => 'INTERSECT' };
 
+with 'Fey::Role::SQL::Cloneable';
+
 no Moose;
 
 1;
