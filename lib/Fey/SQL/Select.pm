@@ -698,13 +698,26 @@ Returns a unique identifier for the select.
 
 =head1 ROLES
 
-This class does C<Fey::Role::SQL::HasBindParams>,
-C<Fey::Role::SQL::HasWhereClause>, C<Fey::Role::SQL::HasOrderByClause>,
-C<Fey::Role::SQL::HasLimitClause>, and C<Fey::Role::HasAliasName> roles.
+=over 4
 
-It also does the C<Fey::Role::SQL::Comparable> role. This allows a
-C<Fey::SQL::Select> object to be used as a subselect in C<WHERE>
-clauses.
+=item * L<Fey::Role::SQL::HasBindParams>
+
+=item * L<Fey::Role::SQL::HasWhereClause>
+
+=item * L<Fey::Role::SQL::HasOrderByClause>
+
+=item * L<Fey::Role::SQL::HasLimitClause>
+
+=item * L<Fey::Role::SQL::HasAliasName>
+
+=item * L<Fey::Role::SQL::Comparable>
+
+This role allows a C<Fey::SQL::Select> object to be used as a
+subselect in C<WHERE> clauses.
+
+=item * L<Fey::Role::SQL::Cloneable>
+
+=back
 
 =head1 AUTHOR
 

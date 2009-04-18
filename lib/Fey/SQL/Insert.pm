@@ -278,7 +278,13 @@ Returns the C<VALUES> clause portion of the SQL statement as a string.
 
 =head1 ROLES
 
-This class does C<Fey::Role::SQL::HasBindParams> role.
+=over 4
+
+=item * L<Fey::Role::SQL::HasBindParams>
+
+=item * L<Fey::Role::SQL::Cloneable>
+
+=back
 
 =head1 AUTHOR
 
