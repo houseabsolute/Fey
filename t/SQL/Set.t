@@ -17,27 +17,27 @@ for my $keyword ( qw( UNION INTERSECT EXCEPT ) )
     my $method = lc $keyword;
 
     {
-        my $q = Fey::SQL->$new_method();
+        my $set_op = Fey::SQL->$new_method();
 
-        eval { $q->$method() };
+        eval { $set_op->$method() };
         like( $@, qr/0 parameters were passed .+ but 2 were expected/,
               "$method() without any parameters is an error" );
 
-        eval { $q->$method( Fey::SQL->new_select ) };
+        eval { $set_op->$method( Fey::SQL->new_select ) };
         like( $@, qr/1 parameter .+ but 2 were expected/,
               "$method() with only one parameter is an error" );
 
         local $TODO = "MooseX::Params::Validate gets the method name wrong"
             if $keyword ne 'EXCEPT';
-        eval { $q->$method() };
+        eval { $set_op->$method() };
         like( $@, qr/0 parameters were passed to .+::$method/,
               "$method() error message has correct method name" );
     }
 
     {
-        my $q = Fey::SQL->$new_method();
+        my $set_op = Fey::SQL->$new_method();
 
-        eval { $q->$method( 1, 2 ) };
+        eval { $set_op->$method( 1, 2 ) };
         like( $@,
               qr/did not pass the 'checking type constraint for Fey\.Type\.SetOperationArg'/,
               "$method() with a non-Select parameter is an error",
@@ -45,41 +45,41 @@ for my $keyword ( qw( UNION INTERSECT EXCEPT ) )
     }
 
     {
-        my $q = Fey::SQL->$new_method();
+        my $set_op = Fey::SQL->$new_method();
 
         my $sel1 = Fey::SQL->new_select->select(1)->from( $s->table('User') );
         my $sel2 = Fey::SQL->new_select->select(2)->from( $s->table('User') );
 
-        $q->$method( $sel1, $sel2 );
+        $set_op->$method( $sel1, $sel2 );
 
         my $sql = qq{(SELECT 1 FROM "User") $keyword (SELECT 2 FROM "User")};
-        is( $q->sql($dbh), $sql, "$method() with two tables" );
+        is( $set_op->sql($dbh), $sql, "$method() with two tables" );
 
-        my $sel3 = Fey::SQL->new_select->select(1)->from($q);
+        my $sel3 = Fey::SQL->new_select->select(1)->from($set_op);
         $sql = qq{SELECT 1 FROM ( $sql ) AS "${keyword}0"};
         is( $sel3->sql($dbh), $sql, "$method() as subselect" );
     }
 
     {
-        my $q = Fey::SQL->$new_method()->all();
+        my $set_op = Fey::SQL->$new_method()->all();
 
         my $sel1 = Fey::SQL->new_select->select(1)->from( $s->table('User') );
         my $sel2 = Fey::SQL->new_select->select(2)->from( $s->table('User') );
 
-        $q->$method( $sel1, $sel2 );
+        $set_op->$method( $sel1, $sel2 );
 
         my $sql = qq{(SELECT 1 FROM "User") };
         $sql   .= qq{$keyword ALL (SELECT 2 FROM "User")};
-        is( $q->sql($dbh), $sql, "$method()->all() with two tables" );
+        is( $set_op->sql($dbh), $sql, "$method()->all() with two tables" );
 
         my $sel3 = Fey::SQL->new_select->select(3)->from( $s->table('User') );
 
-        eval { $q->$method($sel3) };
+        eval { $set_op->$method($sel3) };
         is $@, '', 'no error from adding a single select when 2 are present';
     }
 
     {
-        my $q = Fey::SQL->$new_method();
+        my $set_op = Fey::SQL->$new_method();
 
         my $user = $s->table('User');
 
@@ -89,27 +89,27 @@ for my $keyword ( qw( UNION INTERSECT EXCEPT ) )
         my $sel2 = Fey::SQL->new_select();
         $sel2->select( $user->column('user_id') )->from($user);
 
-        $q->$method( $sel1, $sel2 )->order_by( $user->column('user_id') );
+        $set_op->$method( $sel1, $sel2 )->order_by( $user->column('user_id') );
 
         my $sql = q{(SELECT "User"."user_id" FROM "User")};
         $sql = "$sql $keyword $sql";
         $sql .= q{ ORDER BY "User"."user_id"};
 
-        is( $q->sql($dbh), $sql, "$method() with order by" );
+        is( $set_op->sql($dbh), $sql, "$method() with order by" );
     }
 
     {
-        my $q = Fey::SQL->$new_method();
+        my $set_op = Fey::SQL->$new_method();
 
         my $sel1 = Fey::SQL->new_select->select(1)->from( $s->table('User') );
         my $sel2 = Fey::SQL->new_select->select(2)->from( $s->table('User') );
         my $sel3 = Fey::SQL->new_select->select(3)->from( $s->table('User') );
 
-        $q->$method( $sel1, Fey::SQL->$new_method->$method( $sel2, $sel3 ) );
+        $set_op->$method( $sel1, Fey::SQL->$new_method->$method( $sel2, $sel3 ) );
 
         my $from = qq{FROM "User"};
         my $sql = qq{(SELECT 1 $from) $keyword };
         $sql .=   qq{((SELECT 2 $from) $keyword (SELECT 3 $from))};
-        is( $q->sql($dbh), $sql, "$method() with sub-$method" );
+        is( $set_op->sql($dbh), $sql, "$method() with sub-$method" );
     }
 }
