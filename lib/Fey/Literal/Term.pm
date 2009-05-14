@@ -19,7 +19,7 @@ with 'Fey::Role::HasAliasName' =>
 
 has 'term' =>
     ( is       => 'ro',
-      isa      => 'Fey.Type.LiteralTermArg',
+      isa      => 'Fey::Types::LiteralTermArg',
       required => 1,
       coerce   => 1,
     );

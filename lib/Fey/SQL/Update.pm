@@ -75,11 +75,11 @@ sub set
     my @spec;
     for ( my $x = 0; $x < @_; $x += 2 )
     {
-        push @spec, { isa => 'Fey.Type.ColumnWithTable' };
+        push @spec, { isa => 'Fey::Types::ColumnWithTable' };
         push @spec,
                 blessed $_[$x] && $_[$x]->is_nullable()
-                ? { isa => 'Fey.Type.NullableUpdateValue' }
-                : { isa => 'Fey.Type.NonNullableUpdateValue' };
+                ? { isa => 'Fey::Types::NullableUpdateValue' }
+                : { isa => 'Fey::Types::NonNullableUpdateValue' };
     }
 
     my @set = pos_validated_list( \@_, @spec, MX_PARAMS_VALIDATE_NO_CACHE => 1 );
@@ -114,7 +114,7 @@ sub set
 sub sql
 {
     my $self  = shift;
-    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey.Type.CanQuote' } );
+    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey::Types::CanQuote' } );
 
     return ( join ' ',
              $self->update_clause($dbh),

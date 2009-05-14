@@ -13,7 +13,7 @@ use Moose;
 
 has '_lhs' =>
     ( is       => 'ro',
-      isa      => 'Fey.Type.WhereClauseSide',
+      isa      => 'Fey::Types::WhereClauseSide',
       required => 1,
     );
 
@@ -25,7 +25,7 @@ has '_operator' =>
 
 has '_rhs' =>
     ( is       => 'ro',
-      isa      => 'ArrayRef[Fey.Type.WhereClauseSide]',
+      isa      => 'ArrayRef[Fey::Types::WhereClauseSide]',
       required => 1,
     );
 

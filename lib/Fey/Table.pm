@@ -47,7 +47,7 @@ has 'is_view' =>
 has '_keys' =>
     ( metaclass => 'MooseX::AttributeHelpers::Collection::Array',
       is        => 'rw',
-      isa       => 'Fey.Type.ArrayRefOfNamedObjectSets',
+      isa       => 'Fey::Types::ArrayRefOfNamedObjectSets',
       default   => sub { [] },
       provides  => { push   => '_add_key',
                      delete => '_delete_key',
@@ -128,7 +128,7 @@ sub add_column
 sub remove_column
 {
     my $self = shift;
-    my ($col) = pos_validated_list( \@_, { isa => 'Fey.Type.ColumnOrName' } );
+    my ($col) = pos_validated_list( \@_, { isa => 'Fey::Types::ColumnOrName' } );
 
     $col = $self->column($col)
         unless blessed $col;
@@ -180,7 +180,7 @@ sub add_candidate_key
     my $count = @_ ? @_ : 1;
     my (@cols) =
         pos_validated_list( \@_,
-                            ( ( { isa => 'Fey.Type.ColumnOrName' } ) x $count ),
+                            ( ( { isa => 'Fey::Types::ColumnOrName' } ) x $count ),
                             MX_PARAMS_VALIDATE_NO_CACHE => 1,
                           );
 
@@ -206,7 +206,7 @@ sub remove_candidate_key
     my $count = @_ ? @_ : 1;
     my (@cols) =
         pos_validated_list( \@_,
-                            ( ( { isa => 'Fey.Type.ColumnOrName' } ) x $count ),
+                            ( ( { isa => 'Fey::Types::ColumnOrName' } ) x $count ),
                             MX_PARAMS_VALIDATE_NO_CACHE => 1,
                           );
 
@@ -235,7 +235,7 @@ sub has_candidate_key
     my $count = @_ ? @_ : 1;
     my (@cols) =
         pos_validated_list( \@_,
-                            ( ( { isa => 'Fey.Type.ColumnOrName' } ) x $count ),
+                            ( ( { isa => 'Fey::Types::ColumnOrName' } ) x $count ),
                             MX_PARAMS_VALIDATE_NO_CACHE => 1,
                           );
 

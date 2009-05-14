@@ -46,7 +46,7 @@ sub from
 sub sql
 {
     my $self  = shift;
-    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey.Type.CanQuote' } );
+    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey::Types::CanQuote' } );
 
     return ( join ' ',
              $self->delete_clause($dbh),

@@ -58,7 +58,7 @@ sub add_table
 sub remove_table
 {
     my $self = shift;
-    my ($table) = pos_validated_list( \@_, { isa => 'Fey.Type.TableOrName' } );
+    my ($table) = pos_validated_list( \@_, { isa => 'Fey::Types::TableOrName' } );
 
     $table = $self->table($table)
         unless blessed $table;
@@ -124,7 +124,7 @@ sub remove_foreign_key
 sub foreign_keys_for_table
 {
     my $self    = shift;
-    my ($table) = pos_validated_list( \@_, { isa => 'Fey.Type.TableOrName' } );
+    my ($table) = pos_validated_list( \@_, { isa => 'Fey::Types::TableOrName' } );
 
     my $name = blessed $table ? $table->name() : $table;
 
@@ -142,8 +142,8 @@ sub foreign_keys_between_tables
     my $self    = shift;
     my ( $table1, $table2 ) =
         pos_validated_list( \@_,
-                            { isa => 'Fey.Type.TableLikeOrName' },
-                            { isa => 'Fey.Type.TableLikeOrName' }
+                            { isa => 'Fey::Types::TableLikeOrName' },
+                            { isa => 'Fey::Types::TableLikeOrName' }
                           );
 
     my $name1 =

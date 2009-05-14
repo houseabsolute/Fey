@@ -38,7 +38,7 @@ has 'name' =>
 
 has 'generic_type' =>
     ( is         => 'ro',
-      isa        => 'Fey.Type.GenericTypeName',
+      isa        => 'Fey::Types::GenericTypeName',
       lazy_build => 1,
     );
 
@@ -50,14 +50,14 @@ has type =>
 
 has length =>
     ( is       => 'ro',
-      isa      => 'Fey.Type.PosInteger',
+      isa      => 'Fey::Types::PosInteger',
       required => 0
     );
 
 # How to say that precision requires length as well?
 has precision =>
     ( is       => 'ro',
-      isa      => 'Fey.Type.PosOrZeroInteger',
+      isa      => 'Fey::Types::PosOrZeroInteger',
       required => 0
     );
 
@@ -75,7 +75,7 @@ has is_nullable =>
 
 has default =>
     ( is     => 'ro',
-      isa    => 'Fey.Type.DefaultValue',
+      isa    => 'Fey::Types::DefaultValue',
       coerce => 1,
     );
 

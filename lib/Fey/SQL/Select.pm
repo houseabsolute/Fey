@@ -90,7 +90,7 @@ has '_having' =>
 with 'Fey::Role::SQL::Cloneable';
 
 my $is_subselect_arg =
-    Moose::Util::TypeConstraints::find_type_constraint('Fey.Type.SubSelectArg');
+    Moose::Util::TypeConstraints::find_type_constraint('Fey::Types::SubSelectArg');
 
 sub select
 {
@@ -99,7 +99,7 @@ sub select
     my $count = @_ ? @_ : 1;
     my (@select) =
         pos_validated_list( \@_,
-                            ( ( { isa => 'Fey.Type.SelectElement' } ) x $count ),
+                            ( ( { isa => 'Fey::Types::SelectElement' } ) x $count ),
                             MX_PARAMS_VALIDATE_NO_CACHE => 1,
                           );
 
@@ -273,7 +273,7 @@ sub group_by
     my $count = @_ ? @_ : 1;
     my (@by) =
         pos_validated_list( \@_,
-                            ( ( { isa => 'Fey.Type.GroupByElement' } ) x $count ),
+                            ( ( { isa => 'Fey::Types::GroupByElement' } ) x $count ),
                             MX_PARAMS_VALIDATE_NO_CACHE => 1,
                           );
 
@@ -299,7 +299,7 @@ sub id
 sub sql
 {
     my $self  = shift;
-    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey.Type.CanQuote' } );
+    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey::Types::CanQuote' } );
 
     return
         ( join q{ },

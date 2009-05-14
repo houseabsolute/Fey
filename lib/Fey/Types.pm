@@ -10,33 +10,33 @@ use Scalar::Util qw( blessed );
 use Moose::Util::TypeConstraints;
 
 
-subtype 'Fey.Type.GenericTypeName'
+subtype 'Fey::Types::GenericTypeName'
     => as 'Str'
     => where { /^(?:text|blob|integer|float|date|datetime|time|boolean|other)$/xism };
 
-subtype 'Fey.Type.PosInteger'
+subtype 'Fey::Types::PosInteger'
     => as 'Int'
     => where { $_ > 0 };
 
-subtype 'Fey.Type.PosOrZeroInteger'
+subtype 'Fey::Types::PosOrZeroInteger'
     => as 'Int'
     => where { $_ >= 0 };
 
-subtype 'Fey.Type.DefaultValue'
+subtype 'Fey::Types::DefaultValue'
     => as 'Fey::Literal';
 
-coerce 'Fey.Type.DefaultValue'
+coerce 'Fey::Types::DefaultValue'
     => from 'Undef'
     => via { Fey::Literal::Null->new() }
     => from 'Value'
     => via { Fey::Literal->new_from_scalar($_) };
 
-subtype 'Fey.Type.ArrayRefOfNamedObjectSets'
+subtype 'Fey::Types::ArrayRefOfNamedObjectSets'
     => as 'ArrayRef'
     => where { return 1 unless @{$_};
                all { blessed $_ && $_->isa('Fey::NamedObjectSet') } @{$_} };
 
-subtype 'Fey.Type.ArrayRefOfColumns'
+subtype 'Fey::Types::ArrayRefOfColumns'
     => as 'ArrayRef'
     => where { @{$_} >= 1 && all { $_ && $_->isa('Fey::Column') } @{$_} };
 
@@ -46,40 +46,40 @@ class_type('Fey::Column')
 role_type('Fey::Role::Named')
     unless find_type_constraint('Fey::Role::Named');
 
-coerce 'Fey.Type.ArrayRefOfColumns'
+coerce 'Fey::Types::ArrayRefOfColumns'
     => from 'Fey::Column'
     => via { [ $_ ] };
 
-subtype 'Fey.Type.FunctionArg'
+subtype 'Fey::Types::FunctionArg'
     => as 'Object'
     => where { $_->does('Fey::Role::Selectable') };
 
-coerce 'Fey.Type.FunctionArg'
+coerce 'Fey::Types::FunctionArg'
     => from 'Undef'
     => via { Fey::Literal::Null->new() }
     => from 'Value'
     => via { Fey::Literal->new_from_scalar($_) };
 
 {
-    my $constraint = find_type_constraint('Fey.Type.FunctionArg');
-    subtype 'Fey.Type.ArrayRefOfFunctionArgs'
+    my $constraint = find_type_constraint('Fey::Types::FunctionArg');
+    subtype 'Fey::Types::ArrayRefOfFunctionArgs'
         => as 'ArrayRef'
         => where { return 1 unless @{$_};
                    all { $constraint->check($_) } @{$_} };
 
-    coerce 'Fey.Type.ArrayRefOfFunctionArgs'
+    coerce 'Fey::Types::ArrayRefOfFunctionArgs'
         => from 'ArrayRef'
         => via { [ map { $constraint->coerce($_) } @{$_} ] };
 }
 
-subtype 'Fey.Type.LiteralTermArg'
+subtype 'Fey::Types::LiteralTermArg'
     => as 'ArrayRef'
     => where { return unless $_ and @{$_};
                all { blessed($_)
                      ? $_->can('sql_or_alias') || overload::Overloaded( $_ )
                      : defined && ! ref } @{$_} };
 
-coerce 'Fey.Type.LiteralTermArg'
+coerce 'Fey::Types::LiteralTermArg'
     => from 'Value'
     => via { [ $_ ] };
 
@@ -87,13 +87,13 @@ for my $thing ( qw( Table Column ) )
 {
     my $class = 'Fey::' . $thing;
 
-    subtype 'Fey.Type.' . $thing . 'OrName'
+    subtype 'Fey::Types::' . $thing . 'OrName'
         => as 'Item'
         => where { return unless defined $_;
                    return 1 unless blessed $_;
                    return $_->isa($class) };
 
-    subtype 'Fey.Type.' . $thing . 'LikeOrName'
+    subtype 'Fey::Types::' . $thing . 'LikeOrName'
         => as 'Item'
         => where { return unless defined $_;
                    return 1 unless blessed $_;
@@ -101,20 +101,20 @@ for my $thing ( qw( Table Column ) )
                    return $_->does( 'Fey::Role::' . $thing . 'Like' )  };
 }
 
-subtype 'Fey.Type.SelectOrSetOperation'
+subtype 'Fey::Types::SelectOrSetOperation'
     => as 'Item'
     => where { return unless blessed $_[0];
                    $_[0]->isa('Fey::SQL::Select')
                 || $_[0]->does('Fey::Role::SetOperation')
              };
 
-subtype 'Fey.Type.SubSelectArg'
-    => as 'Fey.Type.SelectOrSetOperation';
+subtype 'Fey::Types::SubSelectArg'
+    => as 'Fey::Types::SelectOrSetOperation';
 
-subtype 'Fey.Type.SetOperationArg'
-    => as 'Fey.Type.SelectOrSetOperation';
+subtype 'Fey::Types::SetOperationArg'
+    => as 'Fey::Types::SelectOrSetOperation';
 
-subtype 'Fey.Type.SelectElement'
+subtype 'Fey::Types::SelectElement'
     => as 'Item'
     => where {    ! blessed $_[0]
                || $_[0]->isa('Fey::Table')
@@ -123,12 +123,12 @@ subtype 'Fey.Type.SelectElement'
                     && $_[0]->is_selectable() );
              };
 
-subtype 'Fey.Type.ColumnWithTable'
+subtype 'Fey::Types::ColumnWithTable'
     => as 'Object'
     => where {    $_[0]->isa('Fey::Column')
                && $_[0]->has_table() };
 
-subtype 'Fey.Type.IntoElement'
+subtype 'Fey::Types::IntoElement'
     => as 'Object',
     => where { return
                    $_->isa('Fey::Table')
@@ -139,7 +139,7 @@ subtype 'Fey.Type.IntoElement'
                    );
              };
 
-subtype 'Fey.Type.NullableInsertValue'
+subtype 'Fey::Types::NullableInsertValue'
     => as 'Item'
     => where {    ! blessed $_
                || $_->isa('Fey::Literal')
@@ -147,7 +147,7 @@ subtype 'Fey.Type.NullableInsertValue'
                || overload::Overloaded( $_ )
              };
 
-subtype 'Fey.Type.NonNullableInsertValue'
+subtype 'Fey::Types::NonNullableInsertValue'
     => as 'Defined'
     => where {    ! blessed $_
                || ( $_->isa('Fey::Literal') && ! $_->isa('Fey::Literal::Null') )
@@ -155,7 +155,7 @@ subtype 'Fey.Type.NonNullableInsertValue'
                || overload::Overloaded( $_ )
              };
 
-subtype 'Fey.Type.NullableUpdateValue'
+subtype 'Fey::Types::NullableUpdateValue'
     => as 'Item'
     => where {    ! blessed $_
                || $_->isa('Fey::Column')
@@ -164,7 +164,7 @@ subtype 'Fey.Type.NullableUpdateValue'
                || overload::Overloaded( $_ )
              };
 
-subtype 'Fey.Type.NonNullableUpdateValue'
+subtype 'Fey::Types::NonNullableUpdateValue'
     => as 'Defined'
     => where {    ! blessed $_
                || $_->isa('Fey::Column')
@@ -173,7 +173,7 @@ subtype 'Fey.Type.NonNullableUpdateValue'
                || overload::Overloaded( $_ )
              };
 
-subtype 'Fey.Type.OrderByElement'
+subtype 'Fey::Types::OrderByElement'
     => as 'Item'
     => where { if ( ! blessed $_ )
                {
@@ -185,26 +185,26 @@ subtype 'Fey.Type.OrderByElement'
                       && $_->is_orderable();
              };
 
-subtype 'Fey.Type.GroupByElement'
+subtype 'Fey::Types::GroupByElement'
     => as 'Object'
     => where { return 1
                    if    $_->can('is_groupable')
                       && $_->is_groupable();
              };
 
-subtype 'Fey.Type.OuterJoinType'
+subtype 'Fey::Types::OuterJoinType'
     => as 'Str',
     => where { return $_ =~ /^(?:full|left|right)$/ };
 
-subtype 'Fey.Type.CanQuote'
+subtype 'Fey::Types::CanQuote'
     => as 'Item'
     => where { return $_->isa('DBI::db') || $_->can('quote') };
 
-subtype 'Fey.Type.WhereBoolean'
+subtype 'Fey::Types::WhereBoolean'
     => as 'Str'
     => where { return $_ =~ /^(?:AND|OR)$/ };
 
-subtype 'Fey.Type.WhereClauseSide'
+subtype 'Fey::Types::WhereClauseSide'
     => as 'Item'
     => where { return 1 if ! defined $_;
                return 1 unless blessed $_;

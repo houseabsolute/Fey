@@ -45,7 +45,7 @@ sub into
 
     my $count = @_ ? scalar @_ : 1;
     my @into = pos_validated_list( \@_,
-                                   ( ( { isa => 'Fey.Type.IntoElement' } ) x $count ),
+                                   ( ( { isa => 'Fey::Types::IntoElement' } ) x $count ),
                                    MX_PARAMS_VALIDATE_NO_CACHE => 1,
                                  );
 
@@ -64,8 +64,8 @@ sub into
     {
         $spec{ $col->name() } =
             $col->is_nullable()
-            ? { isa => 'Fey.Type.NullableInsertValue' }
-            : { isa => 'Fey.Type.NonNullableInsertValue' };
+            ? { isa => 'Fey::Types::NullableInsertValue' }
+            : { isa => 'Fey::Types::NonNullableInsertValue' };
     }
 
     $self->_set_values_spec(\%spec);
@@ -116,7 +116,7 @@ sub values
 sub sql
 {
     my $self  = shift;
-    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey.Type.CanQuote' } );
+    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey::Types::CanQuote' } );
 
     return ( join ' ',
              $self->insert_clause($dbh),

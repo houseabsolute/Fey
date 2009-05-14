@@ -26,7 +26,7 @@ has 'is_all' =>
 has '_set_elements' =>
     ( metaclass => 'Collection::Array',
       is        => 'ro',
-      isa       => 'ArrayRef[Fey.Type.SetOperationArg]',
+      isa       => 'ArrayRef[Fey::Types::SetOperationArg]',
       default   => sub { [] },
       provides  => { push  => '_add_set_elements',
                      count => '_set_element_count',
@@ -92,7 +92,7 @@ role
 
         my (@set) = 
             pos_validated_list( \@_,
-                                ( ( { isa => 'Fey.Type.SetOperationArg' } ) x $count ),
+                                ( ( { isa => 'Fey::Types::SetOperationArg' } ) x $count ),
                                 MX_PARAMS_VALIDATE_NO_CACHE => 1,
                               );
 

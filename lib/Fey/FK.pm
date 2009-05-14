@@ -23,7 +23,7 @@ has 'id' =>
 
 has [ qw( source_columns target_columns ) ] =>
     ( is       => 'ro',
-      isa      => 'Fey.Type.ArrayRefOfColumns',
+      isa      => 'Fey::Types::ArrayRefOfColumns',
       required => 1,
       coerce   => 1,
     );
@@ -127,8 +127,8 @@ sub has_tables
 
     my ( $table1, $table2 ) =
         pos_validated_list( \@_,
-                            { isa => 'Fey.Type.TableOrName' },
-                            { isa => 'Fey.Type.TableOrName' },
+                            { isa => 'Fey::Types::TableOrName' },
+                            { isa => 'Fey::Types::TableOrName' },
                           );
 
     my $name1 = blessed $table1 ? $table1->name() : $table1;

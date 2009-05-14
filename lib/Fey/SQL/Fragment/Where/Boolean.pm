@@ -9,7 +9,7 @@ use Moose;
 
 has 'comparison' =>
     ( is       => 'ro',
-      isa      => 'Fey.Type.WhereBoolean',
+      isa      => 'Fey::Types::WhereBoolean',
       required => 1,
     );
 

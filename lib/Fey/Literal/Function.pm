@@ -28,7 +28,7 @@ has 'function' =>
 
 has 'args' =>
     ( is         => 'ro',
-      isa        => 'Fey.Type.ArrayRefOfFunctionArgs',
+      isa        => 'Fey::Types::ArrayRefOfFunctionArgs',
       default    => sub { [] },
       coerce     => 1,
     );

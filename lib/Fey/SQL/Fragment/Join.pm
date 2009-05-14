@@ -31,7 +31,7 @@ has '_fk' =>
 
 has '_outer_type' =>
     ( is        => 'ro',
-      isa       => 'Fey.Type.OuterJoinType',
+      isa       => 'Fey::Types::OuterJoinType',
       predicate => '_has_outer_type',
       init_arg  => 'outer_type',
     );

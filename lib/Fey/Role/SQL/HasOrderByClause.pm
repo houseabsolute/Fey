@@ -29,7 +29,7 @@ sub order_by
     my $count = @_ ? @_ : 1;
     my (@by) =
         pos_validated_list( \@_,
-                            ( ( { isa => 'Fey.Type.OrderByElement' } ) x $count ),
+                            ( ( { isa => 'Fey::Types::OrderByElement' } ) x $count ),
                             MX_PARAMS_VALIDATE_NO_CACHE => 1,
                           );
 
