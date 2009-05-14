@@ -16,7 +16,7 @@ use Fey::Schema;
     eval { Fey::FK->new( source_columns => [],
                          target_columns => [],
                        ) };
-    like( $@, qr/\QAttribute (source_columns) does not pass the type constraint\E.+ArrayRefOfColumns/,
+    like( $@, qr/\QAttribute (\E(?:source|target)\Q_columns) does not pass the type constraint\E.+ArrayRefOfColumns/,
           'error when column count for source and target differ' );
 
     eval { Fey::FK->new( source_columns => $s->table('User')->column('user_id'),
