@@ -289,8 +289,8 @@ parameter, is the offset for the limit clause.
   # LIMIT 10 OFFSET 20
   $sql->limit( 10, 20 );
 
-  # LIMIT 0 OFFSET 20
-  $sql->limit( 0, 20 );
+  # OFFSET 20
+  $sql->limit( undef, 20 );
 
 =head2 Bind Parameters
 

@@ -1,6 +1,7 @@
 0.30    2009-08-12
 
-- Allow the first argument to ->limit to be 0.
+- Allow the first argument to ->limit to be undef, so you can do
+  ->limit( undef, 20 ), which produces SQL like "OFFSET 20".
 
 
 0.29    2009-08-12

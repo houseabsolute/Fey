@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 3;
+use Test::More tests => 4;
 
 use Fey::Literal;
 use Fey::SQL;
@@ -36,5 +36,14 @@ my $dbh = Fey::Test->mock_dbh();
     $q->limit( 10, 20 );
 
     is( $q->limit_clause($dbh), 'LIMIT 10 OFFSET 20',
+        'limit clause with offset' );
+}
+
+{
+    my $q = Fey::SQL->new_select()->select( $s->table('User') );
+
+    $q->limit( undef, 20 );
+
+    is( $q->limit_clause($dbh), 'OFFSET 20',
         'limit clause with offset' );
 }

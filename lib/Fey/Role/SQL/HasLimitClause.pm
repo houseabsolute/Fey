@@ -26,13 +26,14 @@ sub limit
     my $self = shift;
     my ( $limit, $offset ) =
         pos_validated_list( \@_,
-                            { isa      => 'Fey::Types::PosOrZeroInteger' },
+                            { isa      => 'Fey::Types::PosInteger|Undef' },
                             { isa      => 'Fey::Types::PosOrZeroInteger',
                               optional => 1,
                             },
                           );
 
-    $self->_set_limit($limit);
+    $self->_set_limit($limit)
+        if defined $limit;
     $self->_set_offset($offset)
         if defined $offset;
 
@@ -43,10 +44,13 @@ sub limit_clause
 {
     my $self = shift;
 
-    return unless $self->_has_limit();
+    my $sql = '';
 
-    my $sql = 'LIMIT ' . $self->_limit();
-    $sql .= ' OFFSET ' . $self->_offset()
+    $sql .= 'LIMIT ' . $self->_limit()
+        if $self->_has_limit();
+    $sql .= q{ }
+        if $self->_has_limit() && $self->_has_offset();
+    $sql .= 'OFFSET ' . $self->_offset()
         if $self->_has_offset();
 
     return $sql;
