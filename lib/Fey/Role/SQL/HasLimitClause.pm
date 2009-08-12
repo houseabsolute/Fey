@@ -44,6 +44,8 @@ sub limit_clause
 {
     my $self = shift;
 
+    return unless $self->_has_limit() || $self->_has_offset();
+
     my $sql = '';
 
     $sql .= 'LIMIT ' . $self->_limit()
