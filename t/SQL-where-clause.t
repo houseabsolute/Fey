@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 36;
+use Test::More tests => 37;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -107,7 +107,20 @@ my $dbh = Fey::Test->mock_dbh();
     $q->where( $s->table('User')->column('user_id'), 'IN', $sub );
 
     is( $q->where_clause($dbh), q{WHERE "User"."user_id" IN (SELECT "User"."user_id" FROM "User")},
-        'comparison with subselect' );
+        'in comparison with subselect' );
+}
+
+{
+    my $q = Fey::SQL->new_select( auto_placeholders => 0 );
+
+    my $sub = Fey::SQL->new_select( auto_placeholders => 0 );
+    $sub->select( $s->table('User')->column('user_id') );
+    $sub->from( $s->table('User') );
+
+    $q->where( $s->table('User')->column('user_id'), '=', $sub );
+
+    is( $q->where_clause($dbh), q{WHERE "User"."user_id" = (SELECT "User"."user_id" FROM "User")},
+        'eq comparison with subselect' );
 }
 
 {
