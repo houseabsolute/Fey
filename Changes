@@ -1,3 +1,8 @@
+0.30    2009-08-12
+
+- Allow the first argument to ->limit to be 0.
+
+
 0.29    2009-08-12
 
 - Allow subselects on the right hand side of a where clause comparison using

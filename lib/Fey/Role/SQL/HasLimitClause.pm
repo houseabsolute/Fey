@@ -26,7 +26,7 @@ sub limit
     my $self = shift;
     my ( $limit, $offset ) =
         pos_validated_list( \@_,
-                            { isa      => 'Fey::Types::PosInteger' },
+                            { isa      => 'Fey::Types::PosOrZeroInteger' },
                             { isa      => 'Fey::Types::PosOrZeroInteger',
                               optional => 1,
                             },
