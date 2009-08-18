@@ -5,7 +5,7 @@ use warnings;
 
 use Moose::Role;
 
-# This doesn't actually work with Fey::Role::SetOperation in hte mix.
+# This doesn't actually work with Fey::Role::SetOperation in the mix.
 #requires 'select_clause_elements';
 
 no Moose::Role;
