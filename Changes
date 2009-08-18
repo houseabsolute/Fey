@@ -1,6 +1,6 @@
 0.31
 
-- Added Fey::SQL::Select->distinct_on($column)
+- Added Fey::SQL::Select->distinct_on($column).
 
 - Added a new (empty) role, Fey::Role::SQL::ReturnsData. Use this as a
   constraint any place you might be checking if an object
