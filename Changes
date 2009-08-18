@@ -2,6 +2,11 @@
 
 - Added Fey::SQL::Select->distinct_on($column)
 
+- Added a new (empty) role, Fey::Role::SQL::ReturnsData. Use this as a
+  constraint any place you might be checking if an object
+  ->isa('Fey::SQL::Select'). This role is applied to any SQL query that
+  returns data, such as SELECTs, UNIONs, etc.
+
 
 0.30    2009-08-12
 
