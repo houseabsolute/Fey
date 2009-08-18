@@ -1,3 +1,8 @@
+0.31
+
+- Added Fey::SQL::Select->distinct_on($column)
+
+
 0.30    2009-08-12
 
 - Allow the first argument to ->limit to be undef, so you can do

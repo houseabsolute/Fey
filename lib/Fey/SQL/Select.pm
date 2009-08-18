@@ -5,6 +5,7 @@ use warnings;
 
 use Fey::Exceptions qw( param_error );
 use Fey::Literal;
+use Fey::Role::ColumnLike;
 use Fey::SQL::Fragment::Join;
 use Fey::Types;
 use List::AllUtils qw( all );
@@ -17,9 +18,9 @@ use MooseX::StrictConstructor;
 
 with 'Fey::Role::Comparable',
      'Fey::Role::Selectable',
-     'Fey::Role::SQL::HasOrderByClause';
-
-with 'Fey::Role::SQL::HasLimitClause';
+     'Fey::Role::SQL::HasOrderByClause',
+     'Fey::Role::SQL::HasLimitClause',
+     'Fey::Role::SQL::ReturnsData';
 
 with 'Fey::Role::SQL::HasWhereClause'
           => { excludes => 'bind_params',
@@ -50,6 +51,13 @@ has 'is_distinct' =>
       isa     => 'Bool',
       default => 0,
       writer  => '_set_is_distinct',
+    );
+
+has 'is_distinct_on' =>
+    ( is        => 'rw',
+      does      => 'Fey::Role::ColumnLike',
+      writer    => '_set_is_distinct_on',
+      predicate => '_has_is_distinct_on',
     );
 
 has '_from' =>
@@ -89,9 +97,6 @@ has '_having' =>
 
 with 'Fey::Role::SQL::Cloneable';
 
-my $is_subselect_arg =
-    Moose::Util::TypeConstraints::find_type_constraint('Fey::Types::SubSelectArg');
-
 sub select
 {
     my $self = shift;
@@ -117,7 +122,20 @@ sub select
 
 sub distinct
 {
+    die 'Cannot call ->distinct and ->distinct_on'
+        if $_[0]->_has_is_distinct_on();
+
     $_[0]->_set_is_distinct(1);
+
+    return $_[0];
+}
+
+sub distinct_on
+{
+    die 'Cannot call ->distinct and ->distinct_on'
+        if $_[0]->is_distinct();
+
+    $_[0]->_set_is_distinct_on( $_[1] );
 
     return $_[0];
 }
@@ -132,7 +150,7 @@ sub from
     my $meth =
         ( @_ == 1 && blessed $_[0] && $_[0]->can('is_joinable') && $_[0]->is_joinable()
           ? '_from_one_table'
-          : @_ == 1 && blessed $_[0] && $is_subselect_arg->check($_[0])
+          : @_ == 1 && blessed $_[0] && $_[0]->can('does') && $_[0]->does('Fey::Role::SQL::ReturnsData')
           ? '_from_subselect'
           : @_ == 2
           ? '_join'
@@ -319,7 +337,16 @@ sub select_clause
     my $dbh  = shift;
 
     my $sql = 'SELECT ';
-    $sql .= 'DISTINCT ' if $self->is_distinct();
+
+    if ( $self->is_distinct() )
+    {
+        $sql .= 'DISTINCT ';
+    }
+    elsif ( $self->_has_is_distinct_on() )
+    {
+        $sql .= 'DISTINCT ON (' . $self->is_distinct_on()->sql_or_alias($dbh) . ') ';
+    }
+
     $sql .=
         ( join ', ',
           map { $_->sql_with_alias($dbh) }
@@ -510,8 +537,15 @@ Any type of literal can be included in a C<SELECT> clause.
 
 =head2 $select->distinct()
 
-If this is called, the generated SQL will start with C<SELECT
-DISTINCT>.
+If this is called, the generated SQL will start with C<SELECT DISTINCT>. You
+cannot call both C<< $select->distinct() >> and C<< $select->distinct_on() >>
+for the same query.
+
+=head2 $select->distinct_on($column)
+
+If this is called, the generated SQL will start with C<SELECT DISTINCT ON
+(Table.column)>. You cannot call both C<< $select->distinct() >> and C<<
+$select->distinct_on() >> for the same query.
 
 =head2 $select->from(...)
 

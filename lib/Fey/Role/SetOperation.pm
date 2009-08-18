@@ -13,8 +13,10 @@ parameter keyword =>
     required => 1,
 );
 
-with 'Fey::Role::SQL::HasOrderByClause',
-     'Fey::Role::SQL::HasLimitClause';
+with 'Fey::Role::Comparable',
+     'Fey::Role::SQL::HasOrderByClause',
+     'Fey::Role::SQL::HasLimitClause',
+     'Fey::Role::SQL::ReturnsData';
 
 has 'is_all' =>
     ( is      => 'rw',

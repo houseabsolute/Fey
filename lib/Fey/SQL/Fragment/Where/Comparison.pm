@@ -52,7 +52,7 @@ sub BUILDARGS
     {
         if ( defined $_ && blessed $_ && $_->can('is_comparable') )
         {
-            if ( $_->isa('Fey::SQL::Select') )
+            if ( $_->can('bind_params') )
             {
                 push @bind, $_->bind_params();
             }
@@ -90,7 +90,7 @@ sub BUILDARGS
 
     }
 
-    if ( grep { $_->isa('Fey::SQL::Select') } @rhs )
+    if ( grep { $_->does('Fey::Role::SQL::ReturnsData') } @rhs )
     {
         param_error "Cannot use a subselect on the right-hand side with $operator"
             unless $operator =~ /$eq_comp_re|$in_comp_re/;
@@ -163,7 +163,7 @@ sub sql
     if (    $self->_operator() =~ /$eq_comp_re/
          && @{ $self->_rhs() } == 1
          && blessed $self->_rhs()->[0]
-         && $self->_rhs()->[0]->isa('Fey::SQL::Select') )
+         && $self->_rhs()->[0]->does('Fey::Role::SQL::ReturnsData') )
     {
         return
             (   $sql

@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 37;
+use Test::More tests => 40;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -108,6 +108,43 @@ my $dbh = Fey::Test->mock_dbh();
 
     is( $q->where_clause($dbh), q{WHERE "User"."user_id" IN (SELECT "User"."user_id" FROM "User")},
         'in comparison with subselect' );
+}
+
+{
+    my $q = Fey::SQL->new_select( auto_placeholders => 1 );
+
+    my $sub = Fey::SQL->new_select( auto_placeholders => 1 );
+    $sub->select( $s->table('User')->column('user_id') );
+    $sub->from( $s->table('User') );
+    $sub->where( $s->table('User')->column('user_id'), 'IN', 42, 53 );
+
+    $q->where( $s->table('User')->column('user_id'), 'IN', $sub );
+
+    is_deeply( [ $q->bind_params() ], [ 42, 53 ],
+               'bind_params includes params from subselects in the where clause' );
+}
+
+{
+    my $q = Fey::SQL->new_select( auto_placeholders => 1 );
+
+    my $sub = Fey::SQL->new_select( auto_placeholders => 1 );
+    $sub->select( $s->table('User')->column('user_id') );
+    $sub->from( $s->table('User') );
+    $sub->where( $s->table('User')->column('user_id'), 'IN', 42, 53 );
+
+    my $union = Fey::SQL->new_union();
+    $union->union( $sub, $sub );
+
+    $q->where( $s->table('User')->column('user_id'), 'IN', $union );
+
+    my $union_select = q{SELECT "User"."user_id" FROM "User" WHERE "User"."user_id" IN (?, ?)};
+    my $where = q{WHERE "User"."user_id" IN};
+    $where .= qq{ (($union_select) UNION ($union_select))};
+
+    is( $q->where_clause($dbh), $where,
+        'where clause with union in subselect' );
+    is_deeply( [ $q->bind_params() ], [ 42, 53, 42, 53 ],
+               'bind_params includes params from union subselect in the where clause' );
 }
 
 {
