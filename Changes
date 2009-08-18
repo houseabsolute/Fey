@@ -1,11 +1,11 @@
-0.31
-
-- Added Fey::SQL::Select->distinct_on($column).
+0.31    2009-08-18
 
 - Added a new (empty) role, Fey::Role::SQL::ReturnsData. Use this as a
   constraint any place you might be checking if an object
   ->isa('Fey::SQL::Select'). This role is applied to any SQL query that
   returns data, such as SELECTs, UNIONs, etc.
+
+- Added Fey::SQL::Select->distinct_on($column).
 
 
 0.30    2009-08-12
