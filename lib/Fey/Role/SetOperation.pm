@@ -53,6 +53,11 @@ sub bind_params
     return map { $_->bind_params } @{ $self->_set_elements() };
 }
 
+sub select_clause_elements
+{
+    return $_[0]->_set_elements()->[0]->select_clause_elements();
+}
+
 role
 {
     my $p     = shift;
