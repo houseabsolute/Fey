@@ -15,13 +15,6 @@ use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-use Fey::Literal::Function;
-use Fey::Literal::Null;
-use Fey::Literal::Number;
-use Fey::Literal::String;
-use Fey::Literal::Term;
-
-
 sub new_from_scalar
 {
     shift;
@@ -57,6 +50,13 @@ sub id
 no Moose;
 
 __PACKAGE__->meta()->make_immutable();
+
+# Need to be loaded after this package is made immutable.
+require Fey::Literal::Function;
+require Fey::Literal::Null;
+require Fey::Literal::Number;
+require Fey::Literal::String;
+require Fey::Literal::Term;
 
 1;
 
