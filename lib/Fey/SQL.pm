@@ -223,6 +223,58 @@ each one.
   # there is an implicit $sql->where( 'and' ) here ...
   $sql->where( $size, '<', 10 );
 
+=head3 What Comparison Operators Are Valid?
+
+Basically, any operator should work, and there is no check that a particular operator is valid.
+
+Some operators are special-cased, specifically C<BETWEEN>, C<IN>, and C<NOT
+IN>. If you use C<BETWEEN> as the operator, you are expected to pass I<two>
+items after it. If you use C<IN> or C<NOT IN>, you can pass as many items as
+you need to on the right hand side.
+
+=head3 What Can Be Compared?
+
+When you call C<where()> to do a comparison, you can pass any of the following
+types of things:
+
+=over 4
+
+=item * An object which has an C<is_comparable()> method that returns true
+
+This includes objects which do the L<Fey::ColumnLike> role: L<Fey::Column> and
+L<Fey::Column::Alias>. A column only returns true for C<is_comparable()> when
+it is actually attached to a table.
+
+Objects which do the L<Fey::Role::Comaprable> role: L<Fey::SQL::Select>,
+L<Fey::SQL::Union>, L<Fey::SQL::Intersection>, and L<Fey::SQL::Except> always
+return true for C<is_comparable()>.
+
+If you try to compare something to something that returns a data set, you must
+be using an equality comparison operator (C<=>, C<!=>, etc), C<IN>, or, C<NOT
+IN>.
+
+Also, all L<Fey::Literal> subclasses return true for C<is_comparable()>:
+L<Fey::Literal::Function>, L<Fey::Literal::Null>, L<Fey::Literal::Number>,
+L<Fey::Literal::String>, and L<Fey::Literal::Term>.
+
+=item * An unblessed non-reference scalar
+
+This can be C<undef>, a string, or a number. This scalar will be passed to C<<
+Fey::Literal->new_from_scalar() >> and converted into an appropriate
+L<Fey::Literal> object.
+
+=item * An object which returns true for C<overload::Overloaded($object)>
+
+This will be stringified (C<$object .= ''} and passed to C<<
+Fey::Literal->new_from_scalar() >>.
+
+=back
+
+=head3 NULL In Comparisons
+
+Fey does the right thing for NULLs used in equality comparisons, generating
+C<IS NULL> and C<IS NOT NULL> as appropriate.
+
 =head2 Subgroups
 
 You can pass the strings "(" and ")" to the C<where()> method in order
