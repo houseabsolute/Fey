@@ -267,7 +267,7 @@ L<Fey::Literal> object.
 
 =item * An object which returns true for C<overload::Overloaded($object)>
 
-This will be stringified (C<$object .= ''} and passed to C<<
+This will be stringified (C<$object .= q{}>) and passed to C<<
 Fey::Literal->new_from_scalar() >>.
 
 =back
