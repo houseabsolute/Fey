@@ -257,6 +257,8 @@ Also, all L<Fey::Literal> subclasses return true for C<is_comparable()>:
 L<Fey::Literal::Function>, L<Fey::Literal::Null>, L<Fey::Literal::Number>,
 L<Fey::Literal::String>, and L<Fey::Literal::Term>.
 
+Finally, you can pass a L<Fey::Placeholder> object.
+
 =item * An unblessed non-reference scalar
 
 This can be C<undef>, a string, or a number. This scalar will be passed to C<<
