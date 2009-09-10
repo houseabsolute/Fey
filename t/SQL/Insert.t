@@ -56,7 +56,7 @@ $s->table('User')->add_column($size);
     my $insert = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $insert->into( $s->table('User')->column('user_id'),
-              $s->table('User')->column('username') );
+                   $s->table('User')->column('username') );
 
     is( $insert->insert_clause($dbh), q{INSERT INTO "User"},
         'insert_clause() for User table' );
@@ -68,7 +68,7 @@ $s->table('User')->add_column($size);
     my $insert = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $insert->into( $s->table('User')->column('user_id'),
-              $s->table('User')->column('username') );
+                   $s->table('User')->column('username') );
 
     eval { $insert->values( not_a_column => 1,
                        user_id => 2,
@@ -81,7 +81,7 @@ $s->table('User')->add_column($size);
     my $insert = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $insert->into( $s->table('User')->column('user_id'),
-              $s->table('User')->column('username') );
+                   $s->table('User')->column('username') );
 
     eval { $insert->values( username => 'bob' ) };
     like( $@, qr/Mandatory parameter 'user_id'/,
@@ -92,7 +92,7 @@ $s->table('User')->add_column($size);
     my $insert = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
 
     $insert->into( $s->table('User')->column('user_id'),
-              $s->table('User')->column('username') );
+                   $s->table('User')->column('username') );
 
     eval { $insert->values( user_id => 1, username => undef ) };
     like( $@, qr/\QThe 'username' parameter (undef)/,
