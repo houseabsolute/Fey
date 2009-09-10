@@ -5,6 +5,9 @@
 - Improved docs on WHERE clauses, especially on what can be compared (columns,
   literals, etc.). See Fey::SQL for details. Requested by Martin. RT #48677.
 
+- Tightened up checking of WHERE clause components. Previously an unblessed
+  reference would've ended up getting stringified, now it will be rejected.
+
 
 0.31    2009-08-18
 
