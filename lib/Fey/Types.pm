@@ -197,6 +197,7 @@ subtype 'Fey::Types::WhereBoolean'
 subtype 'Fey::Types::WhereClauseSide'
     => as 'Item'
     => where { return 1 if ! defined $_;
+               return 0 if ref $_ && ! blessed $_;
                return 1 unless blessed $_;
                return 1 if overload::Overloaded($_);
 
