@@ -1,3 +1,11 @@
+0.32
+
+- Shut up some warnings from the next Moose (0.90).
+
+- Improved docs on WHERE clauses, especially on what can be compared (columns,
+  literals, etc.). See Fey::SQL for details. Requested by Martin. RT #48677.
+
+
 0.31    2009-08-18
 
 - Added a new (empty) role, Fey::Role::SQL::ReturnsData. Use this as a
