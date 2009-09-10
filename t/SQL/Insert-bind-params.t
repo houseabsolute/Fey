@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 12;
+use Test::More tests => 14;
 
 use Fey::SQL;
 
@@ -68,6 +68,29 @@ my $dbh = Fey::Test->mock_dbh();
         'columns clause has columns in expected order' );
     is_deeply( [ $q->bind_params() ], [ 'Bubba', 42 ],
                'bind params are in the right order' );
+}
+
+my $size =
+    Fey::Column->new( name        => 'size',
+                      type        => 'text',
+                      is_nullable => 1,
+                    );
+$s->table('User')->add_column($size);
+
+{
+    my $insert = Fey::SQL->new_insert( auto_placeholders => 1 );
+
+    $insert->into( $s->table('User')->columns( 'user_id', 'size', 'username' ) );
+    $insert->values( size     => 42,
+                     user_id  => 921,
+                     username => 'User',
+                   );
+
+    is( $insert->sql($dbh), q{INSERT INTO "User" ("user_id", "size", "username") VALUES (?, ?, ?)},
+        'sql() for insert with auto-placeholders - column order matches into()' );
+    is_deeply( [ $insert->bind_params() ],
+               [ 921, 42, 'User' ],
+               'bind_params() returns params in the right order' );
 }
 
 {
