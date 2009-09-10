@@ -68,7 +68,7 @@ sub BUILDARGS
                 # things simpler when we pass it to DBI, test
                 # code, etc. It works fine with numbers, more or
                 # less (see Fey::Literal).
-                $_ .= '';
+                $_ .= q{};
             }
             else
             {
