@@ -2,6 +2,10 @@
 
 - Put a $VERSION in every .pm file matching Fey.pm
 
+- The $table->aliased_columns() method can now be called with just a prefix,
+  in which case it returns aliases for all the columns in the table. Requested
+  by Aristotle Pagaltzis. RT #40857.
+
 
 0.32    2009-09-10
 

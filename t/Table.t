@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 43;
+use Test::More tests => 44;
 
 use Fey::Table;
 
@@ -199,6 +199,15 @@ use Fey::Table;
         'aliased_columns return column aliases with expected alias_names' );
     is( $a3->alias_name(), 'foo_username',
         'aliased_columns return column aliases with expected alias_names' );
+}
+
+{
+    my $s = Fey::Test->mock_test_schema();
+    my $t = $s->table('User');
+
+    my @a = $t->aliased_columns('foo_');
+    is( scalar @a, 3,
+        'aliased_columns with no explicit columns returns all columns' );
 }
 
 sub _keys_to_names
