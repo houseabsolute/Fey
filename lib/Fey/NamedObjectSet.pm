@@ -128,7 +128,7 @@ Given a name, this method returns the corresponding object.
 
 When given a list of names as an argument, this method returns the
 named objects in the order specified, if they exist in the set. If not
-given any arguments it returns all of the objects in th set.
+given any arguments it returns all of the objects in the set.
 
 =head2 $set->is_same_as($other_set)
 

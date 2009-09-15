@@ -258,7 +258,7 @@ This indicates whether or not the column is auto-incremented.
 
 =item * is_nullable - defaults to 0
 
-A boolean indicating whether the column is nullab.e
+A boolean indicating whether the column is nullable.
 
 =item * default - optional
 

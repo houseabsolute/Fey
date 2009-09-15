@@ -390,7 +390,7 @@ thrown.
 =head2 $table->remove_column($column)
 
 Remove the specified column from the table. If the column was part of
-any foreign keys, these are remvoed from the schema. If this column is
+any foreign keys, these are removed from the schema. If this column is
 part of any keys for the table, those keys will be removed. Removing
 the column unsets the table for the column.
 
