@@ -1,3 +1,8 @@
+0.33
+
+- Put a $VERSION in every .pm file matching Fey.pm
+
+
 0.32    2009-09-10
 
 - Shut up some warnings from the next Moose (0.90).
