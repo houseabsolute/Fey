@@ -7,18 +7,17 @@ use Fey::Types;
 use Scalar::Util qw( blessed );
 
 use Moose::Role;
-use MooseX::AttributeHelpers;
 use MooseX::Params::Validate qw( pos_validated_list );
 
 has '_order_by' =>
-    ( metaclass => 'Collection::Array',
-      is        => 'ro',
-      isa       => 'ArrayRef',
-      default   => sub { [] },
-      provides  => { push  => '_add_order_by_elements',
-                     empty => '_has_order_by_elements',
-                   },
-      init_arg  => undef,
+    ( traits   => [ 'Array' ],
+      is       => 'ro',
+      isa      => 'ArrayRef',
+      default  => sub { [] },
+      handles  => { _add_order_by_elements => 'push',
+                    _has_order_by_elements => 'count',
+                  },
+      init_arg => undef,
     );
 
 

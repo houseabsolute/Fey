@@ -36,14 +36,14 @@ with 'Fey::Role::HasAliasName'
              };
 
 has '_select' =>
-    ( metaclass => 'Collection::Array',
-      is        => 'ro',
-      isa       => 'ArrayRef',
-      default   => sub { [] },
-      provides  => { push     => '_add_select_element',
-                     elements => 'select_clause_elements',
-                   },
-      init_arg  => undef,
+    ( traits   => [ 'Array' ],
+      is       => 'ro',
+      isa      => 'ArrayRef',
+      default  => sub { [] },
+      handles  => { _add_select_element    => 'push',
+                    select_clause_elements => 'elements',
+                  },
+      init_arg => undef,
     );
 
 has 'is_distinct' =>
@@ -61,38 +61,38 @@ has 'is_distinct_on' =>
     );
 
 has '_from' =>
-    ( metaclass => 'Collection::Hash',
-      is        => 'ro',
-      isa       => 'HashRef',
-      default   => sub { {} },
-      provides  => { get  => '_get_from',
-                     set  => '_set_from',
-                     keys => '_from_ids',
-                   },
-      init_arg  => undef,
+    ( traits   => [ 'Hash' ],
+      is       => 'ro',
+      isa      => 'HashRef',
+      default  => sub { {} },
+      handles  => { _get_from => 'get',
+                    _set_from => 'set',
+                    _from_ids => 'keys',
+                  },
+      init_arg => undef,
     );
 
 has '_group_by' =>
-    ( metaclass => 'Collection::Array',
-      is        => 'ro',
-      isa       => 'ArrayRef',
-      default   => sub { [] },
-      provides  => { push     => '_add_group_by_elements',
-                     empty    => '_has_group_by_elements',
-                   },
-      init_arg  => undef,
+    ( traits   => [ 'Array' ],
+      is       => 'ro',
+      isa      => 'ArrayRef',
+      default  => sub { [] },
+      handles  => { _add_group_by_elements => 'push',
+                    _has_group_by_elements => 'count',
+                  },
+      init_arg => undef,
     );
 
 has '_having' =>
-    ( metaclass => 'Collection::Array',
-      is        => 'ro',
-      isa       => 'ArrayRef',
-      default   => sub { [] },
-      provides  => { push  => '_add_having_element',
-                     empty => '_has_having_elements',
-                     last  => '_last_having_element',
-                   },
-      init_arg  => undef,
+    ( traits  => [ 'Array' ],
+      is      => 'ro',
+      isa     => 'ArrayRef',
+      default => sub { [] },
+      handles => { _add_having_element  => 'push',
+                   _has_having_elements => 'count',
+                   _last_having_element => [ 'get', -1 ],
+                 },
+      init_arg => undef,
     );
 
 with 'Fey::Role::SQL::Cloneable';

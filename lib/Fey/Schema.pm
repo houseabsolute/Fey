@@ -10,7 +10,7 @@ use Fey::Table;
 use Fey::Types;
 use Scalar::Util qw( blessed );
 
-use Moose;
+use Moose 0.90;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;

@@ -27,12 +27,12 @@ has '_values_spec' =>
     );
 
 has '_values' =>
-    ( metaclass => 'Collection::Array',
-      is        => 'ro',
-      isa       => 'ArrayRef[HashRef]',
-      default   => sub { [] },
-      provides  => { push => '_add_values' },
-      init_arg  => undef,
+    ( traits   => [ 'Array' ],
+      is       => 'ro',
+      isa      => 'ArrayRef[HashRef]',
+      default  => sub { [] },
+      handles  => { _add_values => 'push' },
+      init_arg => undef,
     );
 
 with 'Fey::Role::SQL::Cloneable';

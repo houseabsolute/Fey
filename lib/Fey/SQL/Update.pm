@@ -35,13 +35,12 @@ has '_update' =>
     );
 
 has '_set_pairs' =>
-    ( metaclass => 'Collection::Array',
-      is        => 'ro',
-      isa       => 'ArrayRef[ArrayRef]',
-      default   => sub { [] },
-      provides  => { push => '_add_set_pair',
-                   },
-      init_arg  => undef,
+    ( traits   => [ 'Array' ],
+      is       => 'ro',
+      isa      => 'ArrayRef[ArrayRef]',
+      default  => sub { [] },
+      handles  => { _add_set_pair => 'push' },
+      init_arg => undef,
     );
 
 with 'Fey::Role::SQL::Cloneable';

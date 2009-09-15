@@ -26,14 +26,14 @@ has 'is_all' =>
     );
 
 has '_set_elements' =>
-    ( metaclass => 'Collection::Array',
-      is        => 'ro',
-      isa       => 'ArrayRef[Fey::Types::SetOperationArg]',
-      default   => sub { [] },
-      provides  => { push  => '_add_set_elements',
-                     count => '_set_element_count',
-                   },
-      init_arg  => undef,
+    ( traits   => [ 'Array' ],
+      is       => 'ro',
+      isa      => 'ArrayRef[Fey::Types::SetOperationArg]',
+      default  => sub { [] },
+      handles  => { _add_set_elements  => 'push',
+                    _set_element_count => 'count',
+                  },
+      init_arg => undef,
     );
 
 sub id

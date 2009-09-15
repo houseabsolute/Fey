@@ -6,13 +6,12 @@ use warnings;
 use Moose::Role;
 
 has '_bind_params' =>
-    ( metaclass => 'Collection::Array',
-      is        => 'ro',
-      isa       => 'ArrayRef',
-      default   => sub { [] },
-      provides  => { push => '_add_bind_param',
-                   },
-      init_arg  => undef,
+    ( traits   => [ 'Array' ],
+      is       => 'ro',
+      isa      => 'ArrayRef',
+      default  => sub { [] },
+      handles  => { _add_bind_param => 'push' },
+      init_arg => undef,
     );
 
 has 'auto_placeholders' =>

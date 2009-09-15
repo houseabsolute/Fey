@@ -15,7 +15,6 @@ use Scalar::Util qw( blessed weaken );
 use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
-use MooseX::AttributeHelpers;
 use MooseX::StrictConstructor;
 use Moose::Util::TypeConstraints;
 
@@ -45,13 +44,14 @@ has 'is_view' =>
     );
 
 has '_keys' =>
-    ( metaclass => 'MooseX::AttributeHelpers::Collection::Array',
-      is        => 'rw',
-      isa       => 'Fey::Types::ArrayRefOfNamedObjectSets',
-      default   => sub { [] },
-      provides  => { push   => '_add_key',
-                     delete => '_delete_key',
-                   },
+    ( traits  => [ 'Array' ],
+      is      => 'rw',
+      isa     => 'Fey::Types::ArrayRefOfNamedObjectSets',
+      default => sub { [] },
+      handles => { _add_key    => 'push',
+                   _delete_key => 'delete',
+                 },
+
     );
 
 has '_columns' =>
@@ -95,15 +95,15 @@ after '_clear_candidate_keys' =>
     sub { $_[0]->_clear_primary_key() };
 
 has '_aliased_tables' =>
-    ( metaclass => 'Collection::Hash',
-      is        => 'ro',
-      isa       => 'HashRef',
-      lazy      => 1,
-      default   => sub { {} },
-      provides  => { exists => '_has_aliased_table',
-                     get    => '_aliased_table',
-                     set    => '_store_aliased_table',
-                   },
+    ( traits  => [ 'Hash' ],
+      is      => 'ro',
+      isa     => 'HashRef',
+      lazy    => 1,
+      default => sub { {} },
+      handles => { _aliased_table       => 'get',
+                   _store_aliased_table => 'set',
+                   _has_aliased_table   => 'exists',
+                 },
     );
 
 with 'Fey::Role::Named';

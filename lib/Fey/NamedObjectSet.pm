@@ -8,18 +8,17 @@ use List::AllUtils qw( all pairwise );
 use Fey::Types;
 
 use Moose;
-use MooseX::AttributeHelpers;
 
 has '_set' =>
-    ( metaclass => 'Collection::Hash',
-      is        => 'ro',
-      isa       => 'HashRef[Fey::Role::Named]',
-      provides  => { set    => '_add',
-                     delete => '_delete',
-                     get    => '_get',
-                     values => '_all',
+    ( traits   => [ 'Hash' ],
+      is       => 'ro',
+      isa      => 'HashRef[Fey::Role::Named]',
+      handles  => { _get    => 'get',
+                    _add    => 'set',
+                    _delete => 'delete',
+                    _all    => 'values',
                    },
-      required  => 1,
+      required => 1,
     );
 
 sub BUILDARGS

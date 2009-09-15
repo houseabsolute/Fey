@@ -8,7 +8,6 @@ use Fey::Table;
 use Fey::Types;
 
 use Moose;
-use MooseX::AttributeHelpers;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
@@ -34,15 +33,15 @@ has 'alias_name' =>
     );
 
 has '_columns' =>
-    ( metaclass => 'Collection::Hash',
-      is        => 'ro',
-      isa       => 'HashRef[Fey::Column]',
-      default   => sub { {} },
-      provides  => { 'get'    => '_get_column',
-                     'set'    => '_set_column',
-                     'exists' => '_has_column',
-                   },
-      init_arg  => undef,
+    ( traits   => [ 'Hash' ],
+      is       => 'ro',
+      isa      => 'HashRef[Fey::Column]',
+      default  => sub { {} },
+      handles  => { _get_column => 'get',
+                    _set_column => 'set',
+                    _has_column => 'exists',
+                  },
+      init_arg => undef,
     );
 
 with 'Fey::Role::Named';

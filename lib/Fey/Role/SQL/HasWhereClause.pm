@@ -13,15 +13,15 @@ use Fey::SQL::Fragment::Where::SubgroupEnd;
 use Moose::Role;
 
 has '_where' =>
-    ( metaclass => 'Collection::Array',
-      is        => 'ro',
-      isa       => 'ArrayRef',
-      default   => sub { [] },
-      provides  => { push  => '_add_where_element',
-                     empty => '_has_where_elements',
-                     last  => '_last_where_element',
-                   },
-      init_arg  => undef,
+    ( traits   => [ 'Array' ],
+      is       => 'ro',
+      isa      => 'ArrayRef',
+      default  => sub { [] },
+      handles  => { _add_where_element  => 'push',
+                    _has_where_elements => 'count',
+                    _last_where_element => [ 'get', -1 ],
+                  },
+      init_arg => undef,
     );
 
 
