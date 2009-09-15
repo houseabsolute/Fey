@@ -3,6 +3,8 @@ package Fey::Role::SQL::HasBindParams;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Moose::Role;
 
 has '_bind_params' =>

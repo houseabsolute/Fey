@@ -3,6 +3,8 @@ package Fey::Role::MakesAliasObjects;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use MooseX::Role::Parameterized;
 
 parameter 'alias_class' =>

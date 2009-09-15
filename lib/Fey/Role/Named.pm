@@ -3,6 +3,8 @@ package Fey::Role::Named;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Moose::Role;
 
 requires 'name';

@@ -3,6 +3,8 @@ package Fey::Role::Selectable;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Moose::Role;
 
 

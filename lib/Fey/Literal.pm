@@ -3,6 +3,8 @@ package Fey::Literal;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Fey::FakeDBI;
 use Fey::Types;
 use Scalar::Util qw( blessed looks_like_number );

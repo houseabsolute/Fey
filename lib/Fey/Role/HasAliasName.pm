@@ -1,5 +1,10 @@
 package Fey::Role::HasAliasName;
 
+use strict;
+use warnings;
+
+our $VERSION = '0.32';
+
 use MooseX::Role::Parameterized;
 
 parameter 'generated_alias_prefix' =>

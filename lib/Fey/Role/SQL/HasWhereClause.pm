@@ -3,6 +3,8 @@ package Fey::Role::SQL::HasWhereClause;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Fey::Exceptions qw( param_error );
 
 use Fey::SQL::Fragment::Where::Boolean;

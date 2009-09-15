@@ -3,6 +3,8 @@ package Fey::FK;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Fey::Column;
 use Fey::Exceptions qw(param_error);
 use Fey::Types;

@@ -3,6 +3,8 @@ package Fey::Role::SQL::HasOrderByClause;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Fey::Types;
 use Scalar::Util qw( blessed );
 

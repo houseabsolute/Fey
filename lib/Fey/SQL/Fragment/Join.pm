@@ -3,6 +3,8 @@ package Fey::SQL::Fragment::Join;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Fey::FakeDBI;
 use Fey::Types;
 use List::AllUtils qw( pairwise );

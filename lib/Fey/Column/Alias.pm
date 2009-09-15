@@ -3,6 +3,8 @@ package Fey::Column::Alias;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Fey::Column;
 use Fey::Exceptions qw( object_state_error );
 use Fey::Table;

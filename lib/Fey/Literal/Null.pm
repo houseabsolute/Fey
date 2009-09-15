@@ -3,6 +3,8 @@ package Fey::Literal::Null;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Fey::Types;
 
 use Moose;

@@ -3,6 +3,8 @@ package Fey::SQL::Update;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Fey::Exceptions qw( param_error );
 use Fey::Literal;
 use Fey::Types;

@@ -3,6 +3,8 @@ package Fey::Schema;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Fey::Exceptions qw( param_error );
 use Fey::NamedObjectSet;
 use Fey::SQL;

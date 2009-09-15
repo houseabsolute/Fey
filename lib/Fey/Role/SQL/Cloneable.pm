@@ -3,6 +3,8 @@ package Fey::Role::SQL::Cloneable;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use MooseX::Role::Parameterized;
 
 parameter 'real_class' =>

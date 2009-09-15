@@ -3,6 +3,8 @@ package Fey::Exceptions;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 my %E;
 BEGIN
 {

@@ -3,6 +3,8 @@ package Fey::Table::Alias;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Fey::Exceptions qw(param_error);
 use Fey::Table;
 use Fey::Types;

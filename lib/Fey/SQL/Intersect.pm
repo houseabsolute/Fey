@@ -3,6 +3,8 @@ package Fey::SQL::Intersect;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Moose;
 
 with 'Fey::Role::SetOperation' => { keyword => 'INTERSECT' };

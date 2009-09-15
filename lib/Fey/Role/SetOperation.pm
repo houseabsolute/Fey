@@ -3,9 +3,12 @@ package Fey::Role::SetOperation;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
+use Fey::Types;
+
 use MooseX::Role::Parameterized;
 use MooseX::Params::Validate qw( pos_validated_list );
-use Fey::Types;
 
 parameter keyword =>
 (

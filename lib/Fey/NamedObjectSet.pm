@@ -3,6 +3,8 @@ package Fey::NamedObjectSet;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use List::AllUtils qw( all pairwise );
 
 use Fey::Types;

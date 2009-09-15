@@ -3,6 +3,8 @@ package Fey::Role::ColumnLike;
 use strict;
 use warnings;
 
+our $VERSION = '0.32';
+
 use Moose::Role;
 
 # This seems weird, but basically we're saying that column-like things
