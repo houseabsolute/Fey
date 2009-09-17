@@ -27,10 +27,12 @@ for my $keyword ( qw( UNION INTERSECT EXCEPT ) )
         like( $@, qr/1 parameter .+ but 2 were expected/,
               "$method() with only one parameter is an error" );
 
-        local $TODO = 'MooseX::Params::Validate gets the method name wrong';
-        eval { $set_op->$method() };
-        like( $@, qr/0 parameters were passed to .+::$method/,
-              "$method() error message has correct method name" );
+    TODO:{
+            local $TODO = 'MooseX::Params::Validate gets the method name wrong';
+            eval { $set_op->$method() };
+            like( $@, qr/0 parameters were passed to .+::$method/,
+                  "$method() error message has correct method name" );
+        }
     }
 
     {
