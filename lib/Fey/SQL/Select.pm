@@ -39,7 +39,7 @@ with 'Fey::Role::HasAliasName'
 
 has '_select' =>
     ( traits   => [ 'Array' ],
-      is       => 'ro',
+      is       => 'bare',
       isa      => 'ArrayRef',
       default  => sub { [] },
       handles  => { _add_select_element    => 'push',
@@ -64,7 +64,7 @@ has 'is_distinct_on' =>
 
 has '_from' =>
     ( traits   => [ 'Hash' ],
-      is       => 'ro',
+      is       => 'bare',
       isa      => 'HashRef',
       default  => sub { {} },
       handles  => { _get_from => 'get',
@@ -76,23 +76,25 @@ has '_from' =>
 
 has '_group_by' =>
     ( traits   => [ 'Array' ],
-      is       => 'ro',
+      is       => 'bare',
       isa      => 'ArrayRef',
       default  => sub { [] },
       handles  => { _add_group_by_elements => 'push',
                     _has_group_by_elements => 'count',
+                    _group_by              => 'elements',
                   },
       init_arg => undef,
     );
 
 has '_having' =>
     ( traits  => [ 'Array' ],
-      is      => 'ro',
+      is      => 'bare',
       isa     => 'ArrayRef',
       default => sub { [] },
       handles => { _add_having_element  => 'push',
                    _has_having_elements => 'count',
                    _last_having_element => [ 'get', -1 ],
+                   _having              => 'elements',
                  },
       init_arg => undef,
     );
@@ -419,7 +421,7 @@ sub group_by_clause
              .
              ( join ', ',
                map { $_->sql_or_alias($dbh) }
-               @{ $self->_group_by() }
+               $self->_group_by()
              )
            );
 }
@@ -434,7 +436,7 @@ sub having_clause
     return ( 'HAVING '
              . ( join ' ',
                  map { $_->sql($dbh) }
-                 @{ $self->_having() }
+                 $self->_having()
                )
            )
 }
@@ -454,7 +456,7 @@ sub bind_params
 
           ( map { $_->bind_params() }
             grep { $_->can('bind_params') }
-            @{ $self->_having() }
+            $self->_having()
           ),
         );
 }

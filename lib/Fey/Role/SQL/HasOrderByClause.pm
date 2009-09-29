@@ -13,11 +13,12 @@ use MooseX::Params::Validate qw( pos_validated_list );
 
 has '_order_by' =>
     ( traits   => [ 'Array' ],
-      is       => 'ro',
+      is       => 'bare',
       isa      => 'ArrayRef',
       default  => sub { [] },
       handles  => { _add_order_by_elements => 'push',
                     _has_order_by_elements => 'count',
+                    _order_by              => 'elements',
                   },
       init_arg => undef,
     );
@@ -48,7 +49,7 @@ sub order_by_clause
 
     my $sql = 'ORDER BY ';
 
-    my @elt = @{ $self->_order_by() };
+    my @elt = $self->_order_by();
 
     for my $elt (@elt)
     {

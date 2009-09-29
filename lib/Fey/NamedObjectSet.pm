@@ -13,12 +13,13 @@ use Moose;
 
 has '_set' =>
     ( traits   => [ 'Hash' ],
-      is       => 'ro',
+      is       => 'bare',
       isa      => 'HashRef[Fey::Role::Named]',
       handles  => { _get    => 'get',
                     _add    => 'set',
                     _delete => 'delete',
                     _all    => 'values',
+                    _keys   => 'keys',
                    },
       required => 1,
     );
@@ -69,8 +70,8 @@ sub is_same_as
     my $self  = shift;
     my $other = shift;
 
-    my @self_names  = sort keys %{ $self->_set() };
-    my @other_names = sort keys %{ $other->_set() };
+    my @self_names  = sort $self->_keys();
+    my @other_names = sort $other->_keys();
 
     return 0 unless @self_names == @other_names;
 

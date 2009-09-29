@@ -22,8 +22,8 @@ has 'auto_placeholders' =>
       default => 1,
     );
 
-# This needs to be a method and not a provides accessor so it can be
-# excluded by classes which need to exclude it.
+# This needs to be a method and not a delegated method so it can be excluded
+# by classes which need to exclude it.
 sub bind_params
 {
     return @{ $_[0]->_bind_params() };

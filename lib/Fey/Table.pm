@@ -47,10 +47,11 @@ has 'is_view' =>
 
 has '_keys' =>
     ( traits  => [ 'Array' ],
-      is      => 'rw',
+      is      => 'bare',
       isa     => 'Fey::Types::ArrayRefOfNamedObjectSets',
       default => sub { [] },
-      handles => { _add_key    => 'push',
+      handles => { _keys       => 'elements',
+                   _add_key    => 'push',
                    _delete_key => 'delete',
                  },
 
@@ -98,7 +99,7 @@ after '_clear_candidate_keys' =>
 
 has '_aliased_tables' =>
     ( traits  => [ 'Hash' ],
-      is      => 'ro',
+      is      => 'bare',
       isa     => 'HashRef',
       lazy    => 1,
       default => sub { {} },
@@ -146,7 +147,7 @@ sub remove_column
 
     my $name = $col->name();
 
-    for my $k ( @{ $self->_keys() } )
+    for my $k ( $self->_keys() )
     {
         $self->remove_candidate_key( $k->objects() )
             if $k->object($name);
@@ -163,7 +164,7 @@ sub _build_candidate_keys
 {
     my $self = shift;
 
-    return [ map { [ $_->objects() ] } @{ $self->_keys() } ];
+    return [ map { [ $_->objects() ] } $self->_keys() ];
 }
 
 sub _build_primary_key
@@ -222,7 +223,7 @@ sub remove_candidate_key
 
     my $set = Fey::NamedObjectSet->new(@cols);
 
-    my $idx = first_index { $_->is_same_as($set) } @{ $self->_keys() };
+    my $idx = first_index { $_->is_same_as($set) } $self->_keys();
 
     $self->_delete_key( $idx, 1 )
         if $idx >= 0;
@@ -253,7 +254,7 @@ sub has_candidate_key
 
     return 1 if
         any { $_->is_same_as($set) }
-        @{ $self->_keys() };
+        $self->_keys();
 
     return 0;
 }

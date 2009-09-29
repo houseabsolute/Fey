@@ -36,7 +36,7 @@ has 'alias_name' =>
 
 has '_columns' =>
     ( traits   => [ 'Hash' ],
-      is       => 'ro',
+      is       => 'bare',
       isa      => 'HashRef[Fey::Column]',
       default  => sub { {} },
       handles  => { _get_column => 'get',

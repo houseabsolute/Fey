@@ -16,12 +16,13 @@ use Moose::Role;
 
 has '_where' =>
     ( traits   => [ 'Array' ],
-      is       => 'ro',
+      is       => 'bare',
       isa      => 'ArrayRef',
       default  => sub { [] },
       handles  => { _add_where_element  => 'push',
                     _has_where_elements => 'count',
                     _last_where_element => [ 'get', -1 ],
+                    _where              => 'elements',
                   },
       init_arg => undef,
     );
@@ -160,7 +161,7 @@ sub where_clause
     return ( $sql
              . ( join ' ',
                  map { $_->sql($dbh) }
-                 @{ $self->_where() }
+                 $self->_where()
                )
            );
 }
@@ -172,7 +173,7 @@ sub bind_params
     return
         ( map { $_->bind_params() }
           grep { $_->can('bind_params') }
-          @{ $self->_where() }
+          $self->_where()
         );
 }
 

@@ -38,10 +38,12 @@ has '_update' =>
 
 has '_set_pairs' =>
     ( traits   => [ 'Array' ],
-      is       => 'ro',
+      is       => 'bare',
       isa      => 'ArrayRef[ArrayRef]',
       default  => sub { [] },
-      handles  => { _add_set_pair => 'push' },
+      handles  => { _add_set_pair => 'push',
+                    _set_pairs    => 'elements',
+                  },
       init_arg => undef,
     );
 
@@ -154,7 +156,7 @@ sub set_clause
                  map {   $self->$col_quote( $_->[0], $dbh )
                        . ' = '
                        . $_->[1]->sql( $dbh ) }
-                 @{ $self->_set_pairs() }
+                 $self->_set_pairs()
                )
            );
 }
