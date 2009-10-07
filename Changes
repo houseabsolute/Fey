@@ -6,6 +6,9 @@
   in which case it returns aliases for all the columns in the table. Requested
   by Aristotle Pagaltzis. RT #40857.
 
+- Fixed some tests in t/SQL/Set.t that changed results when modules were
+  loaded in a different order.
+
 
 0.32    2009-09-10
 
