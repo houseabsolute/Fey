@@ -3,7 +3,7 @@ package Fey::Column;
 use strict;
 use warnings;
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 
 use Scalar::Util qw( blessed weaken );
 

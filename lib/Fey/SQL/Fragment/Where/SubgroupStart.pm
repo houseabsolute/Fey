@@ -3,7 +3,7 @@ package Fey::SQL::Fragment::Where::SubgroupStart;
 use strict;
 use warnings;
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 
 use Moose;
 

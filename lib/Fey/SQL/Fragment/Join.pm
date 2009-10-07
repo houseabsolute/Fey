@@ -3,7 +3,7 @@ package Fey::SQL::Fragment::Join;
 use strict;
 use warnings;
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 
 use Fey::FakeDBI;
 use Fey::Types;

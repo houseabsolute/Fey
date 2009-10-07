@@ -3,7 +3,7 @@ package Fey::Role::SQL::HasWhereClause;
 use strict;
 use warnings;
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 
 use Fey::Exceptions qw( param_error );
 

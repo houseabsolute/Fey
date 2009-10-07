@@ -3,7 +3,7 @@ package Fey::SQL;
 use strict;
 use warnings;
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 
 use Fey::SQL::Delete;
 use Fey::SQL::Insert;
