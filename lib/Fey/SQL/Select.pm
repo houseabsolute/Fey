@@ -520,7 +520,7 @@ These will be passed to C<< Fey::Literal->new_from_scalar() >>.
 =item * C<Fey::Table> objects
 
 If a table is passed, then all of its columns will be included in the
-C<SELECT> clause.
+C<SELECT> clause, sorted alphanumerically.
 
 =item * C<Fey::Column> objects, and aliases
 
