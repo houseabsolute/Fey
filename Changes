@@ -1,3 +1,9 @@
+0.34
+
+- Add a can_have_alias() attribute to Fey::Term::Literal. Sometimes you want
+  make sure a term is used exactly as-is, without any alias being added.
+
+
 0.33    2009-10-07
 
 - Put a $VERSION in every .pm file matching Fey.pm

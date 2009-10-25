@@ -7,6 +7,7 @@ our $VERSION = '0.33';
 
 use Fey::Types;
 
+use Carp qw( croak );
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
@@ -16,9 +17,6 @@ extends 'Fey::Literal';
 with 'Fey::Role::Comparable', 'Fey::Role::Selectable',
      'Fey::Role::Orderable', 'Fey::Role::Groupable';
 
-with 'Fey::Role::HasAliasName' =>
-    { generated_alias_prefix => 'TERM' };
-
 has 'term' =>
     ( is       => 'ro',
       isa      => 'Fey::Types::LiteralTermArg',
@@ -26,6 +24,14 @@ has 'term' =>
       coerce   => 1,
     );
 
+has can_have_alias =>
+    ( is       => 'rw',
+      isa      => 'Bool',
+      default  => 1,
+    );
+
+with 'Fey::Role::HasAliasName' =>
+    { generated_alias_prefix => 'TERM' };
 
 sub BUILDARGS
 {
@@ -47,6 +53,34 @@ sub sql
             );
 }
 
+# XXX - this bit of wackness is necessary because MX::Role::Parameterized
+# doesn't support -alias or -excludes, but we want to provide our own version
+# of sql_with_alias.
+{
+    my $meta = __PACKAGE__->meta();
+
+    my $method = $meta->remove_method('sql_with_alias');
+    $meta->add_method( _han_sql_with_alias => $method );
+
+    my $sql_with_alias = sub
+    {
+        my $self = shift;
+        my $dbh  = shift;
+
+        return $self->can_have_alias() ? $self->_han_sql_with_alias($dbh) : $self->sql($dbh);
+    };
+
+    $meta->add_method( sql_with_alias => $sql_with_alias );
+}
+
+before 'set_alias_name' => sub
+{
+    my $self = shift;
+
+    croak 'This term cannot have an alias'
+        unless $self->can_have_alias();
+};
+
 no Moose;
 
 __PACKAGE__->meta()->make_immutable();
@@ -65,14 +99,13 @@ Fey::Literal::Term - Represents a literal term in a SQL statement
 
 =head1 DESCRIPTION
 
-This class represents a literal term in a SQL statement. A "term" in
-this module means a literal term that will be used verbatim, without
+This class represents a literal term in a SQL statement. A "term" in this
+module means a literal SQL snippet that will be used verbatim, without
 quoting.
 
-This allows you to create SQL for almost any expression, so that you
-can something like this C<EXTRACT( DOY FROM TIMESTAMP
-User.creation_date )>, which is a valid Postgres expression. This
-would be created like this:
+This allows you to create SQL for almost any expression, for example
+C<EXTRACT( DOY FROM TIMESTAMP "User.creation_date" )>, which is a valid Postgres
+expression. This would be created like this:
 
   my $term =
       Fey::Literal::Term->new
@@ -110,6 +143,13 @@ assumption being it that it overloads stringification).
 
 Returns the array reference of fragments passed to the constructor.
 
+=head2 $term->can_have_alias()
+
+=head2 $term->set_can_have_alias()
+
+If this attribute is explicitly set to a true value, then then the
+SQL-generating methods below will never include an alias.
+
 =head2 $term->sql()
 
 =head2 $term->sql_with_alias()
@@ -117,13 +157,22 @@ Returns the array reference of fragments passed to the constructor.
 =head2 $term->sql_or_alias()
 
 Returns the appropriate SQL snippet.  Any Fey objects in the C<term()> will
-have C<sql()> called on them to generate their part of the term.
+have C<sql_or_alias()> called on them to generate their part of the term.
+
+=head1 DETAILS OF SQL GENERATION
+
+A term generates SQL by taking each of the elements passed to its constructor
+and concatenating them. If the element is an object with a C<sql_or_alias()>
+method, that method will be called to generate SQL. Otherwise, the element is
+just used as-is.
+
+If C<< $term->can_have_alias() >> is false, then calling any of the three
+SQL-generating methods is always equivalent to calling C<< $term->sql() >>.
 
 =head1 ROLES
 
 This class does the C<Fey::Role::Selectable>, C<Fey::Role::Comparable>,
-C<Fey::Role::Groupable>, C<Fey::Role::Orderable>, and
-C<Fey::Role::HasAliasName> roles.
+C<Fey::Role::Groupable>, and C<Fey::Role::Orderable> roles.
 
 Of course, the contents of a given term may not really allow for any
 of these things, but having this class do these roles means you can

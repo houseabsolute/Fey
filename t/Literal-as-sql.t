@@ -4,10 +4,9 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 38;
+use Test::More tests => 43;
 
 use Fey::Literal;
-
 
 {
     my $dbh = Fey::Test->mock_dbh();
@@ -173,3 +172,24 @@ use Fey::Literal;
     is( $term->sql_or_alias($dbh), q{THING OTHER "User"."user_id"},
         'Term does not try to call sql_or_alias on objects which do not have this method' );
 }
+
+{
+    my $dbh = Fey::Test->mock_dbh();
+
+    my $term = Fey::Literal::Term->new('1237.0');
+    $term->set_can_have_alias(0);
+
+    is( $term->sql_or_alias($dbh), '1237.0',
+        'term sql_or_alias is 1237.0' );
+    is( $term->sql_with_alias($dbh), '1237.0',
+        'term sql_with_alias is 1237.0' );
+    is( $term->sql_or_alias($dbh), '1237.0',
+        'term sql_or_alias (after _with_alias) is 1237.0' );
+    is( $term->sql($dbh), '1237.0',
+        'term sql is 1237.0' );
+
+    eval { $term->set_alias_name('FOO') };
+    like( $@, qr/\QThis term cannot have an alias/,
+          'set_alias_name dies when can_have_alias is false' );
+}
+
