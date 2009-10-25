@@ -3,6 +3,10 @@
 - Add a can_have_alias() attribute to Fey::Term::Literal. Sometimes you want
   make sure a term is used exactly as-is, without any alias being added.
 
+- Fey::Literal is no longer the parent class for all literal classes. Instead,
+  it is simply a factory. All the literals now do the Fey::Role::IsLiteral
+  role.
+
 
 0.33    2009-10-07
 

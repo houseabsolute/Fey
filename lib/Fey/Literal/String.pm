@@ -11,9 +11,9 @@ use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-extends 'Fey::Literal';
-
-with 'Fey::Role::Comparable', 'Fey::Role::Selectable';
+with 'Fey::Role::Comparable',
+     'Fey::Role::Selectable',
+     'Fey::Role::IsLiteral';
 
 has 'string' =>
     ( is       => 'ro',
@@ -71,6 +71,10 @@ the string passed to the constructor.
 =head2 $string->string()
 
 Returns the string as passed to the constructor.
+
+=head2 $string->id()
+
+The id for a string is always just the string itself.
 
 =head2 $string->sql()
 

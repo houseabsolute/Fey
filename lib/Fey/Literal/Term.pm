@@ -12,10 +12,9 @@ use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-extends 'Fey::Literal';
-
 with 'Fey::Role::Comparable', 'Fey::Role::Selectable',
-     'Fey::Role::Orderable', 'Fey::Role::Groupable';
+     'Fey::Role::Orderable', 'Fey::Role::Groupable',
+     'Fey::Role::IsLiteral';
 
 has 'term' =>
     ( is       => 'ro',
@@ -150,14 +149,18 @@ Returns the array reference of fragments passed to the constructor.
 If this attribute is explicitly set to a true value, then then the
 SQL-generating methods below will never include an alias.
 
+=head2 $term->id()
+
+The id for a term is uniquely identifies the term.
+
 =head2 $term->sql()
 
 =head2 $term->sql_with_alias()
 
 =head2 $term->sql_or_alias()
 
-Returns the appropriate SQL snippet.  Any Fey objects in the C<term()> will
-have C<sql_or_alias()> called on them to generate their part of the term.
+Returns the appropriate SQL snippet. If the term contains any Fey objects,
+their C<sql_or_alias()> method is called to generate their part of the term.
 
 =head1 DETAILS OF SQL GENERATION
 

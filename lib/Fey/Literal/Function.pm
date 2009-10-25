@@ -12,12 +12,11 @@ use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-extends 'Fey::Literal';
-
 with 'Fey::Role::Comparable',
      'Fey::Role::Selectable',
      'Fey::Role::Orderable',
-     'Fey::Role::Groupable' => { excludes => 'is_groupable' };
+     'Fey::Role::Groupable' => { excludes => 'is_groupable' },
+     'Fey::Role::IsLiteral';
 
 with 'Fey::Role::HasAliasName' =>
     { generated_alias_prefix => 'FUNCTION' };
@@ -114,6 +113,10 @@ The function's name, as passed to the constructor.
 
 Returns an array reference of the function's arguments, as passed to
 the constructor.
+
+=head2 $function->id()
+
+The id for a function is uniquely identifies the function.
 
 =head2 $function->sql()
 

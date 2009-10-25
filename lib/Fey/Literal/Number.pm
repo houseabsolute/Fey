@@ -11,9 +11,9 @@ use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-extends 'Fey::Literal';
-
-with 'Fey::Role::Comparable', 'Fey::Role::Selectable';
+with 'Fey::Role::Comparable',
+     'Fey::Role::Selectable',
+     'Fey::Role::IsLiteral';
 
 has 'number' =>
     ( is       => 'ro',
@@ -72,6 +72,10 @@ the number passed to the constructor.
 =head2 $number->number()
 
 Returns the number as passed to the constructor.
+
+=head2 $number->id()
+
+The id for a number is always just the number itself.
 
 =head2 $number->sql()
 

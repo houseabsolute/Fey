@@ -25,7 +25,7 @@ subtype 'Fey::Types::PosOrZeroInteger'
     => where { $_ >= 0 };
 
 subtype 'Fey::Types::DefaultValue'
-    => as 'Fey::Literal';
+    => as role_type('Fey::Role::IsLiteral');
 
 coerce 'Fey::Types::DefaultValue'
     => from 'Undef'
@@ -54,7 +54,7 @@ coerce 'Fey::Types::ArrayRefOfColumns'
 
 subtype 'Fey::Types::FunctionArg'
     => as 'Object'
-    => where { $_->does('Fey::Role::Selectable') };
+    => where { $_->can('does') && $_->does('Fey::Role::Selectable') };
 
 coerce 'Fey::Types::FunctionArg'
     => from 'Undef'
@@ -100,7 +100,7 @@ for my $thing ( qw( Table Column ) )
         => where { return unless defined $_;
                    return 1 unless blessed $_;
                    return unless $_->can('does');
-                   return $_->does( 'Fey::Role::' . $thing . 'Like' )  };
+                   return $_->can('does') && $_->does( 'Fey::Role::' . $thing . 'Like' )  };
 }
 
 subtype 'Fey::Types::SetOperationArg'
@@ -134,7 +134,7 @@ subtype 'Fey::Types::IntoElement'
 subtype 'Fey::Types::NullableInsertValue'
     => as 'Item'
     => where {    ! blessed $_
-               || $_->isa('Fey::Literal')
+               || ( $_->can('does') && $_->does('Fey::Role::IsLiteral') )
                || $_->isa('Fey::Placeholder')
                || overload::Overloaded( $_ )
              };
@@ -142,7 +142,7 @@ subtype 'Fey::Types::NullableInsertValue'
 subtype 'Fey::Types::NonNullableInsertValue'
     => as 'Defined'
     => where {    ! blessed $_
-               || ( $_->isa('Fey::Literal') && ! $_->isa('Fey::Literal::Null') )
+               || ( $_->can('does') && $_->does('Fey::Role::IsLiteral') && ! $_->isa('Fey::Literal::Null') )
                || $_->isa('Fey::Placeholder')
                || overload::Overloaded( $_ )
              };
@@ -151,7 +151,7 @@ subtype 'Fey::Types::NullableUpdateValue'
     => as 'Item'
     => where {    ! blessed $_
                || $_->isa('Fey::Column')
-               || $_->isa('Fey::Literal')
+               || ( $_->can('does') && $_->does('Fey::Role::IsLiteral') )
                || $_->isa('Fey::Placeholder')
                || overload::Overloaded( $_ )
              };
@@ -160,7 +160,7 @@ subtype 'Fey::Types::NonNullableUpdateValue'
     => as 'Defined'
     => where {    ! blessed $_
                || $_->isa('Fey::Column')
-               || ( $_->isa('Fey::Literal') && ! $_->isa('Fey::Literal::Null') )
+               || ( $_->can('does') && $_->does('Fey::Role::IsLiteral') && ! $_->isa('Fey::Literal::Null') )
                || $_->isa('Fey::Placeholder')
                || overload::Overloaded( $_ )
              };

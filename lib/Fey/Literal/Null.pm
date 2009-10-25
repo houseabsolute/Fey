@@ -11,9 +11,9 @@ use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-extends 'Fey::Literal';
-
-with 'Fey::Role::Comparable', 'Fey::Role::Selectable';
+with 'Fey::Role::Comparable',
+     'Fey::Role::Selectable',
+     'Fey::Role::IsLiteral';
 
 
 sub sql { 'NULL' }
@@ -53,6 +53,10 @@ This class provides the following methods:
 =head2 Fey::Literal::Null->new()
 
 This method creates a new C<Fey::Literal::Null> object.
+
+=head2 $null->id()
+
+The id for a null is always just "NULL".
 
 =head2 $null->sql()
 
