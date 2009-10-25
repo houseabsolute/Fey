@@ -23,7 +23,7 @@ Fey::Role::Named - A role for things with a name
 
   use Moose;
 
-  with 'Fey::Role::Name';
+  with 'Fey::Role::Named';
 
 =head1 DESCRIPTION
 
