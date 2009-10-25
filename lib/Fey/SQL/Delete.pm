@@ -3,7 +3,7 @@ package Fey::SQL::Delete;
 use strict;
 use warnings;
 
-our $VERSION = '0.33';
+our $VERSION = '0.34';
 
 use Fey::Types;
 use Scalar::Util qw( blessed );
