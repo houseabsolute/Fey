@@ -1,4 +1,4 @@
-0.34
+0.34    2009-10-25
 
 - Add a can_have_alias() attribute to Fey::Term::Literal. Sometimes you want
   make sure a term is used exactly as-is, without any alias being added.
