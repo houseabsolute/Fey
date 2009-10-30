@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 37;
+use Test::More tests => 38;
 
 use Fey::SQL;
 
@@ -44,6 +44,25 @@ my $dbh = Fey::Test->mock_dbh();
 
     is( $q->from_clause($dbh), q{FROM "User" AS "UserA"},
         'from_clause() for one table alias' );
+
+}
+
+{
+    my $q = Fey::SQL->new_select();
+
+    my $user_t = $s->table('User');
+
+    my $alias = $user_t->alias( alias_name => 'UserA' );
+
+    my $fk = Fey::FK->new( source_columns => $user_t->column('user_id'),
+                           target_columns => $alias->column('user_id'),
+                         );
+
+    $q->from( $user_t, $alias, $fk );
+
+    is( $q->from_clause($dbh)
+        , q{FROM "User" JOIN "User" AS "UserA" ON ("User"."user_id" = "UserA"."user_id")},
+        'from_clause() with self-join to alias using fake FK' );
 
 }
 
