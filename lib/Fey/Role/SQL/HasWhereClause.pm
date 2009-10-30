@@ -202,19 +202,22 @@ C<WHERE> clause.
 
 This role provides the following methods:
 
-=head2 $query->where()
+=head2 $query->where(...)
 
 See the L<Fey::SQL section on WHERE Clauses|Fey::SQL/WHERE Clauses>
 for more details.
 
-=head2 $query->and()
+=head2 $query->and(...)
 
 See the L<Fey::SQL section on WHERE Clauses|Fey::SQL/WHERE Clauses>
 for more details.
 
-=head2 $query->where_clause()
+=head2 $query->where_clause( $dbh, $skip_where )
 
-Returns the C<WHERE> clause portion of the SQL statement as a string.
+Returns the C<WHERE> clause portion of the SQL statement as a string. The
+first argument, a database handle, is required. If the second argument is
+true, the string returned will not start with "WHERE", it will simply start
+with the where clause conditions.
 
 =head1 AUTHOR
 
