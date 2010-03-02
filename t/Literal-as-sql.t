@@ -71,8 +71,8 @@ use Fey::Literal;
     is( $now->sql($dbh), 'NOW()',
         'NOW function sql - with alias' );
 
-    my $now_with_alias = Fey::Literal::Function->new( 'NOW' );
-    $now_with_alias->set_alias_name('rightnow');
+    my $now_with_alias = Fey::Literal::Function->new( 'NOW')
+        ->alias('rightnow');
 
     is( $now_with_alias->sql_with_alias($dbh), q{NOW() AS "rightnow"},
         'aliased NOW function sql_with_alias' );
