@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 38;
+use Test::More tests => 40;
 
 use Fey::SQL;
 
@@ -445,3 +445,27 @@ my $dbh = Fey::Test->mock_dbh();
     is( $q->from_clause($dbh), $sql, 'table only shows up once in from, not twice' );
 }
 
+{
+    my $t1 = $s->table('User');
+    my $t2 = $s->table('UserGroup');
+    my $where = Fey::SQL->new_where( auto_placeholders => 0 );
+    $where->where( $t1->column('user_id'), '=', 2 );
+    my ($fk) = $s->foreign_keys_between_tables($t1, $t2);
+
+    my $sql = q{FROM "User" JOIN "UserGroup" ON};
+    $sql .= q{ ("UserGroup"."user_id" = "User"."user_id"};
+    $sql .= q{ AND "User"."user_id" = 2)};
+    
+    {
+        my $q = Fey::SQL->new_select();
+        $q->from( $t1, $t2, $where );
+        is( $q->from_clause($dbh), $sql, 
+            'from_clause() for inner join with where clause' );
+    }
+    {
+        my $q = Fey::SQL->new_select();
+        $q->from( $t1, $t2, $fk, $where );
+        is( $q->from_clause($dbh), $sql,
+            'from_clause() for inner join with explicit fk and where clause' );
+    }
+}

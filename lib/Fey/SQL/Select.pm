@@ -150,24 +150,36 @@ sub from
 {
     my $self = shift;
 
+    # $t1, 'LEFT', $t2, ...
+    my $is_outer_join = @_ >= 3 && ! blessed $_[1];
+
+    my $is_inner_join = @_ >= 2 && ! $is_outer_join;
+
     # gee, wouldn't multimethods be nice here?
     my $meth =
         ( @_ == 1 && blessed $_[0] && $_[0]->can('is_joinable') && $_[0]->is_joinable()
           ? '_from_one_table'
           : @_ == 1 && blessed $_[0] && $_[0]->can('does') && $_[0]->does('Fey::Role::SQL::ReturnsData')
           ? '_from_subselect'
-          : @_ == 2
+
+          : $is_inner_join && @_ == 4 && $_[3]->isa('Fey::SQL::Where')
+          ? '_join_with_where'
+          : $is_inner_join && @_ == 3 && $_[2]->isa('Fey::SQL::Where')
+          ? '_join_with_where'
+          : $is_inner_join && @_ == 3 && $_[2]->isa('Fey::FK')
           ? '_join'
-          : @_ == 3 && ! blessed $_[1]
-          ? '_outer_join'
-          : @_ == 3
+          : $is_inner_join && @_ == 2
           ? '_join'
-          : @_ == 4 && $_[3]->isa('Fey::FK')
+
+          : $is_outer_join && @_ == 5
+          ? '_outer_join_with_where'
+          : $is_outer_join && @_ == 4 && $_[3]->isa('Fey::SQL::Where')
+          ? '_outer_join_with_where'
+          : $is_outer_join && @_ == 4 && $_[3]->isa('Fey::FK')
           ? '_outer_join'
-          : @_ == 4 && $_[3]->isa('Fey::SQL::Where')
-          ? '_outer_join_with_where'
-          : @_ == 5
-          ? '_outer_join_with_where'
+          : $is_outer_join && @_ == 3
+          ? '_outer_join'
+
           : undef
         );
 
@@ -198,9 +210,8 @@ sub _from_subselect
 sub _join
 {
     my $self = shift;
-
-    param_error 'the first two arguments to from() were not valid (not tables or something else joinable).'
-        unless all { blessed $_ && $_->can('is_joinable') && $_->is_joinable() } @_[0,1];
+    
+    _check_join_arguments(@_);
 
     my $fk = $_[2] || $self->_fk_for_join(@_);
 
@@ -210,6 +221,29 @@ sub _join
                                             );
     $self->_set_from( $join->id() => $join );
 }
+
+sub _join_with_where
+{
+    my $self = shift;
+    
+    _check_join_arguments(@_);
+
+    my $where = pop;
+    my $fk    = @_ == 3 ? pop : $self->_fk_for_join(@_);
+
+    my $join = Fey::SQL::Fragment::Join->new( table1 => $_[0],
+                                              table2 => $_[1],
+                                              fk     => $fk,
+                                              where  => $where,
+                                            );
+    $self->_set_from( $join->id() => $join );
+}
+
+sub _check_join_arguments
+{
+    param_error 'the first two arguments to from() were not valid (not tables or something else joinable).'
+        unless all { blessed $_ && $_->can('is_joinable') && $_->is_joinable() } @_[0,1];
+} 
 
 sub _fk_for_join
 {
@@ -594,6 +628,16 @@ multiple foreign keys between two tables.
 You can also use this to "fake" a foreign key between two tables which
 don't really have one, but where it makes sense to join them
 anyway. If this paragraph doesn't make sense, don't worry about it ;)
+
+=item * ($table1, $table2, $where_clause)
+
+=item * ($table1, $table2, $fk, $where_clause)
+
+If you want to specify a C<WHERE> clause as part of an inner join, include this
+as the last argument when calling C<< $select->from() >>.
+
+To create a standalone C<WHERE> clause suitable for passing to this
+method, use the C<Fey::SQL::Where> class.
 
 =item * ($table1, 'left', $table2)
 
