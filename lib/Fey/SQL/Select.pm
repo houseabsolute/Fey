@@ -210,7 +210,7 @@ sub _from_subselect
 sub _join
 {
     my $self = shift;
-    
+
     _check_join_arguments(@_);
 
     my $fk = $_[2] || $self->_fk_for_join(@_);
@@ -225,7 +225,7 @@ sub _join
 sub _join_with_where
 {
     my $self = shift;
-    
+
     _check_join_arguments(@_);
 
     my $where = pop;
@@ -243,7 +243,7 @@ sub _check_join_arguments
 {
     param_error 'the first two arguments to from() were not valid (not tables or something else joinable).'
         unless all { blessed $_ && $_->can('is_joinable') && $_->is_joinable() } @_[0,1];
-} 
+}
 
 sub _fk_for_join
 {
