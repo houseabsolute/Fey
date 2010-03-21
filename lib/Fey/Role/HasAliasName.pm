@@ -25,6 +25,12 @@ has 'alias_name' =>
 
 requires 'sql';
 
+sub alias
+{
+    $_[0]->set_alias_name( $_[1] );
+    return $_[0];
+}
+
 sub sql_with_alias
 {
     $_[0]->_make_alias()
@@ -117,6 +123,12 @@ Returns the current alias name, if any.
   $obj->set_alias_name('my object');
 
 Sets the current alias name.
+
+=head2 $obj->alias()
+
+  $obj->alias('my object')->do_something_else(...);
+
+Sets the current alias name, then returns the object.
 
 =head2 $obj->sql_with_alias()
 
