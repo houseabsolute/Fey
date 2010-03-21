@@ -1,3 +1,15 @@
+0.35
+
+- You can now include a WHERE clause as part of an inner join, like 
+
+  FROM Part
+       JOIN MachinePart
+       ON Part.part_id = MachinePart.part_id
+       AND MachinePart.machine_id = ?
+
+  Implemented by Dieter Pearcey.
+
+
 0.34    2009-10-25
 
 - Add a can_have_alias() attribute to Fey::Term::Literal. Sometimes you want
