@@ -9,6 +9,16 @@
 
   Implemented by Dieter Pearcey.
 
+- Aliasable objects now have an alias method which sets the alias and returns
+  the object itself, for chaining:
+
+  my $function = Fey::Literal::Function->new( ... )->alias('bar');
+
+  Note that this may be deprecated in a future release where we start allowing
+  aliases to be set in the constructor.
+
+  Implemented by Dieter Pearcey.
+
 
 0.34    2009-10-25
 
