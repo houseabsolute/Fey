@@ -455,11 +455,11 @@ my $dbh = Fey::Test->mock_dbh();
     my $sql = q{FROM "User" JOIN "UserGroup" ON};
     $sql .= q{ ("UserGroup"."user_id" = "User"."user_id"};
     $sql .= q{ AND "User"."user_id" = 2)};
-    
+
     {
         my $q = Fey::SQL->new_select();
         $q->from( $t1, $t2, $where );
-        is( $q->from_clause($dbh), $sql, 
+        is( $q->from_clause($dbh), $sql,
             'from_clause() for inner join with where clause' );
     }
     {
