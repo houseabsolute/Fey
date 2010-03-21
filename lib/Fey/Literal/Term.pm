@@ -146,7 +146,7 @@ Returns the array reference of fragments passed to the constructor.
 
 =head2 $term->set_can_have_alias()
 
-If this attribute is explicitly set to a true value, then then the
+If this attribute is explicitly set to a false value, then then the
 SQL-generating methods below will never include an alias.
 
 =head2 $term->id()
