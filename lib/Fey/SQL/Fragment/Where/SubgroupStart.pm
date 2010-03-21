@@ -9,15 +9,13 @@ use Moose;
 
 my $Paren = '(';
 
-sub sql
-{
+sub sql {
     return $Paren;
 }
 
 no Moose;
 
 __PACKAGE__->meta()->make_immutable();
-
 
 1;
 

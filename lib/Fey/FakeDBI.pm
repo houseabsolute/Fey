@@ -9,23 +9,19 @@ our $VERSION = '0.34';
 # may not be quoting properly for a given DBMS, we will still generate
 # unique ids, and that's all that matters.
 
-sub quote_identifier
-{
+sub quote_identifier {
     shift;
 
-    if ( @_ == 3 )
-    {
-        return q{"} . $_[1] . q{"} . q{.} . q{"} . $_[2] . q{"}
+    if ( @_ == 3 ) {
+        return q{"} . $_[1] . q{"} . q{.} . q{"} . $_[2] . q{"};
     }
-    else
-    {
+    else {
 
         return q{"} . $_[0] . q{"};
     }
 }
 
-sub quote
-{
+sub quote {
     my $text = $_[1];
 
     $text =~ s/"/""/g;

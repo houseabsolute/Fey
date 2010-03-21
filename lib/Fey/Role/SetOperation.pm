@@ -10,67 +10,61 @@ use Fey::Types;
 use MooseX::Role::Parameterized;
 use MooseX::Params::Validate qw( pos_validated_list );
 
-parameter keyword =>
-(
-    isa => 'Str',
+parameter keyword => (
+    isa      => 'Str',
     required => 1,
 );
 
 with 'Fey::Role::Comparable',
-     'Fey::Role::SQL::HasOrderByClause',
-     'Fey::Role::SQL::HasLimitClause',
-     'Fey::Role::SQL::ReturnsData';
+    'Fey::Role::SQL::HasOrderByClause',
+    'Fey::Role::SQL::HasLimitClause',
+    'Fey::Role::SQL::ReturnsData';
 
-has 'is_all' =>
-    ( is      => 'rw',
-      isa     => 'Bool',
-      default => 0,
-      writer  => '_set_is_all',
-    );
+has 'is_all' => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 0,
+    writer  => '_set_is_all',
+);
 
-has '_set_elements' =>
-    ( traits   => [ 'Array' ],
-      is       => 'bare',
-      isa      => 'ArrayRef[Fey::Types::SetOperationArg]',
-      default  => sub { [] },
-      handles  => { _add_set_elements  => 'push',
-                    _set_element_count => 'count',
-                    _set_elements      => 'elements',
-                  },
-      init_arg => undef,
-    );
+has '_set_elements' => (
+    traits  => ['Array'],
+    is      => 'bare',
+    isa     => 'ArrayRef[Fey::Types::SetOperationArg]',
+    default => sub { [] },
+    handles => {
+        _add_set_elements  => 'push',
+        _set_element_count => 'count',
+        _set_elements      => 'elements',
+    },
+    init_arg => undef,
+);
 
-sub id
-{
-    return $_[0]->sql( 'Fey::FakeDBI' );
+sub id {
+    return $_[0]->sql('Fey::FakeDBI');
 }
 
-sub all
-{
+sub all {
     $_[0]->_set_is_all(1);
     return $_[0];
 }
 
-sub bind_params
-{
+sub bind_params {
     my $self = shift;
     return map { $_->bind_params } $self->_set_elements();
 }
 
-sub select_clause_elements
-{
-    return ( $_[0]->_set_elements())[0]->select_clause_elements();
+sub select_clause_elements {
+    return ( $_[0]->_set_elements() )[0]->select_clause_elements();
 }
 
-role
-{
+role {
     my $p     = shift;
     my %extra = @_;
 
     my $name = lc $p->keyword();
 
-    method 'keyword_clause' => sub
-    {
+    method 'keyword_clause' => sub {
         my $self = shift;
 
         my $sql = uc($name);
@@ -80,54 +74,50 @@ role
 
     my $clause_method = $name . '_clause';
 
-    method 'sql' => sub
-    {
+    method 'sql' => sub {
         my $self = shift;
         my $dbh  = shift;
 
-        return
-            ( join q{ },
-              $self->$clause_method($dbh),
-              $self->order_by_clause($dbh),
-              $self->limit_clause($dbh),
-            );
+        return (
+            join q{ },
+            $self->$clause_method($dbh),
+            $self->order_by_clause($dbh),
+            $self->limit_clause($dbh),
+        );
     };
 
-    method $name => sub
-    {
+    method $name => sub {
         my $self = shift;
 
         my $count = @_;
         $count = 2
             if $count < 2 && $self->_set_element_count() < 2;
 
-        my (@set) = 
-            pos_validated_list( \@_,
-                                ( ( { isa => 'Fey::Types::SetOperationArg' } ) x $count ),
-                                MX_PARAMS_VALIDATE_NO_CACHE => 1,
-                              );
+        my (@set) = pos_validated_list(
+            \@_,
+            ( ( { isa => 'Fey::Types::SetOperationArg' } ) x $count ),
+            MX_PARAMS_VALIDATE_NO_CACHE => 1,
+        );
 
         $self->_add_set_elements(@set);
 
         return $self;
     };
 
-    method $clause_method => sub
-    {
+    method $clause_method => sub {
         my $self = shift;
         my $dbh  = shift;
 
-        return
-            ( join q{ } . $self->keyword_clause($dbh) . q{ },
-              map { '(' . $_->sql($dbh) . ')' }
-              $self->_set_elements()
-            );
+        return (
+            join q{ } . $self->keyword_clause($dbh) . q{ },
+            map { '(' . $_->sql($dbh) . ')' } $self->_set_elements()
+        );
     };
 
-    with 'Fey::Role::HasAliasName'
-          => { generated_alias_prefix => uc $name,
-               sql_needs_parens       => 1,
-             };
+    with 'Fey::Role::HasAliasName' => {
+        generated_alias_prefix => uc $name,
+        sql_needs_parens       => 1,
+    };
 };
 
 no MooseX::Role::Parameterized;

@@ -9,8 +9,7 @@ use Moose::Role;
 
 requires 'sql';
 
-sub id
-{
+sub id {
     return $_[0]->sql('Fey::FakeDBI');
 }
 

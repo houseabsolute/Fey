@@ -11,19 +11,15 @@ use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-with 'Fey::Role::Comparable',
-     'Fey::Role::Selectable',
-     'Fey::Role::IsLiteral';
+with 'Fey::Role::Comparable', 'Fey::Role::Selectable', 'Fey::Role::IsLiteral';
 
-has 'number' =>
-    ( is       => 'ro',
-      isa      => 'Num',
-      required => 1,
-    );
+has 'number' => (
+    is       => 'ro',
+    isa      => 'Num',
+    required => 1,
+);
 
-
-sub BUILDARGS
-{
+sub BUILDARGS {
     my $class = shift;
 
     return { number => shift };

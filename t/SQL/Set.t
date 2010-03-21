@@ -8,30 +8,36 @@ use Test::More tests => 36;
 
 use Fey::SQL;
 
-my $s = Fey::Test->mock_test_schema_with_fks();
+my $s   = Fey::Test->mock_test_schema_with_fks();
 my $dbh = Fey::Test->mock_dbh();
 
-for my $keyword ( qw( UNION INTERSECT EXCEPT ) )
-{
+for my $keyword (qw( UNION INTERSECT EXCEPT )) {
     my $new_method = "new_" . lc $keyword;
-    my $method = lc $keyword;
+    my $method     = lc $keyword;
 
     {
         my $set_op = Fey::SQL->$new_method();
 
         eval { $set_op->$method() };
-        like( $@, qr/0 parameters were passed .+ but 2 were expected/,
-              "$method() without any parameters is an error" );
+        like(
+            $@, qr/0 parameters were passed .+ but 2 were expected/,
+            "$method() without any parameters is an error"
+        );
 
         eval { $set_op->$method( Fey::SQL->new_select ) };
-        like( $@, qr/1 parameter .+ but 2 were expected/,
-              "$method() with only one parameter is an error" );
+        like(
+            $@, qr/1 parameter .+ but 2 were expected/,
+            "$method() with only one parameter is an error"
+        );
 
-    TODO:{
-            local $TODO = 'MooseX::Params::Validate gets the method name wrong';
+    TODO: {
+            local $TODO
+                = 'MooseX::Params::Validate gets the method name wrong';
             eval { $set_op->$method() };
-            like( $@, qr/0 parameters were passed to .+::$method/,
-                  "$method() error message has correct method name" );
+            like(
+                $@, qr/0 parameters were passed to .+::$method/,
+                "$method() error message has correct method name"
+            );
         }
     }
 
@@ -39,10 +45,11 @@ for my $keyword ( qw( UNION INTERSECT EXCEPT ) )
         my $set_op = Fey::SQL->$new_method();
 
         eval { $set_op->$method( 1, 2 ) };
-        like( $@,
-              qr/did not pass the 'checking type constraint for Fey::Types::SetOperationArg'/,
-              "$method() with a non-Select parameter is an error",
-            );
+        like(
+            $@,
+            qr/did not pass the 'checking type constraint for Fey::Types::SetOperationArg'/,
+            "$method() with a non-Select parameter is an error",
+        );
     }
 
     {
@@ -70,7 +77,7 @@ for my $keyword ( qw( UNION INTERSECT EXCEPT ) )
         $set_op->$method( $sel1, $sel2 );
 
         my $sql = qq{(SELECT 1 FROM "User") };
-        $sql   .= qq{$keyword ALL (SELECT 2 FROM "User")};
+        $sql .= qq{$keyword ALL (SELECT 2 FROM "User")};
         is( $set_op->sql($dbh), $sql, "$method()->all() with two tables" );
 
         my $sel3 = Fey::SQL->new_select->select(3)->from( $s->table('User') );
@@ -90,7 +97,8 @@ for my $keyword ( qw( UNION INTERSECT EXCEPT ) )
         my $sel2 = Fey::SQL->new_select();
         $sel2->select( $user->column('user_id') )->from($user);
 
-        $set_op->$method( $sel1, $sel2 )->order_by( $user->column('user_id') );
+        $set_op->$method( $sel1, $sel2 )
+            ->order_by( $user->column('user_id') );
 
         my $sql = q{(SELECT "User"."user_id" FROM "User")};
         $sql = "$sql $keyword $sql";
@@ -106,11 +114,12 @@ for my $keyword ( qw( UNION INTERSECT EXCEPT ) )
         my $sel2 = Fey::SQL->new_select->select(2)->from( $s->table('User') );
         my $sel3 = Fey::SQL->new_select->select(3)->from( $s->table('User') );
 
-        $set_op->$method( $sel1, Fey::SQL->$new_method->$method( $sel2, $sel3 ) );
+        $set_op->$method( $sel1,
+            Fey::SQL->$new_method->$method( $sel2, $sel3 ) );
 
         my $from = qq{FROM "User"};
-        my $sql = qq{(SELECT 1 $from) $keyword };
-        $sql .=   qq{((SELECT 2 $from) $keyword (SELECT 3 $from))};
+        my $sql  = qq{(SELECT 1 $from) $keyword };
+        $sql .= qq{((SELECT 2 $from) $keyword (SELECT 3 $from))};
         is( $set_op->sql($dbh), $sql, "$method() with sub-$method" );
     }
 
@@ -124,13 +133,18 @@ for my $keyword ( qw( UNION INTERSECT EXCEPT ) )
         $set_op1->$method( $sel1, $sel2 );
 
         my $set_op2 = $set_op1->clone();
-        $set_op2->$method( $sel3 );
+        $set_op2->$method($sel3);
 
-        is( $set_op1->sql($dbh), qq{(SELECT 1 FROM "User") $keyword (SELECT 2 FROM "User")},
-            "original $method has two selects" );
+        is(
+            $set_op1->sql($dbh),
+            qq{(SELECT 1 FROM "User") $keyword (SELECT 2 FROM "User")},
+            "original $method has two selects"
+        );
 
-        is( $set_op2->sql($dbh),
+        is(
+            $set_op2->sql($dbh),
             qq{(SELECT 1 FROM "User") $keyword (SELECT 2 FROM "User") $keyword (SELECT 3 FROM "User")},
-            "cloned $method has three selects" );
+            "cloned $method has three selects"
+        );
     }
 }

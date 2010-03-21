@@ -16,43 +16,43 @@ use MooseX::StrictConstructor;
 
 with 'Fey::Role::TableLike';
 
-has 'id' =>
-    ( is         => 'ro',
-      lazy_build => 1,
-      init_arg   => undef,
-    );
+has 'id' => (
+    is         => 'ro',
+    lazy_build => 1,
+    init_arg   => undef,
+);
 
-has 'table' =>
-    ( is      => 'ro',
-      isa     => 'Fey::Table',
-      handles => [ 'schema', 'name' ],
-    );
+has 'table' => (
+    is      => 'ro',
+    isa     => 'Fey::Table',
+    handles => [ 'schema', 'name' ],
+);
 
-has 'alias_name' =>
-    ( is         => 'ro',
-      isa        => 'Str',
-      lazy_build => 1,
-    );
+has 'alias_name' => (
+    is         => 'ro',
+    isa        => 'Str',
+    lazy_build => 1,
+);
 
-has '_columns' =>
-    ( traits   => [ 'Hash' ],
-      is       => 'bare',
-      isa      => 'HashRef[Fey::Column]',
-      default  => sub { {} },
-      handles  => { _get_column => 'get',
-                    _set_column => 'set',
-                    _has_column => 'exists',
-                  },
-      init_arg => undef,
-    );
+has '_columns' => (
+    traits  => ['Hash'],
+    is      => 'bare',
+    isa     => 'HashRef[Fey::Column]',
+    default => sub { {} },
+    handles => {
+        _get_column => 'get',
+        _set_column => 'set',
+        _has_column => 'exists',
+    },
+    init_arg => undef,
+);
 
 with 'Fey::Role::Named';
 
-
 {
     my %Numbers;
-    sub _build_alias_name
-    {
+
+    sub _build_alias_name {
         my $self = shift;
 
         my $name = $self->name();
@@ -62,8 +62,7 @@ with 'Fey::Role::Named';
     }
 }
 
-sub column
-{
+sub column {
     my $self = shift;
     my ($name) = pos_validated_list( \@_, { isa => 'Str' } );
 
@@ -81,8 +80,7 @@ sub column
     return $clone;
 }
 
-sub columns
-{
+sub columns {
     my $self = shift;
 
     my @cols = @_ ? @_ : map { $_->name() } $self->table()->columns();
@@ -92,20 +90,19 @@ sub columns
 
 # Making this an attribute would be a hassle since we'd need to reset
 # it whenever the associated table's keys changed.
-sub primary_key
-{
-    return [ $_[0]->columns( map { $_->name() } @{ $_[0]->table()->primary_key() } ) ];
+sub primary_key {
+    return [
+        $_[0]->columns(
+            map { $_->name() } @{ $_[0]->table()->primary_key() }
+        )
+    ];
 }
 
-sub is_alias { 1 }
+sub is_alias {1}
 
-sub sql_with_alias
-{
-    return
-        (   $_[1]->quote_identifier( $_[0]->table()->name() )
-          . ' AS '
-          . $_[1]->quote_identifier( $_[0]->alias_name() )
-        );
+sub sql_with_alias {
+    return (  $_[1]->quote_identifier( $_[0]->table()->name() ) . ' AS '
+            . $_[1]->quote_identifier( $_[0]->alias_name() ) );
 }
 
 sub _build_id { $_[0]->alias_name() }

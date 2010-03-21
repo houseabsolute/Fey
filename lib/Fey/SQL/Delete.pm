@@ -14,61 +14,59 @@ use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
 with 'Fey::Role::SQL::HasWhereClause',
-     'Fey::Role::SQL::HasOrderByClause',
-     'Fey::Role::SQL::HasLimitClause';
+    'Fey::Role::SQL::HasOrderByClause',
+    'Fey::Role::SQL::HasLimitClause';
 
 with 'Fey::Role::SQL::HasBindParams' => { excludes => 'bind_params' };
 
-has '_from' =>
-    ( is       => 'rw',
-      isa      => 'ArrayRef',
-      default  => sub { [] },
-      init_arg => undef,
-    );
+has '_from' => (
+    is       => 'rw',
+    isa      => 'ArrayRef',
+    default  => sub { [] },
+    init_arg => undef,
+);
 
 with 'Fey::Role::SQL::Cloneable';
 
 sub delete { return $_[0] }
 
-sub from
-{
-    my $self     = shift;
+sub from {
+    my $self = shift;
 
     my $count = @_ ? @_ : 1;
-    my (@tables) = pos_validated_list( \@_, 
-                                       ( ( { isa => 'Fey::Table' } ) x $count ),
-                                       MX_PARAMS_VALIDATE_NO_CACHE => 1,
-                                     );
+    my (@tables) = pos_validated_list(
+        \@_,
+        ( ( { isa => 'Fey::Table' } ) x $count ),
+        MX_PARAMS_VALIDATE_NO_CACHE => 1,
+    );
 
-    $self->_set_from(\@tables);
+    $self->_set_from( \@tables );
 
     return $self;
 }
 
-sub sql
-{
-    my $self  = shift;
+sub sql {
+    my $self = shift;
     my ($dbh) = pos_validated_list( \@_, { isa => 'Fey::Types::CanQuote' } );
 
-    return ( join ' ',
-             $self->delete_clause($dbh),
-             $self->where_clause($dbh),
-             $self->order_by_clause($dbh),
-             $self->limit_clause($dbh),
-           );
+    return (
+        join ' ',
+        $self->delete_clause($dbh),
+        $self->where_clause($dbh),
+        $self->order_by_clause($dbh),
+        $self->limit_clause($dbh),
+    );
 }
 
-sub delete_clause
-{
+sub delete_clause {
     return 'DELETE FROM ' . $_[0]->_tables_subclause( $_[1] );
 }
 
-sub _tables_subclause
-{
-    return ( join ', ',
-             map { $_[1]->quote_identifier( $_->name() ) }
-             @{ $_[0]->_from() }
-           );
+sub _tables_subclause {
+    return (
+        join ', ',
+        map { $_[1]->quote_identifier( $_->name() ) } @{ $_[0]->_from() }
+    );
 }
 
 no Moose;

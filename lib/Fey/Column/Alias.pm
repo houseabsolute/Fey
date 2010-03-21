@@ -17,33 +17,34 @@ use MooseX::StrictConstructor;
 
 with 'Fey::Role::ColumnLike';
 
-has 'id' =>
-    ( is         => 'ro',
-      lazy_build => 1,
-      init_arg   => undef,
-      clearer    => '_clear_id',
-    );
+has 'id' => (
+    is         => 'ro',
+    lazy_build => 1,
+    init_arg   => undef,
+    clearer    => '_clear_id',
+);
 
-has 'column' =>
-    ( is      => 'ro',
-      isa     => 'Fey::Column',
-      handles => [ qw( name type generic_type length precision
-                       is_auto_increment is_nullable table ) ],
-    );
+has 'column' => (
+    is      => 'ro',
+    isa     => 'Fey::Column',
+    handles => [
+        qw( name type generic_type length precision
+            is_auto_increment is_nullable table )
+    ],
+);
 
-has 'alias_name' =>
-    ( is         => 'ro',
-      isa        => 'Str',
-      lazy_build => 1,
-    );
+has 'alias_name' => (
+    is         => 'ro',
+    isa        => 'Str',
+    lazy_build => 1,
+);
 
 with 'Fey::Role::Named';
 
-
 {
     my %Numbers;
-    sub _build_alias_name
-    {
+
+    sub _build_alias_name {
         my $self = shift;
 
         my $name = $self->name();
@@ -53,17 +54,16 @@ with 'Fey::Role::Named';
     }
 }
 
-sub is_alias { 1 }
+sub is_alias {1}
 
 sub sql { $_[1]->quote_identifier( $_[0]->alias_name() ) }
 
-sub sql_with_alias
-{
-    my $sql =
-        $_[1]->quote_identifier( undef,
-                                 $_[0]->_containing_table_name_or_alias(),
-                                 $_[0]->name(),
-                               );
+sub sql_with_alias {
+    my $sql = $_[1]->quote_identifier(
+        undef,
+        $_[0]->_containing_table_name_or_alias(),
+        $_[0]->name(),
+    );
 
     $sql .= ' AS ';
     $sql .= $_[1]->quote_identifier( $_[0]->alias_name() );
@@ -73,15 +73,14 @@ sub sql_with_alias
 
 sub sql_or_alias { goto &sql }
 
-sub _build_id
-{
+sub _build_id {
     my $self = shift;
 
     my $table = $self->table();
 
     object_state_error
         'The id attribute cannot be determined for a column object which has no table.'
-            unless $table;
+        unless $table;
 
     return $table->id() . '.' . $self->alias_name();
 }

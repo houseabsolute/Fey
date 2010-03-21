@@ -11,28 +11,27 @@ use Fey::Types;
 
 use Moose;
 
-has '_set' =>
-    ( traits   => [ 'Hash' ],
-      is       => 'bare',
-      isa      => 'HashRef[Fey::Role::Named]',
-      handles  => { _get    => 'get',
-                    _add    => 'set',
-                    _delete => 'delete',
-                    _all    => 'values',
-                    _keys   => 'keys',
-                   },
-      required => 1,
-    );
+has '_set' => (
+    traits  => ['Hash'],
+    is      => 'bare',
+    isa     => 'HashRef[Fey::Role::Named]',
+    handles => {
+        _get    => 'get',
+        _add    => 'set',
+        _delete => 'delete',
+        _all    => 'values',
+        _keys   => 'keys',
+    },
+    required => 1,
+);
 
-sub BUILDARGS
-{
+sub BUILDARGS {
     my $class = shift;
 
     return { _set => { map { $_->name() => $_ } @_ } };
 }
 
-sub add
-{
+sub add {
     my $self = shift;
 
     $self->_add( map { $_->name() => $_ } @_ );
@@ -40,8 +39,7 @@ sub add
     return;
 }
 
-sub delete
-{
+sub delete {
     my $self = shift;
 
     $self->_delete( map { $_->name() } @_ );
@@ -49,24 +47,21 @@ sub delete
     return;
 }
 
-sub object
-{
+sub object {
     my $self = shift;
 
     return $self->_get(shift);
 }
 
-sub objects
-{
+sub objects {
     my $self = shift;
 
     return $self->_all() unless @_;
 
-    return grep { defined } $self->_get(@_);
+    return grep {defined} $self->_get(@_);
 }
 
-sub is_same_as
-{
+sub is_same_as {
     my $self  = shift;
     my $other = shift;
 
@@ -75,7 +70,7 @@ sub is_same_as
 
     return 0 unless @self_names == @other_names;
 
-    return all { $_ } pairwise { $a eq $b } @self_names, @other_names;
+    return all {$_} pairwise { $a eq $b } @self_names, @other_names;
 }
 
 no Moose;

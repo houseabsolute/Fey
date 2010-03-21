@@ -11,37 +11,35 @@ use Scalar::Util qw( blessed );
 use Moose::Role;
 use MooseX::Params::Validate qw( pos_validated_list );
 
-has '_order_by' =>
-    ( traits   => [ 'Array' ],
-      is       => 'bare',
-      isa      => 'ArrayRef',
-      default  => sub { [] },
-      handles  => { _add_order_by_elements => 'push',
-                    _has_order_by_elements => 'count',
-                    _order_by              => 'elements',
-                  },
-      init_arg => undef,
-    );
+has '_order_by' => (
+    traits  => ['Array'],
+    is      => 'bare',
+    isa     => 'ArrayRef',
+    default => sub { [] },
+    handles => {
+        _add_order_by_elements => 'push',
+        _has_order_by_elements => 'count',
+        _order_by              => 'elements',
+    },
+    init_arg => undef,
+);
 
-
-sub order_by
-{
+sub order_by {
     my $self = shift;
 
     my $count = @_ ? @_ : 1;
-    my (@by) =
-        pos_validated_list( \@_,
-                            ( ( { isa => 'Fey::Types::OrderByElement' } ) x $count ),
-                            MX_PARAMS_VALIDATE_NO_CACHE => 1,
-                          );
+    my (@by) = pos_validated_list(
+        \@_,
+        ( ( { isa => 'Fey::Types::OrderByElement' } ) x $count ),
+        MX_PARAMS_VALIDATE_NO_CACHE => 1,
+    );
 
     $self->_add_order_by_elements(@by);
 
     return $self;
 }
 
-sub order_by_clause
-{
+sub order_by_clause {
     my $self = shift;
     my $dbh  = shift;
 
@@ -51,14 +49,11 @@ sub order_by_clause
 
     my @elt = $self->_order_by();
 
-    for my $elt (@elt)
-    {
-        if ( ! blessed $elt )
-        {
+    for my $elt (@elt) {
+        if ( !blessed $elt ) {
             $sql .= q{ } . uc $elt;
         }
-        else
-        {
+        else {
             $sql .= ', ' if $elt != $elt[0];
             $sql .= $elt->sql_or_alias($dbh);
         }

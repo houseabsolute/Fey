@@ -13,46 +13,43 @@ use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
 with 'Fey::Role::Comparable',
-     'Fey::Role::Selectable',
-     'Fey::Role::Orderable',
-     'Fey::Role::Groupable' => { excludes => 'is_groupable' },
-     'Fey::Role::IsLiteral';
+    'Fey::Role::Selectable',
+    'Fey::Role::Orderable',
+    'Fey::Role::Groupable' => { excludes => 'is_groupable' },
+    'Fey::Role::IsLiteral';
 
-with 'Fey::Role::HasAliasName' =>
-    { generated_alias_prefix => 'FUNCTION' };
+with 'Fey::Role::HasAliasName' => { generated_alias_prefix => 'FUNCTION' };
 
-has 'function' =>
-    ( is       => 'ro',
-      isa      => 'Str',
-      required => 1,
-    );
+has 'function' => (
+    is       => 'ro',
+    isa      => 'Str',
+    required => 1,
+);
 
-has 'args' =>
-    ( is         => 'ro',
-      isa        => 'Fey::Types::ArrayRefOfFunctionArgs',
-      default    => sub { [] },
-      coerce     => 1,
-    );
+has 'args' => (
+    is      => 'ro',
+    isa     => 'Fey::Types::ArrayRefOfFunctionArgs',
+    default => sub { [] },
+    coerce  => 1,
+);
 
-sub BUILDARGS
-{
+sub BUILDARGS {
     my $class = shift;
 
-    return { function => shift,
-             args     => [ @_ ],
-           };
+    return {
+        function => shift,
+        args     => [@_],
+    };
 }
 
-sub sql
-{
+sub sql {
     my $sql = $_[0]->function();
     $sql .= '(';
 
-    $sql .=
-        ( join ', ',
-          map { $_->sql( $_[1] ) }
-          @{ $_[0]->args() }
-        );
+    $sql .= (
+        join ', ',
+        map { $_->sql( $_[1] ) } @{ $_[0]->args() }
+    );
     $sql .= ')';
 }
 

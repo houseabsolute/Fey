@@ -7,15 +7,13 @@ our $VERSION = '0.34';
 
 use MooseX::Role::Parameterized;
 
-parameter 'real_class' =>
-    ( isa => 'Moose::Meta::Class' );
+parameter 'real_class' => ( isa => 'Moose::Meta::Class' );
 
 # Yeah, I could've used MooseX::Clone, but avoiding the meta-API at
 # runtime makes this all much faster. Of course, it's probably the
 # root of all evil. OTOH, it's encapsulated in a role, so we can
 # always replace it with an actual use of MX::Clone easily enough.
-role
-{
+role {
     my $p     = shift;
     my %extra = @_;
 
@@ -26,33 +24,28 @@ role
     # applied to the real consuming class.
     my $meta = $p->real_class() ? $p->real_class() : $extra{consumer};
 
-    for my $attr ( grep { $_->has_type_constraint() } $meta->get_all_attributes() )
-    {
+    for my $attr ( grep { $_->has_type_constraint() }
+        $meta->get_all_attributes() ) {
         my $type = $attr->type_constraint();
 
-        if ( $type->is_a_type_of('ArrayRef') )
-        {
+        if ( $type->is_a_type_of('ArrayRef') ) {
             push @array_attr, $attr->name();
         }
-        elsif ( $type->is_a_type_of('HashRef') )
-        {
+        elsif ( $type->is_a_type_of('HashRef') ) {
             push @hash_attr, $attr->name();
         }
     }
 
-    method clone => sub
-    {
+    method clone => sub {
         my $self = shift;
 
         my $clone = bless { %{$self} }, ref $self;
 
-        for my $name (@array_attr)
-        {
+        for my $name (@array_attr) {
             $clone->{$name} = [ @{ $self->{$name} } ];
         }
 
-        for my $name (@hash_attr)
-        {
+        for my $name (@hash_attr) {
             $clone->{$name} = { %{ $self->{$name} } };
         }
 

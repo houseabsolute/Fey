@@ -7,7 +7,6 @@ our $VERSION = '0.34';
 
 use Moose::Role;
 
-
 sub is_joinable { $_[0]->schema() ? 1 : 0 }
 
 no Moose::Role;

@@ -19,113 +19,116 @@ use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
 with 'Fey::Role::Comparable',
-     'Fey::Role::Selectable',
-     'Fey::Role::SQL::HasOrderByClause',
-     'Fey::Role::SQL::HasLimitClause',
-     'Fey::Role::SQL::ReturnsData';
+    'Fey::Role::Selectable',
+    'Fey::Role::SQL::HasOrderByClause',
+    'Fey::Role::SQL::HasLimitClause',
+    'Fey::Role::SQL::ReturnsData';
 
-with 'Fey::Role::SQL::HasWhereClause'
-          => { excludes => 'bind_params',
-               alias    => { bind_params => '_where_clause_bind_params' },
-             };
+with 'Fey::Role::SQL::HasWhereClause' => {
+    excludes => 'bind_params',
+    alias    => { bind_params => '_where_clause_bind_params' },
+};
 
-with 'Fey::Role::SQL::HasBindParams'
-          => { excludes => 'bind_params' };
+with 'Fey::Role::SQL::HasBindParams' => { excludes => 'bind_params' };
 
-with 'Fey::Role::HasAliasName'
-          => { generated_alias_prefix => 'SUBSELECT',
-               sql_needs_parens => 1,
-             };
+with 'Fey::Role::HasAliasName' => {
+    generated_alias_prefix => 'SUBSELECT',
+    sql_needs_parens       => 1,
+};
 
-has '_select' =>
-    ( traits   => [ 'Array' ],
-      is       => 'bare',
-      isa      => 'ArrayRef',
-      default  => sub { [] },
-      handles  => { _add_select_element    => 'push',
-                    select_clause_elements => 'elements',
-                  },
-      init_arg => undef,
-    );
+has '_select' => (
+    traits  => ['Array'],
+    is      => 'bare',
+    isa     => 'ArrayRef',
+    default => sub { [] },
+    handles => {
+        _add_select_element    => 'push',
+        select_clause_elements => 'elements',
+    },
+    init_arg => undef,
+);
 
-has 'is_distinct' =>
-    ( is      => 'rw',
-      isa     => 'Bool',
-      default => 0,
-      writer  => '_set_is_distinct',
-    );
+has 'is_distinct' => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 0,
+    writer  => '_set_is_distinct',
+);
 
-has 'is_distinct_on' =>
-    ( is        => 'rw',
-      does      => 'Fey::Role::ColumnLike',
-      writer    => '_set_is_distinct_on',
-      predicate => '_has_is_distinct_on',
-    );
+has 'is_distinct_on' => (
+    is        => 'rw',
+    does      => 'Fey::Role::ColumnLike',
+    writer    => '_set_is_distinct_on',
+    predicate => '_has_is_distinct_on',
+);
 
-has '_from' =>
-    ( traits   => [ 'Hash' ],
-      is       => 'bare',
-      isa      => 'HashRef',
-      default  => sub { {} },
-      handles  => { _get_from => 'get',
-                    _set_from => 'set',
-                    _from_ids => 'keys',
-                  },
-      init_arg => undef,
-    );
+has '_from' => (
+    traits  => ['Hash'],
+    is      => 'bare',
+    isa     => 'HashRef',
+    default => sub { {} },
+    handles => {
+        _get_from => 'get',
+        _set_from => 'set',
+        _from_ids => 'keys',
+    },
+    init_arg => undef,
+);
 
-has '_group_by' =>
-    ( traits   => [ 'Array' ],
-      is       => 'bare',
-      isa      => 'ArrayRef',
-      default  => sub { [] },
-      handles  => { _add_group_by_elements => 'push',
-                    _has_group_by_elements => 'count',
-                    _group_by              => 'elements',
-                  },
-      init_arg => undef,
-    );
+has '_group_by' => (
+    traits  => ['Array'],
+    is      => 'bare',
+    isa     => 'ArrayRef',
+    default => sub { [] },
+    handles => {
+        _add_group_by_elements => 'push',
+        _has_group_by_elements => 'count',
+        _group_by              => 'elements',
+    },
+    init_arg => undef,
+);
 
-has '_having' =>
-    ( traits  => [ 'Array' ],
-      is      => 'bare',
-      isa     => 'ArrayRef',
-      default => sub { [] },
-      handles => { _add_having_element  => 'push',
-                   _has_having_elements => 'count',
-                   _last_having_element => [ 'get', -1 ],
-                   _having              => 'elements',
-                 },
-      init_arg => undef,
-    );
+has '_having' => (
+    traits  => ['Array'],
+    is      => 'bare',
+    isa     => 'ArrayRef',
+    default => sub { [] },
+    handles => {
+        _add_having_element  => 'push',
+        _has_having_elements => 'count',
+        _last_having_element => [ 'get', -1 ],
+        _having              => 'elements',
+    },
+    init_arg => undef,
+);
 
 with 'Fey::Role::SQL::Cloneable';
 
-sub select
-{
+sub select {
     my $self = shift;
 
     my $count = @_ ? @_ : 1;
-    my (@select) =
-        pos_validated_list( \@_,
-                            ( ( { isa => 'Fey::Types::SelectElement' } ) x $count ),
-                            MX_PARAMS_VALIDATE_NO_CACHE => 1,
-                          );
+    my (@select) = pos_validated_list(
+        \@_,
+        ( ( { isa => 'Fey::Types::SelectElement' } ) x $count ),
+        MX_PARAMS_VALIDATE_NO_CACHE => 1,
+    );
 
-    for my $elt ( map { $_->can('columns')
-                        ? sort { $a->name() cmp $b->name() } $_->columns()
-                        : $_ }
-                  map { blessed $_ ? $_ : Fey::Literal->new_from_scalar($_) }
-                  @select )
-    {
+    for my $elt (
+        map {
+            $_->can('columns')
+                ? sort { $a->name() cmp $b->name() } $_->columns()
+                : $_
+        }
+        map { blessed $_ ? $_ : Fey::Literal->new_from_scalar($_) } @select
+        ) {
         $self->_add_select_element($elt);
     }
 
     return $self;
 }
 
-sub distinct
-{
+sub distinct {
     die 'Cannot call ->distinct and ->distinct_on'
         if $_[0]->_has_is_distinct_on();
 
@@ -134,8 +137,7 @@ sub distinct
     return $_[0];
 }
 
-sub distinct_on
-{
+sub distinct_on {
     die 'Cannot call ->distinct and ->distinct_on'
         if $_[0]->is_distinct();
 
@@ -146,42 +148,43 @@ sub distinct_on
 
 # XXX - need to handle subselect as if it were a table rather than as
 # a special case
-sub from
-{
+sub from {
     my $self = shift;
 
     # $t1, 'LEFT', $t2, ...
-    my $is_outer_join = @_ >= 3 && ! blessed $_[1];
+    my $is_outer_join = @_ >= 3 && !blessed $_[1];
 
-    my $is_inner_join = @_ >= 2 && ! $is_outer_join;
+    my $is_inner_join = @_ >= 2 && !$is_outer_join;
 
     # gee, wouldn't multimethods be nice here?
-    my $meth =
-        ( @_ == 1 && blessed $_[0] && $_[0]->can('is_joinable') && $_[0]->is_joinable()
-          ? '_from_one_table'
-          : @_ == 1 && blessed $_[0] && $_[0]->can('does') && $_[0]->does('Fey::Role::SQL::ReturnsData')
-          ? '_from_subselect'
+    my $meth = (
+        @_ == 1
+            && blessed $_[0]
+            && $_[0]->can('is_joinable')
+            && $_[0]->is_joinable()
+        ? '_from_one_table'
+        : @_ == 1
+            && blessed $_[0]
+            && $_[0]->can('does')
+            && $_[0]->does('Fey::Role::SQL::ReturnsData')
+        ? '_from_subselect'
 
-          : $is_inner_join && @_ == 4 && $_[3]->isa('Fey::SQL::Where')
-          ? '_join_with_where'
-          : $is_inner_join && @_ == 3 && $_[2]->isa('Fey::SQL::Where')
-          ? '_join_with_where'
-          : $is_inner_join && @_ == 3 && $_[2]->isa('Fey::FK')
-          ? '_join'
-          : $is_inner_join && @_ == 2
-          ? '_join'
+        : $is_inner_join
+            && @_ == 4 && $_[3]->isa('Fey::SQL::Where') ? '_join_with_where'
+        : $is_inner_join
+            && @_ == 3 && $_[2]->isa('Fey::SQL::Where') ? '_join_with_where'
+        : $is_inner_join && @_ == 3 && $_[2]->isa('Fey::FK') ? '_join'
+        : $is_inner_join && @_ == 2 ? '_join'
 
-          : $is_outer_join && @_ == 5
-          ? '_outer_join_with_where'
-          : $is_outer_join && @_ == 4 && $_[3]->isa('Fey::SQL::Where')
-          ? '_outer_join_with_where'
-          : $is_outer_join && @_ == 4 && $_[3]->isa('Fey::FK')
-          ? '_outer_join'
-          : $is_outer_join && @_ == 3
-          ? '_outer_join'
+        : $is_outer_join && @_ == 5 ? '_outer_join_with_where'
+        : $is_outer_join
+            && @_ == 4
+            && $_[3]->isa('Fey::SQL::Where') ? '_outer_join_with_where'
+        : $is_outer_join && @_ == 4 && $_[3]->isa('Fey::FK') ? '_outer_join'
+        : $is_outer_join && @_ == 3 ? '_outer_join'
 
-          : undef
-        );
+        : undef
+    );
 
     param_error "from() called with invalid parameters (@_)."
         unless $meth;
@@ -191,85 +194,83 @@ sub from
     return $self;
 }
 
-sub _from_one_table
-{
+sub _from_one_table {
     my $self = shift;
 
     my $join = Fey::SQL::Fragment::Join->new( table1 => $_[0] );
     $self->_set_from( $join->id() => $join );
 }
 
-sub _from_subselect
-{
+sub _from_subselect {
     my $self = shift;
 
     my $subsel = $_[0];
     $self->_set_from( $subsel->id() => $subsel );
 }
 
-sub _join
-{
+sub _join {
     my $self = shift;
 
     _check_join_arguments(@_);
 
     my $fk = $_[2] || $self->_fk_for_join(@_);
 
-    my $join = Fey::SQL::Fragment::Join->new( table1 => $_[0],
-                                              table2 => $_[1],
-                                              fk     => $fk,
-                                            );
+    my $join = Fey::SQL::Fragment::Join->new(
+        table1 => $_[0],
+        table2 => $_[1],
+        fk     => $fk,
+    );
     $self->_set_from( $join->id() => $join );
 }
 
-sub _join_with_where
-{
+sub _join_with_where {
     my $self = shift;
 
     _check_join_arguments(@_);
 
     my $where = pop;
-    my $fk    = @_ == 3 ? pop : $self->_fk_for_join(@_);
+    my $fk = @_ == 3 ? pop : $self->_fk_for_join(@_);
 
-    my $join = Fey::SQL::Fragment::Join->new( table1 => $_[0],
-                                              table2 => $_[1],
-                                              fk     => $fk,
-                                              where  => $where,
-                                            );
+    my $join = Fey::SQL::Fragment::Join->new(
+        table1 => $_[0],
+        table2 => $_[1],
+        fk     => $fk,
+        where  => $where,
+    );
     $self->_set_from( $join->id() => $join );
 }
 
-sub _check_join_arguments
-{
-    param_error 'the first two arguments to from() were not valid (not tables or something else joinable).'
-        unless all { blessed $_ && $_->can('is_joinable') && $_->is_joinable() } @_[0,1];
+sub _check_join_arguments {
+    param_error
+        'the first two arguments to from() were not valid (not tables or something else joinable).'
+        unless
+        all { blessed $_ && $_->can('is_joinable') && $_->is_joinable() }
+        @_[ 0, 1 ];
 }
 
-sub _fk_for_join
-{
+sub _fk_for_join {
     my $self   = shift;
     my @tables = @_;
 
     my $s  = $tables[0]->schema;
     my @fk = $s->foreign_keys_between_tables(@tables);
 
-    unless ( @fk == 1 )
-    {
+    unless ( @fk == 1 ) {
         my $names = join ' and ', sort map { $_->name() } @tables;
 
-        param_error "You specified a join for two tables that do not share a foreign key ($names)."
+        param_error
+            "You specified a join for two tables that do not share a foreign key ($names)."
             unless @fk;
 
         param_error
-              'You specified a join for two tables with more than one foreign key,'
+            'You specified a join for two tables with more than one foreign key,'
             . ', so you must specify which foreign key to use for the join.';
     }
 
     return $fk[0];
 }
 
-sub _outer_join
-{
+sub _outer_join {
     my $self = shift;
 
     _check_outer_join_arguments(@_);
@@ -281,65 +282,66 @@ sub _outer_join
     # but this ends up reducing code coverage because it's not
     # possible (I hope) to have a situation where both are false.
     my $fk = $_[3];
-    $fk = $self->_fk_for_join( @_[0, 2] )
+    $fk = $self->_fk_for_join( @_[ 0, 2 ] )
         unless $fk;
 
-    my $join = Fey::SQL::Fragment::Join->new( table1     => $_[0],
-                                              table2     => $_[2],
-                                              fk         => $fk,
-                                              outer_type => lc $_[1],
-                                            );
+    my $join = Fey::SQL::Fragment::Join->new(
+        table1     => $_[0],
+        table2     => $_[2],
+        fk         => $fk,
+        outer_type => lc $_[1],
+    );
     $self->_set_from( $join->id() => $join );
 }
 
-sub _outer_join_with_where
-{
+sub _outer_join_with_where {
     my $self = shift;
 
     _check_outer_join_arguments(@_);
 
     my $fk;
-    $fk = $_[3]->isa('Fey::FK') ? $_[3] : $self->_fk_for_join( @_[0, 2] );
+    $fk = $_[3]->isa('Fey::FK') ? $_[3] : $self->_fk_for_join( @_[ 0, 2 ] );
 
     my $where = $_[4] ? $_[4] : $_[3];
 
-    my $join = Fey::SQL::Fragment::Join->new( table1     => $_[0],
-                                              table2     => $_[2],
-                                              fk         => $fk,
-                                              outer_type => lc $_[1],
-                                              where      => $where,
-                                            );
+    my $join = Fey::SQL::Fragment::Join->new(
+        table1     => $_[0],
+        table2     => $_[2],
+        fk         => $fk,
+        outer_type => lc $_[1],
+        where      => $where,
+    );
     $self->_set_from( $join->id() => $join );
 }
 
-sub _check_outer_join_arguments
-{
-    param_error 'invalid outer join type, must be one of out left, right, or full.'
+sub _check_outer_join_arguments {
+    param_error
+        'invalid outer join type, must be one of out left, right, or full.'
         unless $_[1] =~ /^(?:left|right|full)$/i;
 
     param_error 'from() was called with invalid arguments'
-        unless $_[0]->can('is_joinable') && $_[0]->is_joinable()
-            && $_[2]->can('is_joinable') && $_[2]->is_joinable();
+        unless $_[0]->can('is_joinable')
+            && $_[0]->is_joinable()
+            && $_[2]->can('is_joinable')
+            && $_[2]->is_joinable();
 }
 
-sub group_by
-{
+sub group_by {
     my $self = shift;
 
     my $count = @_ ? @_ : 1;
-    my (@by) =
-        pos_validated_list( \@_,
-                            ( ( { isa => 'Fey::Types::GroupByElement' } ) x $count ),
-                            MX_PARAMS_VALIDATE_NO_CACHE => 1,
-                          );
+    my (@by) = pos_validated_list(
+        \@_,
+        ( ( { isa => 'Fey::Types::GroupByElement' } ) x $count ),
+        MX_PARAMS_VALIDATE_NO_CACHE => 1,
+    );
 
     $self->_add_group_by_elements(@by);
 
     return $self;
 }
 
-sub having
-{
+sub having {
     my $self = shift;
 
     $self->_condition( 'having', @_ );
@@ -347,72 +349,66 @@ sub having
     return $self;
 }
 
-sub id
-{
-    return $_[0]->sql( 'Fey::FakeDBI' );
+sub id {
+    return $_[0]->sql('Fey::FakeDBI');
 }
 
-sub sql
-{
-    my $self  = shift;
+sub sql {
+    my $self = shift;
     my ($dbh) = pos_validated_list( \@_, { isa => 'Fey::Types::CanQuote' } );
 
-    return
-        ( join q{ },
-          $self->select_clause($dbh),
-          $self->from_clause($dbh),
-          $self->where_clause($dbh),
-          $self->group_by_clause($dbh),
-          $self->having_clause($dbh),
-          $self->order_by_clause($dbh),
-          $self->limit_clause($dbh),
-        );
+    return (
+        join q{ },
+        $self->select_clause($dbh),
+        $self->from_clause($dbh),
+        $self->where_clause($dbh),
+        $self->group_by_clause($dbh),
+        $self->having_clause($dbh),
+        $self->order_by_clause($dbh),
+        $self->limit_clause($dbh),
+    );
 }
 
-sub select_clause
-{
+sub select_clause {
     my $self = shift;
     my $dbh  = shift;
 
     my $sql = 'SELECT ';
 
-    if ( $self->is_distinct() )
-    {
+    if ( $self->is_distinct() ) {
         $sql .= 'DISTINCT ';
     }
-    elsif ( $self->_has_is_distinct_on() )
-    {
-        $sql .= 'DISTINCT ON (' . $self->is_distinct_on()->sql_or_alias($dbh) . ') ';
+    elsif ( $self->_has_is_distinct_on() ) {
+        $sql .= 'DISTINCT ON ('
+            . $self->is_distinct_on()->sql_or_alias($dbh) . ') ';
     }
 
-    $sql .=
-        ( join ', ',
-          map { $_->sql_with_alias($dbh) }
-          $self->select_clause_elements()
-        );
+    $sql .= (
+        join ', ',
+        map { $_->sql_with_alias($dbh) } $self->select_clause_elements()
+    );
 
     return $sql;
 }
 
-sub from_clause
-{
+sub from_clause {
     my $self = shift;
     my $dbh  = shift;
 
     my @from;
 
     my %seen;
+
     # We lower case  the test for correctly skipping
     # already-seen tables.
-    for my $frag ( $self->_get_from( sort { lc($a) cmp lc($b) } $self->_from_ids() ) )
-    {
+    for my $frag (
+        $self->_get_from( sort { lc($a) cmp lc($b) } $self->_from_ids() ) ) {
         my $join_sql = $frag->sql_with_alias( $dbh, \%seen );
 
         # the fragment could be a Fey::SQL::Select itself
         my @tables = $frag->can('tables') ? $frag->tables() : ();
 
-        $seen{ $_->id() } = 1
-            for @tables;
+        $seen{ $_->id() } = 1 for @tables;
 
         next unless length $join_sql;
 
@@ -423,20 +419,16 @@ sub from_clause
 
     # This is a sort of manual join() call special-cased to add a
     # comma as needed.
-    for ( my $i = 0; $i < @from; $i++ )
-    {
+    for ( my $i = 0; $i < @from; $i++ ) {
         $sql .= $from[$i];
 
-        if ( $sql =~ /\)^/ )
-        {
+        if ( $sql =~ /\)^/ ) {
             $sql .= q{ };
         }
-        elsif ( ( $from[ $i + 1 ] || '' ) =~ /^[\w\s]*JOIN/ )
-        {
+        elsif ( ( $from[ $i + 1 ] || '' ) =~ /^[\w\s]*JOIN/ ) {
             $sql .= q{ };
         }
-        elsif ( $from[ $i + 1 ] )
-        {
+        elsif ( $from[ $i + 1 ] ) {
             $sql .= q{, };
         }
     }
@@ -444,55 +436,54 @@ sub from_clause
     return $sql;
 }
 
-sub group_by_clause
-{
+sub group_by_clause {
     my $self = shift;
     my $dbh  = shift;
 
     return unless $self->_has_group_by_elements();
 
-    return ( 'GROUP BY '
-             .
-             ( join ', ',
-               map { $_->sql_or_alias($dbh) }
-               $self->_group_by()
-             )
-           );
+    return (
+        'GROUP BY '
+            . (
+            join ', ',
+            map { $_->sql_or_alias($dbh) } $self->_group_by()
+            )
+    );
 }
 
-sub having_clause
-{
+sub having_clause {
     my $self = shift;
     my $dbh  = shift;
 
     return unless $self->_has_having_elements();
 
-    return ( 'HAVING '
-             . ( join ' ',
-                 map { $_->sql($dbh) }
-                 $self->_having()
-               )
-           )
+    return (
+        'HAVING '
+            . (
+            join ' ',
+            map { $_->sql($dbh) } $self->_having()
+            )
+    );
 }
 
-sub bind_params
-{
+sub bind_params {
     my $self = shift;
 
-    return
-        ( ( map { $_->bind_params() }
+    return (
+        (
+            map  { $_->bind_params() }
             grep { $_->can('bind_params') }
-            map { $self->_get_from($_) }
+            map  { $self->_get_from($_) }
             sort $self->_from_ids()
-          ),
+        ),
 
-          $self->_where_clause_bind_params(),
+        $self->_where_clause_bind_params(),
 
-          ( map { $_->bind_params() }
-            grep { $_->can('bind_params') }
-            $self->_having()
-          ),
-        );
+        (
+            map  { $_->bind_params() }
+            grep { $_->can('bind_params') } $self->_having()
+        ),
+    );
 }
 
 no Moose;

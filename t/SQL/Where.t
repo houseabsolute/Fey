@@ -8,8 +8,7 @@ use Test::More tests => 2;
 
 use Fey::SQL;
 
-
-my $s = Fey::Test->mock_test_schema_with_fks();
+my $s   = Fey::Test->mock_test_schema_with_fks();
 my $dbh = Fey::Test->mock_dbh();
 
 {
@@ -19,9 +18,14 @@ my $dbh = Fey::Test->mock_dbh();
     my $where2 = $where1->clone();
     $where2->where( $s->table('User')->column('username'), '=', 'Bob' );
 
-    is( $where1->where_clause($dbh), q{WHERE "User"."user_id" = 2},
-        'original where clause has one condition' );
+    is(
+        $where1->where_clause($dbh), q{WHERE "User"."user_id" = 2},
+        'original where clause has one condition'
+    );
 
-    is( $where2->where_clause($dbh), q{WHERE "User"."user_id" = 2 AND "User"."username" = 'Bob'},
-        'original where clause has two conditions' );
+    is(
+        $where2->where_clause($dbh),
+        q{WHERE "User"."user_id" = 2 AND "User"."username" = 'Bob'},
+        'original where clause has two conditions'
+    );
 }

@@ -8,37 +8,42 @@ use Test::More tests => 25;
 
 use Fey::SQL;
 
-
-my $s = Fey::Test->mock_test_schema();
+my $s   = Fey::Test->mock_test_schema();
 my $dbh = Fey::Test->mock_dbh();
 
-my $size =
-    Fey::Column->new( name        => 'size',
-                      type        => 'text',
-                      is_nullable => 1,
-                    );
+my $size = Fey::Column->new(
+    name        => 'size',
+    type        => 'text',
+    is_nullable => 1,
+);
 $s->table('User')->add_column($size);
 
 {
     eval { Fey::SQL->new_update()->update() };
 
-    like( $@, qr/1 was expected/,
-          'update() without any parameters fails' );
+    like(
+        $@, qr/1 was expected/,
+        'update() without any parameters fails'
+    );
 }
 
 {
     my $update = Fey::SQL->new_update()->update( $s->table('User') );
 
-    is( $update->update_clause($dbh), q{UPDATE "User"},
-        'update clause for one table' );
+    is(
+        $update->update_clause($dbh), q{UPDATE "User"},
+        'update clause for one table'
+    );
 }
 
 {
     my $update = Fey::SQL->new_update()
-                    ->update( $s->table('User'), $s->table('UserGroup') );
+        ->update( $s->table('User'), $s->table('UserGroup') );
 
-    is( $update->update_clause($dbh), q{UPDATE "User", "UserGroup"},
-        'update clause for two tables' );
+    is(
+        $update->update_clause($dbh), q{UPDATE "User", "UserGroup"},
+        'update clause for two tables'
+    );
 }
 
 {
@@ -46,104 +51,130 @@ $s->table('User')->add_column($size);
     $update->update( $s->table('User') );
     $update->set( $s->table('User')->column('username'), 'bubba' );
 
-    is( $update->set_clause($dbh), q{SET "username" = 'bubba'},
-        'set_clause() for one column' );
+    is(
+        $update->set_clause($dbh), q{SET "username" = 'bubba'},
+        'set_clause() for one column'
+    );
 }
 
 {
     my $update = Fey::SQL->new_update( auto_placeholders => 0 );
     $update->update( $s->table('User') );
-    $update->set( $s->table('User')->column('username'), 'bubba',
-                  $s->table('User')->column('email'), 'bubba@bubba.com',
-                );
+    $update->set(
+        $s->table('User')->column('username'), 'bubba',
+        $s->table('User')->column('email'),    'bubba@bubba.com',
+    );
 
-    is( $update->set_clause($dbh),
+    is(
+        $update->set_clause($dbh),
         q{SET "username" = 'bubba', "email" = 'bubba@bubba.com'},
-        'set_clause() for two columns' );
+        'set_clause() for two columns'
+    );
 }
 
 {
     my $update = Fey::SQL->new_update();
     $update->update( $s->table('User') );
-    $update->set( $s->table('User')->column('username'),
-                  $s->table('User')->column('email'),
-                );
+    $update->set(
+        $s->table('User')->column('username'),
+        $s->table('User')->column('email'),
+    );
 
-    is( $update->set_clause($dbh),
+    is(
+        $update->set_clause($dbh),
         q{SET "username" = "User"."email"},
-        'set_clause() for column = columns' );
+        'set_clause() for column = columns'
+    );
 }
 
 {
     my $update = Fey::SQL->new_update();
     $update->update( $s->table('User') );
-    $update->set( $s->table('User')->column('size'),
-                  Fey::Literal->new_from_scalar(undef),
-                );
+    $update->set(
+        $s->table('User')->column('size'),
+        Fey::Literal->new_from_scalar(undef),
+    );
 
-    is( $update->set_clause($dbh),
+    is(
+        $update->set_clause($dbh),
         q{SET "size" = NULL},
-        'set_clause() for column = NULL (literal)' );
+        'set_clause() for column = NULL (literal)'
+    );
 }
 
 {
     my $update = Fey::SQL->new_update();
     $update->update( $s->table('User') );
-    $update->set( $s->table('User')->column('username'),
-                  Fey::Literal->new_from_scalar('string'),
-                );
+    $update->set(
+        $s->table('User')->column('username'),
+        Fey::Literal->new_from_scalar('string'),
+    );
 
-    is( $update->set_clause($dbh),
+    is(
+        $update->set_clause($dbh),
         q{SET "username" = 'string'},
-        'set_clause() for column = string (literal)' );
+        'set_clause() for column = string (literal)'
+    );
 }
 
 {
     my $update = Fey::SQL->new_update();
     $update->update( $s->table('User') );
-    $update->set( $s->table('User')->column('username'),
-                  Fey::Literal->new_from_scalar(42),
-                );
+    $update->set(
+        $s->table('User')->column('username'),
+        Fey::Literal->new_from_scalar(42),
+    );
 
-    is( $update->set_clause($dbh),
+    is(
+        $update->set_clause($dbh),
         q{SET "username" = 42},
-        'set_clause() for column = number (literal)' );
+        'set_clause() for column = number (literal)'
+    );
 }
 
 {
     my $update = Fey::SQL->new_update();
     $update->update( $s->table('User') );
-    $update->set( $s->table('User')->column('username'),
-                  Fey::Literal::Function->new( 'NOW' ),
-                );
+    $update->set(
+        $s->table('User')->column('username'),
+        Fey::Literal::Function->new('NOW'),
+    );
 
-    is( $update->set_clause($dbh),
+    is(
+        $update->set_clause($dbh),
         q{SET "username" = NOW()},
-        'set_clause() for column = function (literal)' );
+        'set_clause() for column = function (literal)'
+    );
 }
 
 {
     my $update = Fey::SQL->new_update();
     $update->update( $s->table('User') );
-    $update->set( $s->table('User')->column('username'),
-                  Fey::Literal::Term->new( 'thingy' ),
-                );
+    $update->set(
+        $s->table('User')->column('username'),
+        Fey::Literal::Term->new('thingy'),
+    );
 
-    is( $update->set_clause($dbh),
+    is(
+        $update->set_clause($dbh),
         q{SET "username" = thingy},
-        'set_clause() for column = term (literal)' );
+        'set_clause() for column = term (literal)'
+    );
 }
 
 {
     my $update = Fey::SQL->new_update();
     $update->update( $s->table('User') );
-    $update->set( $s->table('User')->column('username'),
-                  Fey::Literal::Term->new( 'thingy' ),
-                );
+    $update->set(
+        $s->table('User')->column('username'),
+        Fey::Literal::Term->new('thingy'),
+    );
 
-    is( $update->set_clause($dbh),
+    is(
+        $update->set_clause($dbh),
         q{SET "username" = thingy},
-        'set_clause() for column = term (literal)' );
+        'set_clause() for column = term (literal)'
+    );
 }
 
 {
@@ -154,9 +185,11 @@ $s->table('User')->add_column($size);
     $update->order_by( $s->table('User')->column('user_id') );
     $update->limit(10);
 
-    is( $update->sql($dbh),
+    is(
+        $update->sql($dbh),
         q{UPDATE "User" SET "username" = 'hello' WHERE "User"."user_id" = 10 ORDER BY "User"."user_id" LIMIT 10},
-        'update sql with where clause, order by, and limit' );
+        'update sql with where clause, order by, and limit'
+    );
 }
 
 {
@@ -164,19 +197,23 @@ $s->table('User')->add_column($size);
     $update->update( $s->table('User') );
     $update->set( $s->table('User')->column('email'), undef );
 
-    is( $update->set_clause($dbh),
+    is(
+        $update->set_clause($dbh),
         q{SET "email" = NULL},
-        'set a column to NULL with placeholders off' );
+        'set a column to NULL with placeholders off'
+    );
 }
-
 
 {
     my $update = Fey::SQL->new_update();
     $update->update( $s->table('User'), $s->table('Group') );
-    $update->set( $s->table('User')->column('username'), $s->table('Group')->column('name') );
+    $update->set( $s->table('User')->column('username'),
+        $s->table('Group')->column('name') );
 
-    is( $update->set_clause($dbh), q{SET "User"."username" = "Group"."name"},
-        'set_clause() for multi-table update' );
+    is(
+        $update->set_clause($dbh), q{SET "User"."username" = "Group"."name"},
+        'set_clause() for multi-table update'
+    );
 }
 
 {
@@ -184,8 +221,10 @@ $s->table('User')->add_column($size);
     $update->update( $s->table('User') );
     eval { $update->set() };
 
-    like( $@, qr/list of paired/,
-          'set() called with no parameters' );
+    like(
+        $@, qr/list of paired/,
+        'set() called with no parameters'
+    );
 }
 
 {
@@ -193,17 +232,19 @@ $s->table('User')->add_column($size);
     $update->update( $s->table('User') );
     eval { $update->set( $s->table('User')->column('username') ) };
 
-    like( $@, qr/list of paired/,
-          'set() called with one parameter' );
+    like(
+        $@, qr/list of paired/,
+        'set() called with one parameter'
+    );
 }
 
 {
+
     package Num;
 
     use overload '0+' => sub { ${ $_[0] } };
 
-    sub new
-    {
+    sub new {
         my $num = $_[1];
         return bless \$num, __PACKAGE__;
     }
@@ -214,29 +255,34 @@ $s->table('User')->add_column($size);
     $update->update( $s->table('User') );
     $update->set( $s->table('User')->column('user_id'), Num->new(42) );
 
-    is( $update->set_clause($dbh), q{SET "user_id" = ?},
-        'set_clause() for one column with overloaded object and auto placeholders' );
-    is_deeply( [ $update->bind_params() ], [ 42 ],
-               'bind params with overloaded object' );
+    is(
+        $update->set_clause($dbh), q{SET "user_id" = ?},
+        'set_clause() for one column with overloaded object and auto placeholders'
+    );
+    is_deeply(
+        [ $update->bind_params() ], [42],
+        'bind params with overloaded object'
+    );
 }
-
 
 {
     my $update = Fey::SQL->new_update( auto_placeholders => 0 );
     $update->update( $s->table('User') );
     $update->set( $s->table('User')->column('user_id'), Num->new(42) );
 
-    is( $update->set_clause($dbh), q{SET "user_id" = 42},
-        'set_clause() for one column with overloaded object, no placeholders' );
+    is(
+        $update->set_clause($dbh), q{SET "user_id" = 42},
+        'set_clause() for one column with overloaded object, no placeholders'
+    );
 }
 
 {
+
     package Str;
 
     use overload q{""} => sub { ${ $_[0] } };
 
-    sub new
-    {
+    sub new {
         my $str = $_[1];
         return bless \$str, __PACKAGE__;
     }
@@ -247,10 +293,14 @@ $s->table('User')->add_column($size);
     $update->update( $s->table('User') );
     $update->set( $s->table('User')->column('username'), Str->new('Bubba') );
 
-    is( $update->set_clause($dbh), q{SET "username" = ?},
-        'set_clause() for one column with overloaded object and auto placeholders' );
-    is_deeply( [ $update->bind_params() ], [ 'Bubba' ],
-               'bind params with overloaded object' );
+    is(
+        $update->set_clause($dbh), q{SET "username" = ?},
+        'set_clause() for one column with overloaded object and auto placeholders'
+    );
+    is_deeply(
+        [ $update->bind_params() ], ['Bubba'],
+        'bind params with overloaded object'
+    );
 }
 
 {
@@ -258,8 +308,10 @@ $s->table('User')->add_column($size);
     $update->update( $s->table('User') );
     $update->set( $s->table('User')->column('username'), Str->new('Bubba') );
 
-    is( $update->set_clause($dbh), q{SET "username" = 'Bubba'},
-        'set_clause() for one column with overloaded object, no placeholders' );
+    is(
+        $update->set_clause($dbh), q{SET "username" = 'Bubba'},
+        'set_clause() for one column with overloaded object, no placeholders'
+    );
 }
 
 {
@@ -273,11 +325,15 @@ $s->table('User')->add_column($size);
     $update2->order_by( $s->table('User')->column('user_id') );
     $update2->limit(10);
 
-    is( $update1->sql($dbh),
+    is(
+        $update1->sql($dbh),
         q{UPDATE "User" SET "username" = 'hello'},
-        'original update sql does not have where clause, order by, or limit' );
+        'original update sql does not have where clause, order by, or limit'
+    );
 
-    is( $update2->sql($dbh),
+    is(
+        $update2->sql($dbh),
         q{UPDATE "User" SET "username" = 'hello' WHERE "User"."user_id" = 10 ORDER BY "User"."user_id" LIMIT 10},
-        'cloned update sql has where clause, order by, and limit' );
+        'cloned update sql has where clause, order by, and limit'
+    );
 }

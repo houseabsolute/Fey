@@ -13,9 +13,7 @@ use MooseX::StrictConstructor;
 
 with 'Fey::Role::Comparable';
 
-
-sub sql
-{
+sub sql {
     return '?';
 }
 

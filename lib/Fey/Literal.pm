@@ -22,8 +22,7 @@ use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-sub new_from_scalar
-{
+sub new_from_scalar {
     shift;
     my $val = shift;
 
@@ -33,8 +32,8 @@ sub new_from_scalar
     # Freaking Perl overloading is so broken! An overloaded reference
     # will not pass the type constraints, so we need to manually
     # convert it to a non-ref.
-    if ( blessed $val && overload::Overloaded( $val ) )
-    {
+    if ( blessed $val && overload::Overloaded($val) ) {
+
         # The stringification method will be derived from the
         # numification method if needed. This might produce strange
         # results in the case of something that overloads both
@@ -45,8 +44,8 @@ sub new_from_scalar
     }
 
     return looks_like_number($val)
-           ? Fey::Literal::Number->new($val)
-           : Fey::Literal::String->new($val);
+        ? Fey::Literal::Number->new($val)
+        : Fey::Literal::String->new($val);
 }
 
 no Moose;

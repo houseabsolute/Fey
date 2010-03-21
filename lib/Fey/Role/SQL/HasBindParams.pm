@@ -7,25 +7,24 @@ our $VERSION = '0.34';
 
 use Moose::Role;
 
-has '_bind_params' =>
-    ( traits   => [ 'Array' ],
-      is       => 'ro',
-      isa      => 'ArrayRef',
-      default  => sub { [] },
-      handles  => { _add_bind_param => 'push' },
-      init_arg => undef,
-    );
+has '_bind_params' => (
+    traits   => ['Array'],
+    is       => 'ro',
+    isa      => 'ArrayRef',
+    default  => sub { [] },
+    handles  => { _add_bind_param => 'push' },
+    init_arg => undef,
+);
 
-has 'auto_placeholders' =>
-    ( is      => 'ro',
-      isa     => 'Bool',
-      default => 1,
-    );
+has 'auto_placeholders' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 1,
+);
 
 # This needs to be a method and not a delegated method so it can be excluded
 # by classes which need to exclude it.
-sub bind_params
-{
+sub bind_params {
     return @{ $_[0]->_bind_params() };
 }
 

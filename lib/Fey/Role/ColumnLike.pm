@@ -10,17 +10,16 @@ use Moose::Role;
 # This seems weird, but basically we're saying that column-like things
 # do these four roles, but the implementation is different for
 # column-like things (than for example, selectable things).
-with ( 'Fey::Role::Selectable' => { excludes => 'is_selectable' },
-       'Fey::Role::Comparable' => { excludes => 'is_comparable' },
-       'Fey::Role::Groupable'  => { excludes => 'is_groupable' },
-       'Fey::Role::Orderable'  => { excludes => 'is_orderable' },
-     );
+with(
+    'Fey::Role::Selectable' => { excludes => 'is_selectable' },
+    'Fey::Role::Comparable' => { excludes => 'is_comparable' },
+    'Fey::Role::Groupable'  => { excludes => 'is_groupable' },
+    'Fey::Role::Orderable'  => { excludes => 'is_orderable' },
+);
 
 requires '_build_id', 'is_alias';
 
-
-sub _containing_table_name_or_alias
-{
+sub _containing_table_name_or_alias {
     my $t = $_[0]->table();
 
     $t->is_alias() ? $t->alias_name() : $t->name();
@@ -30,9 +29,9 @@ sub is_selectable { return $_[0]->table() ? 1 : 0 }
 
 sub is_comparable { return $_[0]->table() ? 1 : 0 }
 
-sub is_groupable  { return $_[0]->table() ? 1 : 0 }
+sub is_groupable { return $_[0]->table() ? 1 : 0 }
 
-sub is_orderable  { return $_[0]->table() ? 1 : 0 }
+sub is_orderable { return $_[0]->table() ? 1 : 0 }
 
 no Moose::Role;
 

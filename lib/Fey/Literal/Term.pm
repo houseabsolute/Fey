@@ -13,43 +13,41 @@ use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
 with 'Fey::Role::Comparable', 'Fey::Role::Selectable',
-     'Fey::Role::Orderable', 'Fey::Role::Groupable',
-     'Fey::Role::IsLiteral';
+    'Fey::Role::Orderable', 'Fey::Role::Groupable',
+    'Fey::Role::IsLiteral';
 
-has 'term' =>
-    ( is       => 'ro',
-      isa      => 'Fey::Types::LiteralTermArg',
-      required => 1,
-      coerce   => 1,
-    );
+has 'term' => (
+    is       => 'ro',
+    isa      => 'Fey::Types::LiteralTermArg',
+    required => 1,
+    coerce   => 1,
+);
 
-has can_have_alias =>
-    ( is       => 'rw',
-      isa      => 'Bool',
-      default  => 1,
-    );
+has can_have_alias => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 1,
+);
 
-with 'Fey::Role::HasAliasName' =>
-    { generated_alias_prefix => 'TERM' };
+with 'Fey::Role::HasAliasName' => { generated_alias_prefix => 'TERM' };
 
-sub BUILDARGS
-{
+sub BUILDARGS {
     my $class = shift;
 
-    return { term => [ @_ ] };
+    return { term => [@_] };
 }
 
-sub sql
-{
-    my ($self, $dbh) = @_;
+sub sql {
+    my ( $self, $dbh ) = @_;
 
-    return
-        join( '',
-              map { blessed($_) && $_->can('sql_or_alias')
-                    ? $_->sql_or_alias($dbh)
-                    : $_ }
-              @{ $self->term() }
-            );
+    return join(
+        '',
+        map {
+            blessed($_) && $_->can('sql_or_alias')
+                ? $_->sql_or_alias($dbh)
+                : $_
+            } @{ $self->term() }
+    );
 }
 
 # XXX - this bit of wackness is necessary because MX::Role::Parameterized
@@ -61,19 +59,19 @@ sub sql
     my $method = $meta->remove_method('sql_with_alias');
     $meta->add_method( _han_sql_with_alias => $method );
 
-    my $sql_with_alias = sub
-    {
+    my $sql_with_alias = sub {
         my $self = shift;
         my $dbh  = shift;
 
-        return $self->can_have_alias() ? $self->_han_sql_with_alias($dbh) : $self->sql($dbh);
+        return $self->can_have_alias()
+            ? $self->_han_sql_with_alias($dbh)
+            : $self->sql($dbh);
     };
 
     $meta->add_method( sql_with_alias => $sql_with_alias );
 }
 
-before 'set_alias_name' => sub
-{
+before 'set_alias_name' => sub {
     my $self = shift;
 
     croak 'This term cannot have an alias'

@@ -9,14 +9,13 @@ use Fey::Types;
 
 use Moose;
 
-has 'comparison' =>
-    ( is       => 'ro',
-      isa      => 'Fey::Types::WhereBoolean',
-      required => 1,
-    );
+has 'comparison' => (
+    is       => 'ro',
+    isa      => 'Fey::Types::WhereBoolean',
+    required => 1,
+);
 
-sub sql
-{
+sub sql {
     return $_[0]->comparison();
 }
 

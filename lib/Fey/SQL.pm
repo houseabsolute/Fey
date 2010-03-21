@@ -15,51 +15,42 @@ use Fey::SQL::Intersect;
 use Fey::SQL::Except;
 use Fey::Types;
 
-
-sub new_delete
-{
+sub new_delete {
     shift;
     return Fey::SQL::Delete->new(@_);
 }
 
-sub new_insert
-{
+sub new_insert {
     shift;
     return Fey::SQL::Insert->new(@_);
 }
 
-sub new_select
-{
+sub new_select {
     shift;
     return Fey::SQL::Select->new(@_);
 }
 
-sub new_update
-{
+sub new_update {
     shift;
     return Fey::SQL::Update->new(@_);
 }
 
-sub new_where
-{
+sub new_where {
     shift;
     return Fey::SQL::Where->new(@_);
 }
 
-sub new_union
-{
+sub new_union {
     shift;
     return Fey::SQL::Union->new(@_);
 }
 
-sub new_intersect
-{
+sub new_intersect {
     shift;
     return Fey::SQL::Intersect->new(@_);
 }
 
-sub new_except
-{
+sub new_except {
     shift;
     return Fey::SQL::Except->new(@_);
 }

@@ -11,12 +11,9 @@ use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 
-with 'Fey::Role::Comparable',
-     'Fey::Role::Selectable',
-     'Fey::Role::IsLiteral';
+with 'Fey::Role::Comparable', 'Fey::Role::Selectable', 'Fey::Role::IsLiteral';
 
-
-sub sql { 'NULL' }
+sub sql {'NULL'}
 
 sub sql_with_alias { goto &sql }
 

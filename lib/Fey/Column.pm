@@ -20,104 +20,102 @@ use MooseX::StrictConstructor;
 
 with 'Fey::Role::ColumnLike';
 
-with 'Fey::Role::MakesAliasObjects' =>
-    { self_param  => 'column',
-      alias_class => 'Fey::Column::Alias',
-    };
+with 'Fey::Role::MakesAliasObjects' => {
+    self_param  => 'column',
+    alias_class => 'Fey::Column::Alias',
+};
 
-has 'id' =>
-    ( is         => 'ro',
-      lazy_build => 1,
-      init_arg   => undef,
-      clearer    => '_clear_id',
-    );
+has 'id' => (
+    is         => 'ro',
+    lazy_build => 1,
+    init_arg   => undef,
+    clearer    => '_clear_id',
+);
 
-has 'name' =>
-    ( is       => 'ro',
-      isa      => 'Str',
-      required => 1,
-    );
+has 'name' => (
+    is       => 'ro',
+    isa      => 'Str',
+    required => 1,
+);
 
-has 'generic_type' =>
-    ( is         => 'ro',
-      isa        => 'Fey::Types::GenericTypeName',
-      lazy_build => 1,
-    );
+has 'generic_type' => (
+    is         => 'ro',
+    isa        => 'Fey::Types::GenericTypeName',
+    lazy_build => 1,
+);
 
-has type =>
-    ( is       => 'ro',
-      isa      => 'Str',
-      required => 1,
-    );
+has type => (
+    is       => 'ro',
+    isa      => 'Str',
+    required => 1,
+);
 
-has length =>
-    ( is       => 'ro',
-      isa      => 'Fey::Types::PosInteger',
-      required => 0
-    );
+has length => (
+    is       => 'ro',
+    isa      => 'Fey::Types::PosInteger',
+    required => 0
+);
 
 # How to say that precision requires length as well?
-has precision =>
-    ( is       => 'ro',
-      isa      => 'Fey::Types::PosOrZeroInteger',
-      required => 0
-    );
+has precision => (
+    is       => 'ro',
+    isa      => 'Fey::Types::PosOrZeroInteger',
+    required => 0
+);
 
-has is_auto_increment =>
-    ( is      => 'ro',
-      isa     => 'Bool',
-      default => 0,
-    );
+has is_auto_increment => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 0,
+);
 
-has is_nullable =>
-    ( is      => 'ro',
-      isa     => 'Bool',
-      default => 0,
-    );
+has is_nullable => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 0,
+);
 
-has default =>
-    ( is     => 'ro',
-      isa    => 'Fey::Types::DefaultValue',
-      coerce => 1,
-    );
+has default => (
+    is     => 'ro',
+    isa    => 'Fey::Types::DefaultValue',
+    coerce => 1,
+);
 
-has 'table' =>
-    ( is        => 'rw',
-      does      =>  'Fey::Role::TableLike',
-      weak_ref  => 1,
-      predicate => 'has_table',
-      writer    => '_set_table',
-      clearer   => '_clear_table',
-    );
+has 'table' => (
+    is        => 'rw',
+    does      => 'Fey::Role::TableLike',
+    weak_ref  => 1,
+    predicate => 'has_table',
+    writer    => '_set_table',
+    clearer   => '_clear_table',
+);
 
-after '_set_table', '_clear_table' =>
-    sub { $_[0]->_clear_id() };
+after '_set_table', '_clear_table' => sub { $_[0]->_clear_id() };
 
 with 'Fey::Role::Named';
 
-
 {
-    my @TypesRe =
-        ( [ text     => qr/(?:text|char(?:acter)?)\b/xism ],
-          [ blob     => qr/blob\b|bytea\b/xism ],
-          # The year type comes from MySQL
-          [ integer  => qr/(?:int(?:eger)?\d*|year)\b/xism ],
-          [ float    => qr/(?:float\d*|decimal|real|double|money|numeric)\b/xism ],
-          # MySQL's timestamp is not always a datetime, it depends on
-          # the length of the column, but this is the best _guess_.
-          [ datetime => qr/datetime\b|^timestamp/xism ],
-          [ date     => qr/date\b/xism ],
-          [ time     => qr/^time|time\b/xism ],
-          [ boolean  => qr/\bbool/xism ],
-        );
+    my @TypesRe = (
+        [ text => qr/(?:text|char(?:acter)?)\b/xism ],
+        [ blob => qr/blob\b|bytea\b/xism ],
 
-    sub _build_generic_type
-    {
+        # The year type comes from MySQL
+        [ integer => qr/(?:int(?:eger)?\d*|year)\b/xism ],
+        [ float => qr/(?:float\d*|decimal|real|double|money|numeric)\b/xism ],
+
+        # MySQL's timestamp is not always a datetime, it depends on
+        # the length of the column, but this is the best _guess_.
+        [ datetime => qr/datetime\b|^timestamp/xism ],
+        [ date     => qr/date\b/xism ],
+        [ time     => qr/^time|time\b/xism ],
+        [ boolean  => qr/\bbool/xism ],
+    );
+
+    sub _build_generic_type {
         my $self = shift;
         my $type = $self->type();
 
-        for my $p (@TypesRe)
-        {
+        for my $p (@TypesRe) {
             return $p->[0] if $type =~ /$p->[1]/;
         }
 
@@ -125,8 +123,7 @@ with 'Fey::Role::Named';
     }
 }
 
-sub _clone
-{
+sub _clone {
     my $self = shift;
 
     my %clone = %{$self};
@@ -136,31 +133,29 @@ sub _clone
 
 sub is_alias { return 0 }
 
-sub sql
-{
+sub sql {
     my $self = shift;
     my $dbh  = shift;
 
-    return
-        $dbh->quote_identifier( undef,
-                                $self->_containing_table_name_or_alias(),
-                                $self->name(),
-                              );
+    return $dbh->quote_identifier(
+        undef,
+        $self->_containing_table_name_or_alias(),
+        $self->name(),
+    );
 }
 
 sub sql_with_alias { goto &sql }
 
 sub sql_or_alias { goto &sql }
 
-sub _build_id
-{
+sub _build_id {
     my $self = shift;
 
     my $table = $self->table();
 
     object_state_error
         'The id attribute cannot be determined for a column object which has no table.'
-            unless $table;
+        unless $table;
 
     return $table->id() . q{.} . $self->name();
 }

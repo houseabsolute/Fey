@@ -4,9 +4,8 @@ use warnings;
 use Test::More tests => 12;
 use Fey::Literal;
 
-
 {
-    my $lit = Fey::Literal->new_from_scalar( 4.2 );
+    my $lit = Fey::Literal->new_from_scalar(4.2);
     isa_ok( $lit, 'Fey::Literal::Number' );
 
     $lit = Fey::Literal->new_from_scalar(4);
@@ -26,12 +25,12 @@ use Fey::Literal;
 }
 
 {
+
     package Num;
 
     use overload '0+' => sub { ${ $_[0] } };
 
-    sub new
-    {
+    sub new {
         my $num = $_[1];
         return bless \$num, __PACKAGE__;
     }
@@ -44,12 +43,12 @@ use Fey::Literal;
 }
 
 {
+
     package Str;
 
     use overload q{""} => sub { ${ $_[0] } };
 
-    sub new
-    {
+    sub new {
         my $str = $_[1];
         return bless \$str, __PACKAGE__;
     }
@@ -63,10 +62,14 @@ use Fey::Literal;
 
 {
     eval { Fey::Literal::Term->new( [] ) };
-    like( $@, qr/Validation failed/,
-          'Term rejects an non-blessed ref' );
+    like(
+        $@, qr/Validation failed/,
+        'Term rejects an non-blessed ref'
+    );
 
     eval { Fey::Literal::Term->new( bless {}, 'Foo' ) };
-    like( $@, qr/Validation failed/,
-          'Term rejects an blessed ref that is not overloaded and does not have a sql_or_alias_method' );
+    like(
+        $@, qr/Validation failed/,
+        'Term rejects an blessed ref that is not overloaded and does not have a sql_or_alias_method'
+    );
 }

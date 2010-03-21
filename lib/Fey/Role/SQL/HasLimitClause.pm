@@ -10,29 +10,28 @@ use Scalar::Util qw( blessed );
 use Moose::Role;
 use MooseX::Params::Validate qw( pos_validated_list );
 
-has '_limit' =>
-    ( is        => 'rw',
-      writer    => '_set_limit',
-      predicate => '_has_limit',
-    );
+has '_limit' => (
+    is        => 'rw',
+    writer    => '_set_limit',
+    predicate => '_has_limit',
+);
 
-has '_offset' =>
-    ( is        => 'rw',
-      writer    => '_set_offset',
-      predicate => '_has_offset',
-    );
+has '_offset' => (
+    is        => 'rw',
+    writer    => '_set_offset',
+    predicate => '_has_offset',
+);
 
-
-sub limit
-{
+sub limit {
     my $self = shift;
-    my ( $limit, $offset ) =
-        pos_validated_list( \@_,
-                            { isa      => 'Fey::Types::PosInteger|Undef' },
-                            { isa      => 'Fey::Types::PosOrZeroInteger',
-                              optional => 1,
-                            },
-                          );
+    my ( $limit, $offset ) = pos_validated_list(
+        \@_,
+        { isa => 'Fey::Types::PosInteger|Undef' },
+        {
+            isa      => 'Fey::Types::PosOrZeroInteger',
+            optional => 1,
+        },
+    );
 
     $self->_set_limit($limit)
         if defined $limit;
@@ -42,8 +41,7 @@ sub limit
     return $self;
 }
 
-sub limit_clause
-{
+sub limit_clause {
     my $self = shift;
 
     return unless $self->_has_limit() || $self->_has_offset();

@@ -7,26 +7,27 @@ plan skip_all => 'This test is only run for the module author'
     unless -d '.hg' || $ENV{IS_MAINTAINER};
 
 eval 'use Test::Pod::Coverage 1.04; use Pod::Coverage::Moose;';
-plan skip_all => 'Test::Pod::Coverage 1.04 and Pod::Coverage::Moose required for testing POD coverage'
+plan skip_all =>
+    'Test::Pod::Coverage 1.04 and Pod::Coverage::Moose required for testing POD coverage'
     if $@;
 
 my @mods = sort grep { include($_) } Test::Pod::Coverage::all_modules();
 
 plan tests => scalar @mods;
 
-
-for my $mod (@mods)
-{
+for my $mod (@mods) {
     my @trustme = qr/^BUILD(?:ARGS)?$/;
 
-    pod_coverage_ok( $mod, { coverage_class => 'Pod::Coverage::Moose',
-                             trustme => \@trustme,
-                           },
-                     "pod coverage for $mod" );
+    pod_coverage_ok(
+        $mod, {
+            coverage_class => 'Pod::Coverage::Moose',
+            trustme        => \@trustme,
+        },
+        "pod coverage for $mod"
+    );
 }
 
-sub include
-{
+sub include {
     my $mod = shift;
 
     return 0 if $mod =~ /::Fragment::/;

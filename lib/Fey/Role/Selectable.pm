@@ -7,8 +7,7 @@ our $VERSION = '0.34';
 
 use Moose::Role;
 
-
-sub is_selectable { 1 }
+sub is_selectable {1}
 
 no Moose::Role;
 

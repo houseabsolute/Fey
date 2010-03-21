@@ -14,22 +14,21 @@ use Fey::SQL::Fragment::Where::SubgroupEnd;
 
 use Moose::Role;
 
-has '_where' =>
-    ( traits   => [ 'Array' ],
-      is       => 'bare',
-      isa      => 'ArrayRef',
-      default  => sub { [] },
-      handles  => { _add_where_element  => 'push',
-                    _has_where_elements => 'count',
-                    _last_where_element => [ 'get', -1 ],
-                    _where              => 'elements',
-                  },
-      init_arg => undef,
-    );
+has '_where' => (
+    traits  => ['Array'],
+    is      => 'bare',
+    isa     => 'ArrayRef',
+    default => sub { [] },
+    handles => {
+        _add_where_element  => 'push',
+        _has_where_elements => 'count',
+        _last_where_element => [ 'get', -1 ],
+        _where              => 'elements',
+    },
+    init_arg => undef,
+);
 
-
-sub where
-{
+sub where {
     my $self = shift;
 
     $self->_condition( 'where', @_ );
@@ -38,33 +37,30 @@ sub where
 }
 
 # Just some sugar
-sub and
-{
+sub and {
     my $self = shift;
 
     return $self->where(@_);
 }
 
 {
-    my %dispatch = ( 'and' => '_and',
-                     'or'  => '_or',
-                     '('   => '_subgroup_start',
-                     ')'   => '_subgroup_end',
-                   );
-    sub _condition
-    {
+    my %dispatch = (
+        'and' => '_and',
+        'or'  => '_or',
+        '('   => '_subgroup_start',
+        ')'   => '_subgroup_end',
+    );
+
+    sub _condition {
         my $self = shift;
         my $key  = shift;
 
-        if ( @_ == 1 )
-        {
-            if ( my $meth = $dispatch{ lc $_[0] } )
-            {
+        if ( @_ == 1 ) {
+            if ( my $meth = $dispatch{ lc $_[0] } ) {
                 $self->$meth($key);
                 return;
             }
-            else
-            {
+            else {
                 param_error
                     qq|Cannot pass one argument to $key() unless it is one of "and", "or", "(", or ")".|;
             }
@@ -73,13 +69,15 @@ sub and
         $self->_add_and_if_needed($key);
 
         my $add_method = '_add_' . $key . '_element';
-        $self->$add_method
-            ( Fey::SQL::Fragment::Where::Comparison->new( $self->auto_placeholders(), @_ ) );
+        $self->$add_method(
+            Fey::SQL::Fragment::Where::Comparison->new(
+                $self->auto_placeholders(), @_
+            )
+        );
     }
 }
 
-sub _add_and_if_needed
-{
+sub _add_and_if_needed {
     my $self = shift;
     my $key  = shift;
 
@@ -88,7 +86,7 @@ sub _add_and_if_needed
     return unless $self->$has_method();
 
     my $last_method = '_last_' . $key . '_element';
-    my $last = $self->$last_method();
+    my $last        = $self->$last_method();
 
     return if $last->isa('Fey::SQL::Fragment::Where::Boolean');
     return if $last->isa('Fey::SQL::Fragment::Where::SubgroupStart');
@@ -96,58 +94,51 @@ sub _add_and_if_needed
     $self->_and($key);
 }
 
-sub _and
-{
+sub _and {
     my $self = shift;
     my $key  = shift;
 
     my $add_method = '_add_' . $key . '_element';
-    $self->$add_method
-        ( Fey::SQL::Fragment::Where::Boolean->new( comparison => 'AND' ) );
+    $self->$add_method(
+        Fey::SQL::Fragment::Where::Boolean->new( comparison => 'AND' ) );
 
     return $self;
 }
 
-sub _or
-{
+sub _or {
     my $self = shift;
     my $key  = shift;
 
     my $add_method = '_add_' . $key . '_element';
-    $self->$add_method
-        ( Fey::SQL::Fragment::Where::Boolean->new( comparison => 'OR' ) );
+    $self->$add_method(
+        Fey::SQL::Fragment::Where::Boolean->new( comparison => 'OR' ) );
 
     return $self;
 }
 
-sub _subgroup_start
-{
+sub _subgroup_start {
     my $self = shift;
     my $key  = shift;
 
     $self->_add_and_if_needed($key);
 
     my $add_method = '_add_' . $key . '_element';
-    $self->$add_method
-        ( Fey::SQL::Fragment::Where::SubgroupStart->new() );
+    $self->$add_method( Fey::SQL::Fragment::Where::SubgroupStart->new() );
 
     return $self;
 }
 
-sub _subgroup_end
-{
+sub _subgroup_end {
     my $self = shift;
     my $key  = shift;
 
     my $add_method = '_add_' . $key . '_element';
-    $self->$add_method
-        ( Fey::SQL::Fragment::Where::SubgroupEnd->new() );
+    $self->$add_method( Fey::SQL::Fragment::Where::SubgroupEnd->new() );
 
     return $self;
 }
 
-sub where_clause
-{
+sub where_clause {
     my $self       = shift;
     my $dbh        = shift;
     my $skip_where = shift;
@@ -158,23 +149,22 @@ sub where_clause
     $sql = 'WHERE '
         unless $skip_where;
 
-    return ( $sql
-             . ( join ' ',
-                 map { $_->sql($dbh) }
-                 $self->_where()
-               )
-           );
+    return (
+        $sql
+            . (
+            join ' ',
+            map { $_->sql($dbh) } $self->_where()
+            )
+    );
 }
 
-sub bind_params
-{
+sub bind_params {
     my $self = shift;
 
-    return
-        ( map { $_->bind_params() }
-          grep { $_->can('bind_params') }
-          $self->_where()
-        );
+    return (
+        map  { $_->bind_params() }
+        grep { $_->can('bind_params') } $self->_where()
+    );
 }
 
 no Moose::Role;

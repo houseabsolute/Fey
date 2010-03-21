@@ -17,90 +17,85 @@ use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 use Moose::Util::TypeConstraints;
 
-has 'id' =>
-    ( is         => 'ro',
-      lazy_build => 1,
-      init_arg   => undef,
-    );
+has 'id' => (
+    is         => 'ro',
+    lazy_build => 1,
+    init_arg   => undef,
+);
 
-has [ qw( source_columns target_columns ) ] =>
-    ( is       => 'ro',
-      isa      => 'Fey::Types::ArrayRefOfColumns',
-      required => 1,
-      coerce   => 1,
-    );
+has [qw( source_columns target_columns )] => (
+    is       => 'ro',
+    isa      => 'Fey::Types::ArrayRefOfColumns',
+    required => 1,
+    coerce   => 1,
+);
 
-has [ qw( source_table target_table ) ] =>
-    ( is         => 'ro',
-      does       => 'Fey::Role::TableLike',
-      lazy_build => 1,
-      init_arg   => undef,
-    );
+has [qw( source_table target_table )] => (
+    is         => 'ro',
+    does       => 'Fey::Role::TableLike',
+    lazy_build => 1,
+    init_arg   => undef,
+);
 
-has column_pairs =>
-    ( is         => 'ro',
-      # really, the inner array refs must always contain 2 columns,
-      # but we don't have structured constraints quite yet.
-      isa        => 'ArrayRef[ArrayRef[Fey::Column]]',
-      lazy_build => 1,
-      init_arg   => undef,
-    );
+has column_pairs => (
+    is => 'ro',
 
-has is_self_referential =>
-    ( is         => 'ro',
-      isa        => 'Bool',
-      lazy_build => 1,
-      init_arg   => 1,
-    );
+    # really, the inner array refs must always contain 2 columns,
+    # but we don't have structured constraints quite yet.
+    isa        => 'ArrayRef[ArrayRef[Fey::Column]]',
+    lazy_build => 1,
+    init_arg   => undef,
+);
 
+has is_self_referential => (
+    is         => 'ro',
+    isa        => 'Bool',
+    lazy_build => 1,
+    init_arg   => 1,
+);
 
-sub BUILD
-{
+sub BUILD {
     my $self = shift;
     my $p    = shift;
 
     my @source = @{ $self->source_columns() };
     my @target = @{ $self->target_columns() };
 
-    unless ( @source == @target )
-    {
+    unless ( @source == @target ) {
+        param_error(
+                  "The source and target arrays passed to add_foreign_key()"
+                . " must contain the same number of columns." );
+    }
+
+    if ( grep { !$_->table() } @source, @target ) {
         param_error
-            ( "The source and target arrays passed to add_foreign_key()"
-              . " must contain the same number of columns." );
+            "All columns passed to add_foreign_key() must have a table.";
     }
 
-    if ( grep { ! $_->table() } @source, @target )
-    {
-        param_error "All columns passed to add_foreign_key() must have a table.";
-    }
-
-    for my $p ( [ source => \@source ], [ target => \@target ]  )
-    {
+    for my $p ( [ source => \@source ], [ target => \@target ] ) {
         my ( $name, $array ) = @{$p};
-        if ( uniq( map { $_->table() } @{$array} ) > 1 )
-        {
-            param_error
-                ( "Each column in the $name argument to add_foreign_key()"
-                  . " must come from the same table." );
+        if ( uniq( map { $_->table() } @{$array} ) > 1 ) {
+            param_error(
+                      "Each column in the $name argument to add_foreign_key()"
+                    . " must come from the same table." );
         }
     }
 
-    return
+    return;
 }
 
-sub _build_id
-{
+sub _build_id {
     my $self = shift;
 
     return join "\0",
-        ( sort
-          map { $_->table()->name() . q{.} . $_->name() }
-          @{ $self->source_columns() }, @{ $self->target_columns() }
+        (
+        sort
+            map { $_->table()->name() . q{.} . $_->name() }
+            @{ $self->source_columns() }, @{ $self->target_columns() }
         );
 }
 
-sub _build_column_pairs
-{
+sub _build_column_pairs {
     my $self = shift;
 
     my @s = @{ $self->source_columns() };
@@ -109,54 +104,48 @@ sub _build_column_pairs
     return [ pairwise { [ $a, $b ] } @s, @t ];
 }
 
-sub _build_source_table
-{
+sub _build_source_table {
     my $self = shift;
 
     return $self->source_columns()->[0]->table();
 }
 
-sub _build_target_table
-{
+sub _build_target_table {
     my $self = shift;
 
     return $self->target_columns()->[0]->table();
 }
 
-sub has_tables
-{
+sub has_tables {
     my $self = shift;
 
-    my ( $table1, $table2 ) =
-        pos_validated_list( \@_,
-                            { isa => 'Fey::Types::TableOrName' },
-                            { isa => 'Fey::Types::TableOrName' },
-                          );
+    my ( $table1, $table2 ) = pos_validated_list(
+        \@_,
+        { isa => 'Fey::Types::TableOrName' },
+        { isa => 'Fey::Types::TableOrName' },
+    );
 
     my $name1 = blessed $table1 ? $table1->name() : $table1;
     my $name2 = blessed $table2 ? $table2->name() : $table2;
 
     my @looking_for = sort $name1, $name2;
-    my @have =
-        sort map { $_->name() } $self->source_table(), $self->target_table();
+    my @have
+        = sort map { $_->name() } $self->source_table(),
+        $self->target_table();
 
-    return (    $looking_for[0] eq $have[0]
-             && $looking_for[1] eq $have[1] );
+    return ( $looking_for[0] eq $have[0] && $looking_for[1] eq $have[1] );
 }
 
-sub has_column
-{
-    my $self  = shift;
+sub has_column {
+    my $self = shift;
     my ($col) = pos_validated_list( \@_, { isa => 'Fey::Column' } );
 
     my $table_name = $col->table()->name();
 
     my @cols;
-    for my $part ( qw( source target ) )
-    {
+    for my $part (qw( source target )) {
         my $table_meth = $part . '_table';
-        if ( $self->$table_meth()->name() eq $table_name )
-        {
+        if ( $self->$table_meth()->name() eq $table_name ) {
             my $col_meth = $part . '_columns';
             @cols = @{ $self->$col_meth() };
         }
@@ -171,42 +160,46 @@ sub has_column
     return 0;
 }
 
-sub _build_is_self_referential
-{
+sub _build_is_self_referential {
     my $self = shift;
 
     return $self->source_table()->name() eq $self->target_table()->name();
 }
 
-sub pretty_print
-{
+sub pretty_print {
     my $self = shift;
 
     my @source_columns = @{ $self->source_columns() };
     my @target_columns = @{ $self->target_columns() };
 
-    my $longest =
-        max
-        map { length $_->name() }
-        $self->source_table(), $self->target_table(),
+    my $longest = max
+        map { length $_->name() } $self->source_table(),
+        $self->target_table(),
         @source_columns, @target_columns;
 
     $longest += 2;
 
-    my $string = sprintf( "\%-${longest}s  \%-${longest}s\n",
-                          $self->source_table()->name(),
-                          $self->target_table()->name(),
-                        );
+    my $string = sprintf(
+        "\%-${longest}s  \%-${longest}s\n",
+        $self->source_table()->name(),
+        $self->target_table()->name(),
+    );
     $string .= ('-') x $longest;
     $string .= q{  };
     $string .= ('-') x $longest;
     $string .= "\n";
 
-    $string .=
-        ( join '', pairwise { sprintf( "\%-${longest}s  \%-${longest}s\n",
-                                       $a->name(), $b->name() ) }
-          @source_columns, @target_columns
-        );
+    $string .= (
+        join '',
+        pairwise {
+            sprintf(
+                "\%-${longest}s  \%-${longest}s\n",
+                $a->name(), $b->name()
+            );
+        }
+        @source_columns,
+        @target_columns
+    );
 
     return $string;
 }

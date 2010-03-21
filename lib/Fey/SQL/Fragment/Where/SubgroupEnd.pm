@@ -9,8 +9,7 @@ use Moose;
 
 my $Paren = ')';
 
-sub sql
-{
+sub sql {
     return $Paren;
 }
 
