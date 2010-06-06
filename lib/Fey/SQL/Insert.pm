@@ -5,7 +5,7 @@ use warnings;
 
 our $VERSION = '0.34';
 
-use Fey::Types;
+use Fey::Types qw( CanQuote IntoElement NonNullableInsertValue NullableInsertValue );
 use overload ();
 use Scalar::Util qw( blessed );
 
@@ -50,7 +50,7 @@ sub into {
     my $count = @_ ? scalar @_ : 1;
     my @into = pos_validated_list(
         \@_,
-        ( ( { isa => 'Fey::Types::IntoElement' } ) x $count ),
+        ( ( { isa => IntoElement } ) x $count ),
         MX_PARAMS_VALIDATE_NO_CACHE => 1,
     );
 
@@ -67,8 +67,8 @@ sub into {
     for my $col ( @{ $self->_into() } ) {
         $spec{ $col->name() }
             = $col->is_nullable()
-            ? { isa => 'Fey::Types::NullableInsertValue' }
-            : { isa => 'Fey::Types::NonNullableInsertValue' };
+            ? { isa => NullableInsertValue }
+            : { isa => NonNullableInsertValue };
     }
 
     $self->_set_values_spec( \%spec );
@@ -115,7 +115,7 @@ sub values {
 
 sub sql {
     my $self = shift;
-    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey::Types::CanQuote' } );
+    my ($dbh) = pos_validated_list( \@_, { isa => CanQuote } );
 
     return (
         join ' ',

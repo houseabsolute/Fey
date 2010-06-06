@@ -9,59 +9,83 @@ use List::AllUtils qw( all );
 use overload ();
 use Scalar::Util qw( blessed );
 
+use MooseX::Types -declare => [qw(
+    ArrayRefOfColumns
+    ArrayRefOfFunctionArgs
+    CanQuote
+    Column
+    ColumnLikeOrName
+    ColumnOrName
+    ColumnWithTable
+    DefaultValue
+    FunctionArg
+    GenericTypeName
+    GroupByElement
+    IntoElement
+    LiteralTermArg
+    NamedObjectSet
+    NonNullableInsertValue
+    NonNullableUpdateValue
+    NullableInsertValue
+    NullableUpdateValue
+    OrderByElement
+    OuterJoinType
+    PosInteger
+    PosOrZeroInteger
+    SelectElement
+    SetOperationArg
+    TableLikeOrName
+    TableOrName
+    WhereBoolean
+    WhereClauseSide
+)];
+
+use MooseX::Types::Moose
+    qw( ArrayRef Defined Int Item Object Str Undef Value );
+
 use Moose::Util::TypeConstraints;
 
-subtype 'Fey::Types::GenericTypeName' => as 'Str' => where {
+subtype GenericTypeName, as Str, where {
     /^(?:text|blob|integer|float|date|datetime|time|boolean|other)$/xism
 };
 
-subtype 'Fey::Types::PosInteger' => as 'Int' => where { $_ > 0 };
+subtype PosInteger, as Int, where { $_ > 0 };
 
-subtype 'Fey::Types::PosOrZeroInteger' => as 'Int' => where { $_ >= 0 };
+subtype PosOrZeroInteger, as Int, where { $_ >= 0 };
 
-subtype 'Fey::Types::DefaultValue' => as role_type('Fey::Role::IsLiteral');
+role_type DefaultValue, { role => 'Fey::Role::IsLiteral' };
 
-coerce 'Fey::Types::DefaultValue' => from 'Undef' =>
-    via { Fey::Literal::Null->new() } => from 'Value' =>
-    via { Fey::Literal->new_from_scalar($_) };
+coerce DefaultValue,
+    from Undef, via { Fey::Literal::Null->new() },
+    from Value, via { Fey::Literal->new_from_scalar($_) };
 
-subtype 'Fey::Types::ArrayRefOfNamedObjectSets' => as 'ArrayRef' => where {
-    return 1 unless @{$_};
-    all { blessed $_ && $_->isa('Fey::NamedObjectSet') } @{$_};
+class_type NamedObjectSet, { class => 'Fey::NamedObjectSet' };
+
+class_type Column, { class => 'Fey::Column' };
+
+subtype ArrayRefOfColumns, as ArrayRef[Column], where {
+    @{$_} >= 1
 };
 
-subtype 'Fey::Types::ArrayRefOfColumns' => as 'ArrayRef' => where {
-    @{$_} >= 1 && all { $_ && $_->isa('Fey::Column') } @{$_};
-};
-
-class_type('Fey::Column')
-    unless find_type_constraint('Fey::Column');
+coerce ArrayRefOfColumns, from Column, via { [$_] };
 
 role_type('Fey::Role::Named')
     unless find_type_constraint('Fey::Role::Named');
 
-coerce 'Fey::Types::ArrayRefOfColumns' => from 'Fey::Column' => via { [$_] };
-
-subtype 'Fey::Types::FunctionArg' => as 'Object' =>
+subtype FunctionArg, as Object,
     where { $_->can('does') && $_->does('Fey::Role::Selectable') };
 
-coerce 'Fey::Types::FunctionArg' => from 'Undef' =>
-    via { Fey::Literal::Null->new() } => from 'Value' =>
-    via { Fey::Literal->new_from_scalar($_) };
+coerce FunctionArg,
+    from Undef, via { Fey::Literal::Null->new() },
+    from Value, via { Fey::Literal->new_from_scalar($_) };
 
-{
-    my $constraint = find_type_constraint('Fey::Types::FunctionArg');
-    subtype 'Fey::Types::ArrayRefOfFunctionArgs' => as 'ArrayRef' => where {
-        return 1 unless @{$_};
-        all { $constraint->check($_) } @{$_};
-    };
+subtype ArrayRefOfFunctionArgs, as ArrayRef[FunctionArg];
 
-    coerce 'Fey::Types::ArrayRefOfFunctionArgs' => from 'ArrayRef' => via {
-        [ map { $constraint->coerce($_) } @{$_} ];
-    };
-}
+coerce ArrayRefOfFunctionArgs, from ArrayRef, via {
+    [ map { FunctionArg->coerce($_) } @{$_} ];
+};
 
-subtype 'Fey::Types::LiteralTermArg' => as 'ArrayRef' => where {
+subtype LiteralTermArg, as ArrayRef, where {
     return unless $_ and @{$_};
     all {
         blessed($_)
@@ -71,18 +95,19 @@ subtype 'Fey::Types::LiteralTermArg' => as 'ArrayRef' => where {
     @{$_};
 };
 
-coerce 'Fey::Types::LiteralTermArg' => from 'Value' => via { [$_] };
+coerce LiteralTermArg, from Value, via { [$_] };
 
-for my $thing (qw( Table Column )) {
-    my $class = 'Fey::' . $thing;
+for my $thing ( ['Table',  'Fey::Table',  TableOrName,  TableLikeOrName],
+                ['Column', 'Fey::Column', ColumnOrName, ColumnLikeOrName] ) {
+    my ($thing, $class, $name_type, $like_type) = @$thing;
 
-    subtype 'Fey::Types::' . $thing . 'OrName' => as 'Item' => where {
+    subtype $name_type, as Item, where {
         return   unless defined $_;
         return 1 unless blessed $_;
         return $_->isa($class);
     };
 
-    subtype 'Fey::Types::' . $thing . 'LikeOrName' => as 'Item' => where {
+    subtype $like_type, as Item, where {
         return   unless defined $_;
         return 1 unless blessed $_;
         return   unless $_->can('does');
@@ -90,10 +115,9 @@ for my $thing (qw( Table Column )) {
     };
 }
 
-subtype 'Fey::Types::SetOperationArg' =>
-    as role_type('Fey::Role::SQL::ReturnsData');
+role_type SetOperationArg, { role => 'Fey::Role::SQL::ReturnsData' };
 
-subtype 'Fey::Types::SelectElement' => as 'Item' => where {
+subtype SelectElement, as Item, where {
            !blessed $_[0]
         || $_[0]->isa('Fey::Table')
         || $_[0]->isa('Fey::Table::Alias')
@@ -101,27 +125,25 @@ subtype 'Fey::Types::SelectElement' => as 'Item' => where {
         && $_[0]->is_selectable() );
 };
 
-subtype 'Fey::Types::ColumnWithTable' => as 'Object' => where {
-    $_[0]->isa('Fey::Column')
-        && $_[0]->has_table();
+subtype ColumnWithTable, as Column, where {
+    $_[0]->has_table();
 };
 
-subtype 'Fey::Types::IntoElement'
-    => as 'Object', => where {
+subtype IntoElement, as Object, where {
     return $_->isa('Fey::Table')
         || ( $_->isa('Fey::Column')
         && $_->table()
         && !$_->table()->is_alias() );
     };
 
-subtype 'Fey::Types::NullableInsertValue' => as 'Item' => where {
+subtype NullableInsertValue, as Item, where {
            !blessed $_
         || ( $_->can('does') && $_->does('Fey::Role::IsLiteral') )
         || $_->isa('Fey::Placeholder')
         || overload::Overloaded($_);
 };
 
-subtype 'Fey::Types::NonNullableInsertValue' => as 'Defined' => where {
+subtype NonNullableInsertValue, as Defined, where {
     !blessed $_
         || ( $_->can('does')
         && $_->does('Fey::Role::IsLiteral')
@@ -130,7 +152,7 @@ subtype 'Fey::Types::NonNullableInsertValue' => as 'Defined' => where {
         || overload::Overloaded($_);
 };
 
-subtype 'Fey::Types::NullableUpdateValue' => as 'Item' => where {
+subtype NullableUpdateValue, as Item, where {
            !blessed $_
         || $_->isa('Fey::Column')
         || ( $_->can('does') && $_->does('Fey::Role::IsLiteral') )
@@ -138,7 +160,7 @@ subtype 'Fey::Types::NullableUpdateValue' => as 'Item' => where {
         || overload::Overloaded($_);
 };
 
-subtype 'Fey::Types::NonNullableUpdateValue' => as 'Defined' => where {
+subtype NonNullableUpdateValue, as Defined, where {
     !blessed $_
         || $_->isa('Fey::Column')
         || ( $_->can('does')
@@ -148,7 +170,7 @@ subtype 'Fey::Types::NonNullableUpdateValue' => as 'Defined' => where {
         || overload::Overloaded($_);
 };
 
-subtype 'Fey::Types::OrderByElement' => as 'Item' => where {
+subtype OrderByElement, as Item, where {
     if ( !blessed $_ ) {
         return $_ =~ /^(?:asc|desc)(?: nulls (?:last|first))?$/i;
     }
@@ -158,22 +180,21 @@ subtype 'Fey::Types::OrderByElement' => as 'Item' => where {
             && $_->is_orderable();
 };
 
-subtype 'Fey::Types::GroupByElement' => as 'Object' => where {
+subtype GroupByElement, as Object, where {
     return 1
         if $_->can('is_groupable')
             && $_->is_groupable();
 };
 
-subtype 'Fey::Types::OuterJoinType'
-    => as 'Str', => where { return $_ =~ /^(?:full|left|right)$/ };
+subtype OuterJoinType, as Str, where { return $_ =~ /^(?:full|left|right)$/ };
 
-subtype 'Fey::Types::CanQuote' => as 'Item' =>
+subtype CanQuote, as Item,
     where { return $_->isa('DBI::db') || $_->can('quote') };
 
-subtype 'Fey::Types::WhereBoolean' => as 'Str' =>
+subtype WhereBoolean, as Str,
     where { return $_ =~ /^(?:AND|OR)$/ };
 
-subtype 'Fey::Types::WhereClauseSide' => as 'Item' => where {
+subtype WhereClauseSide, as Item, where {
     return 1 if !defined $_;
     return 0 if ref $_ && !blessed $_;
     return 1 unless blessed $_;

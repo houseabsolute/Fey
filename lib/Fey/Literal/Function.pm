@@ -5,7 +5,7 @@ use warnings;
 
 our $VERSION = '0.34';
 
-use Fey::Types;
+use Fey::Types qw( ArrayRefOfFunctionArgs );
 use Scalar::Util qw( blessed );
 
 use Moose;
@@ -28,7 +28,7 @@ has 'function' => (
 
 has 'args' => (
     is      => 'ro',
-    isa     => 'Fey::Types::ArrayRefOfFunctionArgs',
+    isa     => ArrayRefOfFunctionArgs,
     default => sub { [] },
     coerce  => 1,
 );

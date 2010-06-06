@@ -9,7 +9,7 @@ use Fey::Exceptions qw( param_error );
 use Fey::NamedObjectSet;
 use Fey::SQL;
 use Fey::Table;
-use Fey::Types;
+use Fey::Types qw( TableLikeOrName TableOrName  );
 use Scalar::Util qw( blessed );
 
 use Moose 0.90;
@@ -59,7 +59,7 @@ sub add_table {
 sub remove_table {
     my $self = shift;
     my ($table)
-        = pos_validated_list( \@_, { isa => 'Fey::Types::TableOrName' } );
+        = pos_validated_list( \@_, { isa => TableOrName } );
 
     $table = $self->table($table)
         unless blessed $table;
@@ -118,7 +118,7 @@ sub remove_foreign_key {
 sub foreign_keys_for_table {
     my $self = shift;
     my ($table)
-        = pos_validated_list( \@_, { isa => 'Fey::Types::TableOrName' } );
+        = pos_validated_list( \@_, { isa => TableOrName } );
 
     my $name = blessed $table ? $table->name() : $table;
 
@@ -135,8 +135,8 @@ sub foreign_keys_between_tables {
     my $self = shift;
     my ( $table1, $table2 ) = pos_validated_list(
         \@_,
-        { isa => 'Fey::Types::TableLikeOrName' },
-        { isa => 'Fey::Types::TableLikeOrName' }
+        { isa => TableLikeOrName },
+        { isa => TableLikeOrName }
     );
 
     my $name1

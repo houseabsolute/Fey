@@ -5,7 +5,7 @@ use warnings;
 
 our $VERSION = '0.34';
 
-use Fey::Types;
+use Fey::Types qw( OrderByElement );
 use Scalar::Util qw( blessed );
 
 use Moose::Role;
@@ -30,7 +30,7 @@ sub order_by {
     my $count = @_ ? @_ : 1;
     my (@by) = pos_validated_list(
         \@_,
-        ( ( { isa => 'Fey::Types::OrderByElement' } ) x $count ),
+        ( ( { isa => OrderByElement } ) x $count ),
         MX_PARAMS_VALIDATE_NO_CACHE => 1,
     );
 

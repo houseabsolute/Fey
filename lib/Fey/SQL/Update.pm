@@ -7,7 +7,7 @@ our $VERSION = '0.34';
 
 use Fey::Exceptions qw( param_error );
 use Fey::Literal;
-use Fey::Types;
+use Fey::Types qw( CanQuote ColumnWithTable NonNullableUpdateValue NullableUpdateValue );
 use overload ();
 use Scalar::Util qw( blessed );
 
@@ -75,11 +75,11 @@ sub set {
 
     my @spec;
     for ( my $x = 0; $x < @_; $x += 2 ) {
-        push @spec, { isa => 'Fey::Types::ColumnWithTable' };
+        push @spec, { isa => ColumnWithTable };
         push @spec,
             blessed $_[$x] && $_[$x]->is_nullable()
-            ? { isa => 'Fey::Types::NullableUpdateValue' }
-            : { isa => 'Fey::Types::NonNullableUpdateValue' };
+            ? { isa => NullableUpdateValue }
+            : { isa => NonNullableUpdateValue };
     }
 
     my @set
@@ -110,7 +110,7 @@ sub set {
 
 sub sql {
     my $self = shift;
-    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey::Types::CanQuote' } );
+    my ($dbh) = pos_validated_list( \@_, { isa => CanQuote } );
 
     return (
         join ' ',

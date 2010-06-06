@@ -12,7 +12,12 @@ use Fey::Exceptions qw( param_error object_state_error );
 use Fey::Literal;
 use Fey::Table;
 use Fey::Table::Alias;
-use Fey::Types;
+use Fey::Types qw(
+    DefaultValue
+    GenericTypeName
+    PosInteger
+    PosOrZeroInteger
+);
 
 use Moose;
 use MooseX::SemiAffordanceAccessor;
@@ -40,7 +45,7 @@ has 'name' => (
 
 has 'generic_type' => (
     is         => 'ro',
-    isa        => 'Fey::Types::GenericTypeName',
+    isa        => GenericTypeName,
     lazy_build => 1,
 );
 
@@ -52,14 +57,14 @@ has type => (
 
 has length => (
     is       => 'ro',
-    isa      => 'Fey::Types::PosInteger',
+    isa      => PosInteger,
     required => 0
 );
 
 # How to say that precision requires length as well?
 has precision => (
     is       => 'ro',
-    isa      => 'Fey::Types::PosOrZeroInteger',
+    isa      => PosOrZeroInteger,
     required => 0
 );
 
@@ -77,7 +82,7 @@ has is_nullable => (
 
 has default => (
     is     => 'ro',
-    isa    => 'Fey::Types::DefaultValue',
+    isa    => DefaultValue,
     coerce => 1,
 );
 

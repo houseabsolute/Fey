@@ -8,14 +8,15 @@ our $VERSION = '0.34';
 use Fey::Exceptions qw( param_error );
 use Fey::Literal;
 use Fey::Placeholder;
-use Fey::Types;
+use Fey::Types qw( WhereClauseSide );
 use Scalar::Util qw( blessed );
 
 use Moose;
+use MooseX::Types::Moose qw( ArrayRef );
 
 has '_lhs' => (
     is       => 'ro',
-    isa      => 'Fey::Types::WhereClauseSide',
+    isa      => WhereClauseSide,
     required => 1,
 );
 
@@ -27,7 +28,7 @@ has '_operator' => (
 
 has '_rhs' => (
     is       => 'ro',
-    isa      => 'ArrayRef[Fey::Types::WhereClauseSide]',
+    isa      => ArrayRef[WhereClauseSide],
     required => 1,
 );
 
@@ -136,7 +137,7 @@ sub sql {
 
     if ( $self->_operator() =~ /$in_comp_re/ ) {
         return (
-                  $sql . ' ' 
+                  $sql . ' '
                 . ( uc $self->_operator() ) . ' ('
                 . (
                 join ', ',

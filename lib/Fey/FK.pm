@@ -7,7 +7,7 @@ our $VERSION = '0.34';
 
 use Fey::Column;
 use Fey::Exceptions qw(param_error);
-use Fey::Types;
+use Fey::Types qw( ArrayRefOfColumns TableOrName );
 use List::AllUtils qw( max uniq all pairwise );
 use Scalar::Util qw( blessed );
 
@@ -25,7 +25,7 @@ has 'id' => (
 
 has [qw( source_columns target_columns )] => (
     is       => 'ro',
-    isa      => 'Fey::Types::ArrayRefOfColumns',
+    isa      => ArrayRefOfColumns,
     required => 1,
     coerce   => 1,
 );
@@ -121,8 +121,8 @@ sub has_tables {
 
     my ( $table1, $table2 ) = pos_validated_list(
         \@_,
-        { isa => 'Fey::Types::TableOrName' },
-        { isa => 'Fey::Types::TableOrName' },
+        { isa => TableOrName },
+        { isa => TableOrName },
     );
 
     my $name1 = blessed $table1 ? $table1->name() : $table1;

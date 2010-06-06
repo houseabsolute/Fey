@@ -5,7 +5,7 @@ use warnings;
 
 our $VERSION = '0.34';
 
-use Fey::Types;
+use Fey::Types qw( LiteralTermArg );
 
 use Carp qw( croak );
 use Moose;
@@ -18,7 +18,7 @@ with 'Fey::Role::Comparable', 'Fey::Role::Selectable',
 
 has 'term' => (
     is       => 'ro',
-    isa      => 'Fey::Types::LiteralTermArg',
+    isa      => LiteralTermArg,
     required => 1,
     coerce   => 1,
 );

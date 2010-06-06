@@ -10,7 +10,7 @@ use Fey::Exceptions qw( param_error );
 use Fey::NamedObjectSet;
 use Fey::Schema;
 use Fey::Table::Alias;
-use Fey::Types;
+use Fey::Types qw( ColumnOrName NamedObjectSet );
 use List::AllUtils qw( any all first_index );
 use Scalar::Util qw( blessed weaken );
 
@@ -18,6 +18,7 @@ use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( ArrayRef );
 use Moose::Util::TypeConstraints;
 
 with 'Fey::Role::TableLike';
@@ -48,7 +49,7 @@ has 'is_view' => (
 has '_keys' => (
     traits  => ['Array'],
     is      => 'bare',
-    isa     => 'Fey::Types::ArrayRefOfNamedObjectSets',
+    isa     => ArrayRef[NamedObjectSet],
     default => sub { [] },
     handles => {
         _keys       => 'elements',
@@ -130,7 +131,7 @@ sub add_column {
 sub remove_column {
     my $self = shift;
     my ($col)
-        = pos_validated_list( \@_, { isa => 'Fey::Types::ColumnOrName' } );
+        = pos_validated_list( \@_, { isa => ColumnOrName } );
 
     $col = $self->column($col)
         unless blessed $col;
@@ -176,7 +177,7 @@ sub add_candidate_key {
     my $count = @_ ? @_ : 1;
     my (@cols) = pos_validated_list(
         \@_,
-        ( ( { isa => 'Fey::Types::ColumnOrName' } ) x $count ),
+        ( ( { isa => ColumnOrName } ) x $count ),
         MX_PARAMS_VALIDATE_NO_CACHE => 1,
     );
 
@@ -202,7 +203,7 @@ sub remove_candidate_key {
     my $count = @_ ? @_ : 1;
     my (@cols) = pos_validated_list(
         \@_,
-        ( ( { isa => 'Fey::Types::ColumnOrName' } ) x $count ),
+        ( ( { isa => ColumnOrName } ) x $count ),
         MX_PARAMS_VALIDATE_NO_CACHE => 1,
     );
 
@@ -231,7 +232,7 @@ sub has_candidate_key {
     my $count = @_ ? @_ : 1;
     my (@cols) = pos_validated_list(
         \@_,
-        ( ( { isa => 'Fey::Types::ColumnOrName' } ) x $count ),
+        ( ( { isa => ColumnOrName } ) x $count ),
         MX_PARAMS_VALIDATE_NO_CACHE => 1,
     );
 

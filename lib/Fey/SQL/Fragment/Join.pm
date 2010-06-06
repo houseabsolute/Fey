@@ -6,7 +6,7 @@ use warnings;
 our $VERSION = '0.34';
 
 use Fey::FakeDBI;
-use Fey::Types;
+use Fey::Types qw( OuterJoinType );
 use List::AllUtils qw( pairwise );
 
 use Moose;
@@ -33,7 +33,7 @@ has '_fk' => (
 
 has '_outer_type' => (
     is        => 'ro',
-    isa       => 'Fey::Types::OuterJoinType',
+    isa       => Fey::Types::OuterJoinType,
     predicate => '_has_outer_type',
     init_arg  => 'outer_type',
 );

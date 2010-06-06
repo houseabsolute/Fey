@@ -7,8 +7,11 @@ our $VERSION = '0.34';
 
 use Scalar::Util qw( blessed );
 
+use Fey::Types qw( PosInteger PosOrZeroInteger );
+
 use Moose::Role;
 use MooseX::Params::Validate qw( pos_validated_list );
+use MooseX::Types::Moose qw( Undef );
 
 has '_limit' => (
     is        => 'rw',
@@ -26,9 +29,9 @@ sub limit {
     my $self = shift;
     my ( $limit, $offset ) = pos_validated_list(
         \@_,
-        { isa => 'Fey::Types::PosInteger|Undef' },
+        { isa => (PosInteger | Undef) },
         {
-            isa      => 'Fey::Types::PosOrZeroInteger',
+            isa      => PosOrZeroInteger,
             optional => 1,
         },
     );

@@ -5,13 +5,13 @@ use warnings;
 
 our $VERSION = '0.34';
 
-use Fey::Types;
+use Fey::Types qw( WhereBoolean );
 
 use Moose;
 
 has 'comparison' => (
     is       => 'ro',
-    isa      => 'Fey::Types::WhereBoolean',
+    isa      => WhereBoolean,
     required => 1,
 );
 

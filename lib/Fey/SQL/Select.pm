@@ -9,7 +9,7 @@ use Fey::Exceptions qw( param_error );
 use Fey::Literal;
 use Fey::Role::ColumnLike;
 use Fey::SQL::Fragment::Join;
-use Fey::Types;
+use Fey::Types qw( CanQuote GroupByElement SelectElement );
 use List::AllUtils qw( all );
 use Scalar::Util qw( blessed );
 
@@ -110,7 +110,7 @@ sub select {
     my $count = @_ ? @_ : 1;
     my (@select) = pos_validated_list(
         \@_,
-        ( ( { isa => 'Fey::Types::SelectElement' } ) x $count ),
+        ( ( { isa => SelectElement } ) x $count ),
         MX_PARAMS_VALIDATE_NO_CACHE => 1,
     );
 
@@ -332,7 +332,7 @@ sub group_by {
     my $count = @_ ? @_ : 1;
     my (@by) = pos_validated_list(
         \@_,
-        ( ( { isa => 'Fey::Types::GroupByElement' } ) x $count ),
+        ( ( { isa => GroupByElement } ) x $count ),
         MX_PARAMS_VALIDATE_NO_CACHE => 1,
     );
 
@@ -355,7 +355,7 @@ sub id {
 
 sub sql {
     my $self = shift;
-    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey::Types::CanQuote' } );
+    my ($dbh) = pos_validated_list( \@_, { isa => CanQuote } );
 
     return (
         join q{ },

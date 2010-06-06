@@ -5,10 +5,11 @@ use warnings;
 
 our $VERSION = '0.34';
 
-use Fey::Types;
+use Fey::Types qw( SetOperationArg );
 
 use MooseX::Role::Parameterized;
 use MooseX::Params::Validate qw( pos_validated_list );
+use MooseX::Types::Moose qw( ArrayRef );
 
 parameter keyword => (
     isa      => 'Str',
@@ -30,7 +31,7 @@ has 'is_all' => (
 has '_set_elements' => (
     traits  => ['Array'],
     is      => 'bare',
-    isa     => 'ArrayRef[Fey::Types::SetOperationArg]',
+    isa     => ArrayRef[SetOperationArg],
     default => sub { [] },
     handles => {
         _add_set_elements  => 'push',
@@ -95,7 +96,7 @@ role {
 
         my (@set) = pos_validated_list(
             \@_,
-            ( ( { isa => 'Fey::Types::SetOperationArg' } ) x $count ),
+            ( ( { isa => SetOperationArg } ) x $count ),
             MX_PARAMS_VALIDATE_NO_CACHE => 1,
         );
 

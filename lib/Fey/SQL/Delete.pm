@@ -5,7 +5,7 @@ use warnings;
 
 our $VERSION = '0.34';
 
-use Fey::Types;
+use Fey::Types qw( CanQuote );
 use Scalar::Util qw( blessed );
 
 use Moose;
@@ -47,7 +47,7 @@ sub from {
 
 sub sql {
     my $self = shift;
-    my ($dbh) = pos_validated_list( \@_, { isa => 'Fey::Types::CanQuote' } );
+    my ($dbh) = pos_validated_list( \@_, { isa => CanQuote } );
 
     return (
         join ' ',
