@@ -5,11 +5,10 @@ use warnings;
 
 our $VERSION = '0.34';
 
-use Fey::Types qw( SetOperationArg );
+use Fey::Types qw( ArrayRef Bool SetOperationArg Str );
 
 use MooseX::Role::Parameterized;
 use MooseX::Params::Validate qw( pos_validated_list );
-use MooseX::Types::Moose qw( ArrayRef Bool Str );
 
 parameter keyword => (
     isa      => Str,

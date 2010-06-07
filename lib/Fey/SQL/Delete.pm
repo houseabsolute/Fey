@@ -5,14 +5,13 @@ use warnings;
 
 our $VERSION = '0.34';
 
-use Fey::Types qw( CanQuote Table );
+use Fey::Types qw( ArrayRef CanQuote Table );
 use Scalar::Util qw( blessed );
 
 use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( ArrayRef );
 
 with 'Fey::Role::SQL::HasWhereClause',
     'Fey::Role::SQL::HasOrderByClause',

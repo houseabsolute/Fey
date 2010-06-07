@@ -7,7 +7,7 @@ our $VERSION = '0.34';
 
 use Fey::Column;
 use Fey::Exceptions qw(param_error);
-use Fey::Types qw( ArrayRefOfColumns Column TableOrName );
+use Fey::Types qw(  ArrayRef ArrayRefOfColumns Bool Column TableOrName );
 use List::AllUtils qw( max uniq all pairwise );
 use Scalar::Util qw( blessed );
 
@@ -15,7 +15,6 @@ use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( ArrayRef Bool );
 use Moose::Util::TypeConstraints;
 
 has 'id' => (

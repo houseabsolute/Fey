@@ -8,21 +8,22 @@ our $VERSION = '0.34';
 use Scalar::Util qw( blessed weaken );
 
 use Fey::Column::Alias;
-use Fey::Exceptions qw( param_error object_state_error );
+use Fey::Exceptions qw(  param_error object_state_error );
 use Fey::Literal;
 use Fey::Table;
 use Fey::Table::Alias;
 use Fey::Types qw(
+    Bool
     DefaultValue
     GenericTypeName
     PosInteger
     PosOrZeroInteger
+    Str
 );
 
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( Bool Str );
 
 with 'Fey::Role::ColumnLike';
 

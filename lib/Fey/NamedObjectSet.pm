@@ -7,10 +7,9 @@ our $VERSION = '0.34';
 
 use List::AllUtils qw( all pairwise );
 
-use Fey::Types qw( Named );
+use Fey::Types qw( HashRef Named );
 
 use Moose;
-use MooseX::Types::Moose qw( HashRef );
 
 has '_set' => (
     traits  => ['Hash'],

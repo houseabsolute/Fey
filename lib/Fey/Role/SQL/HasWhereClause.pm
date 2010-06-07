@@ -11,9 +11,9 @@ use Fey::SQL::Fragment::Where::Boolean;
 use Fey::SQL::Fragment::Where::Comparison;
 use Fey::SQL::Fragment::Where::SubgroupStart;
 use Fey::SQL::Fragment::Where::SubgroupEnd;
+use Fey::Types qw( ArrayRef );
 
 use Moose::Role;
-use MooseX::Types::Moose qw( ArrayRef );
 
 has '_where' => (
     traits  => ['Array'],

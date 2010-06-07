@@ -7,13 +7,12 @@ our $VERSION = '0.34';
 
 use Fey::Exceptions qw(param_error);
 use Fey::Table;
-use Fey::Types qw( Column Table );
+use Fey::Types qw( Column HashRef Str Table );
 
 use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( HashRef Str );
 
 with 'Fey::Role::TableLike';
 

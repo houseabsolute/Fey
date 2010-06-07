@@ -5,8 +5,9 @@ use warnings;
 
 our $VERSION = '0.34';
 
+use Fey::Types qw( Bool Str );
+
 use MooseX::Role::Parameterized;
-use MooseX::Types::Moose qw( Bool Str );
 
 parameter 'generated_alias_prefix' => (
     isa      => Str,

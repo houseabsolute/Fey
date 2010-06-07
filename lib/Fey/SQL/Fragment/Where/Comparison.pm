@@ -8,11 +8,10 @@ our $VERSION = '0.34';
 use Fey::Exceptions qw( param_error );
 use Fey::Literal;
 use Fey::Placeholder;
-use Fey::Types qw( WhereClauseSide );
+use Fey::Types qw( ArrayRef WhereClauseSide Str );
 use Scalar::Util qw( blessed );
 
 use Moose;
-use MooseX::Types::Moose qw( ArrayRef Str );
 
 has '_lhs' => (
     is       => 'ro',

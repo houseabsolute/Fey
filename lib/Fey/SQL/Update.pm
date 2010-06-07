@@ -8,7 +8,8 @@ our $VERSION = '0.34';
 use Fey::Exceptions qw( param_error );
 use Fey::Literal;
 use Fey::Types
-    qw( CanQuote ColumnWithTable NonNullableUpdateValue NullableUpdateValue Table );
+    qw( ArrayRef CanQuote ColumnWithTable NonNullableUpdateValue
+        NullableUpdateValue Table );
 use overload ();
 use Scalar::Util qw( blessed );
 
@@ -16,7 +17,6 @@ use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( ArrayRef );
 
 with 'Fey::Role::SQL::HasOrderByClause', 'Fey::Role::SQL::HasLimitClause';
 

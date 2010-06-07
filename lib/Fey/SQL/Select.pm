@@ -9,7 +9,8 @@ use Fey::Exceptions qw( param_error );
 use Fey::Literal;
 use Fey::Role::ColumnLike;
 use Fey::SQL::Fragment::Join;
-use Fey::Types qw( CanQuote GroupByElement SelectElement );
+use Fey::Types
+    qw( ArrayRef Bool HashRef CanQuote GroupByElement SelectElement );
 use List::AllUtils qw( all );
 use Scalar::Util qw( blessed );
 
@@ -17,7 +18,6 @@ use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( ArrayRef Bool HashRef );
 
 with 'Fey::Role::Comparable',
     'Fey::Role::Selectable',

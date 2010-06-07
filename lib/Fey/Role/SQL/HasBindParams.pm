@@ -5,8 +5,9 @@ use warnings;
 
 our $VERSION = '0.34';
 
+use Fey::Types qw( ArrayRef Bool );
+
 use Moose::Role;
-use MooseX::Types::Moose qw( ArrayRef Bool );
 
 has '_bind_params' => (
     traits   => ['Array'],

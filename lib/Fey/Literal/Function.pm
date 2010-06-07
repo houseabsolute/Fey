@@ -5,13 +5,12 @@ use warnings;
 
 our $VERSION = '0.34';
 
-use Fey::Types qw( ArrayRefOfFunctionArgs );
+use Fey::Types qw( ArrayRefOfFunctionArgs Str );
 use Scalar::Util qw( blessed );
 
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( Str );
 
 with 'Fey::Role::Comparable',
     'Fey::Role::Selectable',

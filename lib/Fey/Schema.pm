@@ -9,14 +9,13 @@ use Fey::Exceptions qw( param_error );
 use Fey::NamedObjectSet;
 use Fey::SQL;
 use Fey::Table;
-use Fey::Types qw( FK NamedObjectSet Table TableLikeOrName TableOrName  );
+use Fey::Types qw( FK HashRef NamedObjectSet Str Table TableLikeOrName TableOrName  );
 use Scalar::Util qw( blessed );
 
 use Moose 0.90;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( HashRef Str );
 
 has 'name' => (
     is       => 'rw',

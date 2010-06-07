@@ -7,11 +7,10 @@ our $VERSION = '0.34';
 
 use Scalar::Util qw( blessed );
 
-use Fey::Types qw( PosInteger PosOrZeroInteger );
+use Fey::Types qw( PosInteger PosOrZeroInteger Undef );
 
 use Moose::Role;
 use MooseX::Params::Validate qw( pos_validated_list );
-use MooseX::Types::Moose qw( Undef );
 
 has '_limit' => (
     is        => 'rw',

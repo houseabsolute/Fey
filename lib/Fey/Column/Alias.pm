@@ -9,12 +9,11 @@ use Fey::Column;
 use Fey::Exceptions qw( object_state_error );
 use Fey::Table;
 use Fey::Table::Alias;
-use Fey::Types qw( Column );
+use Fey::Types qw( Column Str );
 
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( Str );
 
 with 'Fey::Role::ColumnLike';
 

@@ -5,12 +5,11 @@ use warnings;
 
 our $VERSION = '0.34';
 
-use Fey::Types qw( OrderByElement );
+use Fey::Types qw( ArrayRef OrderByElement );
 use Scalar::Util qw( blessed );
 
 use Moose::Role;
 use MooseX::Params::Validate qw( pos_validated_list );
-use MooseX::Types::Moose qw( ArrayRef );
 
 has '_order_by' => (
     traits  => ['Array'],

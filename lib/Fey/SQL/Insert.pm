@@ -5,7 +5,9 @@ use warnings;
 
 our $VERSION = '0.34';
 
-use Fey::Types qw( CanQuote IntoElement NonNullableInsertValue NullableInsertValue );
+use Fey::Types
+    qw( ArrayRef HashRef CanQuote IntoElement NonNullableInsertValue
+        NullableInsertValue );
 use overload ();
 use Scalar::Util qw( blessed );
 
@@ -13,7 +15,6 @@ use Moose;
 use MooseX::Params::Validate qw( validated_hash pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( ArrayRef HashRef );
 
 with 'Fey::Role::SQL::HasBindParams';
 

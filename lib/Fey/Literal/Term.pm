@@ -5,13 +5,12 @@ use warnings;
 
 our $VERSION = '0.34';
 
-use Fey::Types qw( LiteralTermArg );
+use Fey::Types qw( Bool LiteralTermArg );
 
 use Carp qw( croak );
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( Bool );
 
 with 'Fey::Role::Comparable', 'Fey::Role::Selectable',
     'Fey::Role::Orderable', 'Fey::Role::Groupable',

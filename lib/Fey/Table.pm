@@ -10,7 +10,9 @@ use Fey::Exceptions qw( param_error );
 use Fey::NamedObjectSet;
 use Fey::Schema;
 use Fey::Table::Alias;
-use Fey::Types qw( Column ColumnOrName NamedObjectSet Schema );
+use Fey::Types qw(
+    ArrayRef Bool HashRef Str Undef Column ColumnOrName NamedObjectSet Schema
+);
 use List::AllUtils qw( any all first_index );
 use Scalar::Util qw( blessed weaken );
 
@@ -18,7 +20,6 @@ use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( ArrayRef Bool HashRef Str Undef );
 use Moose::Util::TypeConstraints;
 
 with 'Fey::Role::TableLike';

@@ -5,8 +5,9 @@ use warnings;
 
 our $VERSION = '0.34';
 
+use Fey::Types qw( ClassName Str );
+
 use MooseX::Role::Parameterized;
-use MooseX::Types::Moose qw( ClassName Str );
 
 parameter 'alias_class' => (
     is       => 'ro',
