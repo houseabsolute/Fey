@@ -17,6 +17,7 @@ use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( ArrayRef Bool HashRef );
 
 with 'Fey::Role::Comparable',
     'Fey::Role::Selectable',
@@ -39,7 +40,7 @@ with 'Fey::Role::HasAliasName' => {
 has '_select' => (
     traits  => ['Array'],
     is      => 'bare',
-    isa     => 'ArrayRef',
+    isa     => ArrayRef,
     default => sub { [] },
     handles => {
         _add_select_element    => 'push',
@@ -50,7 +51,7 @@ has '_select' => (
 
 has 'is_distinct' => (
     is      => 'rw',
-    isa     => 'Bool',
+    isa     => Bool,
     default => 0,
     writer  => '_set_is_distinct',
 );
@@ -65,7 +66,7 @@ has 'is_distinct_on' => (
 has '_from' => (
     traits  => ['Hash'],
     is      => 'bare',
-    isa     => 'HashRef',
+    isa     => HashRef,
     default => sub { {} },
     handles => {
         _get_from => 'get',
@@ -78,7 +79,7 @@ has '_from' => (
 has '_group_by' => (
     traits  => ['Array'],
     is      => 'bare',
-    isa     => 'ArrayRef',
+    isa     => ArrayRef,
     default => sub { [] },
     handles => {
         _add_group_by_elements => 'push',
@@ -91,7 +92,7 @@ has '_group_by' => (
 has '_having' => (
     traits  => ['Array'],
     is      => 'bare',
-    isa     => 'ArrayRef',
+    isa     => ArrayRef,
     default => sub { [] },
     handles => {
         _add_having_element  => 'push',

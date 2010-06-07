@@ -9,23 +9,24 @@ use Fey::Exceptions qw( param_error );
 use Fey::NamedObjectSet;
 use Fey::SQL;
 use Fey::Table;
-use Fey::Types qw( TableLikeOrName TableOrName  );
+use Fey::Types qw( FK NamedObjectSet Table TableLikeOrName TableOrName  );
 use Scalar::Util qw( blessed );
 
 use Moose 0.90;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( HashRef Str );
 
 has 'name' => (
     is       => 'rw',
-    isa      => 'Str',
+    isa      => Str,
     required => 1,
 );
 
 has '_tables' => (
     is      => 'ro',
-    isa     => 'Fey::NamedObjectSet',
+    isa     => NamedObjectSet,
     default => sub { return Fey::NamedObjectSet->new() },
     handles => {
         tables => 'objects',
@@ -36,14 +37,14 @@ has '_tables' => (
 
 has '_fks' => (
     is       => 'ro',
-    isa      => 'HashRef',
+    isa      => HashRef,
     default  => sub { {} },
     init_arg => undef,
 );
 
 sub add_table {
     my $self = shift;
-    my ($table) = pos_validated_list( \@_, { isa => 'Fey::Table' } );
+    my ($table) = pos_validated_list( \@_, { isa => Table } );
 
     my $name = $table->name();
     param_error "The schema already contains a table named $name."
@@ -77,7 +78,7 @@ sub remove_table {
 
 sub add_foreign_key {
     my $self = shift;
-    my ($fk) = pos_validated_list( \@_, { isa => 'Fey::FK' } );
+    my ($fk) = pos_validated_list( \@_, { isa => FK } );
 
     my $fk_id = $fk->id();
 
@@ -98,7 +99,7 @@ sub add_foreign_key {
 
 sub remove_foreign_key {
     my $self = shift;
-    my ($fk) = pos_validated_list( \@_, { isa => 'Fey::FK' } );
+    my ($fk) = pos_validated_list( \@_, { isa => FK } );
 
     my $fk_id = $fk->id();
 

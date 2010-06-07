@@ -10,11 +10,12 @@ use Scalar::Util qw( blessed );
 
 use Moose::Role;
 use MooseX::Params::Validate qw( pos_validated_list );
+use MooseX::Types::Moose qw( ArrayRef );
 
 has '_order_by' => (
     traits  => ['Array'],
     is      => 'bare',
-    isa     => 'ArrayRef',
+    isa     => ArrayRef,
     default => sub { [] },
     handles => {
         _add_order_by_elements => 'push',

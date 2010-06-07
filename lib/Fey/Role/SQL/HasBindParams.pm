@@ -6,11 +6,12 @@ use warnings;
 our $VERSION = '0.34';
 
 use Moose::Role;
+use MooseX::Types::Moose qw( ArrayRef Bool );
 
 has '_bind_params' => (
     traits   => ['Array'],
     is       => 'ro',
-    isa      => 'ArrayRef',
+    isa      => ArrayRef,
     default  => sub { [] },
     handles  => { _add_bind_param => 'push' },
     init_arg => undef,
@@ -18,7 +19,7 @@ has '_bind_params' => (
 
 has 'auto_placeholders' => (
     is      => 'ro',
-    isa     => 'Bool',
+    isa     => Bool,
     default => 1,
 );
 

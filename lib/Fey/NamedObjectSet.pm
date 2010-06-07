@@ -7,14 +7,15 @@ our $VERSION = '0.34';
 
 use List::AllUtils qw( all pairwise );
 
-use Fey::Types;
+use Fey::Types qw( Named );
 
 use Moose;
+use MooseX::Types::Moose qw( HashRef );
 
 has '_set' => (
     traits  => ['Hash'],
     is      => 'bare',
-    isa     => 'HashRef[Fey::Role::Named]',
+    isa     => HashRef[Named],
     handles => {
         _get    => 'get',
         _add    => 'set',

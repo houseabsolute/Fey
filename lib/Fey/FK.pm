@@ -7,7 +7,7 @@ our $VERSION = '0.34';
 
 use Fey::Column;
 use Fey::Exceptions qw(param_error);
-use Fey::Types qw( ArrayRefOfColumns TableOrName );
+use Fey::Types qw( ArrayRefOfColumns Column TableOrName );
 use List::AllUtils qw( max uniq all pairwise );
 use Scalar::Util qw( blessed );
 
@@ -15,6 +15,7 @@ use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( ArrayRef Bool );
 use Moose::Util::TypeConstraints;
 
 has 'id' => (
@@ -42,14 +43,14 @@ has column_pairs => (
 
     # really, the inner array refs must always contain 2 columns,
     # but we don't have structured constraints quite yet.
-    isa        => 'ArrayRef[ArrayRef[Fey::Column]]',
+    isa        => ArrayRef[ArrayRef[Column]],
     lazy_build => 1,
     init_arg   => undef,
 );
 
 has is_self_referential => (
     is         => 'ro',
-    isa        => 'Bool',
+    isa        => Bool,
     lazy_build => 1,
     init_arg   => 1,
 );
@@ -138,7 +139,7 @@ sub has_tables {
 
 sub has_column {
     my $self = shift;
-    my ($col) = pos_validated_list( \@_, { isa => 'Fey::Column' } );
+    my ($col) = pos_validated_list( \@_, { isa => Column } );
 
     my $table_name = $col->table()->name();
 

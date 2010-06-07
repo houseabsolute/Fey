@@ -10,7 +10,7 @@ use Fey::Exceptions qw( param_error );
 use Fey::NamedObjectSet;
 use Fey::Schema;
 use Fey::Table::Alias;
-use Fey::Types qw( ColumnOrName NamedObjectSet );
+use Fey::Types qw( Column ColumnOrName NamedObjectSet Schema );
 use List::AllUtils qw( any all first_index );
 use Scalar::Util qw( blessed weaken );
 
@@ -18,7 +18,7 @@ use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( ArrayRef );
+use MooseX::Types::Moose qw( ArrayRef Bool HashRef Str Undef );
 use Moose::Util::TypeConstraints;
 
 with 'Fey::Role::TableLike';
@@ -36,13 +36,13 @@ has 'id' => (
 
 has 'name' => (
     is       => 'ro',
-    isa      => 'Str',
+    isa      => Str,
     required => 1,
 );
 
 has 'is_view' => (
     is      => 'ro',
-    isa     => 'Bool',
+    isa     => Bool,
     default => 0,
 );
 
@@ -61,7 +61,7 @@ has '_keys' => (
 
 has '_columns' => (
     is      => 'ro',
-    isa     => 'Fey::NamedObjectSet',
+    isa     => NamedObjectSet,
     default => sub { return Fey::NamedObjectSet->new() },
     handles => {
         columns => 'objects',
@@ -71,7 +71,7 @@ has '_columns' => (
 
 has 'schema' => (
     is        => 'rw',
-    isa       => 'Undef | Fey::Schema',
+    isa       => Undef | Schema,
     weak_ref  => 1,
     writer    => '_set_schema',
     clearer   => '_clear_schema',
@@ -80,7 +80,7 @@ has 'schema' => (
 
 has 'candidate_keys' => (
     is         => 'ro',
-    isa        => 'ArrayRef[ArrayRef[Fey::Column]]',
+    isa        => ArrayRef[ArrayRef[Column]],
     clearer    => '_clear_candidate_keys',
     lazy_build => 1,
     init_arg   => undef,
@@ -90,7 +90,7 @@ after '_add_key', '_delete_key' => sub { $_[0]->_clear_candidate_keys() };
 
 has 'primary_key' => (
     is         => 'ro',
-    isa        => 'ArrayRef[Fey::Column]',
+    isa        => ArrayRef[Column],
     clearer    => '_clear_primary_key',
     lazy_build => 1,
     init_arg   => undef,
@@ -101,7 +101,7 @@ after '_clear_candidate_keys' => sub { $_[0]->_clear_primary_key() };
 has '_aliased_tables' => (
     traits  => ['Hash'],
     is      => 'bare',
-    isa     => 'HashRef',
+    isa     => HashRef,
     lazy    => 1,
     default => sub { {} },
     handles => {
@@ -115,7 +115,7 @@ with 'Fey::Role::Named';
 
 sub add_column {
     my $self = shift;
-    my ($col) = pos_validated_list( \@_, { isa => 'Fey::Column' } );
+    my ($col) = pos_validated_list( \@_, { isa => Column } );
 
     my $name = $col->name();
     param_error "The table already has a column named $name."

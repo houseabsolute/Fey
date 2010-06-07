@@ -13,11 +13,12 @@ use Fey::SQL::Fragment::Where::SubgroupStart;
 use Fey::SQL::Fragment::Where::SubgroupEnd;
 
 use Moose::Role;
+use MooseX::Types::Moose qw( ArrayRef );
 
 has '_where' => (
     traits  => ['Array'],
     is      => 'bare',
-    isa     => 'ArrayRef',
+    isa     => ArrayRef,
     default => sub { [] },
     handles => {
         _add_where_element  => 'push',

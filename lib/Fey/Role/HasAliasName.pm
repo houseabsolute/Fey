@@ -6,20 +6,21 @@ use warnings;
 our $VERSION = '0.34';
 
 use MooseX::Role::Parameterized;
+use MooseX::Types::Moose qw( Bool Str );
 
 parameter 'generated_alias_prefix' => (
-    isa      => 'Str',
+    isa      => Str,
     required => 1,
 );
 
 parameter 'sql_needs_parens' => (
-    isa     => 'Bool',
+    isa     => Bool,
     default => 0,
 );
 
 has 'alias_name' => (
     is     => 'rw',
-    isa    => 'Str',
+    isa    => Str,
     writer => 'set_alias_name',
 );
 

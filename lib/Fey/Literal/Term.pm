@@ -11,6 +11,7 @@ use Carp qw( croak );
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( Bool );
 
 with 'Fey::Role::Comparable', 'Fey::Role::Selectable',
     'Fey::Role::Orderable', 'Fey::Role::Groupable',
@@ -25,7 +26,7 @@ has 'term' => (
 
 has can_have_alias => (
     is      => 'rw',
-    isa     => 'Bool',
+    isa     => Bool,
     default => 1,
 );
 

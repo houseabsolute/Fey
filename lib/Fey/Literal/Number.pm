@@ -10,12 +10,13 @@ use Fey::Types;
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( Num );
 
 with 'Fey::Role::Comparable', 'Fey::Role::Selectable', 'Fey::Role::IsLiteral';
 
 has 'number' => (
     is       => 'ro',
-    isa      => 'Num',
+    isa      => Num,
     required => 1,
 );
 

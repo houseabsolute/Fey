@@ -12,7 +12,7 @@ use Fey::Types qw( WhereClauseSide );
 use Scalar::Util qw( blessed );
 
 use Moose;
-use MooseX::Types::Moose qw( ArrayRef );
+use MooseX::Types::Moose qw( ArrayRef Str );
 
 has '_lhs' => (
     is       => 'ro',
@@ -22,7 +22,7 @@ has '_lhs' => (
 
 has '_operator' => (
     is       => 'ro',
-    isa      => 'Str',
+    isa      => Str,
     required => 1,
 );
 
@@ -34,7 +34,7 @@ has '_rhs' => (
 
 has '_bind_params' => (
     is      => 'ro',
-    isa     => 'ArrayRef',
+    isa     => ArrayRef,
     default => sub { [] },
 );
 

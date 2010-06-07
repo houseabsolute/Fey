@@ -13,25 +13,26 @@ use Moose;
 use MooseX::Params::Validate qw( validated_hash pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( ArrayRef HashRef );
 
 with 'Fey::Role::SQL::HasBindParams';
 
 has '_into' => (
     is       => 'rw',
-    isa      => 'ArrayRef',
+    isa      => ArrayRef,
     init_arg => undef,
 );
 
 has '_values_spec' => (
     is       => 'rw',
-    isa      => 'HashRef',
+    isa      => HashRef,
     init_arg => undef,
 );
 
 has '_values' => (
     traits  => ['Array'],
     is      => 'bare',
-    isa     => 'ArrayRef[HashRef]',
+    isa     => ArrayRef[HashRef],
     default => sub { [] },
     handles => {
         _add_values => 'push',

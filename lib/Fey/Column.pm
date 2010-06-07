@@ -22,6 +22,7 @@ use Fey::Types qw(
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( Bool Str );
 
 with 'Fey::Role::ColumnLike';
 
@@ -39,7 +40,7 @@ has 'id' => (
 
 has 'name' => (
     is       => 'ro',
-    isa      => 'Str',
+    isa      => Str,
     required => 1,
 );
 
@@ -51,7 +52,7 @@ has 'generic_type' => (
 
 has type => (
     is       => 'ro',
-    isa      => 'Str',
+    isa      => Str,
     required => 1,
 );
 
@@ -70,13 +71,13 @@ has precision => (
 
 has is_auto_increment => (
     is      => 'ro',
-    isa     => 'Bool',
+    isa     => Bool,
     default => 0,
 );
 
 has is_nullable => (
     is      => 'ro',
-    isa     => 'Bool',
+    isa     => Bool,
     default => 0,
 );
 

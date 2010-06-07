@@ -6,7 +6,7 @@ use warnings;
 our $VERSION = '0.34';
 
 use Fey::FakeDBI;
-use Fey::Types qw( OuterJoinType );
+use Fey::Types qw( FK OuterJoinType Table WhereClause );
 use List::AllUtils qw( pairwise );
 
 use Moose;
@@ -27,20 +27,20 @@ has '_table2' => (
 
 has '_fk' => (
     is       => 'ro',
-    isa      => 'Fey::FK',
+    isa      => FK,
     init_arg => 'fk',
 );
 
 has '_outer_type' => (
     is        => 'ro',
-    isa       => Fey::Types::OuterJoinType,
+    isa       => OuterJoinType,
     predicate => '_has_outer_type',
     init_arg  => 'outer_type',
 );
 
 has '_where' => (
     is        => 'ro',
-    isa       => 'Fey::SQL::Where',
+    isa       => WhereClause,
     predicate => '_has_where',
     init_arg  => 'where',
 );

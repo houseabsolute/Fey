@@ -19,10 +19,12 @@ use MooseX::Types -declare => [qw(
     ColumnWithTable
     DefaultValue
     FunctionArg
+    FK
     GenericTypeName
     GroupByElement
     IntoElement
     LiteralTermArg
+    Named
     NamedObjectSet
     NonNullableInsertValue
     NonNullableUpdateValue
@@ -34,9 +36,12 @@ use MooseX::Types -declare => [qw(
     PosOrZeroInteger
     SelectElement
     SetOperationArg
+    Schema
+    Table
     TableLikeOrName
     TableOrName
     WhereBoolean
+    WhereClause
     WhereClauseSide
 )];
 
@@ -69,8 +74,7 @@ subtype ArrayRefOfColumns, as ArrayRef[Column], where {
 
 coerce ArrayRefOfColumns, from Column, via { [$_] };
 
-role_type('Fey::Role::Named')
-    unless find_type_constraint('Fey::Role::Named');
+role_type Named, { role => 'Fey::Role::Named' };
 
 subtype FunctionArg, as Object,
     where { $_->can('does') && $_->does('Fey::Role::Selectable') };
@@ -204,6 +208,14 @@ subtype WhereClauseSide, as Item, where {
         if $_->can('is_comparable')
             && $_->is_comparable();
 };
+
+class_type WhereClause, { class => 'Fey::SQL::Where' };
+
+class_type Table, { class => 'Fey::Table' };
+
+class_type Schema, { class => 'Fey::Schema' };
+
+class_type FK, { class => 'Fey::FK' };
 
 no Moose::Util::TypeConstraints;
 

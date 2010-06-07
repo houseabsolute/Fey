@@ -5,13 +5,14 @@ use warnings;
 
 our $VERSION = '0.34';
 
-use Fey::Types qw( CanQuote );
+use Fey::Types qw( CanQuote Table );
 use Scalar::Util qw( blessed );
 
 use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( ArrayRef );
 
 with 'Fey::Role::SQL::HasWhereClause',
     'Fey::Role::SQL::HasOrderByClause',
@@ -21,7 +22,7 @@ with 'Fey::Role::SQL::HasBindParams' => { excludes => 'bind_params' };
 
 has '_from' => (
     is       => 'rw',
-    isa      => 'ArrayRef',
+    isa      => ArrayRef,
     default  => sub { [] },
     init_arg => undef,
 );
@@ -36,7 +37,7 @@ sub from {
     my $count = @_ ? @_ : 1;
     my (@tables) = pos_validated_list(
         \@_,
-        ( ( { isa => 'Fey::Table' } ) x $count ),
+        ( ( { isa => Table } ) x $count ),
         MX_PARAMS_VALIDATE_NO_CACHE => 1,
     );
 

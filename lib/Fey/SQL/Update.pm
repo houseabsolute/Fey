@@ -7,7 +7,8 @@ our $VERSION = '0.34';
 
 use Fey::Exceptions qw( param_error );
 use Fey::Literal;
-use Fey::Types qw( CanQuote ColumnWithTable NonNullableUpdateValue NullableUpdateValue );
+use Fey::Types
+    qw( CanQuote ColumnWithTable NonNullableUpdateValue NullableUpdateValue Table );
 use overload ();
 use Scalar::Util qw( blessed );
 
@@ -15,6 +16,7 @@ use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( ArrayRef );
 
 with 'Fey::Role::SQL::HasOrderByClause', 'Fey::Role::SQL::HasLimitClause';
 
@@ -30,7 +32,7 @@ with 'Fey::Role::SQL::HasBindParams' => {
 
 has '_update' => (
     is       => 'rw',
-    isa      => 'ArrayRef',
+    isa      => ArrayRef,
     default  => sub { [] },
     init_arg => undef,
 );
@@ -38,7 +40,7 @@ has '_update' => (
 has '_set_pairs' => (
     traits  => ['Array'],
     is      => 'bare',
-    isa     => 'ArrayRef[ArrayRef]',
+    isa     => ArrayRef[ArrayRef],
     default => sub { [] },
     handles => {
         _add_set_pair => 'push',
@@ -55,7 +57,7 @@ sub update {
     my $count = @_ ? @_ : 1;
     my (@tables) = pos_validated_list(
         \@_,
-        ( ( { isa => 'Fey::Table' } ) x $count ),
+        ( ( { isa => Table } ) x $count ),
         MX_PARAMS_VALIDATE_NO_CACHE => 1,
     );
 

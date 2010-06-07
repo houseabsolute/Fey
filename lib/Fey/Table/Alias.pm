@@ -7,12 +7,13 @@ our $VERSION = '0.34';
 
 use Fey::Exceptions qw(param_error);
 use Fey::Table;
-use Fey::Types;
+use Fey::Types qw( Column Table );
 
 use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( HashRef Str );
 
 with 'Fey::Role::TableLike';
 
@@ -24,20 +25,20 @@ has 'id' => (
 
 has 'table' => (
     is      => 'ro',
-    isa     => 'Fey::Table',
+    isa     => Table,
     handles => [ 'schema', 'name' ],
 );
 
 has 'alias_name' => (
     is         => 'ro',
-    isa        => 'Str',
+    isa        => Str,
     lazy_build => 1,
 );
 
 has '_columns' => (
     traits  => ['Hash'],
     is      => 'bare',
-    isa     => 'HashRef[Fey::Column]',
+    isa     => HashRef[Column],
     default => sub { {} },
     handles => {
         _get_column => 'get',

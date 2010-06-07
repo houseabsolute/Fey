@@ -9,11 +9,12 @@ use Fey::Column;
 use Fey::Exceptions qw( object_state_error );
 use Fey::Table;
 use Fey::Table::Alias;
-use Fey::Types;
+use Fey::Types qw( Column );
 
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( Str );
 
 with 'Fey::Role::ColumnLike';
 
@@ -26,7 +27,7 @@ has 'id' => (
 
 has 'column' => (
     is      => 'ro',
-    isa     => 'Fey::Column',
+    isa     => Column,
     handles => [
         qw( name type generic_type length precision
             is_auto_increment is_nullable table )
@@ -35,7 +36,7 @@ has 'column' => (
 
 has 'alias_name' => (
     is         => 'ro',
-    isa        => 'Str',
+    isa        => Str,
     lazy_build => 1,
 );
 

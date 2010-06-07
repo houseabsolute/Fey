@@ -9,10 +9,10 @@ use Fey::Types qw( SetOperationArg );
 
 use MooseX::Role::Parameterized;
 use MooseX::Params::Validate qw( pos_validated_list );
-use MooseX::Types::Moose qw( ArrayRef );
+use MooseX::Types::Moose qw( ArrayRef Bool Str );
 
 parameter keyword => (
-    isa      => 'Str',
+    isa      => Str,
     required => 1,
 );
 
@@ -23,7 +23,7 @@ with 'Fey::Role::Comparable',
 
 has 'is_all' => (
     is      => 'rw',
-    isa     => 'Bool',
+    isa     => Bool,
     default => 0,
     writer  => '_set_is_all',
 );
