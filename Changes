@@ -21,6 +21,9 @@
 
 - We now use MooseX::Types internally. Patch by Oliver Charles.
 
+- License is now Artistic 2.0, instead of "same as Perl itself". Artistic 2.0
+  allows you to redistribute under the GPL (any version) if you like.
+
 
 0.34    2009-10-25
 
