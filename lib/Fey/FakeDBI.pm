@@ -49,19 +49,8 @@ C<quote()> and C<quote_identifier()> methods only.
 It exists solely to allow some internal API re-use for Fey, and you
 should never need to use it explicitly.
 
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org>
-
 =head1 BUGS
 
 See L<Fey> for details on how to report bugs.
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2006-2009 Dave Rolsky, All Rights Reserved.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
 
 =cut

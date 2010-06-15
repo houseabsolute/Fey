@@ -124,19 +124,8 @@ given any arguments it returns all of the objects in the set.
 Given a C<Fey::NamedObjectSet>, this method indicates whether or not
 the two sets are the same.
 
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org>
-
 =head1 BUGS
 
 See L<Fey> for details on how to report bugs.
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2006-2009 Dave Rolsky, All Rights Reserved.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
 
 =cut

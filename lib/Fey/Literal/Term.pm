@@ -174,19 +174,8 @@ Of course, the contents of a given term may not really allow for any
 of these things, but having this class do these roles means you can
 freely use a term object in any part of a SQL snippet.
 
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org>
-
 =head1 BUGS
 
 See L<Fey> for details on how to report bugs.
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2006-2009 Dave Rolsky, All Rights Reserved.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
 
 =cut

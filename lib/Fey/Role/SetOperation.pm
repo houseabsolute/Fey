@@ -186,19 +186,8 @@ C<keyword_clause>.
 This class includes C<Fey::Role::SQL::HasOrderByClause>,
 C<Fey::Role::SQL::HasLimitClause>, and C<Fey::Role::SQL::HasAliasName>.
 
-=head1 AUTHOR
-
-Hans Dieter Pearcey <hdp.cpan.fey@weftsoar.net>
-
 =head1 BUGS
 
 See L<Fey> for details on how to report bugs.
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2006-2009 Dave Rolsky, All Rights Reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
 
 =cut

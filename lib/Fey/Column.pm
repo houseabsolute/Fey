@@ -319,19 +319,8 @@ Returns a unique identifier for the column.
 This class does the L<Fey::Role::ColumnLike>, L<Fey::Role::MakesAliasObjects>,
 and L<Fey::Role::Named> roles.
 
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org>
-
 =head1 BUGS
 
 See L<Fey> for details on how to report bugs.
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2006-2009 Dave Rolsky, All Rights Reserved.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
 
 =cut
