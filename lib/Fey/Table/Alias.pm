@@ -2,6 +2,7 @@ package Fey::Table::Alias;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -106,8 +107,6 @@ sub sql_with_alias {
 }
 
 sub _build_id { $_[0]->alias_name() }
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

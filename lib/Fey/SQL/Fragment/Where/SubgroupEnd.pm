@@ -2,6 +2,7 @@ package Fey::SQL::Fragment::Where::SubgroupEnd;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -12,8 +13,6 @@ my $Paren = ')';
 sub sql {
     return $Paren;
 }
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

@@ -2,6 +2,7 @@ package Fey::SQL::Delete;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -68,8 +69,6 @@ sub _tables_subclause {
         map { $_[1]->quote_identifier( $_->name() ) } @{ $_[0]->_from() }
     );
 }
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

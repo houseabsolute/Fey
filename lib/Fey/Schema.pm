@@ -2,6 +2,7 @@ package Fey::Schema;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -200,8 +201,6 @@ sub foreign_keys_between_tables {
 
     return @fks;
 }
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

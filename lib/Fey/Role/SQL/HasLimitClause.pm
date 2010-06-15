@@ -2,6 +2,7 @@ package Fey::Role::SQL::HasLimitClause;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -59,8 +60,6 @@ sub limit_clause {
 
     return $sql;
 }
-
-no Moose::Role;
 
 1;
 

@@ -2,6 +2,7 @@ package Fey::SQL::Insert;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -166,8 +167,6 @@ sub values_clause {
 
     return 'VALUES ' . join ',', @v;
 }
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

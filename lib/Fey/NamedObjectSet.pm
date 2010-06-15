@@ -2,6 +2,7 @@ package Fey::NamedObjectSet;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -72,8 +73,6 @@ sub is_same_as {
 
     return all {$_} pairwise { $a eq $b } @self_names, @other_names;
 }
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

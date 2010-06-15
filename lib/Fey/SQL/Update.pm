@@ -2,6 +2,7 @@ package Fey::SQL::Update;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -171,8 +172,6 @@ sub bind_params {
         $self->_where_clause_bind_params(),
     );
 }
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

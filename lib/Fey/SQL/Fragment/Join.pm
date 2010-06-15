@@ -2,6 +2,7 @@ package Fey::SQL::Fragment::Join;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -186,8 +187,6 @@ sub bind_params {
 
     return $self->_where()->bind_params();
 }
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

@@ -2,6 +2,7 @@ package Fey::Literal::Null;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -18,8 +19,6 @@ sub sql {'NULL'}
 sub sql_with_alias { goto &sql }
 
 sub sql_or_alias { goto &sql }
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

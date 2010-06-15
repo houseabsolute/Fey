@@ -2,6 +2,7 @@ package Fey::Literal::Term;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -77,8 +78,6 @@ before 'set_alias_name' => sub {
     croak 'This term cannot have an alias'
         unless $self->can_have_alias();
 };
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

@@ -2,14 +2,13 @@ package Fey::Role::TableLike;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
 use Moose::Role;
 
 with 'Fey::Role::Joinable';
-
-no Moose::Role;
 
 1;
 

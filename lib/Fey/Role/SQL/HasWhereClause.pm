@@ -2,6 +2,7 @@ package Fey::Role::SQL::HasWhereClause;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -167,8 +168,6 @@ sub bind_params {
         grep { $_->can('bind_params') } $self->_where()
     );
 }
-
-no Moose::Role;
 
 1;
 

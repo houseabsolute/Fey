@@ -2,6 +2,7 @@ package Fey::SQL::Except;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -10,8 +11,6 @@ use Moose;
 with 'Fey::Role::SetOperation' => { keyword => 'EXCEPT' };
 
 with 'Fey::Role::SQL::Cloneable';
-
-no Moose;
 
 1;
 

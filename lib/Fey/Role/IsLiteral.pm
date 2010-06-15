@@ -2,6 +2,7 @@ package Fey::Role::IsLiteral;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -12,8 +13,6 @@ requires 'sql';
 sub id {
     return $_[0]->sql('Fey::FakeDBI');
 }
-
-no Moose::Role;
 
 1;
 

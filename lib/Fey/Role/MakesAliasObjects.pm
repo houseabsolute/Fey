@@ -2,6 +2,7 @@ package Fey::Role::MakesAliasObjects;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -41,8 +42,6 @@ role {
         return $alias_class->new( $self_param => $self, %p );
     };
 };
-
-no MooseX::Role::Parameterized;
 
 1;
 

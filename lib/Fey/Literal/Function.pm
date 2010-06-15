@@ -2,6 +2,7 @@ package Fey::Literal::Function;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -54,9 +55,6 @@ sub sql {
 }
 
 sub is_groupable { $_[0]->alias_name() ? 1 : 0 }
-
-no Moose;
-no Moose::Util::TypeConstraints;
 
 __PACKAGE__->meta()->make_immutable();
 

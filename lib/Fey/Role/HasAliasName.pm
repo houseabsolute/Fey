@@ -2,6 +2,7 @@ package Fey::Role::HasAliasName;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -71,8 +72,6 @@ role {
     };
 
 };
-
-no MooseX::Role::Parameterized;
 
 1;
 

@@ -2,6 +2,7 @@ package Fey::Role::SQL::Cloneable;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -52,8 +53,6 @@ role {
         return $clone;
     };
 };
-
-no MooseX::Role::Parameterized;
 
 1;
 

@@ -2,6 +2,7 @@ package Fey::Column;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -166,9 +167,6 @@ sub _build_id {
 
     return $table->id() . q{.} . $self->name();
 }
-
-no Moose;
-no Moose::Util::TypeConstraints;
 
 __PACKAGE__->meta()->make_immutable();
 

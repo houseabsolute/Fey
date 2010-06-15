@@ -2,6 +2,7 @@ package Fey::SQL::Where;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -16,8 +17,6 @@ with 'Fey::Role::SQL::HasWhereClause';
 with 'Fey::Role::SQL::HasBindParams' => { excludes => 'bind_params' };
 
 with 'Fey::Role::SQL::Cloneable';
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

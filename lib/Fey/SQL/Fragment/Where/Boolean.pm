@@ -2,6 +2,7 @@ package Fey::SQL::Fragment::Where::Boolean;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -18,8 +19,6 @@ has 'comparison' => (
 sub sql {
     return $_[0]->comparison();
 }
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

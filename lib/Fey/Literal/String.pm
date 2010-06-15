@@ -2,6 +2,7 @@ package Fey::Literal::String;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -30,8 +31,6 @@ sub sql { $_[1]->quote( $_[0]->string() ) }
 sub sql_with_alias { goto &sql }
 
 sub sql_or_alias { goto &sql }
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

@@ -2,6 +2,7 @@ package Fey::Role::SetOperation;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -119,8 +120,6 @@ role {
         sql_needs_parens       => 1,
     };
 };
-
-no MooseX::Role::Parameterized;
 
 1;
 

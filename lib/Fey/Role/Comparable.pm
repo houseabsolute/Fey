@@ -2,14 +2,13 @@ package Fey::Role::Comparable;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
 use Moose::Role;
 
 sub is_comparable {1}
-
-no Moose::Role;
 
 1;
 

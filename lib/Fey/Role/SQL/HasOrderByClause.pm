@@ -2,6 +2,7 @@ package Fey::Role::SQL::HasOrderByClause;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -61,8 +62,6 @@ sub order_by_clause {
 
     return $sql;
 }
-
-no Moose::Role;
 
 1;
 

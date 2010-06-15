@@ -2,14 +2,13 @@ package Fey::Role::Named;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
 use Moose::Role;
 
 requires 'name';
-
-no Moose::Role;
 
 1;
 

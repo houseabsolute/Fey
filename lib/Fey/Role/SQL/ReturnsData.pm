@@ -2,6 +2,7 @@ package Fey::Role::SQL::ReturnsData;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -9,8 +10,6 @@ use Moose::Role;
 
 # This doesn't actually work with Fey::Role::SetOperation in the mix.
 #requires 'select_clause_elements';
-
-no Moose::Role;
 
 1;
 

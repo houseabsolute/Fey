@@ -2,6 +2,7 @@ package Fey::FK;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -203,9 +204,6 @@ sub pretty_print {
 
     return $string;
 }
-
-no Moose;
-no Moose::Util::TypeConstraints;
 
 __PACKAGE__->meta()->make_immutable();
 

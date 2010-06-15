@@ -2,6 +2,7 @@ package Fey::Table;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -305,9 +306,6 @@ sub sql {
 sub sql_with_alias { goto &sql }
 
 sub _build_id { $_[0]->name() }
-
-no Moose;
-no Moose::Util::TypeConstraints;
 
 __PACKAGE__->meta()->make_immutable();
 

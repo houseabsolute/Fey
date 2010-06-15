@@ -2,6 +2,7 @@ package Fey::Column::Alias;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -85,7 +86,6 @@ sub _build_id {
     return $table->id() . '.' . $self->alias_name();
 }
 
-no Moose;
 __PACKAGE__->meta()->make_immutable();
 
 1;

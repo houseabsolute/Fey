@@ -2,6 +2,7 @@ package Fey::SQL::Select;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -486,8 +487,6 @@ sub bind_params {
         ),
     );
 }
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

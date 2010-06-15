@@ -2,6 +2,7 @@ package Fey::Literal;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -47,8 +48,6 @@ sub new_from_scalar {
         ? Fey::Literal::Number->new($val)
         : Fey::Literal::String->new($val);
 }
-
-no Moose;
 
 __PACKAGE__->meta()->make_immutable();
 

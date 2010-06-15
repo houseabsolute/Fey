@@ -2,6 +2,7 @@ package Fey::Role::ColumnLike;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -32,8 +33,6 @@ sub is_comparable { return $_[0]->table() ? 1 : 0 }
 sub is_groupable { return $_[0]->table() ? 1 : 0 }
 
 sub is_orderable { return $_[0]->table() ? 1 : 0 }
-
-no Moose::Role;
 
 1;
 

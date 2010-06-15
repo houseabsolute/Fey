@@ -2,6 +2,7 @@ package Fey::Role::SQL::HasBindParams;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.34';
 
@@ -29,8 +30,6 @@ has 'auto_placeholders' => (
 sub bind_params {
     return @{ $_[0]->_bind_params() };
 }
-
-no Moose::Role;
 
 1;
 

@@ -16,6 +16,7 @@ my $builder = Module::Build->new(
         'MooseX::Params::Validate'       => '0.08',
         'MooseX::Role::Parameterized'    => '0.04',
         'MooseX::Types'                  => '0',
+        'namespace::autoclean'           => '0',
         'Scalar::Util'                   => '0',
         'Task::Weaken'                   => '0.99',
     },
