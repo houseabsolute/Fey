@@ -12,6 +12,8 @@ with 'Fey::Role::SQL::Cloneable';
 
 1;
 
+# ABSTRACT: Represents an EXCEPT operation
+
 =head1 SYNOPSIS
 
   my $except = Fey::SQL->new_except;

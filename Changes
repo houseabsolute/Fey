@@ -19,6 +19,8 @@
 
   Implemented by Dieter Pearcey.
 
+- We now use MooseX::Types internally. Patch by Oliver Charles.
+
 
 0.34    2009-10-25
 
