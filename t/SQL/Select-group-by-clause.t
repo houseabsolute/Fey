@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 7;
+use Test::More;
 
 use Fey::Literal;
 use Fey::SQL;
@@ -95,3 +95,5 @@ my $dbh = Fey::Test->mock_dbh();
         'group_by() term'
     );
 }
+
+done_testing();

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 12;
+use Test::More;
 use Fey::Literal;
 
 {
@@ -73,3 +73,5 @@ use Fey::Literal;
         'Term rejects an blessed ref that is not overloaded and does not have a sql_or_alias_method'
     );
 }
+
+done_testing();

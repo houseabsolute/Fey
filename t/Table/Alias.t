@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 23;
+use Test::More;
 
 use Fey::Table::Alias;
 
@@ -89,3 +89,4 @@ $t->add_column($_) for $c1, $c2;
     is( $alias->alias_name(), 'renamed', 'alias_name is renamed' );
 }
 
+done_testing();

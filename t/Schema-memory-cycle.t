@@ -17,9 +17,10 @@ unless (
     exit;
 }
 
-plan tests => 1;
 
 memory_cycle_ok(
     Fey::Test->mock_test_schema(),
     'Make sure schema object does not have circular refs'
 );
+
+done_testing();

@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 21;
+use Test::More;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -256,3 +256,5 @@ $s->table('User')->add_column($size);
         'sql() for cloned insert clause has different value'
     );
 }
+
+done_testing();

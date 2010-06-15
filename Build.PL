@@ -24,7 +24,7 @@ my $builder = Module::Build->new(
         'Fey::Test'        => '0.05',
         'File::Temp'       => '0',
         'Test::MockObject' => '0',
-        'Test::More'       => '0',
+        'Test::More'       => '0.88',
     },
     recommends => {
         'Test::Memory::Cycle' => '0',

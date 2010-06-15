@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 36;
+use Test::More;
 
 use Fey::SQL;
 
@@ -148,3 +148,5 @@ for my $keyword (qw( UNION INTERSECT EXCEPT )) {
         );
     }
 }
+
+done_testing();

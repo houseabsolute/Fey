@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 5;
+use Test::More;
 
 use Fey::SQL;
 
@@ -62,3 +62,4 @@ my $dbh = Fey::Test->mock_dbh();
     );
 }
 
+done_testing();

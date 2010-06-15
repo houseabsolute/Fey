@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 4;
+use Test::More;
 
 use Fey::Literal;
 use Fey::SQL;
@@ -54,3 +54,5 @@ my $dbh = Fey::Test->mock_dbh();
         'limit clause with offset'
     );
 }
+
+done_testing();

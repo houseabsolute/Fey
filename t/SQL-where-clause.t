@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 40;
+use Test::More;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -523,3 +523,5 @@ SKIP:
         'overloaded DateTime object in comparison (=) without auto placeholders'
     );
 }
+
+done_testing();

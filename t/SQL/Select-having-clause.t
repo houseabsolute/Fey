@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 19;
+use Test::More;
 
 use Fey::Placeholder;
 use Fey::SQL;
@@ -243,3 +243,5 @@ my $dbh = Fey::Test->mock_dbh();
         'error when passing one RHS with BETWEEN'
     );
 }
+
+done_testing();

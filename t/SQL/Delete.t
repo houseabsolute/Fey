@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 6;
+use Test::More;
 
 use Fey::SQL;
 
@@ -82,3 +82,5 @@ $s->table('User')->add_column($size);
         'cloned delete sql adds where clause, order by, and limit'
     );
 }
+
+done_testing();

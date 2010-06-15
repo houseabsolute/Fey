@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 14;
+use Test::More;
 
 use Fey::SQL;
 
@@ -179,3 +179,5 @@ $s->table('User')->add_column($size);
         'values_clause() for two columns column with overloaded object, no placeholders'
     );
 }
+
+done_testing();

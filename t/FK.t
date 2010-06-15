@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 22;
+use Test::More;
 
 use Fey::FK;
 use Fey::Schema;
@@ -160,3 +160,5 @@ use Fey::Schema;
 
     ok( $fk->is_self_referential(), 'fk is self-rerential' );
 }
+
+done_testing();

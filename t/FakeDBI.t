@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 2;
+use Test::More;
 use Fey::FakeDBI;
 
 {
@@ -9,3 +9,5 @@ use Fey::FakeDBI;
     is( Fey::FakeDBI->quote(q{"blah"}), q{"""blah"""},
         'FakeDBI->quote "blah"' );
 }
+
+done_testing();

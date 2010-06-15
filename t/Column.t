@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 29;
+use Test::More;
 
 use Fey::Column;
 
@@ -123,3 +123,5 @@ use Fey::Column;
         'cannot get an id for a column without a table'
     );
 }
+
+done_testing();

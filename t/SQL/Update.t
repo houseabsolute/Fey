@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 25;
+use Test::More;
 
 use Fey::SQL;
 
@@ -337,3 +337,5 @@ $s->table('User')->add_column($size);
         'cloned update sql has where clause, order by, and limit'
     );
 }
+
+done_testing();

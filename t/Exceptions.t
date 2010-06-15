@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1;
+use Test::More;
 
 use_ok('Fey::Exceptions');
+
+done_testing();

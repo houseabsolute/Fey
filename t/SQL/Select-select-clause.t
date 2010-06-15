@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 14;
+use Test::More;
 
 use Fey::SQL;
 
@@ -167,3 +167,5 @@ my $dbh = Fey::Test->mock_dbh();
         'subselect alias_name is available'
     );
 }
+
+done_testing();

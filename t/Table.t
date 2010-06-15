@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 44;
+use Test::More;
 
 use Fey::Table;
 
@@ -263,3 +263,5 @@ sub _keys_to_names {
 
     return \@n;
 }
+
+done_testing();

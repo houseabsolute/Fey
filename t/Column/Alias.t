@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 18;
+use Test::More;
 
 use Fey::Table;
 use Fey::Column::Alias;
@@ -78,3 +78,5 @@ $t->add_column($c);
         'alias_name is renamed'
     );
 }
+
+done_testing();

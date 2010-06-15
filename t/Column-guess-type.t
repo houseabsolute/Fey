@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More tests => 61;
+use Test::More;
 
 use Fey::Column;
 
@@ -98,3 +98,5 @@ use Fey::Column;
         );
     }
 }
+
+done_testing();

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 14;
+use Test::More;
 
 use Fey::NamedObjectSet;
 
@@ -78,6 +78,8 @@ use Fey::NamedObjectSet;
         'set with items added at construction is same as set with items added via add()'
     );
 }
+
+done_testing();
 
 package NoName;
 

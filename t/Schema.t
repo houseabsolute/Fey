@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 39;
+use Test::More;
 
 use Fey::Schema;
 
@@ -229,3 +229,5 @@ use Fey::Schema;
     @tables = sort map { $_->name() } $s->tables('NoSuchTable');
     is( scalar @tables, 0, 'tables() ignores tables which do not exist' );
 }
+
+done_testing();

@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 
 use Fey::Test;
-use Test::More tests => 18;
+use Test::More;
 
 use Fey::SQL;
 
@@ -201,3 +201,5 @@ my $dbh = Fey::Test->mock_dbh();
         'bind_params is [ 2, 3 ]'
     );
 }
+
+done_testing();
