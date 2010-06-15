@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Scalar::Util qw( blessed );
 
 use Fey::Types qw( PosInteger PosOrZeroInteger Undef );
@@ -63,11 +61,9 @@ sub limit_clause {
 
 1;
 
+# ABSTRACT: A role for queries which can include a LIMIT clause
+
 __END__
-
-=head1 NAME
-
-Fey::Role::SQL::HasLimitClause - A role for queries which can include a LIMIT clause
 
 =head1 SYNOPSIS
 

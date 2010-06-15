@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Types
     qw( ArrayRef HashRef CanQuote IntoElement NonNullableInsertValue
         NullableInsertValue );
@@ -172,11 +170,9 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Represents a INSERT query
+
 __END__
-
-=head1 NAME
-
-Fey::SQL::Insert - Represents a INSERT query
 
 =head1 SYNOPSIS
 

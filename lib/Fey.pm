@@ -3,17 +3,13 @@ package Fey;
 use strict;
 use warnings;
 
-our $VERSION = '0.34';
-
 use Moose 0.90 ();
 
 1;
 
+# ABSTRACT: Better SQL Generation Through Perl
+
 __END__
-
-=head1 NAME
-
-Fey - Better SQL Generation Through Perl
 
 =head1 SYNOPSIS
 

@@ -3,8 +3,6 @@ package Fey::Exceptions;
 use strict;
 use warnings;
 
-our $VERSION = '0.34';
-
 my %E;
 
 BEGIN {
@@ -47,11 +45,9 @@ our @EXPORT_OK = map { $_->{alias} || () } values %E;
 
 1;
 
+# ABSTRACT: Defines exceptions used in the core Fey classes
+
 __END__
-
-=head1 NAME
-
-Fey::Exceptions - Defines exceptions used in the core Fey classes
 
 =head1 SYNOPSIS
 

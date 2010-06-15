@@ -3,8 +3,6 @@ package Fey::FakeDBI;
 use strict;
 use warnings;
 
-our $VERSION = '0.34';
-
 # This package allows us to use a DBI handle in id(). Even though we
 # may not be quoting properly for a given DBMS, we will still generate
 # unique ids, and that's all that matters.
@@ -30,11 +28,9 @@ sub quote {
 
 1;
 
+# ABSTRACT: Just enough of the DBI API to fool Fey
+
 __END__
-
-=head1 NAME
-
-Fey::FakeDBI - Just enough of the DBI API to fool Fey
 
 =head1 SYNOPSIS
 

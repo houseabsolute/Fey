@@ -4,19 +4,15 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Moose::Role;
 
 sub is_joinable { $_[0]->schema() ? 1 : 0 }
 
 1;
 
+# ABSTRACT: A role for things that can be part of a JOIN BY clause
+
 __END__
-
-=head1 NAME
-
-Fey::Role::Joinable - A role for things that can be part of a JOIN BY clause
 
 =head1 SYNOPSIS
 

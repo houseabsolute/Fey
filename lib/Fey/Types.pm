@@ -3,8 +3,6 @@ package Fey::Types;
 use strict;
 use warnings;
 
-our $VERSION = '0.34';
-
 use base 'MooseX::Types::Combine';
 
 __PACKAGE__->provide_types_from(
@@ -13,11 +11,9 @@ __PACKAGE__->provide_types_from(
 
 1;
 
+# ABSTRACT: Types for use in Fey
+
 __END__
-
-=head1 NAME
-
-Fey::Types - Types for use in Fey
 
 =head1 DESCRIPTION
 

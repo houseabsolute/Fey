@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::FakeDBI;
 use Fey::Literal::Function;
 use Fey::Literal::Null;
@@ -53,11 +51,9 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Factory for making a literal piece of a SQL statement
+
 __END__
-
-=head1 NAME
-
-Fey::Literal - Factory for making a literal piece of a SQL statement
 
 =head1 SYNOPSIS
 

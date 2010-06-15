@@ -4,19 +4,15 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Moose::Role;
 
 requires 'name';
 
 1;
 
+# ABSTRACT: A role for things with a name
+
 __END__
-
-=head1 NAME
-
-Fey::Role::Named - A role for things with a name
 
 =head1 SYNOPSIS
 

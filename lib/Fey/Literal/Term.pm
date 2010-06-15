@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Types qw( Bool LiteralTermArg );
 
 use Carp qw( croak );
@@ -83,11 +81,9 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Represents a literal term in a SQL statement
+
 __END__
-
-=head1 NAME
-
-Fey::Literal::Term - Represents a literal term in a SQL statement
 
 =head1 SYNOPSIS
 

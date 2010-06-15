@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Types;
 
 use Moose;
@@ -24,11 +22,9 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Represents a placeholder
+
 __END__
-
-=head1 NAME
-
-Fey::Placeholder - Represents a placeholder
 
 =head1 SYNOPSIS
 

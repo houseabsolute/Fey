@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Moose::Role;
 
 # This doesn't actually work with Fey::Role::SetOperation in the mix.
@@ -13,11 +11,9 @@ use Moose::Role;
 
 1;
 
+# ABSTRACT: A role for SQL queries which return data (SELECT, UNION, etc)
+
 __END__
-
-=head1 NAME
-
-Fey::Role::ReturnsData - A role for SQL queries which return data (SELECT, UNION, etc)
 
 =head1 SYNOPSIS
 

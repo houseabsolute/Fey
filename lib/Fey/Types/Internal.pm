@@ -3,8 +3,6 @@ package Fey::Types::Internal;
 use strict;
 use warnings;
 
-our $VERSION = '0.34';
-
 use List::AllUtils qw( all );
 use overload ();
 use Scalar::Util qw( blessed );
@@ -217,11 +215,9 @@ class_type FK, { class => 'Fey::FK' };
 
 1;
 
+# ABSTRACT: Types for use in Fey
+
 __END__
-
-=head1 NAME
-
-Fey::Types - Types for use in Fey
 
 =head1 DESCRIPTION
 

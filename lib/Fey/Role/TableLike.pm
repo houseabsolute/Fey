@@ -4,19 +4,15 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Moose::Role;
 
 with 'Fey::Role::Joinable';
 
 1;
 
+# ABSTRACT: A role for things that are like a table
+
 __END__
-
-=head1 NAME
-
-Fey::Role::TableLike - A role for things that are like a table
 
 =head1 SYNOPSIS
 

@@ -4,19 +4,15 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Moose::Role;
 
 sub is_comparable {1}
 
 1;
 
+# ABSTRACT: A role for things that can be part of a WHERE clause
+
 __END__
-
-=head1 NAME
-
-Fey::Role::Comparable - A role for things that can be part of a WHERE clause
 
 =head1 SYNOPSIS
 

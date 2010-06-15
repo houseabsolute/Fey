@@ -4,19 +4,15 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Moose::Role;
 
 sub is_selectable {1}
 
 1;
 
+# ABSTRACT: A role for things that can go in a SELECT clause
+
 __END__
-
-=head1 NAME
-
-Fey::Role::Selectable - A role for things that can go in a SELECT clause
 
 =head1 SYNOPSIS
 

@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Types qw( ClassName Str );
 
 use MooseX::Role::Parameterized;
@@ -45,11 +43,9 @@ role {
 
 1;
 
+# ABSTRACT: A role for objects with separate alias objects
+
 __END__
-
-=head1 NAME
-
-Fey::Role::MakesAliasObjects - A role for objects with separate alias objects
 
 =head1 SYNOPSIS
 

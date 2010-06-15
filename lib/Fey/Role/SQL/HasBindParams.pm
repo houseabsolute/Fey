@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Types qw( ArrayRef Bool );
 
 use Moose::Role;
@@ -33,11 +31,9 @@ sub bind_params {
 
 1;
 
+# ABSTRACT: A role for queries which can have bind parameters
+
 __END__
-
-=head1 NAME
-
-Fey::Role::SQL::HasBindParams - A role for queries which can have bind parameters
 
 =head1 SYNOPSIS
 

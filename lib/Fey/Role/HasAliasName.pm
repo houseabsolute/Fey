@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Types qw( Bool Str );
 
 use MooseX::Role::Parameterized;
@@ -75,11 +73,9 @@ role {
 
 1;
 
+# ABSTRACT: A role for objects that bring an alias with them
+
 __END__
-
-=head1 NAME
-
-Fey::Role::HasAliasName - A role for objects that bring an alias with them
 
 =head1 SYNOPSIS
 

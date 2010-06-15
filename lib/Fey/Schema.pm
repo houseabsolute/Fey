@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Exceptions qw( param_error );
 use Fey::NamedObjectSet;
 use Fey::SQL;
@@ -206,11 +204,9 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Represents a schema and contains tables and foreign keys
+
 __END__
-
-=head1 NAME
-
-Fey::Schema - Represents a schema and contains tables and foreign keys
 
 =head1 SYNOPSIS
 

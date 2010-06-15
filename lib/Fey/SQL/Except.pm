@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Moose;
 
 with 'Fey::Role::SetOperation' => { keyword => 'EXCEPT' };
@@ -13,10 +11,6 @@ with 'Fey::Role::SetOperation' => { keyword => 'EXCEPT' };
 with 'Fey::Role::SQL::Cloneable';
 
 1;
-
-=head1 NAME
-
-Fey::SQL::Except - Represents an EXCEPT operation
 
 =head1 SYNOPSIS
 

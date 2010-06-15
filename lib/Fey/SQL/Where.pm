@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Types;
 
 use Moose;
@@ -22,11 +20,9 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Represents a "stand-alone" WHERE clause
+
 __END__
-
-=head1 NAME
-
-Fey::SQL::Where - Represents a "stand-alone" WHERE clause
 
 =head1 SYNOPSIS
 

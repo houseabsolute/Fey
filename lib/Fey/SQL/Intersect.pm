@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Moose;
 
 with 'Fey::Role::SetOperation' => { keyword => 'INTERSECT' };
@@ -14,11 +12,9 @@ with 'Fey::Role::SQL::Cloneable';
 
 1;
 
+# ABSTRACT: Represents an INTERSECT operation
+
 __END__
-
-=head1 NAME
-
-Fey::SQL::Intersect - Represents an INTERSECT operation
 
 =head1 SYNOPSIS
 

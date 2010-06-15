@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Types qw( ArrayRef Bool SetOperationArg Str );
 
 use MooseX::Role::Parameterized;
@@ -123,11 +121,9 @@ role {
 
 1;
 
+# ABSTRACT: A role for things that are a set operation
+
 __END__
-
-=head1 NAME
-
-Fey::Role::SetOperation - A role for things that are a set operation
 
 =head1 SYNOPSIS
 

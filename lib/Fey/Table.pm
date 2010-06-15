@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Column;
 use Fey::Exceptions qw( param_error );
 use Fey::NamedObjectSet;
@@ -311,11 +309,9 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Represents a table (or view)
+
 __END__
-
-=head1 NAME
-
-Fey::Table - Represents a table (or view)
 
 =head1 SYNOPSIS
 

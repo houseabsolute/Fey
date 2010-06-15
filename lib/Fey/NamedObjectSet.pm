@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use List::AllUtils qw( all pairwise );
 
 use Fey::Types qw( HashRef Named );
@@ -77,10 +75,6 @@ sub is_same_as {
 __PACKAGE__->meta()->make_immutable();
 
 1;
-
-=head1 NAME
-
-Fey::NamedObjectSet - Holds a set of named objects
 
 =head1 SYNOPSIS
 

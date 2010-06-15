@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Moose::Role;
 
 requires 'sql';
@@ -16,11 +14,9 @@ sub id {
 
 1;
 
+# ABSTRACT: A role for things that are literals
+
 __END__
-
-=head1 NAME
-
-Fey::Role::IsLiteral - A role for things that are literals
 
 =head1 SYNOPSIS
 

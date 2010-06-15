@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Exceptions qw( param_error );
 use Fey::Literal;
 use Fey::Placeholder;
@@ -170,11 +168,9 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Represents a comparison in a WHERE clause
+
 __END__
-
-=head1 NAME
-
-Fey::SQL::Fragment::Where::Boolean - Represents a comparison in a WHERE clause
 
 =head1 DESCRIPTION
 

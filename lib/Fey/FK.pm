@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Column;
 use Fey::Exceptions qw(param_error);
 use Fey::Types qw(  ArrayRef ArrayRefOfColumns Bool Column TableOrName );
@@ -209,11 +207,9 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Represents a foreign key
+
 __END__
-
-=head1 NAME
-
-Fey::FK - Represents a foreign key
 
 =head1 SYNOPSIS
 

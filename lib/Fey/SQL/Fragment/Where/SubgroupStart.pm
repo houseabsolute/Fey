@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Moose;
 
 my $Paren = '(';
@@ -18,11 +16,9 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Represents the start of a subgroup in a WHERE clause
+
 __END__
-
-=head1 NAME
-
-Fey::SQL::Fragment::Where::Boolean - Represents the start of a subgroup in a WHERE clause
 
 =head1 DESCRIPTION
 

@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Types qw( ArrayRef OrderByElement );
 use Scalar::Util qw( blessed );
 
@@ -65,11 +63,9 @@ sub order_by_clause {
 
 1;
 
+# ABSTRACT: A role for queries which can include a ORDER BY clause
+
 __END__
-
-=head1 NAME
-
-Fey::Role::SQL::HasOrderByClause - A role for queries which can include a ORDER BY clause
 
 =head1 SYNOPSIS
 

@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Exceptions qw( param_error );
 
 use Fey::SQL::Fragment::Where::Boolean;
@@ -171,11 +169,9 @@ sub bind_params {
 
 1;
 
+# ABSTRACT: A role for queries which can include a WHERE clause
+
 __END__
-
-=head1 NAME
-
-Fey::Role::SQL::HasWhereClause - A role for queries which can include a WHERE clause
 
 =head1 SYNOPSIS
 

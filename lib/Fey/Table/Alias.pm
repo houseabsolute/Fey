@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Exceptions qw(param_error);
 use Fey::Table;
 use Fey::Types qw( Column HashRef Str Table );
@@ -112,11 +110,9 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Represents an alias for a table
+
 __END__
-
-=head1 NAME
-
-Fey::Table::Alias - Represents an alias for a table
 
 =head1 SYNOPSIS
 

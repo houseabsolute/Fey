@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::FakeDBI;
 use Fey::Types qw( FK OuterJoinType Table WhereClause );
 use List::AllUtils qw( pairwise );
@@ -192,11 +190,9 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Represents a single join in a FROM clause
+
 __END__
-
-=head1 NAME
-
-Fey::SQL::Fragment::Join - Represents a single join in a FROM clause
 
 =head1 DESCRIPTION
 

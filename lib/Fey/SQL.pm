@@ -3,8 +3,6 @@ package Fey::SQL;
 use strict;
 use warnings;
 
-our $VERSION = '0.34';
-
 use Fey::SQL::Delete;
 use Fey::SQL::Insert;
 use Fey::SQL::Select;
@@ -57,11 +55,9 @@ sub new_except {
 
 1;
 
+# ABSTRACT: Documentation on SQL generation with Fey and SQL object factory
+
 __END__
-
-=head1 NAME
-
-Fey::SQL - Documentation on SQL generation with Fey and SQL object factory
 
 =head1 SYNOPSIS
 

@@ -4,19 +4,15 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Moose::Role;
 
 sub is_groupable {1}
 
 1;
 
+# ABSTRACT: A role for things that can be part of a GROUP BY clause
+
 __END__
-
-=head1 NAME
-
-Fey::Role::Groupable - A role for things that can be part of a GROUP BY clause
 
 =head1 SYNOPSIS
 

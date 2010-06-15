@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use MooseX::Role::Parameterized;
 
 parameter 'real_class' => ( isa => 'Moose::Meta::Class' );
@@ -56,11 +54,9 @@ role {
 
 1;
 
+# ABSTRACT: Adds a just-deep-enough clone() method to SQL objects
+
 __END__
-
-=head1 NAME
-
-Fey::Role::SQL::Cloneable - Adds a just-deep-enough clone() method to SQL objects
 
 =head1 SYNOPSIS
 

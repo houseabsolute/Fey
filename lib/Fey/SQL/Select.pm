@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Exceptions qw( param_error );
 use Fey::Literal;
 use Fey::Role::ColumnLike;
@@ -492,11 +490,9 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Represents a SELECT query
+
 __END__
-
-=head1 NAME
-
-Fey::SQL::Select - Represents a SELECT query
 
 =head1 SYNOPSIS
 

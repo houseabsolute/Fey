@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Moose::Role;
 
 # This seems weird, but basically we're saying that column-like things
@@ -36,11 +34,9 @@ sub is_orderable { return $_[0]->table() ? 1 : 0 }
 
 1;
 
+# ABSTRACT: A role for "column-like" behavior
+
 __END__
-
-=head1 NAME
-
-Fey::Role::ColumnLike - A role for "column-like" behavior
 
 =head1 SYNOPSIS
 

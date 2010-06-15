@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.34';
-
 use Fey::Types qw( Str );
 
 use Moose;
@@ -36,11 +34,9 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Represents a literal string in a SQL statement
+
 __END__
-
-=head1 NAME
-
-Fey::Literal::String - Represents a literal string in a SQL statement
 
 =head1 SYNOPSIS
 
