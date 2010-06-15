@@ -48,8 +48,6 @@ use MooseX::Types -declare => [qw(
 use MooseX::Types::Moose
     qw( ArrayRef Defined Int Item Object Str Undef Value );
 
-use Moose::Util::TypeConstraints;
-
 subtype GenericTypeName, as Str, where {
     /^(?:text|blob|integer|float|date|datetime|time|boolean|other)$/xism
 };
@@ -216,8 +214,6 @@ class_type Table, { class => 'Fey::Table' };
 class_type Schema, { class => 'Fey::Schema' };
 
 class_type FK, { class => 'Fey::FK' };
-
-no Moose::Util::TypeConstraints;
 
 1;
 
