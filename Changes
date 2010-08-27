@@ -1,3 +1,8 @@
+0.36    2010-08-27
+
+- Avoid warnings from the latest versions of Moose (1.10).
+
+
 0.35    2010-06-15
 
 - You can now include a WHERE clause as part of an inner join, like 
