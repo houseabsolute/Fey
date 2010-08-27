@@ -10,10 +10,10 @@ use Moose::Role;
 # do these four roles, but the implementation is different for
 # column-like things (than for example, selectable things).
 with(
-    'Fey::Role::Selectable' => { excludes => 'is_selectable' },
-    'Fey::Role::Comparable' => { excludes => 'is_comparable' },
-    'Fey::Role::Groupable'  => { excludes => 'is_groupable' },
-    'Fey::Role::Orderable'  => { excludes => 'is_orderable' },
+    'Fey::Role::Selectable' => { -excludes => 'is_selectable' },
+    'Fey::Role::Comparable' => { -excludes => 'is_comparable' },
+    'Fey::Role::Groupable'  => { -excludes => 'is_groupable' },
+    'Fey::Role::Orderable'  => { -excludes => 'is_orderable' },
 );
 
 requires '_build_id', 'is_alias';

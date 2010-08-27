@@ -20,13 +20,13 @@ use MooseX::StrictConstructor;
 with 'Fey::Role::SQL::HasOrderByClause', 'Fey::Role::SQL::HasLimitClause';
 
 with 'Fey::Role::SQL::HasWhereClause' => {
-    excludes => 'bind_params',
-    alias    => { bind_params => '_where_clause_bind_params' },
+    -excludes => 'bind_params',
+    -alias    => { bind_params => '_where_clause_bind_params' },
 };
 
 with 'Fey::Role::SQL::HasBindParams' => {
-    excludes => 'bind_params',
-    alias    => { bind_params => '_update_bind_params' },
+    -excludes => 'bind_params',
+    -alias    => { bind_params => '_update_bind_params' },
 };
 
 has '_update' => (

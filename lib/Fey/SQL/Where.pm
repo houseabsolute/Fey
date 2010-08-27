@@ -12,7 +12,7 @@ use MooseX::StrictConstructor;
 
 with 'Fey::Role::SQL::HasWhereClause';
 
-with 'Fey::Role::SQL::HasBindParams' => { excludes => 'bind_params' };
+with 'Fey::Role::SQL::HasBindParams' => { -excludes => 'bind_params' };
 
 with 'Fey::Role::SQL::Cloneable';
 

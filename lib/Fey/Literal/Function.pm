@@ -14,7 +14,7 @@ use MooseX::StrictConstructor;
 with 'Fey::Role::Comparable',
     'Fey::Role::Selectable',
     'Fey::Role::Orderable',
-    'Fey::Role::Groupable' => { excludes => 'is_groupable' },
+    'Fey::Role::Groupable' => { -excludes => 'is_groupable' },
     'Fey::Role::IsLiteral';
 
 with 'Fey::Role::HasAliasName' => { generated_alias_prefix => 'FUNCTION' };

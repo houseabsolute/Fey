@@ -25,11 +25,11 @@ with 'Fey::Role::Comparable',
     'Fey::Role::SQL::ReturnsData';
 
 with 'Fey::Role::SQL::HasWhereClause' => {
-    excludes => 'bind_params',
-    alias    => { bind_params => '_where_clause_bind_params' },
+    -excludes => 'bind_params',
+    -alias    => { bind_params => '_where_clause_bind_params' },
 };
 
-with 'Fey::Role::SQL::HasBindParams' => { excludes => 'bind_params' };
+with 'Fey::Role::SQL::HasBindParams' => { -excludes => 'bind_params' };
 
 with 'Fey::Role::HasAliasName' => {
     generated_alias_prefix => 'SUBSELECT',

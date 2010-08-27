@@ -16,7 +16,7 @@ with 'Fey::Role::SQL::HasWhereClause',
     'Fey::Role::SQL::HasOrderByClause',
     'Fey::Role::SQL::HasLimitClause';
 
-with 'Fey::Role::SQL::HasBindParams' => { excludes => 'bind_params' };
+with 'Fey::Role::SQL::HasBindParams' => { -excludes => 'bind_params' };
 
 has '_from' => (
     is       => 'rw',
