@@ -54,7 +54,7 @@ has '_keys' => (
     handles => {
         _keys       => 'elements',
         _add_key    => 'push',
-        _delete_key => 'delete',
+        _delete_key => 'splice',
     },
 
 );
