@@ -1,3 +1,11 @@
+0.37    2010-09-25
+
+- Removing a candidate key left an undef value in the internal candidate key
+  array. I'm not sure if this could actually show up in normal use. Note that
+  this fix also avoids an error that will show up in future versions of Moose
+  when a native delegation method is called incorrectly.
+
+
 0.36    2010-08-27
 
 - Avoid warnings from the latest versions of Moose (1.10).
