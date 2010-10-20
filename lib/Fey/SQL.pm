@@ -148,7 +148,7 @@ object, it could be a function or anything that produces valid SQL.
   # WHERE LENGTH(Part.name) = 10
   $sql->where( $length, '=', 10 );
 
-The second parameter in a conditional can any comparison operator that
+The second parameter in a conditional can be any comparison operator that
 produces valid SQL:
 
   # WHERE Message.body LIKE 'hello%'
