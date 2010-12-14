@@ -1,3 +1,12 @@
+0.38    2010-12-14
+
+- Various methods which returned lists of objects, such as Schema->tables()
+  and Table->columns() without arguments, did not return the objects in any
+  specific order. Now the objects are returned in the same order as they were
+  added originally. This also applies to lists of columns in both candidate
+  and foreign keys. RT #63811. Reported by John Dasch.
+
+
 0.37    2010-09-25
 
 - Removing a candidate key left an undef value in the internal candidate key
