@@ -272,10 +272,12 @@ this method returns false.
 
 =head2 $schema->tables(@names)
 
-When this method is called with no arguments, it returns all of the
-tables in the schema. If given a list of names, it returns only the
-specified tables. If a name is given which doesn't match a table in
-the schema, then it is ignored.
+When this method is called with no arguments, it returns all of the tables in
+the schema. Tables are returned in the order with which they were added to the
+schema.
+
+If given a list of names, it returns only the specified tables. If a name is
+given which doesn't match a table in the schema, then it is ignored.
 
 =head2 $schema->add_foreign_key($fk)
 
