@@ -56,7 +56,7 @@ $s->table('User')->add_column($size);
     );
     is(
         $insert->columns_clause($dbh),
-        q{("email", "user_id", "size", "username")},
+        q{("user_id", "username", "email", "size")},
         'columns_clause with one table'
     );
 }
@@ -254,6 +254,42 @@ $s->table('User')->add_column($size);
     is(
         $insert2->sql($dbh), q{INSERT INTO "User" ("size") VALUES (42)},
         'sql() for cloned insert clause has different value'
+    );
+}
+
+{
+    my $insert = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
+
+    $insert->into(
+        $s->table('User')->columns( 'size', 'email', 'username' ) );
+
+    $insert->values(
+        size     => Fey::Placeholder->new(),
+        email    => Fey::Placeholder->new(),
+        username => Fey::Placeholder->new(),
+    );
+
+    is(
+        $insert->sql($dbh), q{INSERT INTO "User" ("size", "email", "username") VALUES (?, ?, ?)},
+        'sql() preserves column order in INTO clause'
+    );
+}
+
+{
+    my $insert = Fey::SQL->new_insert( auto_placeholders => 0 )->insert();
+
+    $insert->into(
+        $s->table('User')->columns( 'email', 'username', 'size' ) );
+
+    $insert->values(
+        size     => Fey::Placeholder->new(),
+        email    => Fey::Placeholder->new(),
+        username => Fey::Placeholder->new(),
+    );
+
+    is(
+        $insert->sql($dbh), q{INSERT INTO "User" ("email", "username", "size") VALUES (?, ?, ?)},
+        'sql() preserves column order in INTO clause (different order)'
     );
 }
 
