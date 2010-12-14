@@ -5,21 +5,21 @@ use warnings;
 use namespace::autoclean;
 
 use List::AllUtils qw( all pairwise );
+use Tie::IxHash;
 
 use Fey::Types qw( HashRef Named );
 
 use Moose;
 
 has '_set' => (
-    traits  => ['Hash'],
     is      => 'bare',
-    isa     => HashRef[Named],
+    isa     => 'Tie::IxHash',
     handles => {
-        _get    => 'get',
-        _add    => 'set',
-        _delete => 'delete',
-        _all    => 'values',
-        _keys   => 'keys',
+        _get    => 'FETCH',
+        _add    => 'STORE',
+        _delete => 'Delete',
+        _all    => 'Values',
+        _keys   => 'Keys',
     },
     required => 1,
 );
@@ -27,7 +27,7 @@ has '_set' => (
 sub BUILDARGS {
     my $class = shift;
 
-    return { _set => { map { $_->name() => $_ } @_ } };
+    return { _set => Tie::IxHash->new( map { $_->name() => $_ } @_ ) };
 }
 
 sub add {
@@ -57,7 +57,7 @@ sub objects {
 
     return $self->_all() unless @_;
 
-    return grep {defined} $self->_get(@_);
+    return grep {defined} map { $self->_get($_) } @_;
 }
 
 sub is_same_as {
