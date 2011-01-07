@@ -1,3 +1,10 @@
+0.39    2011-01-07
+
+- The value used for setting a column in an UPDATE or INSERT can now be any
+  object which does the Fey::Role::SQL::ReturnsData role, which includes
+  Fey::SQL::Select objects.
+
+
 0.38    2010-12-14
 
 - Various methods which returned lists of objects, such as Schema->tables()
