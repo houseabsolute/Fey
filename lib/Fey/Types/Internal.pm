@@ -137,17 +137,23 @@ subtype IntoElement, as Object, where {
     };
 
 subtype NullableInsertValue, as Item, where {
-           !blessed $_
-        || ( $_->can('does') && $_->does('Fey::Role::IsLiteral') )
+    !blessed $_
+        || (
+            $_->can('does')
+            && (   $_->does('Fey::Role::IsLiteral')
+                || $_->does('Fey::Role::SQL::ReturnsData') )
+        )
         || $_->isa('Fey::Placeholder')
         || overload::Overloaded($_);
 };
 
 subtype NonNullableInsertValue, as Defined, where {
     !blessed $_
-        || ( $_->can('does')
-        && $_->does('Fey::Role::IsLiteral')
-        && !$_->isa('Fey::Literal::Null') )
+        || (
+            $_->can('does')
+            && (   $_->does('Fey::Role::IsLiteral')
+                 || $_->does('Fey::Role::SQL::ReturnsData') )
+            && !$_->isa('Fey::Literal::Null') )
         || $_->isa('Fey::Placeholder')
         || overload::Overloaded($_);
 };
@@ -155,7 +161,11 @@ subtype NonNullableInsertValue, as Defined, where {
 subtype NullableUpdateValue, as Item, where {
            !blessed $_
         || $_->isa('Fey::Column')
-        || ( $_->can('does') && $_->does('Fey::Role::IsLiteral') )
+        || (
+            $_->can('does')
+            && (   $_->does('Fey::Role::IsLiteral')
+                || $_->does('Fey::Role::SQL::ReturnsData') )
+        )
         || $_->isa('Fey::Placeholder')
         || overload::Overloaded($_);
 };
@@ -163,9 +173,11 @@ subtype NullableUpdateValue, as Item, where {
 subtype NonNullableUpdateValue, as Defined, where {
     !blessed $_
         || $_->isa('Fey::Column')
-        || ( $_->can('does')
-        && $_->does('Fey::Role::IsLiteral')
-        && !$_->isa('Fey::Literal::Null') )
+        || (
+            $_->can('does')
+            && (   $_->does('Fey::Role::IsLiteral')
+                 || $_->does('Fey::Role::SQL::ReturnsData') )
+            && !$_->isa('Fey::Literal::Null') )
         || $_->isa('Fey::Placeholder')
         || overload::Overloaded($_);
 };

@@ -293,4 +293,24 @@ $s->table('User')->add_column($size);
     );
 }
 
+{
+    my $select = Fey::SQL->new_select()->select(1)->from( $s->table('User') );
+
+    #<<<
+    my $insert =
+        Fey::SQL->new_insert
+                ->insert()
+                ->into( $s->table('User')
+                ->columns('email', 'username') )
+                ->values( email => 'foo@example.com',
+                          username => $select,
+                        );
+    #>>>
+    is(
+        $insert->sql($dbh),
+        q{INSERT INTO "User" ("email", "username") VALUES (?, (SELECT 1 FROM "User"))},
+        'insert where one value is a SELECT query'
+    );
+}
+
 done_testing();

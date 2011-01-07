@@ -147,8 +147,13 @@ sub set_clause {
         'SET ' . (
             join ', ',
             map {
-                      $self->$col_quote( $_->[0], $dbh ) . ' = '
-                    . $_->[1]->sql($dbh)
+                my $val = $_->[1];
+                my $val_sql = $val->sql($dbh);
+                $val_sql = "($val_sql)"
+                    if blessed $val
+                        && $val->can('does')
+                        && $val->does('Fey::Role::SQL::ReturnsData');
+                $self->$col_quote( $_->[0], $dbh ) . ' = ' . $val_sql;
                 } $self->_set_pairs()
         )
     );

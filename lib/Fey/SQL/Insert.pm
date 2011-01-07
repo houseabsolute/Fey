@@ -155,7 +155,15 @@ sub values_clause {
 
         $v .= (
             join ', ',
-            map { $vals->{ $_->name() }->sql($dbh) } @cols
+            map {
+                my $val = $vals->{ $_->name() };
+                my $sql = $val->sql($dbh);
+                blessed $val
+                    && $val->can('does')
+                    && $val->does('Fey::Role::SQL::ReturnsData')
+                    ? "($sql)"
+                    : $sql
+                } @cols
         );
 
         $v .= ')';

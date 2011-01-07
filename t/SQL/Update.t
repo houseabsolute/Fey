@@ -338,4 +338,22 @@ $s->table('User')->add_column($size);
     );
 }
 
+{
+    my $select = Fey::SQL->new_select()->select(1)->from( $s->table('User') );
+
+    #<<<
+    my $update =
+        Fey::SQL->new_update
+                ->update( $s->table('User') )
+                ->set( $s->table('User')->column('email')    => 'foo@example.com',
+                       $s->table('User')->column('username') => $select,
+                     );
+    #>>>
+    is(
+        $update->sql($dbh),
+        q{UPDATE "User" SET "email" = ?, "username" = (SELECT 1 FROM "User")},
+        'update where one value is a SELECT query'
+    );
+}
+
 done_testing();
