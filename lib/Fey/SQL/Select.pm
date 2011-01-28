@@ -263,7 +263,7 @@ sub _fk_for_join {
             unless @fk;
 
         param_error
-            'You specified a join for two tables with more than one foreign key,'
+            'You specified a join for two tables with more than one foreign key'
             . ', so you must specify which foreign key to use for the join.';
     }
 
