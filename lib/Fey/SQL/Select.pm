@@ -472,7 +472,7 @@ sub bind_params {
     return (
         (
             map { $_->bind_params() }
-            grep { blessed $_ && $_->can('bind_params') }
+            grep { $_->can('bind_params') }
             $self->select_clause_elements()
         ),
 
