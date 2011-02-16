@@ -202,4 +202,26 @@ my $dbh = Fey::Test->mock_dbh();
     );
 }
 
+{
+    my $q = Fey::SQL->new_select();
+
+    my $q2 = Fey::SQL->new_select();
+    #<<<
+    $q2
+        ->select( $s->table('User') )
+        ->from  ( $s->table('User') )
+        ->where( $s->table('User')->column('user_id'), '=', 2 );
+
+    $q
+        ->select( $s->table('User'), $q2 )
+        ->from  ( $s->table('User') )
+        ->where( $s->table('User')->column('user_id'), '=', 3 );
+    #>>
+
+    is_deeply(
+        [ $q->bind_params() ], [ 2, 3 ],
+        'bind_params is [ 2, 3 ] (got bind params from subselect in SELECT clause)'
+    );
+}
+
 done_testing();
