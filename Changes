@@ -1,3 +1,9 @@
+0.40    2011-02-16
+
+- Bind params in a subselect used in the SELECT clause of a query were not
+  returned by the bind_params() method.
+
+
 0.39    2011-01-07
 
 - The value used for setting a column in an UPDATE or INSERT can now be any
