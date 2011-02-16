@@ -124,8 +124,10 @@ my $dbh = Fey::Test->mock_dbh();
     my $subselect = Fey::SQL->new_select();
     $subselect->select( $s->table('User')->column('user_id') );
     $subselect->from( $s->table('User') );
-    $subselect->where( $s->table('User')->column('user_id'), 'IN', 5, 6, 7,
-        9 );
+    $subselect->where(
+        $s->table('User')->column('user_id'), 'IN',
+        5, 6, 7, 9
+    );
 
     $q->having( $s->table('User')->column('user_id'), 'IN', $subselect );
 
@@ -136,7 +138,7 @@ my $dbh = Fey::Test->mock_dbh();
     );
     is_deeply(
         [ $q->bind_params() ], [ 5, 6, 7, 9 ],
-        'bind_params is [ 5, 6, 7, 9 ]'
+        'bind_params is [ 5, 6, 7, 9 ] (got bind params from subselect in HAVING clause)'
     );
 }
 
@@ -155,26 +157,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     is_deeply(
         [ $q->bind_params() ], [ 5, 9, 29, 5, 9, 23 ],
-        'bind_params is [ 5, 9, 29, 5, 9, 23 ]'
-    );
-}
-
-{
-    my $q = Fey::SQL->new_select();
-
-    my $subselect = Fey::SQL->new_select();
-    $subselect->select( $s->table('User')->column('user_id') );
-    $subselect->from( $s->table('User') );
-    $subselect->where( $s->table('User')->column('user_id'), 'IN', 5, 9 );
-
-    $q->from($subselect);
-    $q->where( $s->table('User')->column('user_id'), '=',  29 );
-    $q->where( $s->table('User')->column('user_id'), 'IN', $subselect );
-    $q->having( $s->table('User')->column('user_id'), '=', 23 );
-
-    is_deeply(
-        [ $q->bind_params() ], [ 5, 9, 29, 5, 9, 23 ],
-        'bind_params is [ 5, 9, 29, 5, 9, 23 ]'
+        'bind_params is [ 5, 9, 29, 5, 9, 23 ] (got bind params from subselect in WHERE clause)'
     );
 }
 
@@ -198,22 +181,22 @@ my $dbh = Fey::Test->mock_dbh();
 
     is_deeply(
         [ $q->bind_params() ], [ 2, 3 ],
-        'bind_params is [ 2, 3 ]'
+        'bind_params is [ 2, 3 ] (got bind params from condition in FROM clause)'
     );
 }
 
 {
     my $q = Fey::SQL->new_select();
 
-    my $q2 = Fey::SQL->new_select();
+    my $subselect = Fey::SQL->new_select();
     #<<<
-    $q2
+    $subselect
         ->select( $s->table('User') )
         ->from  ( $s->table('User') )
         ->where( $s->table('User')->column('user_id'), '=', 2 );
 
     $q
-        ->select( $s->table('User'), $q2 )
+        ->select( $s->table('User'), $subselect )
         ->from  ( $s->table('User') )
         ->where( $s->table('User')->column('user_id'), '=', 3 );
     #>>
