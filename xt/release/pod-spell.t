@@ -26,10 +26,14 @@ local $ENV{LC_ALL} = 'C';
 all_pod_files_spelling_ok;
 
 __DATA__
+Alzabo
+Alzabo's
+API
 APIs
 ASC
 alias's
 attribute's
+CPAN
 datetime
 deflator
 deflators
@@ -58,9 +62,12 @@ namespace
 nullable
 NULLs
 numification
+OO
 parameterized
 params
 Pearcey
+Postgres
+RDBMS
 resultset
 rethrows
 Rolsky
@@ -68,6 +75,7 @@ Runtime
 schemas
 Siracusa's
 SomeTable
+SQL
 SQLite
 SQLy
 subclause
