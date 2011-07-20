@@ -1,3 +1,8 @@
+{{$NEXT}}
+
+- Shut up warning from tests with newer Perls.
+
+
 0.40    2011-02-16
 
 - Bind params in a subselect used in the SELECT clause of a query were not
