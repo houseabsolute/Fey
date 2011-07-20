@@ -230,12 +230,12 @@ types of things:
 
 =item * An object which has an C<is_comparable()> method that returns true
 
-This includes objects which do the L<Fey::ColumnLike> role: L<Fey::Column> and
-L<Fey::Column::Alias>. A column only returns true for C<is_comparable()> when
-it is actually attached to a table.
+This includes objects which do the L<Fey::Role::ColumnLike> role:
+L<Fey::Column> and L<Fey::Column::Alias>. A column only returns true for
+C<is_comparable()> when it is actually attached to a table.
 
-Objects which do the L<Fey::Role::Comaprable> role: L<Fey::SQL::Select>,
-L<Fey::SQL::Union>, L<Fey::SQL::Intersection>, and L<Fey::SQL::Except> always
+Objects which do the L<Fey::Role::Comparable> role: L<Fey::SQL::Select>,
+L<Fey::SQL::Union>, L<Fey::SQL::Intersect>, and L<Fey::SQL::Except> always
 return true for C<is_comparable()>.
 
 If you try to compare something to something that returns a data set, you must
