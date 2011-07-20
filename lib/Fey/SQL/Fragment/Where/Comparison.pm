@@ -89,7 +89,7 @@ sub BUILDARGS {
             unless $operator =~ /$eq_comp_re|$in_comp_re/;
     }
 
-    if ( lc $operator eq 'between' ) {
+    if ( defined $operator && lc $operator eq 'between' ) {
         param_error "The BETWEEN operator requires two arguments"
             unless @rhs == 2;
     }
