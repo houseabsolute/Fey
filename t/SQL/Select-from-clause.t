@@ -562,4 +562,103 @@ my $dbh = Fey::Test->mock_dbh();
     }
 }
 
+{
+    my $t1 = Fey::Table->new( name => 't1' );
+    $t1->add_column(
+        Fey::Column->new(
+            name => 't1_id',
+            type => 'integer',
+        )
+    );
+    $t1->add_candidate_key('t1_id');
+
+    my $t2 = Fey::Table->new( name => 't2' );
+    $t2->add_column(
+        Fey::Column->new(
+            name => 't2_id',
+            type => 'integer',
+        )
+    );
+    $t2->add_column(
+        Fey::Column->new(
+            name => 't1_id',
+            type => 'integer',
+        )
+    );
+    $t2->add_candidate_key('t2_id');
+
+    my $t3 = Fey::Table->new( name => 't3' );
+    $t3->add_column(
+        Fey::Column->new(
+            name => 't3_id',
+            type => 'integer',
+        )
+    );
+    $t3->add_column(
+        Fey::Column->new(
+            name => 't2_id',
+            type => 'integer',
+        )
+    );
+    $t3->add_candidate_key('t3_id');
+
+    my $t4 = Fey::Table->new( name => 't4' );
+    $t4->add_column(
+        Fey::Column->new(
+            name => 't4_id',
+            type => 'integer',
+        )
+    );
+    $t4->add_column(
+        Fey::Column->new(
+            name => 't3_id',
+            type => 'integer',
+        )
+    );
+    $t4->add_candidate_key('t4_id');
+
+    $s->add_table($_) for $t1, $t2, $t3, $t4;
+
+    $s->add_foreign_key(
+        Fey::FK->new(
+            source_columns => [ $t2->column('t1_id') ],
+            target_columns => [ $t1->column('t1_id') ],
+        )
+    );
+    $s->add_foreign_key(
+        Fey::FK->new(
+            source_columns => [ $t3->column('t2_id') ],
+            target_columns => [ $t2->column('t2_id') ],
+        )
+    );
+    $s->add_foreign_key(
+        Fey::FK->new(
+            source_columns => [ $t4->column('t3_id') ],
+            target_columns => [ $t3->column('t3_id') ],
+        )
+    );
+
+    my $select = Fey::SQL->new_select();
+    #<<<
+    $select
+        ->select($t4)
+        ->from( $t4, $t3 )
+        ->from( $t3, $t2 )
+        ->from( $t2, $t1 )
+        ->where( $t1->column('t1_id'), '=', Fey::Placeholder->new() );
+    #>>
+
+    my $expect = q{SELECT "t4"."t3_id", "t4"."t4_id"};
+    $expect .= q{ FROM "t2"};
+    $expect .= q{ JOIN "t1" ON ("t2"."t1_id" = "t1"."t1_id")};
+    $expect .= q{ JOIN "t3" ON ("t3"."t2_id" = "t2"."t2_id")};
+    $expect .= q{ JOIN "t4" ON ("t4"."t3_id" = "t3"."t3_id")};
+    $expect .= q{ WHERE "t1"."t1_id" = ?};
+
+    is(
+        $select->sql($dbh), $expect,
+        'three joins in a row work'
+    );
+}
+
 done_testing();
