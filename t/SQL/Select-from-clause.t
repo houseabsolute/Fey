@@ -563,97 +563,97 @@ my $dbh = Fey::Test->mock_dbh();
 }
 
 {
-    my $t1 = Fey::Table->new( name => 't1' );
-    $t1->add_column(
+    my $first = Fey::Table->new( name => 'first' );
+    $first->add_column(
         Fey::Column->new(
-            name => 't1_id',
+            name => 'first_id',
             type => 'integer',
         )
     );
-    $t1->add_candidate_key('t1_id');
+    $first->add_candidate_key('first_id');
 
-    my $t2 = Fey::Table->new( name => 't2' );
-    $t2->add_column(
+    my $second = Fey::Table->new( name => 'second' );
+    $second->add_column(
         Fey::Column->new(
-            name => 't2_id',
+            name => 'second_id',
             type => 'integer',
         )
     );
-    $t2->add_column(
+    $second->add_column(
         Fey::Column->new(
-            name => 't1_id',
+            name => 'first_id',
             type => 'integer',
         )
     );
-    $t2->add_candidate_key('t2_id');
+    $second->add_candidate_key('second_id');
 
-    my $t3 = Fey::Table->new( name => 't3' );
-    $t3->add_column(
+    my $third = Fey::Table->new( name => 'third' );
+    $third->add_column(
         Fey::Column->new(
-            name => 't3_id',
+            name => 'third_id',
             type => 'integer',
         )
     );
-    $t3->add_column(
+    $third->add_column(
         Fey::Column->new(
-            name => 't2_id',
+            name => 'second_id',
             type => 'integer',
         )
     );
-    $t3->add_candidate_key('t3_id');
+    $third->add_candidate_key('third_id');
 
-    my $t4 = Fey::Table->new( name => 't4' );
-    $t4->add_column(
+    my $fourth = Fey::Table->new( name => 'fourth' );
+    $fourth->add_column(
         Fey::Column->new(
-            name => 't4_id',
+            name => 'fourth_id',
             type => 'integer',
         )
     );
-    $t4->add_column(
+    $fourth->add_column(
         Fey::Column->new(
-            name => 't3_id',
+            name => 'third_id',
             type => 'integer',
         )
     );
-    $t4->add_candidate_key('t4_id');
+    $fourth->add_candidate_key('fourth_id');
 
-    $s->add_table($_) for $t1, $t2, $t3, $t4;
+    $s->add_table($_) for $first, $second, $third, $fourth;
 
     $s->add_foreign_key(
         Fey::FK->new(
-            source_columns => [ $t2->column('t1_id') ],
-            target_columns => [ $t1->column('t1_id') ],
-        )
-    );
-    $s->add_foreign_key(
-        Fey::FK->new(
-            source_columns => [ $t3->column('t2_id') ],
-            target_columns => [ $t2->column('t2_id') ],
+            source_columns => [ $second->column('first_id') ],
+            target_columns => [ $first->column('first_id') ],
         )
     );
     $s->add_foreign_key(
         Fey::FK->new(
-            source_columns => [ $t4->column('t3_id') ],
-            target_columns => [ $t3->column('t3_id') ],
+            source_columns => [ $third->column('second_id') ],
+            target_columns => [ $second->column('second_id') ],
+        )
+    );
+    $s->add_foreign_key(
+        Fey::FK->new(
+            source_columns => [ $fourth->column('third_id') ],
+            target_columns => [ $third->column('third_id') ],
         )
     );
 
     my $select = Fey::SQL->new_select();
     #<<<
     $select
-        ->select($t4)
-        ->from( $t4, $t3 )
-        ->from( $t3, $t2 )
-        ->from( $t2, $t1 )
-        ->where( $t1->column('t1_id'), '=', Fey::Placeholder->new() );
+        ->select($fourth)
+        ->from( $fourth, $third )
+        ->from( $third, $second )
+        ->from( $second, $first )
+        ->where( $first->column('first_id'), '=', Fey::Placeholder->new() );
     #>>
 
-    my $expect = q{SELECT "t4"."t3_id", "t4"."t4_id"};
-    $expect .= q{ FROM "t2"};
-    $expect .= q{ JOIN "t1" ON ("t2"."t1_id" = "t1"."t1_id")};
-    $expect .= q{ JOIN "t3" ON ("t3"."t2_id" = "t2"."t2_id")};
-    $expect .= q{ JOIN "t4" ON ("t4"."t3_id" = "t3"."t3_id")};
-    $expect .= q{ WHERE "t1"."t1_id" = ?};
+    my $expect = q{SELECT "fourth"."third_id", "fourth"."fourth_id"};
+    $expect .= q{ FROM "second"};
+    $expect .= q{ JOIN "first" ON ("second"."first_id" = "first"."first_id")};
+    $expect .= q{ JOIN "third" ON ("third"."second_id" = "second"."second_id")};
+    $expect .= q{ JOIN "fourth" ON ("fourth"."third_id" = "third"."third_id")};
+    $expect .= q{ WHERE "first"."first_id" = ?};
 
     is(
         $select->sql($dbh), $expect,
