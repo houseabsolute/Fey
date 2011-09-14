@@ -399,8 +399,7 @@ sub from_clause {
 
     my %seen;
 
-    # We lower case  the test for correctly skipping
-    # already-seen tables.
+    # We lower case the test for correctly skipping already-seen tables.
     for my $frag (
         $self->_get_from( sort { lc($a) cmp lc($b) } $self->_from_ids() ) ) {
         my $join_sql = $frag->sql_with_alias( $dbh, \%seen );
