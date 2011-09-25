@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
+use Fey::Exceptions qw( param_error );
 use Fey::FakeDBI;
 use Fey::Types qw( FK OuterJoinType Table WhereClause );
 use List::AllUtils qw( pairwise );
@@ -25,9 +26,10 @@ has '_table2' => (
 );
 
 has '_fk' => (
-    is       => 'ro',
-    isa      => FK,
-    init_arg => 'fk',
+    is        => 'ro',
+    isa       => FK,
+    init_arg  => 'fk',
+    predicate => '_has_fk',
 );
 
 has '_outer_type' => (
@@ -43,6 +45,15 @@ has '_where' => (
     predicate => '_has_where',
     init_arg  => 'where',
 );
+
+sub BUILD {
+    my $self = shift;
+
+    param_error 'You cannot join two tables with a foreign key'
+        if $self->_has_table2() && ! $self->_has_fk();
+
+    return;
+}
 
 sub id {
     my $self = shift;
