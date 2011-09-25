@@ -157,34 +157,52 @@ sub from {
     my $is_inner_join = @_ >= 2 && !$is_outer_join;
 
     # gee, wouldn't multimethods be nice here?
+
+    #<<<
     my $meth = (
         @_ == 1
             && blessed $_[0]
             && $_[0]->can('is_joinable')
             && $_[0]->is_joinable()
-        ? '_from_one_table'
+          ? '_from_one_table'
+
         : @_ == 1
             && blessed $_[0]
             && $_[0]->can('does')
             && $_[0]->does('Fey::Role::SQL::ReturnsData')
-        ? '_from_subselect'
+          ? '_from_subselect'
 
         : $is_inner_join
-            && @_ == 4 && $_[3]->isa('Fey::SQL::Where') ? '_join_with_where'
-        : $is_inner_join
-            && @_ == 3 && $_[2]->isa('Fey::SQL::Where') ? '_join_with_where'
-        : $is_inner_join && @_ == 3 && $_[2]->isa('Fey::FK') ? '_join'
-        : $is_inner_join && @_ == 2 ? '_join'
+            && @_ == 4 && $_[3]->isa('Fey::SQL::Where')
+          ? '_join_with_where'
 
-        : $is_outer_join && @_ == 5 ? '_outer_join_with_where'
+        : $is_inner_join
+            && @_ == 3 && $_[2]->isa('Fey::SQL::Where')
+          ? '_join_with_where'
+
+        : $is_inner_join && @_ == 3 && $_[2]->isa('Fey::FK')
+          ? '_join'
+
+        : $is_inner_join && @_ == 2
+          ? '_join'
+
+        : $is_outer_join && @_ == 5
+          ? '_outer_join_with_where'
+
         : $is_outer_join
             && @_ == 4
-            && $_[3]->isa('Fey::SQL::Where') ? '_outer_join_with_where'
-        : $is_outer_join && @_ == 4 && $_[3]->isa('Fey::FK') ? '_outer_join'
-        : $is_outer_join && @_ == 3 ? '_outer_join'
+            && $_[3]->isa('Fey::SQL::Where')
+          ? '_outer_join_with_where'
+
+        : $is_outer_join && @_ == 4 && $_[3]->isa('Fey::FK')
+           ? '_outer_join'
+
+        : $is_outer_join && @_ == 3
+          ? '_outer_join'
 
         : undef
     );
+    #>>>
 
     param_error "from() called with invalid parameters (@_)."
         unless $meth;
