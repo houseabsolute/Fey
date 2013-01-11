@@ -18,7 +18,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     isa_ok( $select, 'Fey::SQL::Select' );
 
-    my $sql = q{SELECT "User"."email", "User"."user_id", "User"."username"};
+    my $sql = q{SELECT "User".*};
     is(
         $select->select_clause($dbh), $sql,
         'select_clause with one table'
@@ -26,7 +26,7 @@ my $dbh = Fey::Test->mock_dbh();
 
     is_deeply(
         [ map { $_->name() } $select->select_clause_elements() ],
-        [qw( email user_id username )],
+        [qw( User )],
         'select_clause_elements with one table'
     );
 }
@@ -39,8 +39,7 @@ my $dbh = Fey::Test->mock_dbh();
     my $user_alias = $s->table('User')->alias( alias_name => 'UserA' );
     $select->select($user_alias);
 
-    my $sql = q{SELECT "User"."email", "User"."user_id", "User"."username"};
-    $sql .= q{, "UserA"."email", "UserA"."user_id", "UserA"."username"};
+    my $sql = q{SELECT "User".*, "UserA".*};
 
     is(
         $select->select_clause($dbh), $sql,
@@ -55,7 +54,7 @@ my $dbh = Fey::Test->mock_dbh();
     $select->select( $s->table('User') );
 
     my $sql
-        = q{SELECT "User"."user_id", "User"."email", "User"."user_id", "User"."username"};
+        = q{SELECT "User"."user_id", "User".*};
     is(
         $select->select_clause($dbh), $sql,
         'select_clause when first adding column and then table for that column'
