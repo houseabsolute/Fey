@@ -8,6 +8,8 @@ use Moose::Role;
 
 with 'Fey::Role::Joinable';
 
+requires 'sql_for_select_clause';
+
 1;
 
 # ABSTRACT: A role for things that are like a table

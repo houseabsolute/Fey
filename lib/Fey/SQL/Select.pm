@@ -114,15 +114,8 @@ sub select {
         MX_PARAMS_VALIDATE_NO_CACHE => 1,
     );
 
-    for my $elt (
-        map {
-            $_->can('columns')
-                ? sort { $a->name() cmp $b->name() } $_->columns()
-                : $_
-        }
-        map { blessed $_ ? $_ : Fey::Literal->new_from_scalar($_) } @select
-        ) {
-        $self->_add_select_element($elt);
+    for my $elt (@select) {
+        $self->_add_select_element( blessed $elt ? $elt : Fey::Literal->new_from_scalar($elt) );
     }
 
     return $self;
@@ -403,7 +396,11 @@ sub select_clause {
 
     $sql .= (
         join ', ',
-        map { $_->sql_with_alias($dbh) } $self->select_clause_elements()
+        map {
+            $_->can('sql_for_select_clause')
+                ? $_->sql_for_select_clause($dbh)
+                : $_->sql_with_alias($dbh)
+        } $self->select_clause_elements()
     );
 
     return $sql;
@@ -564,7 +561,7 @@ These will be passed to C<< Fey::Literal->new_from_scalar() >>.
 =item * C<Fey::Table> objects
 
 If a table is passed, then all of its columns will be included in the
-C<SELECT> clause, sorted alphanumerically.
+C<SELECT> clause.
 
 =item * C<Fey::Column> objects, and aliases
 
