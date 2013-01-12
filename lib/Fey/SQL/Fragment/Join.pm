@@ -5,7 +5,7 @@ use warnings;
 use namespace::autoclean;
 
 use Fey::FakeDBI;
-use Fey::Types qw( FK OuterJoinType Table WhereClause );
+use Fey::Types qw( Maybe FK OuterJoinType Table WhereClause );
 use List::AllUtils qw( pairwise );
 
 use Moose;
@@ -26,7 +26,7 @@ has '_table2' => (
 
 has '_fk' => (
     is       => 'ro',
-    isa      => FK,
+    isa      => Maybe[FK],
     init_arg => 'fk',
 );
 
@@ -66,8 +66,7 @@ sub id {
     return (
         join "\0",
         @outer,
-        ( map { $_->id() } @tables ),
-        $self->_fk()->id(),
+        ( map { $_->id() } @tables, $self->_fk || () ),
         @where,
     );
 }
@@ -124,10 +123,7 @@ sub _join_one_table {
     $join .= q{ } if length $join;
     $join .= 'JOIN ';
     $join .= $unseen_table->sql_with_alias($dbh);
-
-    $join .= $self->_on_clause($dbh);
-    $join .= $self->_where_clause($dbh);
-    $join .= ')';
+    $join .= $self->_condition_clause($dbh);
 
     return $join;
 }
@@ -143,19 +139,30 @@ sub _join_both_tables {
 
     $join .= ' JOIN ';
     $join .= $self->_table2()->sql_with_alias($dbh);
-
-    $join .= $self->_on_clause($dbh);
-    $join .= $self->_where_clause($dbh);
-    $join .= ')';
+    $join .= $self->_condition_clause($dbh);
 
     return $join;
+}
+
+sub _condition_clause {
+    my $self = shift;
+    my $dbh  = shift;
+
+    my $on = join ' AND ', (
+        $self->_on_clause($dbh),
+        $self->_where_clause($dbh),
+    );
+
+    return length $on ? " ON ($on)" : '';
 }
 
 sub _on_clause {
     my $self = shift;
     my $dbh  = shift;
 
-    my $on .= ' ON (';
+    return unless $self->_fk;
+
+    my $on;
 
     my @s = @{ $self->_fk()->source_columns() };
     my @t = @{ $self->_fk()->target_columns() };
@@ -173,9 +180,9 @@ sub _where_clause {
     my $self = shift;
     my $dbh  = shift;
 
-    return '' unless $self->_has_where();
+    return unless $self->_has_where();
 
-    return ' AND ' . $self->_where()->where_clause( $dbh, 'no WHERE' );
+    return $self->_where()->where_clause( $dbh, 'no WHERE' );
 }
 
 sub bind_params {
