@@ -297,7 +297,7 @@ generating high-level application object classes which subclass the
 Alzabo classes and add "business logic" methods. This is what is
 provided by C<Alzabo::MethodMaker>.
 
-Nowadays, I prefer to have my business logic classes simple use the
+Nowadays, I prefer to have my business logic classes simply use the
 Alzabo classes. In other words, I now prefer "has-a" and "uses-a"
 versus "is-a" object design for this case.
 

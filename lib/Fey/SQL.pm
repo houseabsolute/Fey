@@ -272,9 +272,9 @@ You can pass the strings "(" and ")" to the C<where()> method in order
 to create subgroups.
 
   # WHERE Part.size > 10
-  #   AND ( User.name = 'Widget'
+  #   AND ( Part.name = 'Widget'
   #         OR
-  #         User.name = 'Grommit' )
+  #         Part.name = 'Grommit' )
   $sql->where( $size, '>', 10 );
   $sql->where( '(' );
   $sql->where( $name, '=', 'Widget' );
