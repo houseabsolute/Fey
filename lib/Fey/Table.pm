@@ -475,6 +475,8 @@ columns in table, in same order as returned by C<< $table->columns() >>.
 
 =head2 $table->sql_with_alias()
 
+=head2 $table->sql_for_select_clause()
+
 Returns the appropriate SQL snippet for the table.
 
 =head2 $table->id()
