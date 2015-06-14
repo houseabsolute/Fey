@@ -9,7 +9,7 @@ use Fey::FakeDBI;
 use Fey::Types qw( FK OuterJoinType Table WhereClause );
 use List::AllUtils qw( pairwise );
 
-use Moose;
+use Moose 0.90;
 
 has '_table1' => (
     is       => 'ro',

@@ -3,8 +3,6 @@ package Fey;
 use strict;
 use warnings;
 
-use Moose 0.90 ();
-
 1;
 
 # ABSTRACT: Better SQL Generation Through Perl

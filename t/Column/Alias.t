@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 
-use Test::More;
+use Test::More 0.88;
 
 use Fey::Table;
 use Fey::Column::Alias;

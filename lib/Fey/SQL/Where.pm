@@ -6,9 +6,9 @@ use namespace::autoclean;
 
 use Fey::Types;
 
-use Moose;
-use MooseX::SemiAffordanceAccessor;
-use MooseX::StrictConstructor;
+use Moose 0.90;
+use MooseX::SemiAffordanceAccessor 0.03;
+use MooseX::StrictConstructor 0.07;
 
 with 'Fey::Role::SQL::HasWhereClause';
 

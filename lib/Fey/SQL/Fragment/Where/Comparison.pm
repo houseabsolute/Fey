@@ -10,7 +10,7 @@ use Fey::Placeholder;
 use Fey::Types qw( ArrayRef WhereClauseSide Str );
 use Scalar::Util qw( blessed );
 
-use Moose;
+use Moose 0.90;
 
 has '_lhs' => (
     is       => 'ro',

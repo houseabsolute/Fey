@@ -20,9 +20,9 @@ use Fey::Types qw(
     Str
 );
 
-use Moose;
-use MooseX::SemiAffordanceAccessor;
-use MooseX::StrictConstructor;
+use Moose 0.90;
+use MooseX::SemiAffordanceAccessor 0.03;
+use MooseX::StrictConstructor 0.07;
 
 with 'Fey::Role::ColumnLike';
 

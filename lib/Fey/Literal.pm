@@ -17,9 +17,9 @@ use overload ();
 # This needs to come before we load subclasses or shit blows up
 # because we end up with a metaclass object that is a
 # Class::MOP::Class, not Moose::Meta::Class.
-use Moose;
-use MooseX::SemiAffordanceAccessor;
-use MooseX::StrictConstructor;
+use Moose 0.90;
+use MooseX::SemiAffordanceAccessor 0.03;
+use MooseX::StrictConstructor 0.07;
 
 sub new_from_scalar {
     shift;

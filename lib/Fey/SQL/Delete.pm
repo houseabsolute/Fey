@@ -7,10 +7,10 @@ use namespace::autoclean;
 use Fey::Types qw( ArrayRef CanQuote Table );
 use Scalar::Util qw( blessed );
 
-use Moose;
-use MooseX::Params::Validate qw( pos_validated_list );
-use MooseX::SemiAffordanceAccessor;
-use MooseX::StrictConstructor;
+use Moose 0.90;
+use MooseX::Params::Validate 0.08 qw( pos_validated_list );
+use MooseX::SemiAffordanceAccessor 0.03;
+use MooseX::StrictConstructor 0.07;
 
 with 'Fey::Role::SQL::HasWhereClause',
     'Fey::Role::SQL::HasOrderByClause',

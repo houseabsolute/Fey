@@ -6,7 +6,7 @@ use namespace::autoclean;
 
 use Fey::Types qw( WhereBoolean );
 
-use Moose;
+use Moose 0.90;
 
 has 'comparison' => (
     is       => 'ro',

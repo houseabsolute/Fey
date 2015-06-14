@@ -8,7 +8,7 @@ use Fey::Types qw( ArrayRef OrderByElement );
 use Scalar::Util qw( blessed );
 
 use Moose::Role;
-use MooseX::Params::Validate qw( pos_validated_list );
+use MooseX::Params::Validate 0.08 qw( pos_validated_list );
 
 has '_order_by' => (
     traits  => ['Array'],
@@ -69,7 +69,7 @@ __END__
 
 =head1 SYNOPSIS
 
-  use Moose;
+  use Moose 0.90;
 
   with 'Fey::Role::SQL::HasOrderByClause';
 

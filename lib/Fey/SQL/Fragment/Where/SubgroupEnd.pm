@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-use Moose;
+use Moose 0.90;
 
 my $Paren = ')';
 

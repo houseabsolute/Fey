@@ -6,7 +6,7 @@ use namespace::autoclean;
 
 use Fey::Types qw( ClassName Str );
 
-use MooseX::Role::Parameterized;
+use MooseX::Role::Parameterized 0.04;
 
 parameter 'alias_class' => (
     is       => 'ro',
@@ -51,7 +51,7 @@ __END__
 
   package My::Thing;
 
-  use Moose;
+  use Moose 0.90;
 
   with 'Fey::Role::MakesAliasObjects'
       => { alias_class => 'My::Alias',

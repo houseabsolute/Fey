@@ -9,7 +9,7 @@ use Scalar::Util qw( blessed );
 use Fey::Types qw( PosInteger PosOrZeroInteger Undef );
 
 use Moose::Role;
-use MooseX::Params::Validate qw( pos_validated_list );
+use MooseX::Params::Validate 0.08 qw( pos_validated_list );
 
 has '_limit' => (
     is        => 'rw',
@@ -67,7 +67,7 @@ __END__
 
 =head1 SYNOPSIS
 
-  use Moose;
+  use Moose 0.90;
 
   with 'Fey::Role::SQL::HasLimitClause';
 

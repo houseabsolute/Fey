@@ -6,8 +6,8 @@ use namespace::autoclean;
 
 use Fey::Types qw( ArrayRef Bool SetOperationArg Str );
 
-use MooseX::Role::Parameterized;
-use MooseX::Params::Validate qw( pos_validated_list );
+use MooseX::Role::Parameterized 0.04;
+use MooseX::Params::Validate 0.08 qw( pos_validated_list );
 
 parameter keyword => (
     isa      => Str,
@@ -127,7 +127,7 @@ __END__
 
 =head1 SYNOPSIS
 
-  use Moose;
+  use Moose 0.90;
 
   with 'Fey::Role::SetOperation' => { keyword => $keyword };
 

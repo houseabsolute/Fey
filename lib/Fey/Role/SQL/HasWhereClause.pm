@@ -175,7 +175,7 @@ __END__
 
 =head1 SYNOPSIS
 
-  use Moose;
+  use Moose 0.90;
 
   with 'Fey::Role::SQL::HasWhereClause';
 

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More 0.88;
 
 use Fey::NamedObjectSet;
 
@@ -87,7 +87,7 @@ sub new { return bless {}, shift }
 
 package Name;
 
-use Moose;
+use Moose 0.90;
 
 BEGIN {
     has 'name' => (

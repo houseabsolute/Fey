@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-use MooseX::Role::Parameterized;
+use MooseX::Role::Parameterized 0.04;
 
 parameter 'real_class' => ( isa => 'Moose::Meta::Class' );
 
@@ -60,7 +60,7 @@ __END__
 
 =head1 SYNOPSIS
 
-  use Moose;
+  use Moose 0.90;
 
   with 'Fey::Role::SQL::Cloneable';
 

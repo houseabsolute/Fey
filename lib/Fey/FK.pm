@@ -10,10 +10,10 @@ use Fey::Types qw(  ArrayRef ArrayRefOfColumns Bool Column TableOrName );
 use List::AllUtils qw( max uniq all pairwise );
 use Scalar::Util qw( blessed );
 
-use Moose;
-use MooseX::Params::Validate qw( pos_validated_list );
-use MooseX::SemiAffordanceAccessor;
-use MooseX::StrictConstructor;
+use Moose 0.90;
+use MooseX::Params::Validate 0.08 qw( pos_validated_list );
+use MooseX::SemiAffordanceAccessor 0.03;
+use MooseX::StrictConstructor 0.07;
 use Moose::Util::TypeConstraints;
 
 has 'id' => (

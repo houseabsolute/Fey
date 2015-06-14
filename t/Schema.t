@@ -3,8 +3,8 @@ use warnings;
 
 use lib 't/lib';
 
-use Fey::Test;
-use Test::More;
+use Fey::Test 0.05;
+use Test::More 0.88;
 
 use Fey::Schema;
 

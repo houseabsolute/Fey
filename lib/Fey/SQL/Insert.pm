@@ -10,10 +10,10 @@ use Fey::Types
 use overload ();
 use Scalar::Util qw( blessed );
 
-use Moose;
-use MooseX::Params::Validate qw( validated_hash pos_validated_list );
-use MooseX::SemiAffordanceAccessor;
-use MooseX::StrictConstructor;
+use Moose 0.90;
+use MooseX::Params::Validate 0.08 qw( validated_hash pos_validated_list );
+use MooseX::SemiAffordanceAccessor 0.03;
+use MooseX::StrictConstructor 0.07;
 
 with 'Fey::Role::SQL::HasBindParams';
 

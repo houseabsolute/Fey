@@ -6,7 +6,7 @@ use namespace::autoclean;
 
 use Fey::Types qw( Bool Str );
 
-use MooseX::Role::Parameterized;
+use MooseX::Role::Parameterized 0.04;
 
 parameter 'generated_alias_prefix' => (
     isa      => Str,
@@ -81,7 +81,7 @@ __END__
 
   package My::Thing;
 
-  use Moose;
+  use Moose 0.90;
   with 'Fey::Role::HasAliasName'
       => { generated_alias_prefix => 'THING' };
 

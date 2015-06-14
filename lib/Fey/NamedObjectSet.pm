@@ -9,7 +9,7 @@ use Tie::IxHash;
 
 use Fey::Types qw( HashRef Named );
 
-use Moose;
+use Moose 0.90;
 
 has '_set' => (
     is      => 'bare',
