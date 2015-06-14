@@ -117,7 +117,8 @@ sub select {
     );
 
     for my $elt (@select) {
-        $self->_add_select_element( blessed $elt ? $elt : Fey::Literal->new_from_scalar($elt) );
+        $self->_add_select_element(
+            blessed $elt ? $elt : Fey::Literal->new_from_scalar($elt) );
     }
 
     return $self;
@@ -399,7 +400,7 @@ sub select_clause {
     $sql .= (
         join ', ',
         map {
-            $_->can('sql_for_select_clause')
+                  $_->can('sql_for_select_clause')
                 ? $_->sql_for_select_clause($dbh)
                 : $_->sql_with_alias($dbh)
         } $self->select_clause_elements()

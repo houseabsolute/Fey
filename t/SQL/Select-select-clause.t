@@ -53,8 +53,7 @@ my $dbh = Fey::Test->mock_dbh();
     $select->select( $s->table('User')->column('user_id') );
     $select->select( $s->table('User') );
 
-    my $sql
-        = q{SELECT "User"."user_id", "User".*};
+    my $sql = q{SELECT "User"."user_id", "User".*};
     is(
         $select->select_clause($dbh), $sql,
         'select_clause when first adding column and then table for that column'

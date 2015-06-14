@@ -8,7 +8,7 @@ use base 'MooseX::Types::Combine';
 our $VERSION = '0.41';
 
 __PACKAGE__->provide_types_from(
-    qw( MooseX::Types::Moose Fey::Types::Internal ) );
+    qw( MooseX::Types::Moose Fey::Types::Internal ));
 
 1;
 
