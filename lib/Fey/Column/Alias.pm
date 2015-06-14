@@ -6,7 +6,6 @@ use namespace::autoclean;
 
 our $VERSION = '0.41';
 
-use Fey::Column;
 use Fey::Exceptions qw( object_state_error );
 use Fey::Table;
 use Fey::Table::Alias;
@@ -87,6 +86,9 @@ sub _build_id {
 }
 
 __PACKAGE__->meta()->make_immutable();
+
+# This is here to avoid a circular use issue.
+require Fey::Column;
 
 1;
 
