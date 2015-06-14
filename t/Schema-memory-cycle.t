@@ -3,20 +3,13 @@ use warnings;
 
 use lib 't/lib';
 
-use Fey::Test;
-use Test::More;
+use Test::Requires {
+    'Test::Memory::Cycle' => 0,
+};
 
-unless (
-    eval {
-        require Test::Memory::Cycle;
-        Test::Memory::Cycle->import();
-        1;
-    }
-    ) {
-    plan skip_all => 'These tests require Test::Memory::Cycle.';
-    exit;
-}
-
+use Fey::Test 0.05;
+use Test::More 0.88;
+use Test::Memory::Cycle;
 
 memory_cycle_ok(
     Fey::Test->mock_test_schema(),
