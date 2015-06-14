@@ -49,7 +49,7 @@ has '_where' => (
 sub BUILD {
     my $self = shift;
 
-    param_error 'You cannot join two tables with a foreign key'
+    param_error 'You cannot join two tables without a foreign key'
         if $self->_has_table2() && ! $self->_has_fk();
 
     return;
