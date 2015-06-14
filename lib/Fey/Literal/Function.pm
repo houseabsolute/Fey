@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
+our $VERSION = '0.41';
+
 use Fey::Types qw( ArrayRefOfFunctionArgs Str );
 use Scalar::Util qw( blessed );
 

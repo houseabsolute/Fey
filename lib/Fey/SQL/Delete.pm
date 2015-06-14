@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
+our $VERSION = '0.41';
+
 use Fey::Types qw( ArrayRef CanQuote Table );
 use Scalar::Util qw( blessed );
 

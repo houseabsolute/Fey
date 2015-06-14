@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
+our $VERSION = '0.41';
+
 use Fey::Types qw( Bool Str );
 
 use MooseX::Role::Parameterized 0.04;

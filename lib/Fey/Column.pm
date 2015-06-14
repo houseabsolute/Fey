@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
+our $VERSION = '0.41';
+
 use Scalar::Util qw( blessed weaken );
 
 use Fey::Column::Alias;

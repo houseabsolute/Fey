@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
+our $VERSION = '0.41';
+
 use Moose::Role;
 
 # This seems weird, but basically we're saying that column-like things

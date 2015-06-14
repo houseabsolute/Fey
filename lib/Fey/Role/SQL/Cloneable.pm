@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
+our $VERSION = '0.41';
+
 use MooseX::Role::Parameterized 0.04;
 
 parameter 'real_class' => ( isa => 'Moose::Meta::Class' );

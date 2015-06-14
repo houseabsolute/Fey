@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
+our $VERSION = '0.41';
+
 use Fey::Exceptions qw( param_error );
 use Fey::NamedObjectSet;
 use Fey::SQL;

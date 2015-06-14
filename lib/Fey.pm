@@ -3,6 +3,8 @@ package Fey;
 use strict;
 use warnings;
 
+our $VERSION = '0.41';
+
 1;
 
 # ABSTRACT: Better SQL Generation Through Perl

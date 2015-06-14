@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
+our $VERSION = '0.41';
+
 use Fey::FakeDBI;
 use Fey::Literal::Function;
 use Fey::Literal::Null;

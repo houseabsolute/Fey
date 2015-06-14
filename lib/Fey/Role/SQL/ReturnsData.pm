@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
+our $VERSION = '0.41';
+
 use Moose::Role;
 
 # This doesn't actually work with Fey::Role::SetOperation in the mix.
