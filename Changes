@@ -2,6 +2,9 @@
 
 - Shut up warning from tests with newer Perls.
 
+- Fix test failures when using MooseX::Params::Validate 0.21 or
+  newer. Reported by Andreas Koenig. RT #102342.
+
 
 0.40    2011-02-16
 
