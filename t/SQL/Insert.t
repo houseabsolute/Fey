@@ -119,7 +119,7 @@ $s->table('User')->add_column($size);
 
     eval { $insert->values( user_id => 1, username => undef ) };
     like(
-        $@, qr/\QThe 'username' parameter (undef)/,
+        $@, qr/\QThe 'username' parameter does not pass the type constraint\E.+undef/,
         'cannot pass undef for non-nullable column'
     );
 }

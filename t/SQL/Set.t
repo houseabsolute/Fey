@@ -47,7 +47,7 @@ for my $keyword (qw( UNION INTERSECT EXCEPT )) {
         eval { $set_op->$method( 1, 2 ) };
         like(
             $@,
-            qr/did not pass the 'checking type constraint for .+::SetOperationArg'/,
+            qr/SetOperationArg' with value 1/,
             "$method() with a non-Select parameter is an error",
         );
     }
