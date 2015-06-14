@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.42    2015-06-14
+
 - Fixed the repo info in the distro metadata.
 
 
