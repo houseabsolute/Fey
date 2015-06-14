@@ -3,7 +3,7 @@ package Fey::FakeDBI;
 use strict;
 use warnings;
 
-our $VERSION = '0.41';
+our $VERSION = '0.42';
 
 # This package allows us to use a DBI handle in id(). Even though we
 # may not be quoting properly for a given DBMS, we will still generate
