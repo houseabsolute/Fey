@@ -28,7 +28,7 @@ has '_operator' => (
 
 has '_rhs' => (
     is       => 'ro',
-    isa      => ArrayRef[WhereClauseSide],
+    isa      => ArrayRef [WhereClauseSide],
     required => 1,
 );
 

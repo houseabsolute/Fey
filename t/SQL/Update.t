@@ -207,8 +207,10 @@ $s->table('User')->add_column($size);
 {
     my $update = Fey::SQL->new_update();
     $update->update( $s->table('User'), $s->table('Group') );
-    $update->set( $s->table('User')->column('username'),
-        $s->table('Group')->column('name') );
+    $update->set(
+        $s->table('User')->column('username'),
+        $s->table('Group')->column('name')
+    );
 
     is(
         $update->set_clause($dbh), q{SET "User"."username" = "Group"."name"},

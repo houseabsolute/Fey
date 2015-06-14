@@ -47,7 +47,7 @@ sub sql {
             blessed($_) && $_->can('sql_or_alias')
                 ? $_->sql_or_alias($dbh)
                 : $_
-            } @{ $self->term() }
+        } @{ $self->term() }
     );
 }
 

@@ -258,7 +258,7 @@ sub _check_join_arguments {
         'the first two arguments to from() were not valid (not tables or something else joinable).'
         unless
         all { blessed $_ && $_->can('is_joinable') && $_->is_joinable() }
-        @_[ 0, 1 ];
+    @_[ 0, 1 ];
 }
 
 sub _fk_for_join {
@@ -334,9 +334,9 @@ sub _check_outer_join_arguments {
 
     param_error 'from() was called with invalid arguments'
         unless $_[0]->can('is_joinable')
-            && $_[0]->is_joinable()
-            && $_[2]->can('is_joinable')
-            && $_[2]->is_joinable();
+        && $_[0]->is_joinable()
+        && $_[2]->can('is_joinable')
+        && $_[2]->is_joinable();
 }
 
 sub group_by {
@@ -487,9 +487,9 @@ sub bind_params {
 
     return (
         (
-            map { $_->bind_params() }
-            grep { $_->can('bind_params') }
-            $self->select_clause_elements()
+            map      { $_->bind_params() }
+                grep { $_->can('bind_params') }
+                $self->select_clause_elements()
         ),
 
         (

@@ -119,7 +119,8 @@ $s->table('User')->add_column($size);
 
     eval { $insert->values( user_id => 1, username => undef ) };
     like(
-        $@, qr/\QThe 'username' parameter does not pass the type constraint\E.+undef/,
+        $@,
+        qr/\QThe 'username' parameter does not pass the type constraint\E.+undef/,
         'cannot pass undef for non-nullable column'
     );
 }
@@ -270,7 +271,8 @@ $s->table('User')->add_column($size);
     );
 
     is(
-        $insert->sql($dbh), q{INSERT INTO "User" ("size", "email", "username") VALUES (?, ?, ?)},
+        $insert->sql($dbh),
+        q{INSERT INTO "User" ("size", "email", "username") VALUES (?, ?, ?)},
         'sql() preserves column order in INTO clause'
     );
 }
@@ -288,7 +290,8 @@ $s->table('User')->add_column($size);
     );
 
     is(
-        $insert->sql($dbh), q{INSERT INTO "User" ("email", "username", "size") VALUES (?, ?, ?)},
+        $insert->sql($dbh),
+        q{INSERT INTO "User" ("email", "username", "size") VALUES (?, ?, ?)},
         'sql() preserves column order in INTO clause (different order)'
     );
 }

@@ -9,41 +9,43 @@ use List::AllUtils qw( all );
 use overload ();
 use Scalar::Util qw( blessed );
 
-use MooseX::Types -declare => [qw(
-    ArrayRefOfColumns
-    ArrayRefOfFunctionArgs
-    CanQuote
-    Column
-    ColumnLikeOrName
-    ColumnOrName
-    ColumnWithTable
-    DefaultValue
-    FunctionArg
-    FK
-    GenericTypeName
-    GroupByElement
-    IntoElement
-    LiteralTermArg
-    Named
-    NamedObjectSet
-    NonNullableInsertValue
-    NonNullableUpdateValue
-    NullableInsertValue
-    NullableUpdateValue
-    OrderByElement
-    OuterJoinType
-    PosInteger
-    PosOrZeroInteger
-    SelectElement
-    SetOperationArg
-    Schema
-    Table
-    TableLikeOrName
-    TableOrName
-    WhereBoolean
-    WhereClause
-    WhereClauseSide
-)];
+use MooseX::Types -declare => [
+    qw(
+        ArrayRefOfColumns
+        ArrayRefOfFunctionArgs
+        CanQuote
+        Column
+        ColumnLikeOrName
+        ColumnOrName
+        ColumnWithTable
+        DefaultValue
+        FunctionArg
+        FK
+        GenericTypeName
+        GroupByElement
+        IntoElement
+        LiteralTermArg
+        Named
+        NamedObjectSet
+        NonNullableInsertValue
+        NonNullableUpdateValue
+        NullableInsertValue
+        NullableUpdateValue
+        OrderByElement
+        OuterJoinType
+        PosInteger
+        PosOrZeroInteger
+        SelectElement
+        SetOperationArg
+        Schema
+        Table
+        TableLikeOrName
+        TableOrName
+        WhereBoolean
+        WhereClause
+        WhereClauseSide
+        )
+];
 
 use MooseX::Types::Moose
     qw( ArrayRef Defined Int Item Object Str Undef Value );
@@ -66,7 +68,7 @@ class_type NamedObjectSet, { class => 'Fey::NamedObjectSet' };
 
 class_type Column, { class => 'Fey::Column' };
 
-subtype ArrayRefOfColumns, as ArrayRef[Column], where {
+subtype ArrayRefOfColumns, as ArrayRef [Column], where {
     @{$_} >= 1
 };
 
@@ -81,7 +83,7 @@ coerce FunctionArg,
     from Undef, via { Fey::Literal::Null->new() },
     from Value, via { Fey::Literal->new_from_scalar($_) };
 
-subtype ArrayRefOfFunctionArgs, as ArrayRef[FunctionArg];
+subtype ArrayRefOfFunctionArgs, as ArrayRef [FunctionArg];
 
 coerce ArrayRefOfFunctionArgs, from ArrayRef, via {
     [ map { FunctionArg->coerce($_) } @{$_} ];
@@ -99,9 +101,11 @@ subtype LiteralTermArg, as ArrayRef, where {
 
 coerce LiteralTermArg, from Value, via { [$_] };
 
-for my $thing ( ['Table',  'Fey::Table',  TableOrName,  TableLikeOrName],
-                ['Column', 'Fey::Column', ColumnOrName, ColumnLikeOrName] ) {
-    my ($thing, $class, $name_type, $like_type) = @$thing;
+for my $thing (
+    [ 'Table',  'Fey::Table',  TableOrName,  TableLikeOrName ],
+    [ 'Column', 'Fey::Column', ColumnOrName, ColumnLikeOrName ]
+    ) {
+    my ( $thing, $class, $name_type, $like_type ) = @$thing;
 
     subtype $name_type, as Item, where {
         return   unless defined $_;
@@ -120,7 +124,7 @@ for my $thing ( ['Table',  'Fey::Table',  TableOrName,  TableLikeOrName],
 role_type SetOperationArg, { role => 'Fey::Role::SQL::ReturnsData' };
 
 subtype SelectElement, as Item, where {
-           !blessed $_[0]
+    !blessed $_[0]
         || $_[0]->isa('Fey::Table')
         || $_[0]->isa('Fey::Table::Alias')
         || ( $_[0]->can('is_selectable')
@@ -136,14 +140,14 @@ subtype IntoElement, as Object, where {
         || ( $_->isa('Fey::Column')
         && $_->table()
         && !$_->table()->is_alias() );
-    };
+};
 
 subtype NullableInsertValue, as Item, where {
     !blessed $_
         || (
-            $_->can('does')
-            && (   $_->does('Fey::Role::IsLiteral')
-                || $_->does('Fey::Role::SQL::ReturnsData') )
+        $_->can('does')
+        && (   $_->does('Fey::Role::IsLiteral')
+            || $_->does('Fey::Role::SQL::ReturnsData') )
         )
         || $_->isa('Fey::Placeholder')
         || overload::Overloaded($_);
@@ -152,21 +156,22 @@ subtype NullableInsertValue, as Item, where {
 subtype NonNullableInsertValue, as Defined, where {
     !blessed $_
         || (
-            $_->can('does')
-            && (   $_->does('Fey::Role::IsLiteral')
-                 || $_->does('Fey::Role::SQL::ReturnsData') )
-            && !$_->isa('Fey::Literal::Null') )
+        $_->can('does')
+        && (   $_->does('Fey::Role::IsLiteral')
+            || $_->does('Fey::Role::SQL::ReturnsData') )
+        && !$_->isa('Fey::Literal::Null')
+        )
         || $_->isa('Fey::Placeholder')
         || overload::Overloaded($_);
 };
 
 subtype NullableUpdateValue, as Item, where {
-           !blessed $_
+    !blessed $_
         || $_->isa('Fey::Column')
         || (
-            $_->can('does')
-            && (   $_->does('Fey::Role::IsLiteral')
-                || $_->does('Fey::Role::SQL::ReturnsData') )
+        $_->can('does')
+        && (   $_->does('Fey::Role::IsLiteral')
+            || $_->does('Fey::Role::SQL::ReturnsData') )
         )
         || $_->isa('Fey::Placeholder')
         || overload::Overloaded($_);
@@ -176,10 +181,11 @@ subtype NonNullableUpdateValue, as Defined, where {
     !blessed $_
         || $_->isa('Fey::Column')
         || (
-            $_->can('does')
-            && (   $_->does('Fey::Role::IsLiteral')
-                 || $_->does('Fey::Role::SQL::ReturnsData') )
-            && !$_->isa('Fey::Literal::Null') )
+        $_->can('does')
+        && (   $_->does('Fey::Role::IsLiteral')
+            || $_->does('Fey::Role::SQL::ReturnsData') )
+        && !$_->isa('Fey::Literal::Null')
+        )
         || $_->isa('Fey::Placeholder')
         || overload::Overloaded($_);
 };
@@ -191,13 +197,13 @@ subtype OrderByElement, as Item, where {
 
     return 1
         if $_->can('is_orderable')
-            && $_->is_orderable();
+        && $_->is_orderable();
 };
 
 subtype GroupByElement, as Object, where {
     return 1
         if $_->can('is_groupable')
-            && $_->is_groupable();
+        && $_->is_groupable();
 };
 
 subtype OuterJoinType, as Str, where { return $_ =~ /^(?:full|left|right)$/ };
@@ -205,8 +211,7 @@ subtype OuterJoinType, as Str, where { return $_ =~ /^(?:full|left|right)$/ };
 subtype CanQuote, as Item,
     where { return $_->isa('DBI::db') || $_->can('quote') };
 
-subtype WhereBoolean, as Str,
-    where { return $_ =~ /^(?:AND|OR)$/ };
+subtype WhereBoolean, as Str, where { return $_ =~ /^(?:AND|OR)$/ };
 
 subtype WhereClauseSide, as Item, where {
     return 1 if !defined $_;
@@ -216,7 +221,7 @@ subtype WhereClauseSide, as Item, where {
 
     return 1
         if $_->can('is_comparable')
-            && $_->is_comparable();
+        && $_->is_comparable();
 };
 
 class_type WhereClause, { class => 'Fey::SQL::Where' };

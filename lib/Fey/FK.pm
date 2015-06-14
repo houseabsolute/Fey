@@ -43,7 +43,7 @@ has column_pairs => (
 
     # really, the inner array refs must always contain 2 columns,
     # but we don't have structured constraints quite yet.
-    isa        => ArrayRef[ArrayRef[Column]],
+    isa => ArrayRef [ ArrayRef [Column] ],
     lazy_build => 1,
     init_arg   => undef,
 );

@@ -51,7 +51,7 @@ has 'is_view' => (
 has '_keys' => (
     traits  => ['Array'],
     is      => 'bare',
-    isa     => ArrayRef[NamedObjectSet],
+    isa     => ArrayRef [NamedObjectSet],
     default => sub { [] },
     handles => {
         _keys       => 'elements',
@@ -82,7 +82,7 @@ has 'schema' => (
 
 has 'candidate_keys' => (
     is         => 'ro',
-    isa        => ArrayRef[ArrayRef[Column]],
+    isa        => ArrayRef [ ArrayRef [Column] ],
     clearer    => '_clear_candidate_keys',
     lazy_build => 1,
     init_arg   => undef,
@@ -92,7 +92,7 @@ after '_add_key', '_delete_key' => sub { $_[0]->_clear_candidate_keys() };
 
 has 'primary_key' => (
     is         => 'ro',
-    isa        => ArrayRef[Column],
+    isa        => ArrayRef [Column],
     clearer    => '_clear_primary_key',
     lazy_build => 1,
     init_arg   => undef,

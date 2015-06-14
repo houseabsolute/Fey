@@ -8,7 +8,7 @@ our $VERSION = '0.41';
 
 use Fey::Types
     qw( ArrayRef HashRef CanQuote IntoElement NonNullableInsertValue
-        NullableInsertValue );
+    NullableInsertValue );
 use overload ();
 use Scalar::Util qw( blessed );
 
@@ -34,7 +34,7 @@ has '_values_spec' => (
 has '_values' => (
     traits  => ['Array'],
     is      => 'bare',
-    isa     => ArrayRef[HashRef],
+    isa     => ArrayRef [HashRef],
     default => sub { [] },
     handles => {
         _add_values => 'push',
@@ -165,7 +165,7 @@ sub values_clause {
                     && $val->does('Fey::Role::SQL::ReturnsData')
                     ? "($sql)"
                     : $sql
-                } @cols
+            } @cols
         );
 
         $v .= ')';

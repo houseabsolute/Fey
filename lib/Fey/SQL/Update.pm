@@ -8,9 +8,8 @@ our $VERSION = '0.41';
 
 use Fey::Exceptions qw( param_error );
 use Fey::Literal;
-use Fey::Types
-    qw( ArrayRef CanQuote ColumnWithTable NonNullableUpdateValue
-        NullableUpdateValue Table );
+use Fey::Types qw( ArrayRef CanQuote ColumnWithTable NonNullableUpdateValue
+    NullableUpdateValue Table );
 use overload ();
 use Scalar::Util qw( blessed );
 
@@ -41,7 +40,7 @@ has '_update' => (
 has '_set_pairs' => (
     traits  => ['Array'],
     is      => 'bare',
-    isa     => ArrayRef[ArrayRef],
+    isa     => ArrayRef [ArrayRef],
     default => sub { [] },
     handles => {
         _add_set_pair => 'push',
@@ -149,14 +148,14 @@ sub set_clause {
         'SET ' . (
             join ', ',
             map {
-                my $val = $_->[1];
+                my $val     = $_->[1];
                 my $val_sql = $val->sql($dbh);
                 $val_sql = "($val_sql)"
                     if blessed $val
-                        && $val->can('does')
-                        && $val->does('Fey::Role::SQL::ReturnsData');
+                    && $val->can('does')
+                    && $val->does('Fey::Role::SQL::ReturnsData');
                 $self->$col_quote( $_->[0], $dbh ) . ' = ' . $val_sql;
-                } $self->_set_pairs()
+            } $self->_set_pairs()
         )
     );
 }

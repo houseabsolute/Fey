@@ -75,8 +75,10 @@ my $dbh = Fey::Test->mock_dbh();
 {
     my $q = Fey::SQL->new_select( auto_placeholders => 0 );
 
-    $q->having( $s->table('User')->column('user_id'), '=',
-        $s->table('User')->column('user_id') );
+    $q->having(
+        $s->table('User')->column('user_id'), '=',
+        $s->table('User')->column('user_id')
+    );
 
     is(
         $q->having_clause($dbh),

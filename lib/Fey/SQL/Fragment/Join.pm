@@ -52,7 +52,7 @@ sub BUILD {
     my $self = shift;
 
     param_error 'You cannot join two tables without a foreign key'
-        if $self->_has_table2() && ! $self->_has_fk();
+        if $self->_has_table2() && !$self->_has_fk();
 
     return;
 }

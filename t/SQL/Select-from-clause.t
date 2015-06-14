@@ -26,8 +26,10 @@ my $dbh = Fey::Test->mock_dbh();
 
     $q->from( $s->table('User') );
 
-    is( $q->from_clause($dbh), q{FROM "User"},
-        'from_clause() for one table' );
+    is(
+        $q->from_clause($dbh), q{FROM "User"},
+        'from_clause() for one table'
+    );
 }
 
 {
@@ -436,8 +438,10 @@ my $dbh = Fey::Test->mock_dbh();
     my $q = Fey::SQL->new_select();
 
     eval {
-        $q->from( $s->table('User'), 'full', $s->table('UserGroup'),
-            'invalid' );
+        $q->from(
+            $s->table('User'), 'full', $s->table('UserGroup'),
+            'invalid'
+        );
     };
     like(
         $@, qr/\Qfrom() called with invalid parameters/,
@@ -534,8 +538,10 @@ my $dbh = Fey::Test->mock_dbh();
     my $sql = q{FROM "User" LEFT OUTER JOIN "UserGroup" ON};
     $sql .= q{ ("UserGroup"."user_id" = "User"."user_id")};
 
-    is( $q->from_clause($dbh), $sql,
-        'table only shows up once in from, not twice' );
+    is(
+        $q->from_clause($dbh), $sql,
+        'table only shows up once in from, not twice'
+    );
 }
 
 {

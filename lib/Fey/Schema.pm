@@ -10,7 +10,8 @@ use Fey::Exceptions qw( param_error );
 use Fey::NamedObjectSet;
 use Fey::SQL;
 use Fey::Table;
-use Fey::Types qw( FK HashRef NamedObjectSet Str Table TableLikeOrName TableOrName  );
+use Fey::Types
+    qw( FK HashRef NamedObjectSet Str Table TableLikeOrName TableOrName  );
 use Scalar::Util qw( blessed );
 
 use Moose 0.90;

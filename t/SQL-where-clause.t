@@ -75,8 +75,10 @@ my $dbh = Fey::Test->mock_dbh();
 {
     my $q = Fey::SQL->new_select( auto_placeholders => 0 );
 
-    $q->where( $s->table('User')->column('user_id'), '=',
-        $s->table('User')->column('user_id') );
+    $q->where(
+        $s->table('User')->column('user_id'), '=',
+        $s->table('User')->column('user_id')
+    );
 
     is(
         $q->where_clause($dbh), q{WHERE "User"."user_id" = "User"."user_id"},
@@ -386,8 +388,10 @@ my $dbh = Fey::Test->mock_dbh();
 {
     my $q = Fey::SQL->new_select( auto_placeholders => 0 );
 
-    $q->where( $s->table('User')->column('user_id'), '=',
-        Fey::Placeholder->new() );
+    $q->where(
+        $s->table('User')->column('user_id'), '=',
+        Fey::Placeholder->new()
+    );
 
     is(
         $q->where_clause($dbh), q{WHERE "User"."user_id" = ?},
@@ -476,8 +480,10 @@ my $dbh = Fey::Test->mock_dbh();
     my $q = Fey::SQL->new_select( auto_placeholders => 0 );
 
     eval {
-        $q->where( $s->table('User')->column('user_id'), '=', bless {},
-            'Foo' );
+        $q->where(
+            $s->table('User')->column('user_id'), '=', bless {},
+            'Foo'
+        );
     };
     like(
         $@,

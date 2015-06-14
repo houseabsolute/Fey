@@ -29,7 +29,7 @@ sub limit {
     my $self = shift;
     my ( $limit, $offset ) = pos_validated_list(
         \@_,
-        { isa => (PosInteger | Undef) },
+        { isa => ( PosInteger | Undef ) },
         {
             isa      => PosOrZeroInteger,
             optional => 1,

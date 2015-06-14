@@ -104,8 +104,10 @@ use Fey::Schema;
 
     my $alias = $s->table('User')->alias( alias_name => 'UserA' );
     @fk = $s->foreign_keys_between_tables( $alias, 'UserGroup' );
-    is( scalar @fk, 1,
-        'one fk between alias of User table and UserGroup table' );
+    is(
+        scalar @fk, 1,
+        'one fk between alias of User table and UserGroup table'
+    );
     is(
         $fk[0]->source_columns()->[0]->table(), $alias,
         'source column points to alias'
@@ -118,8 +120,10 @@ use Fey::Schema;
         'one foreign key between UserGroup and User'
     );
 
-    @fk = $s->foreign_keys_between_tables( $s->table('User'),
-        $s->table('UserGroup') );
+    @fk = $s->foreign_keys_between_tables(
+        $s->table('User'),
+        $s->table('UserGroup')
+    );
     is( scalar @fk, 1, 'one fk for UserGroup table - passed as objects' );
 
     @fk = $s->foreign_keys_between_tables( 'User', 'Group' );
@@ -152,22 +156,28 @@ use Fey::Schema;
         'no fks for UserGroup table after User.user_id column is removed'
     );
 
-    @fk = $s->foreign_keys_between_tables( $s->table('User'),
-        $s->table('UserGroup') );
+    @fk = $s->foreign_keys_between_tables(
+        $s->table('User'),
+        $s->table('UserGroup')
+    );
     is(
         scalar @fk, 0,
         'no fks between User and UserGroup after User.user_id columns is removed'
     );
 
-    @fk = $s->foreign_keys_between_tables( $s->table('UserGroup'),
-        $s->table('User') );
+    @fk = $s->foreign_keys_between_tables(
+        $s->table('UserGroup'),
+        $s->table('User')
+    );
     is(
         scalar @fk, 0,
         'no fks between UserGroup and User after User.user_id columns is removed'
     );
 
-    @fk = $s->foreign_keys_between_tables( $s->table('Message'),
-        $s->table('Message') );
+    @fk = $s->foreign_keys_between_tables(
+        $s->table('Message'),
+        $s->table('Message')
+    );
     is(
         scalar @fk, 0,
         'no fks between Message and Message'

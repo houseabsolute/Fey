@@ -114,8 +114,10 @@ for my $keyword (qw( UNION INTERSECT EXCEPT )) {
         my $sel2 = Fey::SQL->new_select->select(2)->from( $s->table('User') );
         my $sel3 = Fey::SQL->new_select->select(3)->from( $s->table('User') );
 
-        $set_op->$method( $sel1,
-            Fey::SQL->$new_method->$method( $sel2, $sel3 ) );
+        $set_op->$method(
+            $sel1,
+            Fey::SQL->$new_method->$method( $sel2, $sel3 )
+        );
 
         my $from = qq{FROM "User"};
         my $sql  = qq{(SELECT 1 $from) $keyword };

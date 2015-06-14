@@ -65,8 +65,10 @@ my $dbh = Fey::Test->mock_dbh();
     my $subselect = Fey::SQL->new_select();
     $subselect->select( $s->table('User')->column('user_id') );
     $subselect->from( $s->table('User') );
-    $subselect->where( $s->table('User')->column('user_id'), 'IN', 5, 6, 7,
-        9 );
+    $subselect->where(
+        $s->table('User')->column('user_id'), 'IN', 5, 6, 7,
+        9
+    );
 
     $q->from($subselect);
 
@@ -87,8 +89,10 @@ my $dbh = Fey::Test->mock_dbh();
     my $subselect = Fey::SQL->new_select();
     $subselect->select( $s->table('User')->column('user_id') );
     $subselect->from( $s->table('User') );
-    $subselect->where( $s->table('User')->column('user_id'), 'IN', 5, 6, 7,
-        9 );
+    $subselect->where(
+        $s->table('User')->column('user_id'), 'IN', 5, 6, 7,
+        9
+    );
 
     $q->where( $s->table('User')->column('user_id'), 'IN', $subselect );
 
