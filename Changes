@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Fixed the repo info in the distro metadata.
+
+
 0.41    2015-06-14
 
 - Shut up warning from tests with newer Perls.
