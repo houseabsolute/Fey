@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.41    2015-06-14
+
 - Shut up warning from tests with newer Perls.
 
 - Fix test failures when using MooseX::Params::Validate 0.21 or
