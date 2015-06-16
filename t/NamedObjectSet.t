@@ -87,7 +87,7 @@ sub new { return bless {}, shift }
 
 package Name;
 
-use Moose 0.90;
+use Moose 2.1200;
 
 BEGIN {
     has 'name' => (

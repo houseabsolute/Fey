@@ -8,8 +8,8 @@ our $VERSION = '0.43';
 
 use Fey::Types qw( ArrayRef Bool SetOperationArg Str );
 
-use MooseX::Role::Parameterized 0.04;
-use MooseX::Params::Validate 0.08 qw( pos_validated_list );
+use MooseX::Role::Parameterized 1.00;
+use MooseX::Params::Validate 0.21 qw( pos_validated_list );
 
 parameter keyword => (
     isa      => Str,
@@ -129,7 +129,7 @@ __END__
 
 =head1 SYNOPSIS
 
-  use Moose 0.90;
+  use Moose 2.1200;
 
   with 'Fey::Role::SetOperation' => { keyword => $keyword };
 

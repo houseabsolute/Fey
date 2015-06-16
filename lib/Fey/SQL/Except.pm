@@ -6,7 +6,7 @@ use namespace::autoclean;
 
 our $VERSION = '0.43';
 
-use Moose 0.90;
+use Moose 2.1200;
 
 with 'Fey::Role::SetOperation' => { keyword => 'EXCEPT' };
 

@@ -14,10 +14,10 @@ use Fey::Types
     qw( FK HashRef NamedObjectSet Str Table TableLikeOrName TableOrName  );
 use Scalar::Util qw( blessed );
 
-use Moose 0.90;
-use MooseX::Params::Validate 0.08 qw( pos_validated_list );
+use Moose 2.1200;
+use MooseX::Params::Validate 0.21 qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor 0.03;
-use MooseX::StrictConstructor 0.07;
+use MooseX::StrictConstructor 0.13;
 
 has 'name' => (
     is       => 'rw',

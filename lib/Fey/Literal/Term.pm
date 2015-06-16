@@ -9,9 +9,9 @@ our $VERSION = '0.43';
 use Fey::Types qw( Bool LiteralTermArg );
 
 use Carp qw( croak );
-use Moose 0.90;
+use Moose 2.1200;
 use MooseX::SemiAffordanceAccessor 0.03;
-use MooseX::StrictConstructor 0.07;
+use MooseX::StrictConstructor 0.13;
 
 with 'Fey::Role::Comparable', 'Fey::Role::Selectable',
     'Fey::Role::Orderable', 'Fey::Role::Groupable',

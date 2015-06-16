@@ -11,9 +11,9 @@ use Fey::Table;
 use Fey::Table::Alias;
 use Fey::Types qw( Column Str );
 
-use Moose 0.90;
+use Moose 2.1200;
 use MooseX::SemiAffordanceAccessor 0.03;
-use MooseX::StrictConstructor 0.07;
+use MooseX::StrictConstructor 0.13;
 
 with 'Fey::Role::ColumnLike';
 

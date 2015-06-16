@@ -8,7 +8,7 @@ our $VERSION = '0.43';
 
 use Fey::Types qw( WhereBoolean );
 
-use Moose 0.90;
+use Moose 2.1200;
 
 has 'comparison' => (
     is       => 'ro',

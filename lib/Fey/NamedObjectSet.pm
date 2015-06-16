@@ -11,7 +11,7 @@ use Tie::IxHash;
 
 use Fey::Types qw( HashRef Named );
 
-use Moose 0.90;
+use Moose 2.1200;
 
 has '_set' => (
     is      => 'bare',

@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+- I meant to require MooseX::Params::Validate 0.21 or greater in the 0.41
+  release but somehow only required 0.08. This also increases several other
+  prereq versions. This distro now requires Moose 2.1200+,
+  MooseX::Role::Parameterized 1.00+, and MooseX::StrictConstructor 0.13+.
+
+
 0.42    2015-06-14
 
 - Fixed the repo info in the distro metadata.

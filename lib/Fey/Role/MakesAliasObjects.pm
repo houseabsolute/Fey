@@ -8,7 +8,7 @@ our $VERSION = '0.43';
 
 use Fey::Types qw( ClassName Str );
 
-use MooseX::Role::Parameterized 0.04;
+use MooseX::Role::Parameterized 1.00;
 
 parameter 'alias_class' => (
     is       => 'ro',
@@ -53,7 +53,7 @@ __END__
 
   package My::Thing;
 
-  use Moose 0.90;
+  use Moose 2.1200;
 
   with 'Fey::Role::MakesAliasObjects'
       => { alias_class => 'My::Alias',

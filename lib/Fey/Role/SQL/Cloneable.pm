@@ -6,7 +6,7 @@ use namespace::autoclean;
 
 our $VERSION = '0.43';
 
-use MooseX::Role::Parameterized 0.04;
+use MooseX::Role::Parameterized 1.00;
 
 parameter 'real_class' => ( isa => 'Moose::Meta::Class' );
 
@@ -62,7 +62,7 @@ __END__
 
 =head1 SYNOPSIS
 
-  use Moose 0.90;
+  use Moose 2.1200;
 
   with 'Fey::Role::SQL::Cloneable';
 

@@ -42,7 +42,7 @@ __END__
 
 =head1 SYNOPSIS
 
-  use Moose 0.90;
+  use Moose 2.1200;
 
   with 'Fey::Role::ColumnLike';
 
