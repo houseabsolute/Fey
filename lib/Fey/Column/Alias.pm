@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.43';
+our $VERSION = '0.44';
 
 use Fey::Exceptions qw( object_state_error );
 use Fey::Table;
