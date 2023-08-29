@@ -101,10 +101,6 @@ sub primary_key {
 
 sub is_alias {1}
 
-sub sql_for_select_clause {
-    return $_[1]->quote_identifier( $_[0]->alias_name() ) . '.*';
-}
-
 sub sql_with_alias {
     return (  $_[1]->quote_identifier( $_[0]->table()->name() ) . ' AS '
             . $_[1]->quote_identifier( $_[0]->alias_name() ) );

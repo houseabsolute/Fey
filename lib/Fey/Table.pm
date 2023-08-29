@@ -303,8 +303,6 @@ sub sql {
     return $_[1]->quote_identifier( $_[0]->name() );
 }
 
-sub sql_for_select_clause { $_[0]->sql( $_[1] ) . '.*' }
-
 sub sql_with_alias { goto &sql }
 
 sub _build_id { $_[0]->name() }

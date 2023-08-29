@@ -659,7 +659,7 @@ my $dbh = Fey::Test->mock_dbh();
         ->where( $first->column('first_id'), '=', Fey::Placeholder->new() );
     #>>
 
-    my $expect = q{SELECT "fourth".*};
+    my $expect = q{SELECT "fourth"."third_id", "fourth"."fourth_id"};
     $expect .= q{ FROM "second"};
     $expect .= q{ JOIN "first" ON ("second"."first_id" = "first"."first_id")};
     $expect .= q{ JOIN "third" ON ("third"."second_id" = "second"."second_id")};
@@ -764,7 +764,7 @@ TODO:
         ->where( $t1->column('t1_id'), '=', Fey::Placeholder->new() );
     #>>
 
-    my $expect = q{SELECT "t4".*};
+    my $expect = q{SELECT "t4"."t3_id", "t4"."t4_id"};
     $expect .= q{ FROM "t2"};
     $expect .= q{ JOIN "t1" ON ("t2"."t1_id" = "t1"."t1_id")};
     $expect .= q{ JOIN "t3" ON ("t3"."t2_id" = "t2"."t2_id")};
